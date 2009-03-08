@@ -13,13 +13,12 @@ public final class R {
     public static final class color {
         /**  Retrieved via Resources.getColor() and friends. 
          */
-        public static final int red=0x7f040000;
+        public static final int red=0x7f030000;
     }
     public static final class drawable {
         /**  Retrieved via Resources.getDrawable() and friends. 
          */
-        public static final int semi_black=0x7f020001;
-        public static final int violet=0x7f020000;
+        public static final int semi_black=0x7f040000;
     }
     public static final class id {
         public static final int add_user_button=0x7f070004;
@@ -31,7 +30,7 @@ public final class R {
         public static final int start_stop_button=0x7f070003;
     }
     public static final class layout {
-        public static final int server_control_activity=0x7f030000;
+        public static final int server_control_activity=0x7f020000;
     }
     public static final class string {
         public static final int add_user=0x7f050004;
