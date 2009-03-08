@@ -1,0 +1,12 @@
+How to use Eclipse and the Android plugin with the SwiFTP project:
+
+1) Check out the trunk according to the instructions on the "Source" page on 
+   http://www.swiftp.org
+2) In Eclipse, import the existing project:
+  - File -> Import 
+  - Select General, then Existing Projects Into Workspace
+  - In "Select root directory," browse for the directory where you checked out
+    the source
+  - From there it's obvious
+
+
