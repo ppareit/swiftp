@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 /**
  * This class provides a basic demonstration of how to write an Android
@@ -41,11 +42,11 @@ public class ServerControlActivity extends Activity {
     static final private int BACK_ID = Menu.FIRST;
     static final private int CLEAR_ID = Menu.FIRST + 1;
 
-    static final private String LOGTAG = "SwiFTP control";
+    //static final private String LOGTAG = "SwiFTP control";
     //private EditText mEditor;
-    private ListView actionList;
+    //private ListView actionList;
     
-    private int mPosStartStop;
+    //private int mPosStartStop;
     //private int mPosAddUser;
     //private int mPosManageUsers;
     
@@ -54,6 +55,8 @@ public class ServerControlActivity extends Activity {
     private Button manageUsersButton;
     private Button serverOptionsButton;
     
+    private TextView ipText;
+	
     protected MyLog myLog = new MyLog(this.getClass().getName());
     
     public Handler handler = new Handler() {
@@ -63,16 +66,27 @@ public class ServerControlActivity extends Activity {
     };
     
     public ServerControlActivity() {
+    	
     }
 
     /** Called with the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        // Set the application-wide context global, if not already set
+		Context myContext = Globals.getContext();
+		if(myContext == null) {
+			myContext = getApplicationContext();
+			if(myContext == null) {
+				throw new NullPointerException("Null context!?!?!?");
+			}
+			Globals.setContext(myContext);
+		}
         // Inflate our UI from its XML layout description.
         setContentView(R.layout.server_control_activity);
         
+        ipText = (TextView)findViewById(R.id.ip_address);
+        	
         startStopButton = (Button) findViewById(R.id.start_stop_button);
         addUserButton = (Button) findViewById(R.id.add_user_button);
         manageUsersButton = (Button) findViewById(R.id.manage_users_button);
@@ -82,6 +96,7 @@ public class ServerControlActivity extends Activity {
         addUserButton.setOnClickListener(addUserListener);
         manageUsersButton.setOnClickListener(manageUsersListener);
         serverOptionsButton.setOnClickListener(serverOptionsListener);
+        
         
         updateUi();
         //((Button) findViewById(R.id.clear)).setOnClickListener(mClearListener);
@@ -158,6 +173,12 @@ public class ServerControlActivity extends Activity {
     		startStopButton.setText(R.string.stop_server);
     	} else {
     		startStopButton.setText(R.string.start_server);
+    	}
+    	String ip =  FTPServerService.getWifiIpAsString();
+    	if(ip != null) {
+    		ipText.setText("Wifi URL: ftp://" + ip);
+    	} else {
+    		ipText.setText("Wifi is not enabled");
     	}
     }
     

@@ -21,13 +21,14 @@ public final class R {
         public static final int semi_black=0x7f040000;
     }
     public static final class id {
-        public static final int add_user_button=0x7f070004;
+        public static final int add_user_button=0x7f070005;
         public static final int byline=0x7f070002;
-        public static final int manage_users_button=0x7f070005;
+        public static final int ip_address=0x7f070003;
+        public static final int manage_users_button=0x7f070006;
         public static final int menu_top_text=0x7f070000;
         public static final int menu_url=0x7f070001;
-        public static final int server_options_button=0x7f070006;
-        public static final int start_stop_button=0x7f070003;
+        public static final int server_options_button=0x7f070007;
+        public static final int start_stop_button=0x7f070004;
     }
     public static final class layout {
         public static final int server_control_activity=0x7f020000;
