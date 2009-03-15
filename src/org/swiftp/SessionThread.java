@@ -2,7 +2,9 @@ package org.swiftp;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -31,50 +33,53 @@ public class SessionThread extends Thread {
 	 * closed before returning.
 	 * 
 	 * @param string
-	 * @return 0 if the socket open failed, 1 if the socket opened but the 
-	 * transfer failed, 2 if the transfer completed succesfully.
+	 * @return Whether the send completed successfully
 	 */
-	public int sendViaDataSocket(String string) {
-		if(pasvMode) {
-			if(acceptPasvSocket() == false) {
-				closeDataSocket();
+	public boolean sendViaDataSocket(String string) {
+		try {
+			byte[] bytes = string.getBytes("UTF-8");
+			return sendViaDataSocket(bytes, bytes.length);
+		} catch(UnsupportedEncodingException e) {
+			// There's no plausible way this can happen
+			return false;
+		}
+	}
+	
+	public boolean sendViaDataSocket(byte[] bytes, int len) {
+		if(!dataSocket.isConnected()) {
+			return false;
+		}
+		OutputStream out;
+		try {
+			out = dataSocket.getOutputStream();
+			out.write(bytes, 0, len);
+		} catch(IOException e) {
+			myLog.l(Log.INFO, "Couldn't write output stream for data socket");
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Prepares the data socket for transmission. The action taken depends on
+	 * the value of pasvMode. Currently, only pasvMode == true is supported.
+	 * @return 0 if the socket open failed, 1 if the socket open was successful,
+	 * 2 if pasvMode was not true
+	 */
+	public int initDataSocket() {
+		if (pasvMode) {			
+			if(acceptPasvSocket()) {
+				myLog.l(Log.DEBUG, "initDataSocket success");
+				return 1;
+			} else {
+				myLog.l(Log.INFO, "initDataSocket failure");
 				return 0;
 			}
 		} else {
 			String msg = "Non-PASV transfer unsupported";
 			myLog.l(Log.ERROR, msg);
-			return 0;
-		}
-		PrintWriter writer;
-		try {
-				writer = new PrintWriter(dataSocket.getOutputStream());
-		} catch (IOException e) {
-			myLog.l(Log.INFO, "Couldn't getOutputStream on data socket");
-			closeDataSocket(); // just to be safe
-			return 0;
-		}
-		writer.write(string);
-		writer.flush();
-		myLog.l(Log.DEBUG, "Wrote to data socket: " + string);
-		boolean err = writer.checkError(); 
-		closeDataSocket();
-		if(err) {
-			return 1;
-		} else {
 			return 2;
 		}
-	}
-	
-	public Socket getDataSocket() {
-		return dataSocket;
-	}
-
-	public void setDataSocket(Socket dataSocket) {
-		this.dataSocket = dataSocket;
-	}
-
-	public ServerSocket getServerSocket() {
-		return dataServerSocket;
 	}
 	
 	/**
@@ -82,14 +87,26 @@ public class SessionThread extends Thread {
 	 * @return The port number that is listening, or -1 on failure.
 	 */
 	public int openPasvSocket() {
+		closeDataSocket();
+		if(dataServerSocket != null) {
+			if(dataServerSocket.isBound()) {
+				try {
+					myLog.l(Log.DEBUG, "Closing dataServerSocket");
+					dataServerSocket.close();
+				} catch(IOException e) {}
+			}
+		}
+
 		// Listen on any port (0) with a backlog of 1
 		ServerSocket server;
 		try {
 			server = new ServerSocket(0, 1);
 		} catch(IOException e) {
+			myLog.l(Log.ERROR, "Data socket creation error");
 			return -1;
 		}
 		dataServerSocket = server;
+		myLog.l(Log.DEBUG, "Data socket creation success");
 		return server.getLocalPort();
 	}
 	
@@ -111,9 +128,12 @@ public class SessionThread extends Thread {
 	}
 	
 	public void closeDataSocket() {
-		try {
-			dataSocket.close();
-		} catch(IOException e) {}
+		myLog.l(Log.DEBUG, "Closing data socket");
+		if(dataSocket != null) {
+			try {
+				dataSocket.close();
+			} catch(IOException e) {}
+		}
 		dataSocket = null;
 	}
 	
@@ -152,7 +172,6 @@ public class SessionThread extends Thread {
 					FtpCmd.dispatchCommand(this, line);
 				}
 				buffer.flip();
-				myLog.l(Log.DEBUG, "Command dispatched");
 			}
 		} catch (IOException e) {
 			myLog.l(Log.ERROR, "IOException in main read");
@@ -258,4 +277,15 @@ public class SessionThread extends Thread {
 		this.service = service;
 	}
 
+	public Socket getDataSocket() {
+		return dataSocket;
+	}
+
+	public void setDataSocket(Socket dataSocket) {
+		this.dataSocket = dataSocket;
+	}
+
+	public ServerSocket getServerSocket() {
+		return dataServerSocket;
+	}
 }

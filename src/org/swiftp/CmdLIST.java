@@ -59,8 +59,10 @@ public class CmdLIST extends FtpCmd implements Runnable {
 			myLog.l(Log.DEBUG, "Dir len " + entries.length);
 			for(File entry : entries) {
 				myLog.l(Log.DEBUG, "Handling dentry");
-				response.append(makeLsString(entry));
-				response.append("\r\n");
+				String curLine = makeLsString(entry);
+				if(curLine != null) {
+					response.append(curLine + "\r\n");
+				}
 			}
 		} else {
 			myLog.l(Log.DEBUG, "Listing file");
@@ -69,24 +71,35 @@ public class CmdLIST extends FtpCmd implements Runnable {
 			response.append("\r\n");
 		}
 		
-		String feedback;
-		sessionThread.writeString("150-Beginning transmission\r\n");
-		switch(sessionThread.sendViaDataSocket(response.toString())) {
-		case 0:
-			feedback = "425 Couldn't establish connection\r\n";
-			break;
-		case 1:
-			feedback = "426 Connection broken\r\n";
+		boolean err = false;
+		String errString = null;
+		switch(sessionThread.initDataSocket()) {
+		case 1: // success
 			break;
 		case 2:
-			feedback = "226 Listing transmitted OK\r\n";
+			err = true;
+			errString = "425 Must use PASV mode\r\n";
 			break;
+		case 0:
 		default:
-			feedback = "425 Unknown transmission error\r\n";
+			err = true;
+			errString = "425 Error opening data socket\r\n";
 			break;
 		}
-
-		sessionThread.writeString(feedback);
+		if(!err) {
+			sessionThread.writeString("150 Beginning transmission\r\n");
+			if(!sessionThread.sendViaDataSocket(response.toString())) {
+				errString = "426 Data socket or network error\r\n";
+			} else {
+				myLog.l(Log.DEBUG, "sendViaDataSocket success");
+			}
+		}
+		sessionThread.closeDataSocket();
+		if(err) {
+			sessionThread.writeString(errString);
+		} else {
+			sessionThread.writeString("226 Data transmission OK");
+		}
 		myLog.l(Log.INFO, "LIST complete");
 	}
 	
@@ -105,8 +118,7 @@ public class CmdLIST extends FtpCmd implements Runnable {
 		String lastNamePart = file.getName();
 		// Many clients can't handle files containing these symbols
 		if(lastNamePart.contains("*") || 
-		   lastNamePart.contains("/") ||
-		   lastNamePart.contains("-"))
+		   lastNamePart.contains("/"))
 		{
 			staticLog.l(Log.INFO, "Filename omitted due to disallowed character");
 			return null;

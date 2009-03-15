@@ -9,7 +9,7 @@ public class CmdCWD extends FtpCmd implements Runnable {
 	protected String input;
 	
 	public CmdCWD(SessionThread sessionThread, String input) {
-		super(sessionThread, "TEMPLATECMD");
+		super(sessionThread, "CWD");
 		this.input = input;
 	}
 	
@@ -34,7 +34,6 @@ public class CmdCWD extends FtpCmd implements Runnable {
 		} catch(IOException e) {
 			sessionThread.writeString("550 Invalid path\r\n");
 		}
-		myLog.l(Log.INFO, "Template log message");
 	}
 
 }

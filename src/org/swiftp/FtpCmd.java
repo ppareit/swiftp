@@ -21,7 +21,8 @@ public abstract class FtpCmd implements Runnable {
 			new CmdMap("CWD",  CmdCWD.class),
 			new CmdMap("PWD",  CmdPWD.class),
 			new CmdMap("LIST", CmdLIST.class),
-			new CmdMap("PASV", CmdPASV.class)
+			new CmdMap("PASV", CmdPASV.class),
+			new CmdMap("RETR", CmdRETR.class)
 	};
 	
 	public FtpCmd(SessionThread sessionThread, String logName) {
@@ -118,7 +119,8 @@ public abstract class FtpCmd implements Runnable {
 			}
 		}
 		if(cmdInstance == null) {
-			// If we couldn't find a matching command, 
+			// If we couldn't find a matching command,
+			staticLog.l(Log.INFO, "Didn't recognize verb: " + verb);
 			session.writeBytes(Responses.unrecognizedCmdMsg);
 			return;
 		} else {

@@ -16,7 +16,6 @@ public class CmdPASV extends FtpCmd implements Runnable {
 	public void run() {
 		myLog.l(Log.INFO, "PASV running");
 		
-		InetAddress myAddress = sessionThread.getLocalAddress();
 		int port = sessionThread.openPasvSocket();
 		if(port < 0) {
 			// There was a problem opening a port
