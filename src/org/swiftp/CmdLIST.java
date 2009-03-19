@@ -2,8 +2,6 @@ package org.swiftp;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -11,13 +9,13 @@ import android.util.Log;
 
 public class CmdLIST extends FtpCmd implements Runnable {
 	//public static final String message = "LIST";
-	protected static MyLog staticLog = new MyLog("LIST_static");
+	protected static MyLog staticLog = new MyLog(CmdLIST.class.toString());
 	protected String input;
 	// The approximate number of milliseconds in 6 months
 	public final static long MS_IN_SIX_MONTHS = 6 * 30 * 24 * 60 * 60 * 1000; 
 	
 	public CmdLIST(SessionThread sessionThread, String input) {
-		super(sessionThread, "LIST");
+		super(sessionThread, CmdLIST.class.toString());
 		this.input = input; 
 	}
 	
@@ -98,7 +96,7 @@ public class CmdLIST extends FtpCmd implements Runnable {
 		if(err) {
 			sessionThread.writeString(errString);
 		} else {
-			sessionThread.writeString("226 Data transmission OK");
+			sessionThread.writeString("226 Data transmission OK\r\n");
 		}
 		myLog.l(Log.INFO, "LIST complete");
 	}
@@ -126,7 +124,7 @@ public class CmdLIST extends FtpCmd implements Runnable {
 				
 		
 		if(file.isDirectory()) {
-			response.append("drwxr-xr-x 1");
+			response.append("drwxr-xr-x 1 owner group");
 		} else {
 			// todo: think about special files, symlinks, devices
 			response.append("-rw-r--r-- 1 owner group");

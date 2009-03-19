@@ -6,7 +6,7 @@ public class CmdUSER extends FtpCmd implements Runnable {
 	protected String input;
 	
 	public CmdUSER(SessionThread sessionThread, String input) {
-		super(sessionThread, "USER");
+		super(sessionThread, CmdUSER.class.toString());
 		this.input = input;
 		
 	}

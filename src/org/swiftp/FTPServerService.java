@@ -11,7 +11,6 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -38,7 +37,6 @@ public class FTPServerService extends Service implements Runnable {
 	
 	protected ServerSocketChannel mainSocket;
 	protected static WifiLock wifiLock = null;
-	protected List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
 	
 	// The server thread will check this often to look for incoming 
 	// connections. We are forced to use non-blocking accept() and polling
@@ -130,7 +128,8 @@ public class FTPServerService extends Service implements Runnable {
 		// The UI will want to check the server status to update its 
 		// start/stop server button
 		UiUpdater.updateClients();
-		
+		List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
+				
 		// Open up a non-blocking server socket
 		// thanks to Patrick Chan's Java Developers Almanac for this idea
 		/*Context appContext = getApplicationContext();
@@ -183,19 +182,27 @@ public class FTPServerService extends Service implements Runnable {
 			}
 			// Look for finished session threads and stop tracking them in
 			// the sessionThreads list
+			
+			// Since we're not allowed to modify the list while iterating over
+			// it, we construct a list in toBeRemoved of threads to remove
+			// later from the sessionThreads list.
+			List <SessionThread> toBeRemoved = new ArrayList<SessionThread>();
 			for(SessionThread sessionThread : sessionThreads) {
 				if(!sessionThread.isAlive()) {
 					myLog.l(Log.DEBUG, "Cleaning up finished session...");
 					try {
 						sessionThread.join();
 						myLog.l(Log.DEBUG, "Thread joined");
-						sessionThreads.remove(sessionThread);
+						toBeRemoved.add(sessionThread);
 						sessionThread.closeSocket(); // make sure socket closed
 					} catch (InterruptedException e) {
 						myLog.l(Log.DEBUG, "Interrupted while joining");
 						// We will try again in the next loop iteration
 					}
 				}
+			}
+			for(SessionThread removeThread : toBeRemoved) {
+				sessionThreads.remove(removeThread);
 			}
 		}
 			

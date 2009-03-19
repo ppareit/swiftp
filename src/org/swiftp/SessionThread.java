@@ -2,8 +2,8 @@ package org.swiftp;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -27,8 +27,9 @@ public class SessionThread extends Thread {
 	protected ServerSocket dataServerSocket = null;
 	protected Socket dataSocket = null;
 	protected FTPServerService service;
+	protected File renameFrom = null;
 	/**
-	 * Opens an ingoing or outgoing socket depending on the value of pasvMode,
+	 * Opens an incoming or outgoing socket depending on the value of pasvMode,
 	 * then sends the given String over that socket. In all cases the socket is
 	 * closed before returning.
 	 * 
@@ -47,6 +48,7 @@ public class SessionThread extends Thread {
 	
 	public boolean sendViaDataSocket(byte[] bytes, int len) {
 		if(!dataSocket.isConnected()) {
+			myLog.l(Log.ERROR, "Can't send via unconnected socket");
 			return false;
 		}
 		OutputStream out;
@@ -58,6 +60,40 @@ public class SessionThread extends Thread {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * Received some bytes from the data socket, which is assumed to already 
+	 * be connected. The bytes are placed in the given array, and the number
+	 * of bytes successfully read is returned. 
+	 * @param bytes Where to place the input bytes
+	 * @return >0 if successful which is the number of bytes read, -1 if no 
+	 * bytes remain to be read, -2 if the data socket was not connected,
+	 * 0 if there was a read error
+	 */
+	public int receiveFromDataSocket(byte[] buf) {
+		int bytesRead;
+		
+		if(!dataSocket.isConnected()) {
+			myLog.l(Log.INFO, "Can't receive from unconnected socket");
+			return -2;
+		}
+		InputStream in;
+		try {
+			in = dataSocket.getInputStream();
+			// If the read returns 0 bytes, the stream is not yet
+			// closed, but we just want to read again.
+			while((bytesRead = in.read(buf, 0, buf.length)) == 0) {}
+			if(bytesRead == -1) {
+				// If InputStream.read returns -1, there are no bytes
+				// remaining, so we return 0.
+				return -1;
+			}
+		} catch(IOException e) {
+			myLog.l(Log.INFO, "Error reading data socket");
+			return 0;
+		}
+		return bytesRead;
 	}
 	
 	/**
@@ -287,5 +323,13 @@ public class SessionThread extends Thread {
 
 	public ServerSocket getServerSocket() {
 		return dataServerSocket;
+	}
+
+	public File getRenameFrom() {
+		return renameFrom;
+	}
+
+	public void setRenameFrom(File renameFrom) {
+		this.renameFrom = renameFrom;
 	}
 }

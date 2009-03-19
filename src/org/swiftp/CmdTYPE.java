@@ -6,7 +6,7 @@ public class CmdTYPE extends FtpCmd implements Runnable {
 	String input;
 	
 	public CmdTYPE(SessionThread sessionThread, String input) {
-		super(sessionThread, "TEMPLATECMD");
+		super(sessionThread, CmdTYPE.class.toString());
 		this.input = input;
 	}
 	

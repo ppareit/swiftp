@@ -6,7 +6,7 @@ public class CmdPWD extends FtpCmd implements Runnable {
 	public static final String message = "TEMPLATE!!"; 
 	
 	public CmdPWD(SessionThread sessionThread, String input) {
-		super(sessionThread, "PWD");
+		super(sessionThread, CmdPWD.class.toString());
 	}
 	
 	public void run() {

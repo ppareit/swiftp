@@ -8,7 +8,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
 		// We can just discard the password for now. We're just
 		// following the expected dialogue, we're going to allow
 		// access in any case.
-		super(sessionThread, "PASS");
+		super(sessionThread, CmdPASS.class.toString());
 	}
 	
 	public void run() {

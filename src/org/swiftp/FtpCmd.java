@@ -2,16 +2,13 @@ package org.swiftp;
 
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import android.util.Log;
 
 public abstract class FtpCmd implements Runnable {
 	protected SessionThread sessionThread;
 	protected MyLog myLog;
-	protected static MyLog staticLog = new MyLog("FtpCmd");
+	protected static MyLog staticLog = new MyLog(FtpCmd.class.toString());
 	
 	protected static CmdMap[] cmdClasses = {
 			new CmdMap("SYST", CmdSYST.class),
@@ -22,7 +19,14 @@ public abstract class FtpCmd implements Runnable {
 			new CmdMap("PWD",  CmdPWD.class),
 			new CmdMap("LIST", CmdLIST.class),
 			new CmdMap("PASV", CmdPASV.class),
-			new CmdMap("RETR", CmdRETR.class)
+			new CmdMap("RETR", CmdRETR.class),
+			new CmdMap("NOOP", CmdNOOP.class),
+			new CmdMap("STOR", CmdSTOR.class),
+			new CmdMap("DELE", CmdDELE.class),
+			new CmdMap("RNFR", CmdRNFR.class),
+			new CmdMap("RNTO", CmdRNTO.class),
+			new CmdMap("RMD",  CmdRMD.class),
+			new CmdMap("MKD",  CmdMKD.class)
 	};
 	
 	public FtpCmd(SessionThread sessionThread, String logName) {

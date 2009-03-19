@@ -9,7 +9,7 @@ public class CmdCWD extends FtpCmd implements Runnable {
 	protected String input;
 	
 	public CmdCWD(SessionThread sessionThread, String input) {
-		super(sessionThread, "CWD");
+		super(sessionThread, CmdCWD.class.toString());
 		this.input = input;
 	}
 	

@@ -1,16 +1,12 @@
 package org.swiftp;
 
-import java.net.InetAddress;
-
-import android.content.Context;
-import android.net.wifi.WifiManager;
 import android.util.Log;
 
 public class CmdPASV extends FtpCmd implements Runnable {
 	//public static final String message = "TEMPLATE!!";
 	
 	public CmdPASV(SessionThread sessionThread, String input) {
-		super(sessionThread, "PASV");
+		super(sessionThread, CmdPASV.class.toString());
 	}
 	
 	public void run() {

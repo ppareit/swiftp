@@ -1,0 +1,9 @@
+Implement content provider to store users, groups and settings
+
+Implement user/group scheme
+
+Implement configurable settings
+
+Add icon in the taskbar/notification area/whatever its called, with server status
+
+IPv6 support 

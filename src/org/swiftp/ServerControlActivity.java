@@ -29,7 +29,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 /**
@@ -176,13 +175,14 @@ public class ServerControlActivity extends Activity {
     	}
     	String ip =  FTPServerService.getWifiIpAsString();
     	if(ip != null) {
-    		ipText.setText("Wifi URL: ftp://" + ip);
+    		ipText.setText("My URL on Wifi: ftp://" + ip + 
+    		               ":" + FTPServerService.PORT + "/");
     	} else {
     		ipText.setText("Wifi is not enabled");
     	}
     }
     
-        /**
+    /**
      * Called when your activity's options menu needs to be created.
      */
     @Override

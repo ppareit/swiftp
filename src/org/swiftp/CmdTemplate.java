@@ -6,7 +6,7 @@ public class CmdTemplate extends FtpCmd implements Runnable {
 	public static final String message = "TEMPLATE!!"; 
 	
 	public CmdTemplate(SessionThread sessionThread, String input) {
-		super(sessionThread, "TEMPLATECMD");
+		super(sessionThread, CmdTemplate.class.toString());
 	}
 	
 	public void run() {

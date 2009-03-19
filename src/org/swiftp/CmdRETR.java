@@ -8,12 +8,11 @@ import java.io.IOException;
 import android.util.Log;
 
 public class CmdRETR extends FtpCmd implements Runnable {
-	public static final int CHUNK_SIZE = 8192;  // do file I/O in 8k chunks 
 	//public static final String message = "TEMPLATE!!";
 	protected String input;
 	
 	public CmdRETR(SessionThread sessionThread, String input) {
-		super(sessionThread, "RETR");
+		super(sessionThread, CmdRETR.class.toString());
 		this.input = input;
 	}
 	
@@ -56,7 +55,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
 		if(!err) {
 			try {
 				FileInputStream in = new FileInputStream(fileToRetr);
-				byte[] buffer = new byte[CHUNK_SIZE];
+				byte[] buffer = new byte[Settings.getDataChunkSize()];
 				int bytesRead;
 				switch(sessionThread.initDataSocket()) {
 				case 1:
