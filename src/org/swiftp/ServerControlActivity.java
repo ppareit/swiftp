@@ -16,6 +16,9 @@
 
 package org.swiftp;
 
+import java.net.InetAddress;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -27,8 +30,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 /**
@@ -50,12 +55,18 @@ public class ServerControlActivity extends Activity {
     //private int mPosManageUsers;
     
     private Button startStopButton;
-    private Button addUserButton;
-    private Button manageUsersButton;
-    private Button serverOptionsButton;
-    
+    //private Button addUserButton;
+    //private Button manageUsersButton;
+    //private Button serverOptionsButton;
+
+    private TextView statusText;
     private TextView ipText;
 	
+    private TextView sessionMonitor;
+    private CheckBox sessionMonitorCheckBox;
+    private TextView serverLog;
+    private CheckBox serverLogCheckBox;
+    
     protected MyLog myLog = new MyLog(this.getClass().getName());
     
     public Handler handler = new Handler() {
@@ -85,17 +96,30 @@ public class ServerControlActivity extends Activity {
         setContentView(R.layout.server_control_activity);
         
         ipText = (TextView)findViewById(R.id.ip_address);
+        statusText = (TextView)findViewById(R.id.server_status);
         	
         startStopButton = (Button) findViewById(R.id.start_stop_button);
-        addUserButton = (Button) findViewById(R.id.add_user_button);
-        manageUsersButton = (Button) findViewById(R.id.manage_users_button);
-        serverOptionsButton = (Button) findViewById(R.id.server_options_button);
+        //addUserButton = (Button) findViewById(R.id.add_user_button);
+        //manageUsersButton = (Button) findViewById(R.id.manage_users_button);
+        //serverOptionsButton = (Button) findViewById(R.id.server_options_button);
         
         startStopButton.setOnClickListener(startStopListener);
-        addUserButton.setOnClickListener(addUserListener);
-        manageUsersButton.setOnClickListener(manageUsersListener);
-        serverOptionsButton.setOnClickListener(serverOptionsListener);
+        //addUserButton.setOnClickListener(addUserListener);
+        //manageUsersButton.setOnClickListener(manageUsersListener);
+        //serverOptionsButton.setOnClickListener(serverOptionsListener);
         
+        sessionMonitor = (TextView) findViewById(R.id.session_monitor);
+        sessionMonitorCheckBox = 
+        	(CheckBox) findViewById(R.id.session_monitor_checkbox);
+        serverLog = (TextView) findViewById(R.id.server_log);
+        serverLogCheckBox = (CheckBox) findViewById(R.id.server_log_checkbox);
+        
+        //sessionMonitor.setHeight(1);
+        //serverLog.setHeight(1);
+        
+        sessionMonitorCheckBox
+        	.setOnClickListener(sessionMonitorCheckBoxListener);
+        serverLogCheckBox.setOnClickListener(serverLogCheckBoxListener);
         
         updateUi();
         //((Button) findViewById(R.id.clear)).setOnClickListener(mClearListener);
@@ -167,18 +191,58 @@ public class ServerControlActivity extends Activity {
      * changed state in a way that requires us to update our UI.
      */
     public void updateUi() {
-    	// Update the start/stop button to show the correct text
     	if(FTPServerService.isRunning()) {
-    		startStopButton.setText(R.string.stop_server);
-    	} else {
-    		startStopButton.setText(R.string.start_server);
-    	}
-    	String ip =  FTPServerService.getWifiIpAsString();
-    	if(ip != null) {
-    		ipText.setText("My URL on Wifi: ftp://" + ip + 
+    		InetAddress address =  FTPServerService.getServerAddress();
+        	if(address != null) {
+    			ipText.setText("ftp://" + address.getHostAddress() + 
     		               ":" + FTPServerService.PORT + "/");
+        	} else {
+        		ipText.setText(R.string.cant_get_url);
+        	}
+        	startStopButton.setText(R.string.stop_server);
+        	statusText.setText(R.string.running);
     	} else {
-    		ipText.setText("Wifi is not enabled");
+    		// Update the start/stop button to show the correct text
+    		if(FTPServerService.isWifiEnabled()) {
+    			startStopButton.setText(R.string.start_server);
+    		} else {
+    			startStopButton.setText(R.string.cannot_start_until_wifi);
+    		}
+    		ipText.setText(R.string.no_url_yet);
+    		statusText.setText(R.string.stopped);
+    	}
+    	if(sessionMonitorCheckBox.isChecked()) {
+    		// If the session monitor is visible, then retrieve the contents
+    		// from the FTPServerService
+    		sessionMonitor.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+    		List<String> lines = FTPServerService.getSessionMonitorContents();
+			int size = Settings.getSessionMonitorScrollBack();
+    		sessionMonitor.setMinLines(size);
+    		sessionMonitor.setMaxLines(size);
+    		String showText = "";
+    		for(String line : lines) {
+    			showText += showText + line + "\n";  
+    		}
+    		sessionMonitor.setText(showText);
+    	} else {
+    		sessionMonitor.setHeight(1);
+    	}
+    	if(serverLogCheckBox.isChecked()) {
+    		// If the server log is visible, then retrieve the contents
+    		// from the FTPServerService
+    		serverLog.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+    		List<String> lines = FTPServerService.getServerLogContents();
+    		//Log.d("", "Got " + lines.size() + " lines from server");
+			int size = Settings.getServerLogScrollBack();
+    		serverLog.setMinLines(size);
+    		serverLog.setMaxLines(size);
+    		String showText = "";
+    		for(String line : lines) {
+    			showText = showText + line + "\n";  
+    		}
+    		serverLog.setText(showText);
+    	} else {
+    		serverLog.setHeight(1);
     	}
     }
     
@@ -229,9 +293,6 @@ public class ServerControlActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A call-back for when the user presses the back button.
-     */
     OnClickListener startStopListener = new OnClickListener() {
         public void onClick(View v) {
     		Context context = getApplicationContext();
@@ -243,14 +304,22 @@ public class ServerControlActivity extends Activity {
         	 */
     		Resources resources = getResources(); // fetch app resources
     		String startString = resources.getString(R.string.start_server);
-        	if(startStopButton.getText().equals(startString)) {
+    		String stopString = resources.getString(R.string.stop_server);
+    		String noWifiString = resources.getString(R.string.cannot_start_until_wifi);
+    		String buttonText = startStopButton.getText().toString(); 
+        	if(buttonText.equals(startString)) { 
     			/* The button had the "start server" text  */
         		context.startService(intent);
-        	} else {
-        		/* The button didn't have the "start server" text so it must
-        		 * have had the "stop server" text. We stop it now.
-        		 */
+        	} else if (buttonText.equals(stopString)) {
+        		/* The button had the "stop server" text. We stop the server now. */
         		context.stopService(intent);
+        	} else if (buttonText.equals(noWifiString)) {
+        		// If we were waiting for the user to enable wifi, then just do a
+        		// refresh of the wifi state when they press the start/stop button
+        		updateUi();
+        	} else {
+        		// Do nothing
+        		myLog.l(Log.ERROR, "Unrecognized start/stop text");
         	}
         }
     };
@@ -282,4 +351,27 @@ public class ServerControlActivity extends Activity {
         	
         }
     };
+    
+    /**
+     * A callback for when the user toggles the session monitor on or off
+     */
+    OnClickListener sessionMonitorCheckBoxListener = new OnClickListener() {
+        public void onClick(View v) {
+        	// Trigger a UI update message to our Activity
+            UiUpdater.updateClients();
+        	//updateUi();
+        }
+    };
+
+    /**
+     * A callback for when the user toggles the server log on or off
+     */
+    OnClickListener serverLogCheckBoxListener = new OnClickListener() {
+        public void onClick(View v) {
+        	// Trigger a UI update message to our Activity
+        	UiUpdater.updateClients();
+            //updateUi();
+        }
+    };
+
 }

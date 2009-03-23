@@ -10,5 +10,6 @@ public class MyLog {
 	}
 	public void l(int level, String str) {
 		Log.println(level,tag, str);
+		FTPServerService.log(level, str);
 	}
 }

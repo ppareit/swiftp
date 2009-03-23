@@ -20,7 +20,7 @@ public class CmdLIST extends FtpCmd implements Runnable {
 	}
 	
 	public void run() {
-		myLog.l(Log.INFO, "LIST executing");
+		myLog.l(Log.DEBUG, "LIST executing");
 
 		String param = getParameter(input);
 		File fileToList = null;
@@ -98,7 +98,7 @@ public class CmdLIST extends FtpCmd implements Runnable {
 		} else {
 			sessionThread.writeString("226 Data transmission OK\r\n");
 		}
-		myLog.l(Log.INFO, "LIST complete");
+		myLog.l(Log.DEBUG, "LIST complete");
 	}
 	
 	private static String makeLsString(File file) {

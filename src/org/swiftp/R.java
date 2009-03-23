@@ -21,14 +21,16 @@ public final class R {
         public static final int semi_black=0x7f040000;
     }
     public static final class id {
-        public static final int add_user_button=0x7f070005;
         public static final int byline=0x7f070002;
-        public static final int ip_address=0x7f070003;
-        public static final int manage_users_button=0x7f070006;
+        public static final int ip_address=0x7f070005;
         public static final int menu_top_text=0x7f070000;
         public static final int menu_url=0x7f070001;
-        public static final int server_options_button=0x7f070007;
-        public static final int start_stop_button=0x7f070004;
+        public static final int server_log=0x7f070009;
+        public static final int server_log_checkbox=0x7f070008;
+        public static final int server_status=0x7f070004;
+        public static final int session_monitor=0x7f070007;
+        public static final int session_monitor_checkbox=0x7f070006;
+        public static final int start_stop_button=0x7f070003;
     }
     public static final class layout {
         public static final int server_control_activity=0x7f020000;
@@ -38,17 +40,28 @@ public final class R {
         /**  Simple strings. 
          */
         public static final int back=0x7f050000;
+        public static final int cannot_start_until_wifi=0x7f05000e;
+        public static final int cant_get_url=0x7f05000f;
         public static final int clear=0x7f050001;
+        public static final int enabled=0x7f050014;
         public static final int manage_users=0x7f050005;
         public static final int menu_byline=0x7f050003;
         /**  This is a complex string containing style runs. 
          */
         public static final int menu_top_string=0x7f050002;
         public static final int menu_url=0x7f050008;
+        public static final int my_url_is=0x7f05000d;
+        public static final int no_url_yet=0x7f05000b;
+        public static final int running=0x7f050010;
+        public static final int server_log=0x7f050015;
         public static final int server_options=0x7f050007;
+        public static final int server_status=0x7f05000c;
+        public static final int session_monitor=0x7f050013;
         public static final int start_server=0x7f05000a;
         public static final int stop_server=0x7f050009;
+        public static final int stopped=0x7f050011;
         public static final int swiftp_name=0x7f050006;
+        public static final int unknown=0x7f050012;
     }
     public static final class style {
         public static final int ActionButton=0x7f060000;

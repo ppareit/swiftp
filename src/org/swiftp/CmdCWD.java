@@ -14,7 +14,7 @@ public class CmdCWD extends FtpCmd implements Runnable {
 	}
 	
 	public void run() {
-		myLog.l(Log.INFO, "CWD executing");
+		myLog.l(Log.DEBUG, "CWD executing");
 		String param = getParameter(input);
 		File newPrefix;
 		if(param.charAt(0) == File.separatorChar) {
@@ -34,6 +34,6 @@ public class CmdCWD extends FtpCmd implements Runnable {
 		} catch(IOException e) {
 			sessionThread.writeString("550 Invalid path\r\n");
 		}
+		myLog.l(Log.DEBUG, "CWD complete");
 	}
-
 }

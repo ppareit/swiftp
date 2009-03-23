@@ -6,4 +6,10 @@ Implement configurable settings
 
 Add icon in the taskbar/notification area/whatever its called, with server status
 
-IPv6 support 
+IPv6 support
+
+Make a non-terrible UI 
+
+Detect wifi disable and stop server?
+
+Allow enable of wifi from control screen

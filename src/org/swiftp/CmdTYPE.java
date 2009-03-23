@@ -12,7 +12,7 @@ public class CmdTYPE extends FtpCmd implements Runnable {
 	
 	public void run() {
 		String output;
-		myLog.l(Log.INFO, "TYPE executing");
+		myLog.l(Log.DEBUG, "TYPE executing");
 		String param = getParameter(input);
 		if(param.equals("I") || param.equals("L 8")) {
 			output = "200 Binary type set\r\n";
@@ -24,7 +24,7 @@ public class CmdTYPE extends FtpCmd implements Runnable {
 			output = "503 Malformed TYPE command\r\n";
 		}
 		sessionThread.writeString(output);
-		myLog.l(Log.INFO, "TYPE complete");
+		myLog.l(Log.DEBUG, "TYPE complete");
 	}
 
 }

@@ -21,16 +21,23 @@
 <!-- The top view is a layout manager that places its child views into
      a row, here set to be vertical (so the first is at the top) -->
 
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent" android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+   	>
     
     <TextView 
     	android:id="@+id/menu_top_text" 
     	android:layout_height="wrap_content"
     	android:layout_width="wrap_content"
     	android:text="@string/menu_top_string"
-    	android:textSize="20sp" 
+    	android:textSize="20sp"
+    	android:textColor="#ffffff" 
     	>
     </TextView>
     
@@ -52,20 +59,18 @@
     	>
     </TextView>
     
-    <TextView
-    	android:id="@+id/ip_address" 
-    	android:layout_height="wrap_content"
-    	android:layout_width="wrap_content"
-    	android:text="@string/menu_byline"
-    	android:textSize="16sp" 
-    	>
-    </TextView>
-    
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    	android:layout_width="fill_parent" android:layout_height="fill_parent"
+    <!--  A horizontal line -->
+	<FrameLayout android:layout_height="1px"
+		android:layout_width="fill_parent"
+		android:background="#666666"
+		>
+	</FrameLayout>
+	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:layout_width="fill_parent" android:layout_height="wrap_content"
     	android:gravity="center_horizontal"
     	android:orientation="vertical"
-    	android:textSize="30sp">
+    	>
     	
 		<Button
 			android:id="@+id/start_stop_button" 
@@ -74,70 +79,196 @@
 			android:text="@string/start_server"
 			>
 		</Button>
-		<Button
-			android:id="@+id/add_user_button" 
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:text="@string/add_user"
-			>
-		</Button>
-		<Button
-			android:id="@+id/manage_users_button" 
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:text="@string/manage_users"
-			>
-		</Button>
-		<Button
-			android:id="@+id/server_options_button" 
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:text="@string/server_options"
-			>
-		</Button>
-		
-    </LinearLayout>
+<!--		<Button-->
+<!--			android:id="@+id/add_user_button" -->
+<!--			android:layout_height="wrap_content"-->
+<!--			android:layout_width="fill_parent"-->
+<!--			android:text="@string/add_user"-->
+<!--			>-->
+<!--		</Button>-->
+<!--		<Button-->
+<!--			android:id="@+id/manage_users_button" -->
+<!--			android:layout_height="wrap_content"-->
+<!--			android:layout_width="fill_parent"-->
+<!--			android:text="@string/manage_users"-->
+<!--			>-->
+<!--		</Button>-->
+<!--		<Button-->
+<!--			android:id="@+id/server_options_button" -->
+<!--			android:layout_height="wrap_content"-->
+<!--			android:layout_width="fill_parent"-->
+<!--			android:text="@string/server_options"-->
+<!--			>-->
+<!--		</Button>-->
+	</LinearLayout>
+	
+	<!--  A horizontal line -->
+	<FrameLayout android:layout_height="1px"
+		android:layout_width="fill_parent"
+		android:background="#666666"
+		>
+	</FrameLayout>
+	
+	<TableLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+		<TableRow>
+			<TextView
+		    	android:layout_height="wrap_content"
+	    		android:layout_width="wrap_content"
+	    		android:text="@string/server_status"
+	    		android:textSize="16sp"
+	    		android:gravity="left"
+		    	/>
+		   	<TextView
+		  		android:id="@+id/server_status" 
+	  			android:layout_height="wrap_content"
+	  			android:layout_width="wrap_content"
+	  			android:text="@string/unknown"
+				android:textColor="#ffffff" 
+	  			android:textSize="16sp" 
+  				/>
+  		</TableRow>
+  		<TableRow>
+  			<TextView
+		    	android:layout_height="wrap_content"
+		    	android:layout_width="wrap_content"
+		    	android:text="@string/my_url_is"
+		    	android:textSize="16sp"
+		    	android:gravity="left"
+	    	/>
+		    <TextView
+		    	android:id="@+id/ip_address" 
+		    	android:layout_height="wrap_content"
+		    	android:layout_width="wrap_content"
+		    	android:text="@string/no_url_yet"
+		    	android:textSize="16sp"
+		    	android:gravity="right"
+				android:textColor="#ffffff" 
+		    />
+		</TableRow>
+	</TableLayout>
+	
+	<!--  A horizontal line -->
+	<FrameLayout android:layout_height="1px"
+		android:layout_width="fill_parent"
+		android:background="#666666"
+		>
+	</FrameLayout>
+	
+	<LinearLayout 
+		android:orientation="horizontal" 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+	
+	<TextView
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="@string/session_monitor"
+		android:textColor="#ffffff"
+	/>
+	<CheckBox
+		android:id="@+id/session_monitor_checkbox" 
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:checked="true"
+	/>
+	</LinearLayout>
+	<TextView
+		android:id="@+id/session_monitor"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:background="#333333"
+	/>
+	
+	<!--  A horizontal line -->
+	<FrameLayout android:layout_height="1px"
+		android:layout_width="fill_parent"
+		android:background="#666666"
+		>
+	</FrameLayout>
+	
+	<LinearLayout 
+		android:orientation="horizontal" 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+	
+	<TextView
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="@string/server_log"
+		android:textColor="#ffffff"
+	/>
+	<CheckBox
+		android:id="@+id/server_log_checkbox" 
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:checked="true"
+	/>
+	</LinearLayout>
+	<TextView
+		android:id="@+id/server_log"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:background="#333333"
+	/>
+	
+	<!--  A horizontal line -->
+	<FrameLayout android:layout_height="1px"
+		android:layout_width="fill_parent"
+		android:background="#666666"
+		>
+	</FrameLayout>
+	
+	
+<!--	<LinearLayout -->
+<!--		android:orientation="horizontal"-->
+<!--		android:textSize="16sp"-->
+<!--		android:layout_width="fill_parent"-->
+<!--		android:layout_height="wrap_content"-->
+<!--		>-->
+<!--		<TextView-->
+<!--	    	android:layout_height="wrap_content"-->
+<!--	    	android:layout_width="wrap_content"-->
+<!--	    	android:text="@string/server_status"-->
+<!--	    	android:textSize="16sp"-->
+<!--	    	android:gravity="left"-->
+<!--	    	/>-->
+<!--	    <TextView-->
+<!--	  		android:id="@+id/server_status" -->
+<!--  			android:layout_height="wrap_content"-->
+<!--  			android:layout_width="wrap_content"-->
+<!--  			android:text="@string/unknown"-->
+<!--			android:textColor="#ffffff" -->
+<!--  			android:textSize="16sp" -->
+<!--  		/>-->
+<!--	</LinearLayout>-->
+<!--	<LinearLayout -->
+<!--		android:orientation="horizontal"-->
+<!--		android:textSize="16sp"-->
+<!--		android:layout_width="fill_parent"-->
+<!--		android:layout_height="wrap_content"-->
+<!--		android:textColor="#ffffff" -->
+<!--		>-->
+<!--		<TextView-->
+<!--	    	android:layout_height="wrap_content"-->
+<!--	    	android:layout_width="wrap_content"-->
+<!--	    	android:text="@string/my_url_is"-->
+<!--	    	android:textSize="16sp"-->
+<!--	    	android:gravity="left"-->
+<!--			android:textColor="#cccccc" -->
+<!--	    	/>-->
+<!--	    <TextView-->
+<!--	    	android:id="@+id/ip_address" -->
+<!--	    	android:layout_height="wrap_content"-->
+<!--	    	android:layout_width="wrap_content"-->
+<!--	    	android:text="@string/no_url_yet"-->
+<!--	    	android:textSize="16sp"-->
+<!--	    	android:gravity="right"-->
+<!--			android:textColor="#ffffff" -->
+<!--	    	/>-->
+<!--	</LinearLayout>-->
+	    	
     
-    	
-<!--    All this stuff left over from skeleton app -->
-<!--    <EditText android:id="@+id/"-->
-<!--        android:layout_width="fill_parent" android:layout_height="0dip"-->
-<!--        android:autoText="true"-->
-<!--        android:capitalize="sentences"-->
-<!--        android:layout_weight="1"-->
-<!--        android:freezesText="true" >-->
-<!--        <requestFocus />-->
-<!--    </EditText>-->
-<!---->
-<!--     Next view is another linear layout manager, now horizontal.  We-->
-<!--         give it a custom background; see colors.xml for the definition-->
-<!--         of drawable/semi_black-->
-<!--    <LinearLayout-->
-<!--        android:layout_width="wrap_content" android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center_vertical" android:gravity="center_horizontal"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:background="@drawable/semi_black">-->
-<!---->
-<!--         On the left: the "back" button.  See styles.xml for the-->
-<!--             definition of style/ActionButton, which we use to hold-->
-<!--             common attributes that are used for both this and the-->
-<!--             clear button.  See strings.xml for the definition of-->
-<!--             string/back. -->
-<!--        <Button android:id="@+id/back" style="@style/ActionButton"-->
-<!--            android:text="@string/back" />-->
-<!---->
-<!--        <ImageView android:id="@+id/image"-->
-<!--            android:layout_width="wrap_content" android:layout_height="wrap_content"-->
-<!--            android:paddingLeft="4dip" android_paddingRight="4dip"-->
-<!--            android:src="@drawable/violet" />-->
-<!---->
-<!--         On the right: another button, this time with its text color-->
-<!--             changed to red.  Again, see colors.xml for the definition. -->
-<!--        <Button android:id="@+id/clear" style="@style/ActionButton"-->
-<!--            android:text="@string/clear" android:textColor="@color/red" />-->
-<!---->
-<!--    </LinearLayout>-->
-
 </LinearLayout>
-
-
+</ScrollView>

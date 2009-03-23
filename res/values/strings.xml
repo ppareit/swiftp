@@ -40,5 +40,16 @@
 <string name="start_server">Start server</string>
 
 
+<string name="no_url_yet">none yet</string>
+<string name="server_status">&quot;Server status: &quot;</string>
+<string name="my_url_is">&quot;Server URL: &quot;</string>
+<string name="cannot_start_until_wifi">&quot;Can't start until wifi is enabled, click here to refresh&quot;</string>
+<string name="cant_get_url">&quot;can't determine URL&quot;</string>
+<string name="running">running</string>
+<string name="stopped">stopped</string>
+<string name="unknown">unknown</string>
+<string name="session_monitor">Session monitor enabled:</string>
+<string name="enabled">Enabled:</string>
+<string name="server_log">Server log enabled:</string>
 </resources>
 

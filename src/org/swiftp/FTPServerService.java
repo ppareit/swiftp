@@ -38,6 +38,12 @@ public class FTPServerService extends Service implements Runnable {
 	protected ServerSocketChannel mainSocket;
 	protected static WifiLock wifiLock = null;
 	
+	protected static InetAddress serverAddress = null;
+	
+	protected static List<String> sessionMonitor = new ArrayList<String>();
+	protected static List<String> serverLog = new ArrayList<String>();
+	protected static int uiLogLevel = Log.INFO;
+	
 	// The server thread will check this often to look for incoming 
 	// connections. We are forced to use non-blocking accept() and polling
 	// because we cannot wait forever in accept() if we want to be able
@@ -45,15 +51,7 @@ public class FTPServerService extends Service implements Runnable {
 	public static final int WAKE_INTERVAL_MS = 1000; // milliseconds  
 	
 	public FTPServerService() {
-		// Set the application-wide context global, if not already set
-		Context myContext = Globals.getContext();
-		if(myContext == null) {
-			myContext = getApplicationContext();
-			if(myContext != null) {
-				Globals.setContext(myContext);
-			}
-		}
-		return;
+		
 	}
 
 	public IBinder onBind(Intent intent) {
@@ -63,7 +61,15 @@ public class FTPServerService extends Service implements Runnable {
 	
 	public void onCreate() {
 		// Don't do anything until onStart()
-		myLog.l(Log.INFO, "SwiFTP server created");
+		myLog.l(Log.DEBUG, "SwiFTP server created");
+		// Set the application-wide context global, if not already set
+		Context myContext = Globals.getContext();
+		if(myContext == null) {
+			myContext = getApplicationContext();
+			if(myContext != null) {
+				Globals.setContext(myContext);
+			}
+		}
 		return;
 	}
 	
@@ -96,7 +102,7 @@ public class FTPServerService extends Service implements Runnable {
 	}
 	
 	public void onDestroy() {
-		myLog.l(Log.INFO, "Stopping");
+		myLog.l(Log.INFO, "Stopping server");
 		shouldExit = true;
 		if(serverThread == null) {
 			myLog.l(Log.WARN, "Stopping with null serverThread");
@@ -107,7 +113,7 @@ public class FTPServerService extends Service implements Runnable {
 			serverThread.join(1000);  // wait 1 sec for server thread to finish
 		} catch (InterruptedException e) {}
 		if(serverThread.isAlive()) {
-			myLog.l(Log.ERROR, "Server thread failed to exit");
+			myLog.l(Log.WARN, "Server thread failed to exit");
 			// it may still exit eventually if we just leave the
 			// shouldExit flag set
 		} else {
@@ -144,32 +150,38 @@ public class FTPServerService extends Service implements Runnable {
 			if(wifiIp == null) { 
 				throw new IOException("Wifi not enabled");
 			}
-			InetAddress inetAddr = InetAddress.getByName(wifiIp);
-			mainSocket.socket().bind(new InetSocketAddress(inetAddr, PORT));
+			serverAddress = InetAddress.getByName(wifiIp);
+			mainSocket.socket().bind(new InetSocketAddress(serverAddress, PORT));
 		} catch (IOException e) {
 			myLog.l(Log.ERROR, "Error opening port");
+			serverAddress = null;
 			cleanupAndStopService();
 			return;
 		}
-		myLog.l(Log.DEBUG, "Port opened");
+		myLog.l(Log.INFO, "SwiFTP server ready");
+		
+		// We should update the UI now that we have a socket open, so the UI
+		// can present the URL
+		UiUpdater.updateClients();
 		
 		// The main loop: wait for inbound TCP connections and dispatch
 		// them to handler threads. If any session threads have finished,
 		// then remove them from our sessionThreads list.
+		
 		while(!shouldExit) {
 			SocketChannel clientSocket;
 			try {
 				// Handle one of more incoming connection requests
 				while((clientSocket = mainSocket.accept()) != null) {
 					// If the accept was successful, spawn a new session
-					myLog.l(Log.INFO, "Spawned session thread");
+					myLog.l(Log.INFO, "New connection, spawned thread");
 					SessionThread newSession = new SessionThread(clientSocket, this);
 					sessionThreads.add(newSession);
 					newSession.start();
 				}
 			} catch(IOException e) {
-				myLog.l(Log.ERROR, "Error in socket accept");
-				myLog.l(Log.ERROR, e.toString());
+				myLog.l(Log.WARN, "Error in socket accept");
+				myLog.l(Log.WARN, e.toString());
 				cleanupAndStopService();
 				return;
 			}
@@ -233,10 +245,24 @@ public class FTPServerService extends Service implements Runnable {
 		}
 		WifiManager wifiMgr = (WifiManager)myContext
 		                        .getSystemService(Context.WIFI_SERVICE);
-		if(wifiMgr.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
+		if(isWifiEnabled()) {
 			return wifiMgr.getConnectionInfo().getIpAddress();
 		} else {
 			return -1;
+		}
+	}
+	
+	public static boolean isWifiEnabled() {
+		Context myContext = Globals.getContext();
+		if(myContext == null) {
+			throw new NullPointerException("Global context is null");
+		}
+		WifiManager wifiMgr = (WifiManager)myContext
+		                        .getSystemService(Context.WIFI_SERVICE);
+		if(wifiMgr.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
@@ -252,5 +278,54 @@ public class FTPServerService extends Service implements Runnable {
 		} else {
 			return null;
 		}
+	}
+	
+	public static InetAddress getServerAddress() {
+		return serverAddress;
+	}
+	
+	public static List<String> getSessionMonitorContents() {
+		return new ArrayList<String>(sessionMonitor);
+	}
+	
+	public static List<String> getServerLogContents() {
+		return new ArrayList<String>(serverLog);
+	}
+	
+	public static void log(int msgLevel, String s) {
+		if(msgLevel >= uiLogLevel) {
+			serverLog.add(s.trim());
+			int maxSize = Settings.getServerLogScrollBack();
+			while(serverLog.size() > maxSize) {
+				serverLog.remove(0);
+			}
+			updateClients();
+		}
+	}
+	
+	public static void updateClients() {
+		UiUpdater.updateClients();
+	}
+	
+	public static void writeMonitor(boolean incoming, String s) {
+		if(incoming) {
+			s = "> " + s;
+		} else {
+			s = "< " + s;
+		}
+		sessionMonitor.add(s.trim());
+		int maxSize = Settings.getSessionMonitorScrollBack();
+		while(sessionMonitor.size() > maxSize) {
+			sessionMonitor.remove(0);
+		}
+		updateClients();
+	}
+
+	public static int getUiLogLevel() {
+		return uiLogLevel;
+	}
+
+	public static void setUiLogLevel(int uiLogLevel) {
+		FTPServerService.uiLogLevel = uiLogLevel;
 	}
 }

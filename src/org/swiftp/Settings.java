@@ -4,7 +4,8 @@ public class Settings {
 	protected static int inputBufferSize = 256;
 	protected static boolean allowOverwrite = false;
 	protected static int dataChunkSize = 8192;  // do file I/O in 8k chunks 
-	
+	protected static int sessionMonitorScrollBack = 10;
+	protected static int serverLogScrollBack = 10;
 
 	public static int getInputBufferSize() {
 		return inputBufferSize;
@@ -28,5 +29,23 @@ public class Settings {
 
 	public static void setDataChunkSize(int dataChunkSize) {
 		Settings.dataChunkSize = dataChunkSize;
+	}
+
+	public static int getSessionMonitorScrollBack() {
+		return sessionMonitorScrollBack;
+	}
+
+	public static void setSessionMonitorScrollBack(
+			int sessionMonitorScrollBack) 
+	{
+		Settings.sessionMonitorScrollBack = sessionMonitorScrollBack;
+	}
+
+	public static int getServerLogScrollBack() {
+		return serverLogScrollBack;
+	}
+
+	public static void setLogScrollBack(int serverLogScrollBack) {
+		Settings.serverLogScrollBack = serverLogScrollBack;
 	}
 }

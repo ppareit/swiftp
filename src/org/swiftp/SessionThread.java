@@ -205,6 +205,7 @@ public class SessionThread extends Thread {
 				
 				String[] lines = asString.split("\n");
 				for (String line : lines) {
+					FTPServerService.writeMonitor(true, line);
 					FtpCmd.dispatchCommand(this, line);
 				}
 				buffer.flip();
@@ -248,6 +249,7 @@ public class SessionThread extends Thread {
 	}
 	
 	public void writeString(String str) {
+		FTPServerService.writeMonitor(false, str);
 		writeBytes(str.getBytes());
 	}
 	

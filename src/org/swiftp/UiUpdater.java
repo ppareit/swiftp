@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Handler;
-import android.util.Log;
 
 public class UiUpdater {
 	protected static MyLog myLog = new MyLog("UiUpdater");
@@ -17,11 +16,13 @@ public class UiUpdater {
 	}
 	
 	static void unregisterClient(Handler client) {
-		clients.remove(client);
+		while(clients.contains(client)) {
+			clients.remove(client);
+		}
 	}
 	
 	static void updateClients() {
-		myLog.l(Log.DEBUG, "UI update");
+		//myLog.l(Log.DEBUG, "UI update");
 		for (Handler client : clients) {
 			client.sendEmptyMessage(0);
 		}

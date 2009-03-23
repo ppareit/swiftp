@@ -17,10 +17,10 @@ public class CmdRETR extends FtpCmd implements Runnable {
 	}
 	
 	public void run() {
-		myLog.l(Log.INFO, "RETR executing");
+		myLog.l(Log.DEBUG, "RETR executing");
 		String param = getParameter(input);
 		File fileToRetr;
-		if(input.charAt(0) == '/') {
+		if(param.charAt(0) == '/') {
 			// The RETR command gave an absolute path
 			fileToRetr = new File(param);
 		} else {
@@ -36,11 +36,12 @@ public class CmdRETR extends FtpCmd implements Runnable {
 			errString = "550 File name error\r\n";
 		}
 		if(fileToRetr.isDirectory()) {
-			myLog.l(Log.INFO, "Failed RETR for directory");
+			myLog.l(Log.DEBUG, "Ignoring RETR for directory");
 			errString = "550 Can't RETR a directory\r\n";
 			err = true;
 		} else if(!fileToRetr.exists()) {
-			myLog.l(Log.INFO, "Failed RETR for nonexistent file");
+			myLog.l(Log.INFO, "Can't RETR nonexistent file: " + 
+					fileToRetr.getAbsolutePath());
 			errString = "550 File does not exist\r\n";
 			err = true;
 		} else if(!fileToRetr.canRead()) {
@@ -101,5 +102,6 @@ public class CmdRETR extends FtpCmd implements Runnable {
 			sessionThread.writeString("226 Transmission finished\r\n");
 		}
 		sessionThread.closeDataSocket();
+		myLog.l(Log.DEBUG, "RETR executing");
 	}
 }

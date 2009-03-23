@@ -10,7 +10,7 @@ public class CmdPASV extends FtpCmd implements Runnable {
 	}
 	
 	public void run() {
-		myLog.l(Log.INFO, "PASV running");
+		myLog.l(Log.DEBUG, "PASV running");
 		
 		int port = sessionThread.openPasvSocket();
 		if(port < 0) {
@@ -32,6 +32,6 @@ public class CmdPASV extends FtpCmd implements Runnable {
 		String responseString = response.toString() + "\r\n";
 		sessionThread.writeString(responseString);
 		sessionThread.setPasvMode(true);
-		myLog.l(Log.INFO, "PASV completed, sent: " + responseString);
+		myLog.l(Log.DEBUG, "PASV completed, sent: " + responseString);
 	}
 }

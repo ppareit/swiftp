@@ -36,43 +36,6 @@ public abstract class FtpCmd implements Runnable {
 	
 	abstract public void run();
 	
-	/*protected static byte[][] tokenize(byte[] bytes, int len) {
-		List<byte[]> tokenList = new ArrayList<byte[]>();
-		// We use the maximum input line size also as the maximum input
-		// token size
-		int maxTokenSize = Settings.getInputBufferSize();
-		
-		if(bytes[0] == ' ') {
-			return null;
-		}
-		for(int i=0; i<len; i++) {
-			byte[] curToken = new byte[maxTokenSize];
-			int j = 0;
-			while(i<len) {
-				byte cur = bytes[i];
-				switch
-				curToken[j] = bytes[i];
-				i++;
-			}
-			// If there was a group of spaces and we found just the first
-			// one, consume the rest of them now
-			while(bytes[i] == ' ' && i<len) {
-				i++;
-			}
-			if(j!=0) {
-				tokenList.add(curToken);
-			}
-		}
-		staticLog.l(Log.DEBUG, "Tokens parsed (len " + len + "):");
-		for(int i=0; i<tokenList.size(); i++) {
-			staticLog.l(Log.DEBUG, "Token " + i + ": " + tokenList.get(i));
-		}
-		if(tokenList.size() == 0) {
-			return null;
-		}
-		return (byte[][])(tokenList.toArray());
-	}*/
-	
 	protected static void dispatchCommand(SessionThread session, 
 	                                      String inputString) {
 		String[] strings = inputString.split(" ");
@@ -124,7 +87,7 @@ public abstract class FtpCmd implements Runnable {
 		}
 		if(cmdInstance == null) {
 			// If we couldn't find a matching command,
-			staticLog.l(Log.INFO, "Didn't recognize verb: " + verb);
+			staticLog.l(Log.INFO, "Ignoring unrecognized FTP verb: " + verb);
 			session.writeBytes(Responses.unrecognizedCmdMsg);
 			return;
 		} else {
