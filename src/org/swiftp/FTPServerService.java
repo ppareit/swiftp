@@ -42,7 +42,7 @@ public class FTPServerService extends Service implements Runnable {
 	
 	protected static List<String> sessionMonitor = new ArrayList<String>();
 	protected static List<String> serverLog = new ArrayList<String>();
-	protected static int uiLogLevel = Log.INFO;
+	protected static int uiLogLevel = Settings.getUiLogLevel();
 	
 	// The server thread will check this often to look for incoming 
 	// connections. We are forced to use non-blocking accept() and polling
@@ -171,7 +171,7 @@ public class FTPServerService extends Service implements Runnable {
 		while(!shouldExit) {
 			SocketChannel clientSocket;
 			try {
-				// Handle one of more incoming connection requests
+				// Handle one or more incoming connection requests
 				while((clientSocket = mainSocket.accept()) != null) {
 					// If the accept was successful, spawn a new session
 					myLog.l(Log.INFO, "New connection, spawned thread");

@@ -220,6 +220,13 @@
 		>
 	</FrameLayout>
 	
+	<!--  It's visually pleasing to have some empty space at the bottom -->
+	<FrameLayout android:layout_height="15px"
+		android:layout_width="fill_parent"
+		android:background="#000000"
+		>
+	</FrameLayout>
+	
 	
 <!--	<LinearLayout -->
 <!--		android:orientation="horizontal"-->

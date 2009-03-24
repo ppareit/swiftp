@@ -1,11 +1,22 @@
 package org.swiftp;
 
+import android.util.Log;
+
 public class Settings {
 	protected static int inputBufferSize = 256;
 	protected static boolean allowOverwrite = false;
 	protected static int dataChunkSize = 8192;  // do file I/O in 8k chunks 
 	protected static int sessionMonitorScrollBack = 10;
 	protected static int serverLogScrollBack = 10;
+	protected static int uiLogLevel = Log.INFO;
+	
+	public static int getUiLogLevel() {
+		return uiLogLevel;
+	}
+
+	public static void setUiLogLevel(int uiLogLevel) {
+		Settings.uiLogLevel = uiLogLevel;
+	}
 
 	public static int getInputBufferSize() {
 		return inputBufferSize;
@@ -48,4 +59,6 @@ public class Settings {
 	public static void setLogScrollBack(int serverLogScrollBack) {
 		Settings.serverLogScrollBack = serverLogScrollBack;
 	}
+	
+	
 }

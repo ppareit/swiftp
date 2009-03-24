@@ -19,15 +19,29 @@ public class CmdMKD extends FtpCmd implements Runnable {
 		File toCreate;
 		String errString = null;
 		mainblock: {
+			// If the param is an absolute path, use it as is. If it's a
+			// relative path, prepend the current working directory.
+			if(param.length() < 1) {
+				errString = "550 Invalid name";
+				break mainblock;
+			}
+			if(param.charAt(0) == '/') {
+				toCreate = new File(param);
+			} else {
+				toCreate = new File(sessionThread.getPrefix(), param);
+			}
 			try {
-				toCreate = new File(param)
-				            .getCanonicalFile().getAbsoluteFile();
+				toCreate = toCreate.getCanonicalFile().getAbsoluteFile();
 			} catch(IOException e) {
 				errString = "550 Invalid name\r\n";
 				break mainblock;
 			}
+			if(toCreate.exists()) {
+				errString = "550 Already exists\r\n";
+				break mainblock;
+			}
 			if(!toCreate.mkdir()) {
-				errString = "550 Error during creation operation\r\n";
+				errString = "550 Error making directory (permissions?)\r\n";
 				break mainblock;
 			}
 		}

@@ -17,10 +17,17 @@ public class CmdRNTO extends FtpCmd implements Runnable {
 		String param = getParameter(input);
 		String errString = null;
 		File toFile = null;
-		myLog.l(Log.INFO, "RNTO executing\r\n");
+		myLog.l(Log.DEBUG, "RNTO executing\r\n");
 		mainblock: {
+			if(param.charAt(0) == '/') {
+				// Param is absolute path, use param as is
+				toFile = new File(param);
+			} else {
+				// If relative path, use current directory prefix
+				toFile = new File(sessionThread.getPrefix(), param);
+			}
 			try {
-				toFile = new File(param).getCanonicalFile().getAbsoluteFile();
+				toFile = toFile.getCanonicalFile().getAbsoluteFile();
 			} catch (IOException e) {
 				sessionThread.writeString("450 Invalid filename\r\n");
 				errString = "Couldn't construct File object";
@@ -44,6 +51,6 @@ public class CmdRNTO extends FtpCmd implements Runnable {
 			sessionThread.writeString("250 rename successful\r\n");
 		}
 		sessionThread.setRenameFrom(null);
-		myLog.l(Log.INFO, "RNTO finished");
+		myLog.l(Log.DEBUG, "RNTO finished");
 	}
 }

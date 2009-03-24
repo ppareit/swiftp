@@ -71,6 +71,10 @@ public class ServerControlActivity extends Activity {
     
     public Handler handler = new Handler() {
     	public void handleMessage(Message msg) {
+    		// If more than one update is queued up, we only need to do one.
+    		// The call to removeMessages clears all messages with the value
+    		// of 0, which all of our update messages have.
+    		removeMessages(0); 
     		updateUi();
     	}
     };
@@ -191,6 +195,7 @@ public class ServerControlActivity extends Activity {
      * changed state in a way that requires us to update our UI.
      */
     public void updateUi() {
+    	Log.d("manual", "In updateUi()");
     	if(FTPServerService.isRunning()) {
     		InetAddress address =  FTPServerService.getServerAddress();
         	if(address != null) {
@@ -253,11 +258,12 @@ public class ServerControlActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
+        // Leftover from sample app
         // We are going to create two menus. Note that we assign them
         // unique integer IDs, labels from our string resources, and
         // given them shortcuts.
-        menu.add(0, BACK_ID, 0, R.string.back).setShortcut('0', 'b');
-        menu.add(0, CLEAR_ID, 0, R.string.clear).setShortcut('1', 'c');
+        //menu.add(0, BACK_ID, 0, R.string.back).setShortcut('0', 'b');
+        //menu.add(0, CLEAR_ID, 0, R.string.clear).setShortcut('1', 'c');
 
         return true;
     }

@@ -20,9 +20,20 @@ public class CmdRMD extends FtpCmd implements Runnable {
 		File toRemove;
 		String errString = null;
 		mainblock: {
+			if(param.length() < 1) {
+				errString = "550 Invalid argument\r\n";
+				break mainblock;
+			}
+			if(param.charAt(0) == '/') {
+				toRemove = new File(param);
+			} else {
+				// The param is a relative path, prepend the working directory
+				toRemove = new File(sessionThread.getPrefix(), param);
+			}
 			try {
-				toRemove = new File(param)
-				            .getCanonicalFile().getAbsoluteFile();
+				toRemove = toRemove.getCanonicalFile().getAbsoluteFile();
+				myLog.l(Log.DEBUG, "toRemove: " + toRemove.getAbsolutePath());
+
 			} catch (IOException e) {
 				errString = "550 Invalid directory name\r\n";
 				break mainblock;

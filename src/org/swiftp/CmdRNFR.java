@@ -18,8 +18,15 @@ public class CmdRNFR extends FtpCmd implements Runnable {
 		String errString = null;
 		File file = null;
 		running: {
+			if(param.charAt(0) == '/') {
+				// Param is absolute path, use param as is
+				file = new File(param);
+			} else {
+				// If relative path, use current directory prefix
+				file = new File(sessionThread.getPrefix(), param);
+			}
 			try {
-				file = new File(param).getCanonicalFile().getAbsoluteFile();
+				file = file.getCanonicalFile().getAbsoluteFile();
 			} catch (IOException e) {
 				sessionThread.writeString("450 Invalid filename\r\n");
 				errString = "Couldn't construct File object";
