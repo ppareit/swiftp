@@ -36,6 +36,8 @@ This is an early beta release of SwiFTP that lacks some features, so please be p
 Once you have started the server, you may access it with the username \"anonymous\" and \
 any password. Your FTP client must use PASV mode.\n\n\
 \
+Look in the /sdcard directory for your music and other files.\n\n\
+\
 Wifi must be enabled before the server will start. This version of SwiFTP doesn't use the \
 3G network.\n\n\
 \
