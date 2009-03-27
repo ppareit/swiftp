@@ -19,10 +19,7 @@ import android.net.wifi.WifiManager.WifiLock;
 import android.os.IBinder;
 import android.util.Log;
 
-/**
- * @author david
- *
- */
+
 public class FTPServerService extends Service implements Runnable {
 	/**
 	 * 
@@ -30,6 +27,8 @@ public class FTPServerService extends Service implements Runnable {
 	protected static Thread serverThread = null;
 	protected boolean shouldExit = false;
 	protected MyLog myLog = new MyLog(getClass().getName());
+	protected static MyLog staticLog = 
+		new MyLog(FTPServerService.class.getName());
 	
 	protected static final int PORT = 2121;
 	protected static final int BACKLOG = 21;
@@ -146,10 +145,14 @@ public class FTPServerService extends Service implements Runnable {
 		try {
 			mainSocket = ServerSocketChannel.open();
 			mainSocket.configureBlocking(false);
+			myLog.l(Log.DEBUG, "About to get wifi IP");
 			String wifiIp = getWifiIpAsString();
-			if(wifiIp == null) { 
+			myLog.l(Log.DEBUG, "Got wifi IP");
+			if(wifiIp == null) {
+				myLog.l(Log.DEBUG, "Wifi IP string was null");
 				throw new IOException("Wifi not enabled");
 			}
+			myLog.l(Log.DEBUG, "Wifi IP: " + wifiIp);
 			serverAddress = InetAddress.getByName(wifiIp);
 			mainSocket.socket().bind(new InetSocketAddress(serverAddress, PORT));
 		} catch (IOException e) {
@@ -236,7 +239,7 @@ public class FTPServerService extends Service implements Runnable {
 
 	/**
 	 * Gets the IP address of the wifi connection.
-	 * @return The integer IP address if wifi enabled, or -1 if not.
+	 * @return The integer IP address if wifi enabled, or 0 if not.
 	 */
 	public static int getWifiIpAsInt() {
 		Context myContext = Globals.getContext();
@@ -248,7 +251,7 @@ public class FTPServerService extends Service implements Runnable {
 		if(isWifiEnabled()) {
 			return wifiMgr.getConnectionInfo().getIpAddress();
 		} else {
-			return -1;
+			return 0;
 		}
 	}
 	
@@ -268,12 +271,14 @@ public class FTPServerService extends Service implements Runnable {
 	
 	public static String getWifiIpAsString() {
 		int addr = getWifiIpAsInt();
-		if(addr > 0) {
+		staticLog.l(Log.DEBUG, "IP as int: " + addr);
+		if(addr != 0) {
 			StringBuffer buf = new StringBuffer();
 			buf.append(addr & 0xff).append('.').
-	        append((addr >>>= 8) & 0xff).append('.').
-	        append((addr >>>= 8) & 0xff).append('.').
-	        append((addr >>>= 8) & 0xff);
+			append((addr >>>= 8) & 0xff).append('.').
+			append((addr >>>= 8) & 0xff).append('.').
+			append((addr >>>= 8) & 0xff);
+			staticLog.l(Log.DEBUG, "Returning IP string: " + buf.toString());
 			return buf.toString();
 		} else {
 			return null;

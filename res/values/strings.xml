@@ -1,31 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2007 The Android Open Source Project
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-  
-          http://www.apache.org/licenses/LICENSE-2.0
-  
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
-<!-- This file contains resource definitions for displayed strings, allowing
-     them to be changed based on the locale and options. -->
 
 <resources>
-    <!-- Simple strings. -->
-    
-    <string name="back">Back</string>
-    <string name="clear">Clear</string>
-
-    <!-- This is a complex string containing style runs. -->
-    
-<string name="menu_top_string">SwiFTP Server Control</string>
+<string name="menu_top_string">SwiFTP Server Control (BETA)</string>
 <string name="menu_byline">SwiFTP is open source software by Dave Revell and contributors</string>
 
 <string name="add_user">Add User</string>
@@ -51,5 +27,25 @@
 <string name="session_monitor">Session monitor enabled:</string>
 <string name="enabled">Enabled:</string>
 <string name="server_log">Server log enabled:</string>
+<string name="submit_bug_reports">&quot;Submit bug reports: &quot;</string>
+<string name="ok">OK</string>
+<string name="instructions_label">Instructions</string>
+<string name="instructions_text">
+This is an early beta release of SwiFTP that lacks some features, so please be patient.\n\n\
+\
+Once you have started the server, you may access it with the username \"anonymous\" and \
+any password. Your FTP client must use PASV mode.\n\n\
+\
+Wifi must be enabled before the server will start. This version of SwiFTP doesn't use the \
+3G network.\n\n\
+\
+For security reasons, it's recommended that the server be stopped after use.\n\n
+Full instructions are on the wiki at http://www.swiftp.org/.\n\n\
+\
+Don't be alarmed by messages about ignored or unrecognized commands, these are normal as \
+long as they don't cause undesired behavior.\n\n\
+\
+Thanks for using SwiFTP, and look for fixes and improvements soon.\n\
+</string>
 </resources>
 

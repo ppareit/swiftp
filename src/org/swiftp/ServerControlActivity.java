@@ -1,18 +1,4 @@
-/*
- * Copyright (C) 2007 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package org.swiftp;
 
@@ -20,7 +6,9 @@ import java.net.InetAddress;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -36,29 +24,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-/**
- * This class provides a basic demonstration of how to write an Android
- * activity. Inside of its window, it places a single view: an EditText that
- * displays and edits some internal text.
- */
 public class ServerControlActivity extends Activity {
-    
-    static final private int BACK_ID = Menu.FIRST;
-    static final private int CLEAR_ID = Menu.FIRST + 1;
-
-    //static final private String LOGTAG = "SwiFTP control";
-    //private EditText mEditor;
-    //private ListView actionList;
-    
-    //private int mPosStartStop;
-    //private int mPosAddUser;
-    //private int mPosManageUsers;
     
     private Button startStopButton;
     //private Button addUserButton;
     //private Button manageUsersButton;
     //private Button serverOptionsButton;
-
+    private Button instructionsButton;
+    
     private TextView statusText;
     private TextView ipText;
 	
@@ -68,6 +41,8 @@ public class ServerControlActivity extends Activity {
     private CheckBox serverLogCheckBox;
     
     protected MyLog myLog = new MyLog(this.getClass().getName());
+    
+    protected Context activityContext = this;
     
     public Handler handler = new Handler() {
     	public void handleMessage(Message msg) {
@@ -106,11 +81,13 @@ public class ServerControlActivity extends Activity {
         //addUserButton = (Button) findViewById(R.id.add_user_button);
         //manageUsersButton = (Button) findViewById(R.id.manage_users_button);
         //serverOptionsButton = (Button) findViewById(R.id.server_options_button);
+        instructionsButton = (Button) findViewById(R.id.instructions);
         
         startStopButton.setOnClickListener(startStopListener);
         //addUserButton.setOnClickListener(addUserListener);
         //manageUsersButton.setOnClickListener(manageUsersListener);
         //serverOptionsButton.setOnClickListener(serverOptionsListener);
+        instructionsButton.setOnClickListener(instructionsListener);
         
         sessionMonitor = (TextView) findViewById(R.id.session_monitor);
         sessionMonitorCheckBox = 
@@ -126,33 +103,6 @@ public class ServerControlActivity extends Activity {
         serverLogCheckBox.setOnClickListener(serverLogCheckBoxListener);
         
         updateUi();
-        //((Button) findViewById(R.id.clear)).setOnClickListener(mClearListener);
-        
-        //mEditor.setText(getText(R.string.main_label));
-        
-//        ArrayList<String> actionChoices = new ArrayList<String>();
-//        actionChoices.add("@string/start_stop");
-//        mPosStartStop = 0;
-//        actionChoices.add("@string/add_user");
-//        actionChoices.add("@string/manage_users");
-        
-        /*ArrayList<TextView> actionChoices = new ArrayList<TextView>();
-        TextView temp = new TextView
-        actionChoices.add(new TextView(this).setText(R.string.start_stop));
-        mPosStartStop = 0;
-        actionChoices.add(new TextView(this).setText(R.string.add_user));
-        actionChoices.add(new TextView(this).setText(R.string.manage_users));
-        
-        
-        actionList = (ListView) findViewById(R.id.action_list);
-        ArrayAdapter<String> actionListAdapter;
-        actionListAdapter = new ArrayAdapter<String>(
-        		this,
-        		android.R.layout.simple_list_item_1, actionChoices);
-        
-        
-        actionList.setAdapter(actionListAdapter);*/
-        
     }
 
 
@@ -257,14 +207,6 @@ public class ServerControlActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-
-        // Leftover from sample app
-        // We are going to create two menus. Note that we assign them
-        // unique integer IDs, labels from our string resources, and
-        // given them shortcuts.
-        //menu.add(0, BACK_ID, 0, R.string.back).setShortcut('0', 'b');
-        //menu.add(0, CLEAR_ID, 0, R.string.clear).setShortcut('1', 'c');
-
         return true;
     }
 
@@ -274,11 +216,6 @@ public class ServerControlActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-
-        // Before showing the menu, we need to decide whether the clear
-        // item is enabled depending on whether there is text to clear.
-        //menu.findItem(CLEAR_ID).setVisible(mEditor.getText().length() > 0);
-
         return true;
     }
 
@@ -347,13 +284,30 @@ public class ServerControlActivity extends Activity {
         	myLog.l(Log.INFO, "Server options stub");
         }
     };
-
+    
+    DialogInterface.OnClickListener ignoreDialogListener = 
+    	new DialogInterface.OnClickListener() 
+    {
+    	public void onClick(DialogInterface dialog, int which) {
+    	}
+    };
+    
     
     /**
-     * A call-back for when the user presses the clear button.
+     * A call-back for when the user presses the instructions button.
      */
-    OnClickListener mClearListener = new OnClickListener() {
+    OnClickListener instructionsListener = new OnClickListener() {
         public void onClick(View v) {
+        	
+        	TextView textView = new TextView(getApplicationContext());
+        	textView.setText(R.string.instructions_text);
+        	
+        	AlertDialog dialog =  new AlertDialog.Builder(activityContext).create();
+        	CharSequence instructions = getText(R.string.instructions_text);
+        	dialog.setMessage(instructions);
+        	dialog.setTitle(getText(R.string.instructions_label));
+        	dialog.setButton(getText(R.string.ok), ignoreDialogListener);
+        	dialog.show();
         	
         }
     };
