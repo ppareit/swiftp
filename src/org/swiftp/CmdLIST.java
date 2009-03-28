@@ -29,6 +29,9 @@ public class CmdLIST extends FtpCmd implements Runnable {
 			if(param.charAt(0) == '/') {
 				// The LIST parameter is an absolute path
 				fileToList = new File(param);
+			} else if (param.charAt(0) == '-') {
+				// The parameter is some options to ls, which we ignore
+				fileToList = sessionThread.getPrefix();
 			} else {
 				// The LIST parameter is a relative path,
 				// so append it to the existing path prefix
