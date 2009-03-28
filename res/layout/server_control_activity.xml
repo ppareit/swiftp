@@ -63,20 +63,27 @@
     	android:orientation="vertical"
     	>
     	
-		<Button
-			android:id="@+id/start_stop_button" 
+		<LinearLayout 
+			xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent"
-			android:text="@string/start_server"
-			/>
-		
-		<Button
-			android:id="@+id/instructions"
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:text="@string/instructions_label"
-			/>
-		
+			android:orientation="horizontal"
+			android:gravity="center"
+			>
+			<Button
+				android:id="@+id/start_stop_button" 
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="@string/start_server"
+				/>
+			
+			<Button
+				android:id="@+id/instructions"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="@string/instructions_label"
+				/>
+		</LinearLayout>		
 <!--		<Button-->
 <!--			android:id="@+id/add_user_button" -->
 <!--			android:layout_height="wrap_content"-->

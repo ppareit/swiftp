@@ -41,7 +41,7 @@ Look in the /sdcard directory for your music and other files.\n\n\
 Wifi must be enabled before the server will start. This version of SwiFTP doesn't use the \
 3G network.\n\n\
 \
-For security reasons, it's recommended that the server be stopped after use.\n\n
+For security reasons, it's recommended that the server be stopped after use.\n\n\
 Full instructions are on the wiki at http://www.swiftp.org/.\n\n\
 \
 Don't be alarmed by messages about ignored or unrecognized commands, these are normal as \

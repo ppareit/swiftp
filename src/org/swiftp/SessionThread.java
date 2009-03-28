@@ -28,10 +28,22 @@ public class SessionThread extends Thread {
 	protected Socket dataSocket = null;
 	protected FTPServerService service;
 	protected File renameFrom = null;
+	protected InetAddress outDataDest = null; 
+	protected int outDataPort = 20; // 20 is the default ftp-data port
+	
 	/**
-	 * Opens an incoming or outgoing socket depending on the value of pasvMode,
-	 * then sends the given String over that socket. In all cases the socket is
-	 * closed before returning.
+	 * Used when we get a PORT command to open up an outgoing socket.
+	 * @return
+	 */
+	public void setPortSocket(InetAddress dest, int port) {
+		myLog.l(Log.DEBUG, "Setting PORT dest to " +
+				dest.getHostAddress() + " port " + port);
+		outDataDest = dest;
+		outDataPort = port;
+	}
+	
+	/**
+	 * Sends a string over the already-established data socket
 	 * 
 	 * @param string
 	 * @return Whether the send completed successfully
@@ -46,6 +58,12 @@ public class SessionThread extends Thread {
 		}
 	}
 	
+	/**
+	 *  Sends a byte array over the already-established data socket
+	 * @param bytes
+	 * @param len
+	 * @return
+	 */
 	public boolean sendViaDataSocket(byte[] bytes, int len) {
 		if(!dataSocket.isConnected()) {
 			myLog.l(Log.ERROR, "Can't send via unconnected socket");
@@ -105,16 +123,33 @@ public class SessionThread extends Thread {
 	public int initDataSocket() {
 		if (pasvMode) {			
 			if(acceptPasvSocket()) {
-				myLog.l(Log.DEBUG, "initDataSocket success");
 				return 1;
 			} else {
-				myLog.l(Log.INFO, "initDataSocket failure");
 				return 0;
 			}
 		} else {
-			String msg = "Non-PASV transfer unsupported";
-			myLog.l(Log.ERROR, msg);
-			return 2;
+			if(connectOutDataSocket()) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+	}
+	
+	boolean connectOutDataSocket() {
+		try {
+			// If the user never specified an address, use the same one
+			// that their other connection came from
+			if(outDataDest == null) {
+				outDataDest = socket.socket().getInetAddress();
+				myLog.l(Log.DEBUG, "Defaulting data address to " + 
+						outDataDest.getHostAddress());
+			}
+			dataSocket = new Socket(outDataDest, outDataPort);
+			return true;
+		} catch(IOException e) {
+			myLog.l(Log.INFO, "Couldn't open outbound data socket");
+			return false;
 		}
 	}
 	
@@ -146,6 +181,7 @@ public class SessionThread extends Thread {
 		return server.getLocalPort();
 	}
 	
+
 	public boolean acceptPasvSocket() {
 		if(dataSocket != null) {
 			if(dataSocket.isConnected()) {
@@ -296,6 +332,9 @@ public class SessionThread extends Thread {
 	}
 
 	public void setAuthenticated(boolean authenticated) {
+		if(authenticated) {
+			myLog.l(Log.INFO, "Authentication complete");
+		}
 		this.authenticated = authenticated;
 	}
 

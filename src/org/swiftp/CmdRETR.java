@@ -50,7 +50,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
 			err = true;
 		} else if(!sessionThread.isBinaryMode()) {
 			myLog.l(Log.INFO, "Failed RETR in text mode");
-			errString = "550 Text mode is not currently supported\r\n";
+			errString = "550 Text mode RETR not supported\r\n";
 			err = true;
 		}
 		if(!err) {
