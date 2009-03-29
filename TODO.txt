@@ -8,10 +8,16 @@ Detect wifi disable and stop server
 
 Allow enable of wifi from control screen
 
-Detect unconfigured state and prompt
-
 Popup on ERROR
 
 Explore speed optimizations (buffer size?) (dedicated IO thread?)
 
 Remove beta from title and copy
+
+Make a decent icon
+
+Provide an option to start server whenever wifi is on
+
+Apply GPLv3 boilerplate
+
+Retire "Responses" class
