@@ -15,8 +15,8 @@ public class CmdUSER extends FtpCmd implements Runnable {
 		myLog.l(Log.DEBUG, "USER executing");
 		String username = FtpCmd.getParameter(input);
 		username = username.toLowerCase();
-		if(!username.toLowerCase().equals("anonymous")) {
-			sessionThread.writeString("530 Must use \"anonymous\" user\r\n");
+		if(!username.matches("[A-Za-z1-9]+")) {
+			sessionThread.writeString("530 Invalid username\r\n");
 			return;
 		}
 		sessionThread.writeString("331 Send password\r\n");

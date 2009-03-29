@@ -27,7 +27,8 @@ public abstract class FtpCmd implements Runnable {
 			new CmdMap("RNTO", CmdRNTO.class),
 			new CmdMap("RMD",  CmdRMD.class),
 			new CmdMap("MKD",  CmdMKD.class),
-			new CmdMap("PORT", CmdPORT.class)
+			new CmdMap("PORT", CmdPORT.class),
+			new CmdMap("QUIT", CmdQUIT.class)
 	};
 	
 	public FtpCmd(SessionThread sessionThread, String logName) {
@@ -91,8 +92,15 @@ public abstract class FtpCmd implements Runnable {
 			staticLog.l(Log.INFO, "Ignoring unrecognized FTP verb: " + verb);
 			session.writeBytes(Responses.unrecognizedCmdMsg);
 			return;
-		} else {
+		} else if(session.isAuthenticated() 
+				|| cmdInstance.getClass().equals(CmdUSER.class)
+				|| cmdInstance.getClass().equals(CmdPASS.class)
+				|| cmdInstance.getClass().equals(CmdUSER.class))
+		{
+			// Unauthenticated users can run only USER, PASS and QUIT 
 			cmdInstance.run();
+		} else {
+			session.writeString("530 Login first with USER and PASS\r\n");
 		}
 	}
 		

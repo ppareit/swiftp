@@ -42,7 +42,6 @@
     	/>
     </LinearLayout>
     <TextView 
-    	android:id="@+id/byline" 
     	android:layout_height="wrap_content"
     	android:layout_width="wrap_content"
     	android:text="@string/menu_byline"
@@ -82,6 +81,13 @@
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
 				android:text="@string/instructions_label"
+				/>
+				
+			<Button
+				android:id="@+id/configure"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="@string/configure_label"
 				/>
 		</LinearLayout>		
 <!--		<Button-->
@@ -212,6 +218,7 @@
 		android:checked="false"
 	/>
 	</LinearLayout>
+	
 	<TextView
 		android:id="@+id/session_monitor"
 		android:layout_width="fill_parent"

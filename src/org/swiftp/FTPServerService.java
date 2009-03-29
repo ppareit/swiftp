@@ -14,6 +14,7 @@ import java.util.List;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.IBinder;
@@ -30,7 +31,6 @@ public class FTPServerService extends Service implements Runnable {
 	protected static MyLog staticLog = 
 		new MyLog(FTPServerService.class.getName());
 	
-	protected static final int PORT = 2121;
 	protected static final int BACKLOG = 21;
 	protected static final int MAX_SESSIONS = 5;
 	
@@ -41,15 +41,17 @@ public class FTPServerService extends Service implements Runnable {
 	
 	protected static List<String> sessionMonitor = new ArrayList<String>();
 	protected static List<String> serverLog = new ArrayList<String>();
-	protected static int uiLogLevel = Settings.getUiLogLevel();
+	protected static int uiLogLevel = Defaults.getUiLogLevel();
 	
 	// The server thread will check this often to look for incoming 
 	// connections. We are forced to use non-blocking accept() and polling
 	// because we cannot wait forever in accept() if we want to be able
 	// to receive an exit signal and cleanly exit.
-	public static final int WAKE_INTERVAL_MS = 1000; // milliseconds  
+	public static final int WAKE_INTERVAL_MS = 1000; // milliseconds
 	
-	public FTPServerService() {
+	protected static int port;
+	
+		public FTPServerService() {
 		
 	}
 
@@ -142,6 +144,25 @@ public class FTPServerService extends Service implements Runnable {
 			appContext.getSystemService(Context.CONNECTIVITY_SERVICE);*/
 		myLog.l(Log.DEBUG, "Server thread running");
 		
+		myLog.l(Log.DEBUG, "Loading settings");
+		SharedPreferences settings = getSharedPreferences(
+				Defaults.getSettingsName(), Defaults.getSettingsMode());
+		int port = settings.getInt("portNum", 0);
+		if(port <= 1024 || port >= 65536) {
+			myLog.l(Log.ERROR, "Can't start server due to port number");
+			cleanupAndStopService();
+			return;
+		}
+		FTPServerService.port = port;
+		String username = settings.getString("username", null);
+		String password = settings.getString("password", null);
+		if(username == null || password == null) {
+			myLog.l(Log.ERROR, "Username or password is invalid");
+			cleanupAndStopService();
+		}
+		
+		myLog.l(Log.DEBUG, "Using port " + port);
+		
 		try {
 			mainSocket = ServerSocketChannel.open();
 			mainSocket.configureBlocking(false);
@@ -154,7 +175,9 @@ public class FTPServerService extends Service implements Runnable {
 			}
 			myLog.l(Log.DEBUG, "Wifi IP: " + wifiIp);
 			serverAddress = InetAddress.getByName(wifiIp);
-			mainSocket.socket().bind(new InetSocketAddress(serverAddress, PORT));
+			mainSocket.socket().bind(new InetSocketAddress(serverAddress, port));
+			// The following line listens on all interfaces
+			// mainSocket.socket().bind(new InetSocketAddress(port));
 		} catch (IOException e) {
 			myLog.l(Log.ERROR, "Error opening port");
 			serverAddress = null;
@@ -298,14 +321,12 @@ public class FTPServerService extends Service implements Runnable {
 	}
 	
 	public static void log(int msgLevel, String s) {
-		if(msgLevel >= uiLogLevel) {
-			serverLog.add(s.trim());
-			int maxSize = Settings.getServerLogScrollBack();
-			while(serverLog.size() > maxSize) {
-				serverLog.remove(0);
-			}
-			updateClients();
+		serverLog.add(s);
+		int maxSize = Defaults.getServerLogScrollBack();
+		while(serverLog.size() > maxSize) {
+			serverLog.remove(0);
 		}
+		updateClients();
 	}
 	
 	public static void updateClients() {
@@ -319,18 +340,20 @@ public class FTPServerService extends Service implements Runnable {
 			s = "< " + s;
 		}
 		sessionMonitor.add(s.trim());
-		int maxSize = Settings.getSessionMonitorScrollBack();
+		int maxSize = Defaults.getSessionMonitorScrollBack();
 		while(sessionMonitor.size() > maxSize) {
 			sessionMonitor.remove(0);
 		}
 		updateClients();
 	}
 
-	public static int getUiLogLevel() {
-		return uiLogLevel;
+	public static int getPort() {
+		return port;
 	}
 
-	public static void setUiLogLevel(int uiLogLevel) {
-		FTPServerService.uiLogLevel = uiLogLevel;
+	public static void setPort(int port) {
+		FTPServerService.port = port;
 	}
+
+
 }

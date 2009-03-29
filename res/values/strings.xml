@@ -49,5 +49,15 @@ long as they don't cause undesired behavior.\n\n\
 \
 Thanks for using SwiFTP, and look for fixes and improvements soon.\n\
 </string>
+<string name="configure_label">Configure</string>
+<string name="save_settings">Save settings</string>
+<string name="config_username">Username:</string>
+<string name="config_password">Password:</string>
+<string name="config_portnum">Port number (>1024):</string>
+<string name="config_header">SwiFTP Settings</string>
+<string name="config_intro">Settings will take effect when the server is started/restarted.</string>
+<string name="username_validation_error">The username must consist of 1 or more letters. No other characters are allowed.</string>
+<string name="password_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>
+<string name="port_validation_error">The port number must be in the range 1025 to 65535.</string>
 </resources>
 

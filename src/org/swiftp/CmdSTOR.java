@@ -17,7 +17,7 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 	}
 	
 	public void run() {
-		myLog.l(Log.INFO, "STOR executing");
+		myLog.l(Log.DEBUG, "STOR executing");
 		String param = getParameter(input);
 		File storeFile;
 		if(param.charAt(0) == '/') {
@@ -31,7 +31,7 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 		
 		storing: {
 			if(storeFile.exists()) {
-				if(!Settings.isAllowOverwrite()) {
+				if(!Defaults.isAllowOverwrite()) {
 					errString = "451 Server settings prohibit overwrite\r\n";
 					myLog.l(Log.INFO, "Prevented overwrite");
 					break storing;
@@ -65,7 +65,7 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 			}
 			myLog.l(Log.DEBUG, "Data socket ready");
 			sessionThread.writeString("150 Data socket ready\r\n");
-			byte[] buffer = new byte[Settings.getDataChunkSize()];
+			byte[] buffer = new byte[Defaults.getDataChunkSize()];
 			int numRead;
 			while(true) {
 				switch(numRead = sessionThread.receiveFromDataSocket(buffer)) {
@@ -97,7 +97,7 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 			sessionThread.writeString("226 Transmission complete\r\n");
 		}
 		sessionThread.closeDataSocket();
-		myLog.l(Log.INFO, "STOR finished");
+		myLog.l(Log.DEBUG, "STOR finished");
 	}
 
 }

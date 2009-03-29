@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +32,7 @@ public class ServerControlActivity extends Activity {
     //private Button manageUsersButton;
     //private Button serverOptionsButton;
     private Button instructionsButton;
+    private Button configureButton;
     
     private TextView statusText;
     private TextView ipText;
@@ -82,12 +84,14 @@ public class ServerControlActivity extends Activity {
         //manageUsersButton = (Button) findViewById(R.id.manage_users_button);
         //serverOptionsButton = (Button) findViewById(R.id.server_options_button);
         instructionsButton = (Button) findViewById(R.id.instructions);
+        configureButton = (Button) findViewById(R.id.configure);
         
         startStopButton.setOnClickListener(startStopListener);
         //addUserButton.setOnClickListener(addUserListener);
         //manageUsersButton.setOnClickListener(manageUsersListener);
         //serverOptionsButton.setOnClickListener(serverOptionsListener);
         instructionsButton.setOnClickListener(instructionsListener);
+        configureButton.setOnClickListener(configureListener);
         
         sessionMonitor = (TextView) findViewById(R.id.session_monitor);
         sessionMonitorCheckBox = 
@@ -101,7 +105,19 @@ public class ServerControlActivity extends Activity {
         sessionMonitorCheckBox
         	.setOnClickListener(sessionMonitorCheckBoxListener);
         serverLogCheckBox.setOnClickListener(serverLogCheckBoxListener);
-        
+
+        // If the preferences are not present, launch the configuration
+        // Activity.
+        SharedPreferences settings = getSharedPreferences(
+        		Defaults.getSettingsName(),	Defaults.getSettingsMode());
+		String username = settings.getString("username", null);
+		String password = settings.getString("password", null);
+		int portNumber = settings.getInt("portNum", 0);
+		if(username == null || password == null || 
+				portNumber == 0) 
+		{
+			launchConfigureActivity();
+		}
         updateUi();
     }
 
@@ -145,12 +161,11 @@ public class ServerControlActivity extends Activity {
      * changed state in a way that requires us to update our UI.
      */
     public void updateUi() {
-    	Log.d("manual", "In updateUi()");
     	if(FTPServerService.isRunning()) {
     		InetAddress address =  FTPServerService.getServerAddress();
         	if(address != null) {
     			ipText.setText("ftp://" + address.getHostAddress() + 
-    		               ":" + FTPServerService.PORT + "/");
+    		               ":" + FTPServerService.getPort() + "/");
         	} else {
         		ipText.setText(R.string.cant_get_url);
         	}
@@ -171,7 +186,7 @@ public class ServerControlActivity extends Activity {
     		// from the FTPServerService
     		sessionMonitor.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
     		List<String> lines = FTPServerService.getSessionMonitorContents();
-			int size = Settings.getSessionMonitorScrollBack();
+			int size = Defaults.getSessionMonitorScrollBack();
     		sessionMonitor.setMinLines(size);
     		sessionMonitor.setMaxLines(size);
     		String showText = "";
@@ -188,7 +203,7 @@ public class ServerControlActivity extends Activity {
     		serverLog.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
     		List<String> lines = FTPServerService.getServerLogContents();
     		//Log.d("", "Got " + lines.size() + " lines from server");
-			int size = Settings.getServerLogScrollBack();
+			int size = Defaults.getServerLogScrollBack();
     		serverLog.setMinLines(size);
     		serverLog.setMaxLines(size);
     		String showText = "";
@@ -311,6 +326,20 @@ public class ServerControlActivity extends Activity {
         	
         }
     };
+    
+    /**
+     * A call-back for when the user presses the "configure" button.
+     */
+    OnClickListener configureListener = new OnClickListener() {
+        public void onClick(View v) {
+        	launchConfigureActivity();
+        }
+    };
+    
+    void launchConfigureActivity() {
+    	Intent intent = new Intent(activityContext, ConfigureActivity.class);
+    	startActivity(intent);
+    }
     
     /**
      * A callback for when the user toggles the session monitor on or off

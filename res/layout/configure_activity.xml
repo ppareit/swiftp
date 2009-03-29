@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+   	>
+    
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:text="@string/config_header"
+    	android:textSize="20sp"
+    	android:textColor="#ffffff"
+    	/>
+    
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:text="@string/config_intro"
+    	/>
+    
+	<!--  A horizontal line -->
+	<FrameLayout android:layout_height="1px"
+		android:layout_width="fill_parent"
+		android:background="#666666"
+		>
+	</FrameLayout>
+	    
+	<TableLayout 
+		android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:stretchColumns="*"
+    	>
+    	<TableRow>
+    	
+			<TextView
+		    	android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:text="@string/config_username"
+		    	/> 
+		    <EditText
+		    	android:id="@+id/config_username"
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="wrap_content"
+		    	/> 
+		</TableRow>
+		<TableRow>
+			<TextView
+		    	android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:text="@string/config_password"
+		    	/> 
+		    <EditText
+		    	android:id="@+id/config_password"
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="wrap_content"
+		    	android:password="true"
+		    	/> 
+		</TableRow>
+		<TableRow>
+			<TextView
+		    	android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:text="@string/config_portnum"
+		    	/> 
+		    <EditText
+		    	android:id="@+id/config_portnum"
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="wrap_content"
+		    	/> 
+		</TableRow>
+		
+	</TableLayout>
+	<!--  A horizontal line -->
+	<FrameLayout android:layout_height="1px"
+		android:layout_width="fill_parent"
+		android:background="#666666"
+		/>
+	<LinearLayout 
+		android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:orientation="horizontal"
+	    android:gravity="right"
+	    >
+    <Button
+    	android:id="@+id/config_save" 
+    	android:text="@string/save_settings"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	/>	
+	</LinearLayout>
+	
+</LinearLayout>
+</ScrollView>

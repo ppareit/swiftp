@@ -18,7 +18,7 @@ public class SessionThread extends Thread {
 	protected SocketChannel socket;
 	protected MyLog myLog = new MyLog(getClass().getName());
 	protected ByteBuffer buffer = 
-		ByteBuffer.allocate(Settings.getInputBufferSize());
+		ByteBuffer.allocate(Defaults.getInputBufferSize());
 	protected boolean pasvMode = false;
 	protected boolean binaryMode = false;
 	protected Account account = new Account();

@@ -56,7 +56,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
 		if(!err) {
 			try {
 				FileInputStream in = new FileInputStream(fileToRetr);
-				byte[] buffer = new byte[Settings.getDataChunkSize()];
+				byte[] buffer = new byte[Defaults.getDataChunkSize()];
 				int bytesRead;
 				switch(sessionThread.initDataSocket()) {
 				case 1:

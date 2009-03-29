@@ -9,7 +9,12 @@ public class MyLog {
 		this.tag = tag;
 	}
 	public void l(int level, String str) {
-		Log.println(level,tag, str);
-		FTPServerService.log(level, str);
+		str = str.trim();
+		if(level >= Defaults.getConsoleLogLevel()) {
+			Log.println(level,tag, str);
+		}
+		if(level >= Defaults.getUiLogLevel()) {
+			FTPServerService.log(level, str);
+		}
 	}
 }
