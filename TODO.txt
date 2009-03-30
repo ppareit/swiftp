@@ -21,3 +21,5 @@ Provide an option to start server whenever wifi is on
 Apply GPLv3 boilerplate
 
 Retire "Responses" class
+
+audit wifi lock release

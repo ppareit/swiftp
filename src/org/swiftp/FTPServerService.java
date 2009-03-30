@@ -143,6 +143,7 @@ public class FTPServerService extends Service implements Runnable {
 		UiUpdater.updateClients();
 		if(wifiLock != null) {
 			wifiLock.release();
+			wifiLock = null;
 		}
 		// todo: we should broadcast an intent to inform anyone who cares
 	}
@@ -269,6 +270,10 @@ public class FTPServerService extends Service implements Runnable {
 		Context context = getApplicationContext();
 		Intent intent = new Intent(context,	FTPServerService.class);
 		context.stopService(intent);
+		if(wifiLock != null) {
+			wifiLock.release();
+			wifiLock = null;
+		}
 	}
 	
 	public void errorShutdown() {

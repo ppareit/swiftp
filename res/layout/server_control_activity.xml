@@ -200,7 +200,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 		android:id="@+id/server_log_checkbox" 
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
-		android:checked="true"
+		android:checked="false"
 	/>
 	</LinearLayout>
 	
