@@ -40,7 +40,8 @@ public class CmdPASV extends FtpCmd implements Runnable {
 		}
 		String ipAsString = FTPServerService.getWifiIpAsString();
 		ipAsString = ipAsString.replace('.',',');
-		StringBuilder response = new StringBuilder("227 =");
+		StringBuilder response = new StringBuilder(
+				"227 Entering Passive Mode (");
 		// Output our IP address in the format xxx,xxx,xxx,xxx
 		response.append(ipAsString + ",");
 		
@@ -48,7 +49,8 @@ public class CmdPASV extends FtpCmd implements Runnable {
 		response.append(port / 256);
 		response.append(",");
 		response.append(port % 256);
-		String responseString = response.toString() + "\r\n";
+		response.append(").\r\n");
+		String responseString = response.toString();
 		sessionThread.writeString(responseString);
 		sessionThread.setPasvMode(true);
 		myLog.l(Log.DEBUG, "PASV completed, sent: " + responseString);

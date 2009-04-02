@@ -4,13 +4,11 @@ Add icon in the taskbar/notification area/whatever its called, if server enabled
 
 IPv6 support
 
-Detect wifi disable and stop server
-
 Allow enable of wifi from control screen
 
 Popup on ERROR
 
-Explore speed optimizations (buffer size?) (dedicated IO thread?)
+Speed optimizations (buffer size? IO thread?) (FileZilla writes)
 
 Remove beta from title and copy
 
@@ -18,8 +16,10 @@ Make a decent icon
 
 Provide an option to start server whenever wifi is on
 
-Apply GPLv3 boilerplate
-
 Retire "Responses" class
 
 audit wifi lock release
+
+Handle ascii type transfers to some extent
+
+Support for REST, SIZE, MDTM, NLST

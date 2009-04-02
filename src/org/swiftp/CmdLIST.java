@@ -84,6 +84,8 @@ public class CmdLIST extends FtpCmd implements Runnable {
 					response.append(curLine + "\r\n");
 				}
 			}
+			myLog.l(Log.DEBUG, "Done looping");
+			
 		} else {
 			myLog.l(Log.DEBUG, "Listing file");
 			// The given path is a file and not a directory
@@ -95,12 +97,15 @@ public class CmdLIST extends FtpCmd implements Runnable {
 		String errString = null;
 		switch(sessionThread.initDataSocket()) {
 		case 1: // success
+			myLog.l(Log.DEBUG, "LIST done making socket");
 			break;
 		case 2:
+			myLog.l(Log.DEBUG, "data socket create failure 2");
 			err = true;
 			errString = "425 Must use PASV mode\r\n";
 			break;
 		case 0:
+			myLog.l(Log.DEBUG, "data socket create failure 0");
 		default:
 			err = true;
 			errString = "425 Error opening data socket\r\n";
@@ -108,8 +113,10 @@ public class CmdLIST extends FtpCmd implements Runnable {
 		}
 		if(!err) {
 			sessionThread.writeString("150 Beginning transmission\r\n");
+			myLog.l(Log.DEBUG, "Sent code 150, sending listing string now");
 			if(!sessionThread.sendViaDataSocket(response.toString())) {
 				errString = "426 Data socket or network error\r\n";
+				myLog.l(Log.DEBUG, "sendViaDataSocket failure");
 			} else {
 				myLog.l(Log.DEBUG, "sendViaDataSocket success");
 			}
@@ -117,10 +124,12 @@ public class CmdLIST extends FtpCmd implements Runnable {
 		sessionThread.closeDataSocket();
 		if(err) {
 			sessionThread.writeString(errString);
+			myLog.l(Log.DEBUG, "Failed with: " + errString);
 		} else {
 			sessionThread.writeString("226 Data transmission OK\r\n");
+			myLog.l(Log.DEBUG, "List completed OK");
 		}
-		myLog.l(Log.DEBUG, "LIST complete");
+		//myLog.l(Log.DEBUG, "LIST complete");
 	}
 	
 	private static String makeLsString(File file) {

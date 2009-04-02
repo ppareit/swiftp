@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -73,6 +74,7 @@ public class SessionThread extends Thread {
 			return sendViaDataSocket(bytes, bytes.length);
 		} catch(UnsupportedEncodingException e) {
 			// There's no plausible way this can happen
+			myLog.l(Log.ERROR, "UTF-8 output failure");
 			return false;
 		}
 	}
@@ -93,6 +95,14 @@ public class SessionThread extends Thread {
 			out = dataSocket.getOutputStream();
 			out.write(bytes, 0, len);
 		} catch(IOException e) {
+			try {
+				throw new Exception("Ohno");
+			} catch(Exception ex) {
+				myLog.l(Log.DEBUG, "Stack trace: ");
+				for (StackTraceElement element : ex.getStackTrace()) {
+					myLog.l(Log.DEBUG, element.toString());
+				}
+			}
 			myLog.l(Log.INFO, "Couldn't write output stream for data socket");
 			return false;
 		}
@@ -140,10 +150,13 @@ public class SessionThread extends Thread {
 	 * 2 if pasvMode was not true
 	 */
 	public int initDataSocket() {
-		if (pasvMode) {			
+		if (pasvMode) {
+			myLog.l(Log.DEBUG, "to accept() data connection");
 			if(acceptPasvSocket()) {
+				myLog.l(Log.DEBUG, "accept() success");
 				return 1;
 			} else {
+				myLog.l(Log.DEBUG, "accept() fail");
 				return 0;
 			}
 		} else {

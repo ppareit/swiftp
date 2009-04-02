@@ -27,7 +27,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
      to come from a domain that you own or have control over. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.swiftp"
-    android:versionCode="5" android:versionName="1.0RC5">
+    android:versionName="1.0RC6" android:versionCode="6">
 
     <!-- This package contains an application...  The 'label' is the name
          to display to the user for the overall application, and provides

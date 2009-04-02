@@ -28,8 +28,8 @@ public class Defaults {
 	protected static int dataChunkSize = 8192;  // do file I/O in 8k chunks 
 	protected static int sessionMonitorScrollBack = 10;
 	protected static int serverLogScrollBack = 10;
-	protected static int uiLogLevel = Log.INFO;
-	protected static int consoleLogLevel = Log.INFO;
+	protected static int uiLogLevel = Defaults.release ? Log.INFO : Log.DEBUG;
+	protected static int consoleLogLevel = Defaults.release ? Log.INFO : Log.DEBUG;
 	protected static String settingsName = "SwiFTP";
 	//protected static String username = "user";
 	//protected static String password = "";
