@@ -39,40 +39,31 @@ public class CmdRETR extends FtpCmd implements Runnable {
 		myLog.l(Log.DEBUG, "RETR executing");
 		String param = getParameter(input);
 		File fileToRetr;
-		if(param.charAt(0) == '/') {
-			// The RETR command gave an absolute path
-			fileToRetr = new File(param);
-		} else {
-			fileToRetr = new File(sessionThread.getPrefix(), param);
-		}
-		boolean err = false;
 		String errString = null;
-		// Check on and report the various possible error conditions
-		try {
-			fileToRetr = fileToRetr.getCanonicalFile();
-		} catch (IOException e) {
-			err = true;
-			errString = "550 File name error\r\n";
-		}
-		if(fileToRetr.isDirectory()) {
-			myLog.l(Log.DEBUG, "Ignoring RETR for directory");
-			errString = "550 Can't RETR a directory\r\n";
-			err = true;
-		} else if(!fileToRetr.exists()) {
-			myLog.l(Log.INFO, "Can't RETR nonexistent file: " + 
-					fileToRetr.getAbsolutePath());
-			errString = "550 File does not exist\r\n";
-			err = true;
-		} else if(!fileToRetr.canRead()) {
-			myLog.l(Log.INFO, "Failed RETR permission (canRead() is false)");
-			errString = "550 No read permissions\r\n";
-			err = true;
-		} else if(!sessionThread.isBinaryMode()) {
-			myLog.l(Log.INFO, "Failed RETR in text mode");
-			errString = "550 Text mode RETR not supported\r\n";
-			err = true;
-		}
-		if(!err) {
+		
+		mainblock: {
+			fileToRetr = inputPathToChrootedFile(sessionThread.getPrefix(), param);
+			if(violatesChroot(fileToRetr)) {
+				errString = "550 Invalid name or chroot violation\r\n";
+				break mainblock;
+			} else if(fileToRetr.isDirectory()) {
+				myLog.l(Log.DEBUG, "Ignoring RETR for directory");
+				errString = "550 Can't RETR a directory\r\n";
+				break mainblock;
+			} else if(!fileToRetr.exists()) {
+				myLog.l(Log.INFO, "Can't RETR nonexistent file: " + 
+						fileToRetr.getAbsolutePath());
+				errString = "550 File does not exist\r\n";
+				break mainblock;
+			} else if(!fileToRetr.canRead()) {
+				myLog.l(Log.INFO, "Failed RETR permission (canRead() is false)");
+				errString = "550 No read permissions\r\n";
+				break mainblock;
+			} /*else if(!sessionThread.isBinaryMode()) {
+				myLog.l(Log.INFO, "Failed RETR in text mode");
+				errString = "550 Text mode RETR not supported\r\n";
+				break mainblock;
+			}*/
 			try {
 				FileInputStream in = new FileInputStream(fileToRetr);
 				byte[] buffer = new byte[Defaults.getDataChunkSize()];
@@ -82,45 +73,79 @@ public class CmdRETR extends FtpCmd implements Runnable {
 					myLog.l(Log.DEBUG, "RETR opened data socket");
 					break;
 				case 2:
-					err = true;
 					errString = "425 Only PASV mode is supported\r\n";
 					myLog.l(Log.INFO, "Failed RETR without PASV");
-					break;
+					break mainblock;
 				case 0:
 				default:
-					err = true;
 					errString = "425 Error opening socket\r\n";
 					myLog.l(Log.INFO, "");
-					break;
+					break mainblock;
 				}
-				if(!err) {
-					sessionThread.writeString("150 Sending file\r\n");
+				sessionThread.writeString("150 Sending file\r\n");
+				if(sessionThread.isBinaryMode()) {
 					while((bytesRead = in.read(buffer)) != -1) {
 						if(sessionThread
 						   .sendViaDataSocket(buffer, bytesRead) == false) 
 						{
 							errString = "426 Data socket error\r\n";
-							err = true;
-							break;
+							break mainblock;
+						}
+					}
+				} else { // We're in ASCII mode
+					// We have to convert all solitary \n to \r\n
+					boolean lastBufEndedWithCR = false;
+					while((bytesRead = in.read(buffer)) != -1) {
+						int startPos = 0, endPos = 0;
+						byte[] crnBuf = {'\r','\n'};
+						for(endPos = 0; endPos<bytesRead; endPos++) {
+							if(buffer[endPos] == '\n') {
+								// Send bytes up to but not including the newline
+								sessionThread.sendViaDataSocket(buffer, 
+										startPos, endPos-startPos);
+								if(endPos == 0) {
+									// handle special case where newline occurs at
+									// the beginning of a buffer
+									if(!lastBufEndedWithCR) {
+										// Send an \r only if the the previous
+										// buffer didn't end with an \r
+										sessionThread.sendViaDataSocket(crnBuf, 1);
+									}
+								} else if(buffer[endPos-1] != '\r') {
+									// The file did not have \r before \n, add it
+									sessionThread.sendViaDataSocket(crnBuf, 1);
+								} else {
+									// The file did have \r before \n, don't change
+								}
+								startPos = endPos;
+							}
+						}
+						// Now endPos has finished traversing the array, send remaining
+						// data as-is
+						sessionThread.sendViaDataSocket(buffer, startPos, 
+								endPos-startPos);
+						if(buffer[bytesRead-1] == '\r') {
+							lastBufEndedWithCR = true;
+						} else {
+							lastBufEndedWithCR = false;
 						}
 					}
 				}
 			} catch (FileNotFoundException e) {
-				err = true;
 				errString = "550 File not found\r\n";
+				break mainblock;
 			} catch(IOException e) {
-				err = true;
 				errString = "425 Network error\r\n";
-			} finally {
-				sessionThread.closeDataSocket();
+				break mainblock;
 			}
 		}
-		if(err) {
+		sessionThread.closeDataSocket();
+		if(errString != null) {
 			sessionThread.writeString(errString);
 		} else {
 			sessionThread.writeString("226 Transmission finished\r\n");
 		}
 		sessionThread.closeDataSocket();
-		myLog.l(Log.DEBUG, "RETR executing");
+		myLog.l(Log.DEBUG, "RETR done");
 	}
 }

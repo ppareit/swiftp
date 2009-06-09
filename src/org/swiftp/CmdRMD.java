@@ -20,7 +20,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package org.swiftp;
 
 import java.io.File;
-import java.io.IOException;
 
 import android.util.Log;
 
@@ -43,18 +42,9 @@ public class CmdRMD extends FtpCmd implements Runnable {
 				errString = "550 Invalid argument\r\n";
 				break mainblock;
 			}
-			if(param.charAt(0) == '/') {
-				toRemove = new File(param);
-			} else {
-				// The param is a relative path, prepend the working directory
-				toRemove = new File(sessionThread.getPrefix(), param);
-			}
-			try {
-				toRemove = toRemove.getCanonicalFile().getAbsoluteFile();
-				myLog.l(Log.DEBUG, "toRemove: " + toRemove.getAbsolutePath());
-
-			} catch (IOException e) {
-				errString = "550 Invalid directory name\r\n";
+			toRemove = inputPathToChrootedFile(sessionThread.getPrefix(), param);
+			if(violatesChroot(toRemove)) {
+				errString = "550 Invalid name or chroot violation\r\n";
 				break mainblock;
 			}
 			if(!toRemove.isDirectory()) {

@@ -34,21 +34,15 @@ public class CmdDELE extends FtpCmd implements Runnable {
 	public void run() {
 		myLog.l(Log.INFO, "DELE executing");
 		String param = getParameter(input);
-		File storeFile;
-		if(param.charAt(0) == '/') {
-			// The parameter is an absolute path
-			storeFile = new File(param);
-		} else {
-			// The parameter is a relative path
-			storeFile = new File(sessionThread.getPrefix(), param); 
-		}
+		File storeFile = inputPathToChrootedFile(sessionThread.getPrefix(), param);
 		String errString = null;
-		if(storeFile.isDirectory()) {
+		if(violatesChroot(storeFile)) {
+			errString = "550 Invalid name or chroot violation\r\n";
+		} else if(storeFile.isDirectory()) {
 			errString = "550 Can't DELE a directory\r\n";
 		} else if(!storeFile.delete()) {
 			errString = "450 Error deleting file\r\n";
 		}
-		
 		
 		if(errString != null) {
 			sessionThread.writeString(errString);

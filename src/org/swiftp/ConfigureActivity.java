@@ -19,6 +19,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.swiftp;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -33,8 +35,15 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 	private EditText usernameBox;
 	private EditText passwordBox;
 	private EditText portNumberBox;
+	private EditText chrootDirBox;
 	
 	private Button saveButton;
+	private Button cancelButton;
+	
+	public final static String USERNAME = "username";
+	public final static String PASSWORD = "password";
+	public final static String PORTNUM = "portNum";
+	public final static String CHROOTDIR = "chrootDir";
 	
     public ConfigureActivity() {
 	}
@@ -48,21 +57,26 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 		
         saveButton = (Button) findViewById(R.id.config_save);
         saveButton.setOnClickListener(this);
+        cancelButton = (Button) findViewById(R.id.config_cancel);
+        cancelButton.setOnClickListener(this);
         
         usernameBox = (EditText) findViewById(R.id.config_username);
         passwordBox = (EditText) findViewById(R.id.config_password);
         portNumberBox = (EditText) findViewById(R.id.config_portnum);
+        chrootDirBox = (EditText) findViewById(R.id.config_chroot);
         
 		settings = getSharedPreferences(Defaults.getSettingsName(),
 				Defaults.getSettingsMode());
 		
-		String username = settings.getString("username", "");
-		String password = settings.getString("password", "");
-		int portNumber = settings.getInt("portNum", Defaults.getPortNumber());
+		String username = settings.getString(USERNAME, "");
+		String password = settings.getString(PASSWORD, "");
+		int portNumber = settings.getInt(PORTNUM, Defaults.getPortNumber());
+		String chroot = settings.getString(CHROOTDIR, Defaults.chrootDir);
 		
 		usernameBox.setText(username);
 		passwordBox.setText(password);
 		portNumberBox.setText(Integer.toString(portNumber));
+		chrootDirBox.setText(chroot);
 	}
 	
 	protected void onStart() {
@@ -88,13 +102,18 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		// This function is called when the user clicks "save."
 		
+		if(v == cancelButton) {
+			finish();
+			return;
+		}
 		// Let's validate all the input fields.
 		String errString = null;
 		int portNum = 0;
-		String username, password, portNumberString;
+		String username, password, portNumberString, chrootDir;
 		username = usernameBox.getText().toString();
 		password = passwordBox.getText().toString();
 		portNumberString = portNumberBox.getText().toString();
+		chrootDir = chrootDirBox.getText().toString();
 		
 		validateBlock: {
 			if(!username.matches("[a-zA-Z0-9]+")) {
@@ -111,8 +130,13 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 			} catch (Exception e) {
 				portNum = 0;
 			}
-			if(portNum <= 1024 || portNum > 65535) {
+			if(portNum <= 0 || portNum > 65535) {
 				errString = getString(R.string.port_validation_error);
+				break validateBlock;
+			}
+			
+			if(!(new File(chrootDir).isDirectory())) {
+				errString = getString(R.string.chrootDir_validation_error);
 				break validateBlock;
 			}
 		}
@@ -134,10 +158,10 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 				Defaults.getSettingsName(), Defaults.getSettingsMode());
 		SharedPreferences.Editor editor = settings.edit();
 		
-		editor.putString("username", username);
-		editor.putString("password", password);
-		editor.putInt("portNum", portNum);
-		
+		editor.putString(USERNAME, username);
+		editor.putString(PASSWORD, password);
+		editor.putInt(PORTNUM, portNum);
+		editor.putString(CHROOTDIR, chrootDir);
 		editor.commit();
 		
 		finish();  // close this Activity

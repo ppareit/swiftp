@@ -43,12 +43,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     	android:layout_height="wrap_content"
     	android:orientation="horizontal"
 	>    	
-    <TextView 
-    	android:layout_height="wrap_content"
-    	android:layout_width="wrap_content"
-    	android:text="@string/submit_bug_reports"
-    	android:textSize="12sp" 
-    	/>
+<!--	This was cluttering the UI-->
+<!--    <TextView -->
+<!--    	android:layout_height="wrap_content"-->
+<!--    	android:layout_width="wrap_content"-->
+<!--    	android:text="@string/submit_bug_reports"-->
+<!--    	android:textSize="12sp" -->
+<!--    	/>-->
     
     <TextView 
     	android:id="@+id/menu_url" 
@@ -93,19 +94,23 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 				android:layout_width="wrap_content"
 				android:text="@string/start_server"
 				/>
-			
+			<Button
+				android:id="@+id/wifi_button" 
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="@string/enable_wifi"
+				/>
 			<Button
 				android:id="@+id/instructions"
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
 				android:text="@string/instructions_label"
 				/>
-				
 			<Button
-				android:id="@+id/configure"
+				android:id="@+id/setup"
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
-				android:text="@string/configure_label"
+				android:text="@string/setup_label"
 				/>
 		</LinearLayout>		
 <!--		<Button-->
@@ -140,7 +145,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 	
 	<TableLayout 
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:shrinkColumns="2">
 		<TableRow>
 			<TextView
 		    	android:layout_height="wrap_content"
@@ -148,6 +154,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 	    		android:text="@string/server_status"
 	    		android:textSize="16sp"
 	    		android:gravity="left"
+		    	/>
+			<!--A small spacer between the columns -->
+		    <FrameLayout
+		    	android:layout_width="3sp"
+		    	android:layout_height="wrap_content"
 		    	/>
 		   	<TextView
 		  		android:id="@+id/server_status" 
@@ -166,16 +177,67 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 		    	android:textSize="16sp"
 		    	android:gravity="left"
 	    	/>
+			<!--A small spacer between the columns -->
+		    <FrameLayout
+		    	android:layout_width="3sp"
+		    	android:layout_height="wrap_content"
+		    	/>
 		    <TextView
 		    	android:id="@+id/ip_address" 
 		    	android:layout_height="wrap_content"
 		    	android:layout_width="wrap_content"
 		    	android:text="@string/no_url_yet"
 		    	android:textSize="16sp"
-		    	android:gravity="right"
-				android:textColor="#ffffff" 
+		    	android:textColor="#ffffff" 
 		    />
 		</TableRow>
+  		<TableRow>
+  			<TextView
+		    	android:layout_height="wrap_content"
+		    	android:layout_width="wrap_content"
+		    	android:text="@string/wifi_status"
+		    	android:textSize="16sp"
+		    	android:gravity="left"
+	    	/>
+			<!--A small spacer between the columns -->
+		    <FrameLayout
+		    	android:layout_width="3sp"
+		    	android:layout_height="wrap_content"
+		    	/>
+			<TextView
+		  		android:id="@+id/wifi_status" 
+	  			android:layout_height="wrap_content"
+	  			android:layout_width="wrap_content"
+	  			android:text="@string/unknown"
+				android:textColor="#ffffff" 
+	  			android:textSize="16sp" 
+  				/>
+  		</TableRow>
+  		<TableRow>
+  			<TextView
+  				android:id="@+id/last_error_label"
+		    	android:layout_height="wrap_content"
+		    	android:layout_width="wrap_content"
+		    	android:text="@string/last_error"
+		    	android:textSize="16sp"
+		    	android:gravity="left"
+		    	android:visibility="gone"
+	    	/>
+			<!--A small spacer between the columns -->
+		    <FrameLayout
+		    	android:layout_width="3sp"
+		    	android:layout_height="wrap_content"
+		    	/>
+			<TextView
+		  		android:id="@+id/last_error" 
+	  			android:layout_height="wrap_content"
+	  			android:layout_width="wrap_content"
+	  			android:text="@string/unknown"
+				android:textColor="#ff0000" 
+	  			android:textSize="16sp" 
+		    	android:visibility="gone"
+  				/>
+  		</TableRow>
 	</TableLayout>
 	
 	<!--  A horizontal line -->
@@ -215,6 +277,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 	<FrameLayout android:layout_height="1px"
 		android:layout_width="fill_parent"
 		android:background="#666666"
+		android:visibility="gone"
 		>
 	</FrameLayout>
 	
@@ -222,19 +285,22 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 		android:orientation="horizontal" 
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content">
+		android:visibility="gone">
 	
-	<TextView
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:text="@string/session_monitor"
-		android:textColor="#ffffff"
-	/>
-	<CheckBox
-		android:id="@+id/session_monitor_checkbox" 
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:checked="false"
-	/>
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="@string/session_monitor"
+			android:textColor="#ffffff"
+			android:visibility="gone"
+		/>
+		<CheckBox
+			android:id="@+id/session_monitor_checkbox" 
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:checked="false"
+			android:visibility="gone"
+		/>
 	</LinearLayout>
 	
 	<TextView
@@ -242,6 +308,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:background="#333333"
+		android:visibility="gone"
 	/>
 	
 	<!--  A horizontal line -->
@@ -254,10 +321,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 	<!--  It's visually pleasing to have some empty space at the bottom -->
 	<FrameLayout android:layout_height="15px"
 		android:layout_width="fill_parent"
-		android:background="#000000"
-		>
-	</FrameLayout>
-	
+		/>
 	
 <!--	<LinearLayout -->
 <!--		android:orientation="horizontal"-->

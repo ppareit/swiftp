@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -43,7 +42,7 @@ public class SessionThread extends Thread {
 	protected boolean binaryMode = false;
 	protected Account account = new Account();
 	protected boolean authenticated = false;
-	protected File prefix = new File("/");  // start off in the root
+	protected File prefix = Globals.getChrootDir();
 	protected ServerSocket dataServerSocket = null;
 	protected Socket dataSocket = null;
 	protected FTPServerService service;
@@ -79,30 +78,29 @@ public class SessionThread extends Thread {
 		}
 	}
 	
+	public boolean sendViaDataSocket(byte[] bytes, int len) {
+		return sendViaDataSocket(bytes, 0, len);
+	}
+	
 	/**
 	 *  Sends a byte array over the already-established data socket
 	 * @param bytes
 	 * @param len
 	 * @return
 	 */
-	public boolean sendViaDataSocket(byte[] bytes, int len) {
+	public boolean sendViaDataSocket(byte[] bytes, int start, int len) {
 		if(!dataSocket.isConnected()) {
 			myLog.l(Log.ERROR, "Can't send via unconnected socket");
 			return false;
 		}
+		if(len == 0) {
+			return true; // this isn't an "error" 
+		}
 		OutputStream out;
 		try {
 			out = dataSocket.getOutputStream();
-			out.write(bytes, 0, len);
+			out.write(bytes, start, len);
 		} catch(IOException e) {
-			try {
-				throw new Exception("Ohno");
-			} catch(Exception ex) {
-				myLog.l(Log.DEBUG, "Stack trace: ");
-				for (StackTraceElement element : ex.getStackTrace()) {
-					myLog.l(Log.DEBUG, element.toString());
-				}
-			}
 			myLog.l(Log.INFO, "Couldn't write output stream for data socket");
 			return false;
 		}
@@ -217,7 +215,7 @@ public class SessionThread extends Thread {
 	public boolean acceptPasvSocket() {
 		if(dataSocket != null) {
 			if(dataSocket.isConnected()) {
-				myLog.l(Log.ERROR, "Can't accept pasv socket, already open");
+				myLog.l(Log.INFO, "Can't accept pasv socket, already open");
 				return false;
 			}
 		}
@@ -248,7 +246,7 @@ public class SessionThread extends Thread {
 	public void run() {
 		myLog.l(Log.INFO, "SessionHandler started");
 		
-		writeBytes(Responses.welcomeMsg);
+		writeString("220 SwiFTP ready\r\n");
 		// Main loop: read an incoming line and process it
 		try {
 			while(true) {
@@ -273,13 +271,16 @@ public class SessionThread extends Thread {
 				
 				String[] lines = asString.split("\n");
 				for (String line : lines) {
+					if(!Defaults.release) {
+						Log.d("SessionThread", "Writing monitor: " + line);
+					}
 					FTPServerService.writeMonitor(true, line);
 					FtpCmd.dispatchCommand(this, line);
 				}
 				buffer.flip();
 			}
 		} catch (IOException e) {
-			myLog.l(Log.ERROR, "IOException in main read");
+			myLog.l(Log.INFO, "Client dropped connection");
 		}
 	}
 	
@@ -310,7 +311,7 @@ public class SessionThread extends Thread {
 			socket.write(ByteBuffer.wrap(bytes));
 			// todo: flush here?
 		} catch (IOException e) {
-			myLog.l(Log.ERROR, "Exception writing socket");
+			myLog.l(Log.INFO, "Exception writing socket");
 			closeSocket();
 			return;
 		}
@@ -375,7 +376,11 @@ public class SessionThread extends Thread {
 	}
 
 	public void setPrefix(File prefix) {
-		this.prefix = prefix;
+		try {
+			this.prefix = prefix.getCanonicalFile().getAbsoluteFile();
+		} catch (IOException e) {
+			myLog.l(Log.INFO, "SessionThread canonical error");
+		}
 	}
 
 	public FTPServerService getService() {

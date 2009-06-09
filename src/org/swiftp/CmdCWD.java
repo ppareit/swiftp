@@ -36,22 +36,32 @@ public class CmdCWD extends FtpCmd implements Runnable {
 		myLog.l(Log.DEBUG, "CWD executing");
 		String param = getParameter(input);
 		File newPrefix;
-		if(param.charAt(0) == File.separatorChar) {
-			// The user has given an absolute path
-			newPrefix = new File(param);
-		} else {
-			newPrefix = new File(sessionThread.getPrefix(), param);
-		}
-		try {
-			newPrefix = newPrefix.getCanonicalFile();
-			if(newPrefix.canRead()) {
-				sessionThread.setPrefix(newPrefix);
-				sessionThread.writeString("250 CWD successful\r\n");
-			} else {
-				sessionThread.writeString("550 No read permission\r\n");
+		String errString = null;
+		mainblock: {
+			newPrefix = inputPathToChrootedFile(sessionThread.getPrefix(), param);
+
+			// Ensure the new path does not violate the chroot restriction
+			if(violatesChroot(newPrefix)) {
+				errString = "550 Invalid name or chroot violation\r\n";
+				sessionThread.writeString(errString);
+				myLog.l(Log.INFO, errString);
+				break mainblock;
 			}
-		} catch(IOException e) {
-			sessionThread.writeString("550 Invalid path\r\n");
+
+			try {
+				newPrefix = newPrefix.getCanonicalFile();
+				if(!newPrefix.isDirectory()) {
+					sessionThread.writeString("550 Can't CWD to invalid directory\r\n");
+				} else if(newPrefix.canRead()) {
+					sessionThread.setPrefix(newPrefix);
+					sessionThread.writeString("250 CWD successful\r\n");
+				} else {
+					sessionThread.writeString("550 That path is inaccessible\r\n");
+				}
+			} catch(IOException e) {
+				sessionThread.writeString("550 Invalid path\r\n");
+				break mainblock;
+			}
 		}
 		myLog.l(Log.DEBUG, "CWD complete");
 	}

@@ -20,6 +20,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package org.swiftp;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 
 import android.util.Log;
@@ -61,21 +63,23 @@ public abstract class FtpCmd implements Runnable {
 	protected static void dispatchCommand(SessionThread session, 
 	                                      String inputString) {
 		String[] strings = inputString.split(" ");
+		String unrecognizedCmdMsg = "502 Command not recognized\r\n";
 		if(strings == null) {
 			// There was some egregious sort of parsing error
-			staticLog.l(Log.INFO, "Command parse error");
-			session.writeBytes(Responses.unrecognizedCmdMsg);
+			String errString = "502 Command parse error\r\n";
+			staticLog.l(Log.INFO, errString);
+			session.writeString(errString);
 			return;
 		}
 		if(strings.length < 1) {
 			staticLog.l(Log.INFO, "No strings parsed");
-			session.writeBytes(Responses.unrecognizedCmdMsg);
+			session.writeString(unrecognizedCmdMsg);
 			return;
 		}
 		String verb = strings[0];
 		if(verb.length() < 1) {
 			staticLog.l(Log.INFO, "Invalid command verb");
-			session.writeBytes(Responses.unrecognizedCmdMsg);
+			session.writeString(unrecognizedCmdMsg);
 			return;
 		}
 		FtpCmd cmdInstance = null;
@@ -109,8 +113,8 @@ public abstract class FtpCmd implements Runnable {
 		}
 		if(cmdInstance == null) {
 			// If we couldn't find a matching command,
-			staticLog.l(Log.INFO, "Ignoring unrecognized FTP verb: " + verb);
-			session.writeBytes(Responses.unrecognizedCmdMsg);
+			staticLog.l(Log.DEBUG, "Ignoring unrecognized FTP verb: " + verb);
+			session.writeString(unrecognizedCmdMsg);
 			return;
 		} else if(session.isAuthenticated() 
 				|| cmdInstance.getClass().equals(CmdUSER.class)
@@ -144,4 +148,31 @@ public abstract class FtpCmd implements Runnable {
 		return retString; 
 	}
 
+	public static File inputPathToChrootedFile(File existingPrefix, String param) {
+		File chroot = Globals.getChrootDir();
+		if(param.charAt(0) == '/') {
+			// The STOR contained an absolute path
+			return new File(chroot, param);
+		} else {
+			// The STOR contained a relative path
+			return new File(existingPrefix, param); 
+		}
+	}
+	
+	public boolean violatesChroot(File file) {
+		File chroot = Globals.getChrootDir();
+		try {
+			String canonicalPath = file.getCanonicalPath();
+			if(!canonicalPath.startsWith(chroot.toString())) {
+				myLog.l(Log.INFO, "Path violated folder restriction, denying");
+				myLog.l(Log.DEBUG, "path: " + canonicalPath);
+				myLog.l(Log.DEBUG, "chroot: " + chroot.toString());
+				return true; // the path must begin with the chroot path
+			}
+			return false;
+		} catch(IOException e) {
+			myLog.l(Log.INFO, "Path canonicalization problem");
+			return true;  // for security, assume violation
+		}
+	}
 }

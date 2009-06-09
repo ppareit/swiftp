@@ -44,13 +44,24 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     	android:text="@string/config_intro"
     	/>
     
+	<!--  A spacer for visual attractiveness -->
+	<FrameLayout android:layout_height="8px"
+		android:layout_width="fill_parent"
+		>
+	</FrameLayout>
+	
 	<!--  A horizontal line -->
 	<FrameLayout android:layout_height="1px"
 		android:layout_width="fill_parent"
 		android:background="#666666"
 		>
 	</FrameLayout>
-	    
+	
+	<TextView
+		android:text="@string/user_password_intro"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		/>    
 	<TableLayout 
 		android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
@@ -82,6 +93,19 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 		    	android:password="true"
 		    	/> 
 		</TableRow>
+		
+	</TableLayout>
+	<!--  A horizontal line -->
+	<FrameLayout android:layout_height="1px"
+		android:layout_width="fill_parent"
+		android:background="#666666"
+		/>
+
+	<TableLayout 
+		android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:stretchColumns="*"
+    	>
 		<TableRow>
 			<TextView
 		    	android:layout_width="wrap_content"
@@ -94,13 +118,24 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 		    	android:layout_height="wrap_content"
 		    	/> 
 		</TableRow>
-		
+		<TableRow>
+			<TextView
+		    	android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:text="@string/stay_within_folder"
+		    	/>
+		    <EditText
+		    	android:id="@+id/config_chroot"
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="wrap_content"
+		    	/>
+		    </TableRow>
 	</TableLayout>
-	<!--  A horizontal line -->
 	<FrameLayout android:layout_height="1px"
 		android:layout_width="fill_parent"
 		android:background="#666666"
 		/>
+
 	<LinearLayout 
 		android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
@@ -110,6 +145,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <Button
     	android:id="@+id/config_save" 
     	android:text="@string/save_settings"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	/>	
+	<Button
+    	android:id="@+id/config_cancel" 
+    	android:text="@string/cancel"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
     	/>	

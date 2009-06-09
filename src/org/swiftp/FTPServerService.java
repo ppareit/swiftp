@@ -19,6 +19,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.swiftp;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -154,29 +155,34 @@ public class FTPServerService extends Service implements Runnable {
 		UiUpdater.updateClients();
 		List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
 				
-		// Open up a non-blocking server socket
-		// thanks to Patrick Chan's Java Developers Almanac for this idea
-		/*Context appContext = getApplicationContext();
-		ConnectivityManager connMgr = (ConnectivityManager)
-			appContext.getSystemService(Context.CONNECTIVITY_SERVICE);*/
 		myLog.l(Log.DEBUG, "Server thread running");
 		
 		myLog.l(Log.DEBUG, "Loading settings");
 		SharedPreferences settings = getSharedPreferences(
 				Defaults.getSettingsName(), Defaults.getSettingsMode());
-		int port = settings.getInt("portNum", 0);
-		if(port <= 1024 || port >= 65536) {
-			myLog.l(Log.ERROR, "Can't start server due to port number");
-			cleanupAndStopService();
-			return;
+		int port = settings.getInt("portNum", Defaults.portNumber);
+		if(port == 0) {
+			// If port number from settings is invalid, use the default
+			port = Defaults.portNumber;
 		}
 		FTPServerService.port = port;
-		String username = settings.getString("username", null);
-		String password = settings.getString("password", null);
+		String username = settings.getString(ConfigureActivity.USERNAME, null);
+		String password = settings.getString(ConfigureActivity.PASSWORD, null);
+		String chrootDir = settings.getString(ConfigureActivity.CHROOTDIR,
+				Defaults.chrootDir);
+		
 		if(username == null || password == null) {
 			myLog.l(Log.ERROR, "Username or password is invalid");
 			cleanupAndStopService();
+			return;
 		}
+		File chrootDirAsFile = new File(chrootDir);
+		if(!chrootDirAsFile.isDirectory()) {
+			myLog.l(Log.ERROR, "Chroot dir is invalid");
+			cleanupAndStopService();
+			return;
+		}
+		Globals.setChrootDir(chrootDirAsFile);
 		
 		myLog.l(Log.DEBUG, "Using port " + port);
 		
@@ -184,11 +190,24 @@ public class FTPServerService extends Service implements Runnable {
 			mainSocket = ServerSocketChannel.open();
 			mainSocket.configureBlocking(false);
 			myLog.l(Log.DEBUG, "About to get wifi IP");
-			String wifiIp = getWifiIpAsString();
-			myLog.l(Log.DEBUG, "Got wifi IP");
-			if(wifiIp == null) {
+			String wifiIp = null;
+			int loops = 0;
+			while(wifiIp == null) {
+				// If IP address retrieval fails, it may be because DHCP is
+				// still coming up. So we wait one second between attempts,
+				// with a max # of attempts Defaults.getIpRetrievalAttempts().
+				wifiIp = getWifiIpAsString();
+				if(wifiIp != null) {
+					break;
+				}
 				myLog.l(Log.DEBUG, "Wifi IP string was null");
-				throw new IOException("Wifi not enabled");
+				loops++;
+				if(loops > Defaults.getIpRetrievalAttempts()) {
+					throw new IOException("IP retrieval failure");	
+				}
+				try {
+					Thread.sleep(1000);
+				} catch(InterruptedException e) {}
 			}
 			myLog.l(Log.DEBUG, "Wifi IP: " + wifiIp);
 			serverAddress = InetAddress.getByName(wifiIp);
@@ -196,7 +215,7 @@ public class FTPServerService extends Service implements Runnable {
 			// The following line listens on all interfaces
 			// mainSocket.socket().bind(new InetSocketAddress(port));
 		} catch (IOException e) {
-			myLog.l(Log.ERROR, "Error opening port");
+			myLog.l(Log.ERROR, "Error opening port, check your network connection.");
 			serverAddress = null;
 			cleanupAndStopService();
 			return;

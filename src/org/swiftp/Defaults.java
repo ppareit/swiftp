@@ -24,8 +24,7 @@ import android.util.Log;
 
 public class Defaults {
 	protected static int inputBufferSize = 256;
-	protected static boolean allowOverwrite = false;
-	protected static int dataChunkSize = 8192;  // do file I/O in 8k chunks 
+	protected static int dataChunkSize = 65536;  // do file I/O in 64k chunks 
 	protected static int sessionMonitorScrollBack = 10;
 	protected static int serverLogScrollBack = 10;
 	protected static int uiLogLevel = Defaults.release ? Log.INFO : Log.DEBUG;
@@ -34,9 +33,19 @@ public class Defaults {
 	//protected static String username = "user";
 	//protected static String password = "";
 	protected static int portNumber = 2121; 
-	
+	protected static int ipRetrievalAttempts = 5;
+	public static final String chrootDir = "/sdcard";
 	public static final boolean release = true;
 	
+	
+	public static int getIpRetrievalAttempts() {
+		return ipRetrievalAttempts;
+	}
+
+	public static void setIpRetrievalAttempts(int ipRetrievalAttempts) {
+		Defaults.ipRetrievalAttempts = ipRetrievalAttempts;
+	}
+
 	public static int getPortNumber() {
 		return portNumber;
 	}
@@ -81,14 +90,6 @@ public class Defaults {
 
 	public static void setInputBufferSize(int inputBufferSize) {
 		Defaults.inputBufferSize = inputBufferSize;
-	}
-
-	public static boolean isAllowOverwrite() {
-		return allowOverwrite;
-	}
-
-	public static void setAllowOverwrite(boolean allowOverwrite) {
-		Defaults.allowOverwrite = allowOverwrite;
 	}
 
 	public static int getDataChunkSize() {

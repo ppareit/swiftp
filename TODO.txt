@@ -1,25 +1,28 @@
-Session monitor duplication bug?
-
-Add icon in the taskbar/notification area/whatever its called, if server enabled
-
+Add icon in the taskbar/notification area/whatever its called, if server enabled (NotificationManager)
 IPv6 support
-
-Allow enable of wifi from control screen
-
-Popup on ERROR
-
-Speed optimizations (buffer size? IO thread?) (FileZilla writes)
-
-Remove beta from title and copy
-
+SSL support
+Speed optimizations (buffer size? IO thread?) (bursty writes(FileZilla))
 Make a decent icon
-
 Provide an option to start server whenever wifi is on
-
-Retire "Responses" class
-
-audit wifi lock release
-
-Handle ascii type transfers to some extent
-
-Support for REST, SIZE, MDTM, NLST
+Support for FTP verbs: REST(how to test?), SIZE, MDTM, NLST
+How to refresh system/music player cache of card contents
+Fix the instructions
+Add server start on wifi up
+Multiple users
+Try to recruit people to help with localization (translation)
+Configurable log level
+Put static finals in Defaults and runtime values in Globals
+Add a save+restart button to config activity
+Fix session monitor 
+Tune retry delay in DedicatedWriter
+Javadocs for everything
+Cleaner scrollable server log
+Figure out why getCanonicalPath chokes on trailing dots (.)
+Figure out why RMD complains but works anyway
+Generalize interface support for non-wifi
+Integrated error reporting (launch google code page?)
+Provide ability to launch wifi config
+Error text wrapping
+Move MainActivity launchConf.. toast into configuration activity
+Force serialization of transfers to improve throughput?
+Don't put a title bar on our window: requestWindowFeature(Window.FEATURE_NO_TITLE);

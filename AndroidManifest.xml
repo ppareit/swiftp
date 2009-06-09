@@ -27,13 +27,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
      to come from a domain that you own or have control over. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.swiftp"
-    android:versionName="1.0RC6" android:versionCode="6">
+    android:versionName="1.11" android:versionCode="9">
 
     <!-- This package contains an application...  The 'label' is the name
          to display to the user for the overall application, and provides
          a default label for all following components.  The syntax here is a
          reference to one of our string resources.-->
-    <application android:label="@string/swiftp_name" android:icon="@drawable/beta_icon">
+    <application android:label="@string/swiftp_name" android:icon="@drawable/icon_v1_1">
 
         <!-- An Activity in the application - this is something the user
              can launch and interact with.  The "name" attribute is the
@@ -58,11 +58,22 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <activity android:name="ConfigureActivity" class=".ConfigureActivity" />
         <service android:name=".FTPServerService" />
 
-    </application>
+<!--    <receiver-->
+<!--    	android:label="@string/wifi_state_receiver_label" -->
+<!--        android:name="org.swiftp.WifiStateReceiver" -->
+<!--        android:enabled="true"-->
+<!--        android:exported="true"-->
+<!--        >-->
+<!--	    <intent-filter>-->
+<!--			<action android:name="android.net.wifi.WifiManager.STATE_CHANGE" />-->
+<!--		</intent-filter>-->
+<!--	</receiver>-->
+</application>
 
 <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
-
-
+<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
 <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+
+<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
 </manifest>

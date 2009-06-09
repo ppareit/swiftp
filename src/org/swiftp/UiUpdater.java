@@ -42,6 +42,7 @@ public class UiUpdater {
 	
 	static void updateClients() {
 		//myLog.l(Log.DEBUG, "UI update");
+		//Log.d("UiUpdate", "Update now");
 		for (Handler client : clients) {
 			client.sendEmptyMessage(0);
 		}

@@ -1,0 +1,18 @@
+Set Defaults.release to true
+Update version number on servercontrolactivity
+Update instructions if necessary
+Uninstall fully
+
+Test on
+ - Ubuntu GNOME browser
+ - Firefox
+ - FireFTP
+ - gFTP
+ - Command line FTP
+ - Windows explorer
+ - FileZilla
+ 
+Export, sign, upload
+SVN commit
+Upload apk to Google Code
+Update wiki, site front page 

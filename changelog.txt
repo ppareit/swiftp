@@ -1,3 +1,5 @@
+(changelog not maintained)
+
 1.0RC2 - 2009/3/26
 - A small tweak to the instructions telling users to use the /sdcard directory
 - Added this changelog file

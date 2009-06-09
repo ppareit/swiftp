@@ -28,12 +28,18 @@ public class MyLog {
 		this.tag = tag;
 	}
 	public void l(int level, String str) {
-		str = str.trim();
-		if(level >= Defaults.getConsoleLogLevel()) {
-			Log.println(level,tag, str);
-		}
-		if(level >= Defaults.getUiLogLevel()) {
-			FTPServerService.log(level, str);
+		synchronized (MyLog.class) {
+			str = str.trim();
+			// Messages of this severity are handled specially
+			if(level == Log.ERROR) {
+				Globals.setLastError(str);
+			}
+			if(level >= Defaults.getConsoleLogLevel()) {
+				Log.println(level,tag, str);
+			}
+			if(level >= Defaults.getUiLogLevel()) {
+				FTPServerService.log(level, str);
+			}
 		}
 	}
 }

@@ -20,7 +20,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package org.swiftp;
 
 import java.io.File;
-import java.io.IOException;
 
 import android.util.Log;
 
@@ -38,21 +37,13 @@ public class CmdRNTO extends FtpCmd implements Runnable {
 		File toFile = null;
 		myLog.l(Log.DEBUG, "RNTO executing\r\n");
 		mainblock: {
-			if(param.charAt(0) == '/') {
-				// Param is absolute path, use param as is
-				toFile = new File(param);
-			} else {
-				// If relative path, use current directory prefix
-				toFile = new File(sessionThread.getPrefix(), param);
-			}
-			try {
-				toFile = toFile.getCanonicalFile().getAbsoluteFile();
-			} catch (IOException e) {
-				sessionThread.writeString("450 Invalid filename\r\n");
-				errString = "Couldn't construct File object";
+			myLog.l(Log.INFO, "param: " + param); 
+			toFile = inputPathToChrootedFile(sessionThread.getPrefix(), param);
+			myLog.l(Log.INFO, "RNTO parsed: " + toFile.getPath());
+			if(violatesChroot(toFile)) {
+				errString = "550 Invalid name or chroot violation\r\n";
 				break mainblock;
 			}
-			
 			File fromFile = sessionThread.getRenameFrom();
 			if(fromFile == null) {
 				errString = "550 Rename error, maybe RNFR not sent\r\n";

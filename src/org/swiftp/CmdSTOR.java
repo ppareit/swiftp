@@ -38,36 +38,32 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 	public void run() {
 		myLog.l(Log.DEBUG, "STOR executing");
 		String param = getParameter(input);
-		File storeFile;
-		if(param.charAt(0) == '/') {
-			// The STOR contained an absolute path
-			storeFile = new File(param);
-		} else {
-			// The STOR contained a relative path
-			storeFile = new File(sessionThread.getPrefix(), param); 
-		}
-		String errString = null;
+		File storeFile = inputPathToChrootedFile(sessionThread.getPrefix(), param);
 		
+		String errString = null;
+		FileOutputStream out = null;
+		//DedicatedWriter dedicatedWriter = null;
+		//int origPriority = Thread.currentThread().getPriority();
+		//myLog.l(Log.DEBUG, "STOR original priority: " + origPriority);
 		storing: {
-			if(storeFile.exists()) {
-				if(!Defaults.isAllowOverwrite()) {
-					errString = "451 Server settings prohibit overwrite\r\n";
-					myLog.l(Log.INFO, "Prevented overwrite");
-					break storing;
-				}
-			}
 			// Get a normalized absolute path for the desired file
-			String fileName;
-			try {
-				fileName = storeFile.getCanonicalFile().getAbsolutePath();
-			} catch (IOException e) {
-				errString = "450 Invalid file name\r\n";
-				myLog.l(Log.INFO, "Filename problem");
+			if(violatesChroot(storeFile)) {
+				errString = "550 Invalid name or chroot violation\r\n";
 				break storing;
 			}
-			FileOutputStream out;
+			if(storeFile.isDirectory()) {
+				errString = "451 Can't overwrite a directory\r\n";
+				break storing;
+			}
+
 			try {
-				out = new FileOutputStream(fileName);
+				if(storeFile.exists()) {
+					if(!storeFile.delete()) {
+						errString = "451 Couldn't truncate file\r\n";
+						break storing;
+					}
+				}
+				out = new FileOutputStream(storeFile, false); // don't append
 			} catch(FileNotFoundException e) {
 				errString = "451 Couldn't open file for writing\r\n";
 				break storing;
@@ -85,8 +81,18 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 			myLog.l(Log.DEBUG, "Data socket ready");
 			sessionThread.writeString("150 Data socket ready\r\n");
 			byte[] buffer = new byte[Defaults.getDataChunkSize()];
+			//dedicatedWriter = new DedicatedWriter(out);
+			//dedicatedWriter.start();  // start the writer thread executing
+			myLog.l(Log.DEBUG, "Started DedicatedWriter");
 			int numRead;
+			//Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+			//int newPriority = Thread.currentThread().getPriority();
+			//myLog.l(Log.DEBUG, "New STOR prio: " + newPriority);
 			while(true) {
+				/*if(dedicatedWriter.checkErrorFlag()) {
+					errString = "451 File IO problem\r\n";
+					break storing;
+				}*/
 				switch(numRead = sessionThread.receiveFromDataSocket(buffer)) {
 				case -1:
 					myLog.l(Log.DEBUG, "Returned from final read");
@@ -100,15 +106,49 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 					break storing;
 				default:
 					try {
-						out.write(buffer, 0, numRead);
+						//myLog.l(Log.DEBUG, "Enqueueing buffer of " + numRead);
+						//dedicatedWriter.enqueueBuffer(buffer, numRead);
+						if(sessionThread.isBinaryMode()) {
+							out.write(buffer, 0, numRead);
+						} else {
+							// ASCII mode, substitute \r\n to \n
+							int startPos=0, endPos;
+							for(endPos = 0; endPos < numRead; endPos++ ) {
+								if(buffer[endPos] == '\r') {
+									// Our hacky method is to drop all \r
+									out.write(buffer, startPos, endPos-startPos);
+									startPos = endPos+1;
+								}
+							}
+							// Write last part of buffer as long as there was something
+							// left after handling the last \r
+							if(startPos < numRead) {
+								out.write(buffer, startPos, endPos-startPos);
+							} 
+						}
 					} catch (IOException e) {
-						errString = "451 File IO problem\r\n";
+						errString = "451 File buffer queue problem\r\n";
 						break storing;
 					}
 					break;
 				}
 			}
 		}
+//		// Clean up the dedicated writer thread
+//		if(dedicatedWriter != null) {
+//			dedicatedWriter.exit();  // set its exit flag
+//			dedicatedWriter.interrupt(); // make sure it wakes up to process the flag
+//		}
+		//Thread.currentThread().setPriority(origPriority);
+		try {
+//			if(dedicatedWriter != null) {
+//				dedicatedWriter.exit();
+//			}
+			if(out != null) {
+				out.close();
+			}
+		} catch (IOException e) {}
+		
 		if(errString != null) {
 			myLog.l(Log.INFO, "STOR error: " + errString.trim());
 			sessionThread.writeString(errString);
@@ -118,5 +158,5 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 		sessionThread.closeDataSocket();
 		myLog.l(Log.DEBUG, "STOR finished");
 	}
-
+	
 }

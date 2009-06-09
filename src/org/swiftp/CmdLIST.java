@@ -20,7 +20,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package org.swiftp;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -41,77 +40,49 @@ public class CmdLIST extends FtpCmd implements Runnable {
 	public void run() {
 		myLog.l(Log.DEBUG, "LIST executing");
 
-		String param = getParameter(input);
-		File fileToList = null;
-		if(param.length() > 0) {
-			// the user specified "LIST <argument>"
-			if(param.charAt(0) == '/') {
-				// The LIST parameter is an absolute path
-				fileToList = new File(param);
-			} else if (param.charAt(0) == '-') {
-				// The parameter is some options to ls, which we ignore
-				fileToList = sessionThread.getPrefix();
-			} else {
-				// The LIST parameter is a relative path,
-				// so append it to the existing path prefix
-				fileToList = new File(sessionThread.getPrefix(), param);
-			}
-		} else {
-			// The user did not give a parameter to LIST. So we just
-			// use the current directory for the session.
-			fileToList = sessionThread.getPrefix();
-		}
-		// Normalize the path representation
-		try {
-			fileToList = fileToList.getCanonicalFile();
-		} catch (IOException e) {
-			myLog.l(Log.INFO, "Error getting canonical path");
-			sessionThread.writeString("451 Path problem\r\n");
-			return;
-		}
-		myLog.l(Log.DEBUG, "Listing name: " + fileToList.toString());
-		StringBuilder response = new StringBuilder();
-		
-		if(fileToList.isDirectory()) {
-			myLog.l(Log.DEBUG, "Listing directory");
-			// Get a listing of all files and directories in the path
-			File[] entries = fileToList.listFiles();
-			myLog.l(Log.DEBUG, "Dir len " + entries.length);
-			for(File entry : entries) {
-				myLog.l(Log.DEBUG, "Handling dentry");
-				String curLine = makeLsString(entry);
-				if(curLine != null) {
-					response.append(curLine + "\r\n");
-				}
-			}
-			myLog.l(Log.DEBUG, "Done looping");
-			
-		} else {
-			myLog.l(Log.DEBUG, "Listing file");
-			// The given path is a file and not a directory
-			response.append(makeLsString(fileToList));
-			response.append("\r\n");
-		}
-		
-		boolean err = false;
+		//String param = getParameter(input);
 		String errString = null;
-		switch(sessionThread.initDataSocket()) {
-		case 1: // success
-			myLog.l(Log.DEBUG, "LIST done making socket");
-			break;
-		case 2:
-			myLog.l(Log.DEBUG, "data socket create failure 2");
-			err = true;
-			errString = "425 Must use PASV mode\r\n";
-			break;
-		case 0:
-			myLog.l(Log.DEBUG, "data socket create failure 0");
-		default:
-			err = true;
-			errString = "425 Error opening data socket\r\n";
-			break;
-		}
-		if(!err) {
+		File fileToList = null;
+		mainblock: {
+			// An FTP "LIST" verb always means list current directory
+			fileToList = sessionThread.getPrefix();
+	
+			myLog.l(Log.DEBUG, "Listing: " + fileToList.toString());
+			StringBuilder response = new StringBuilder();
+			
+			if(fileToList.isDirectory()) {
+				myLog.l(Log.DEBUG, "Listing directory");
+				// Get a listing of all files and directories in the path
+				File[] entries = fileToList.listFiles();
+				myLog.l(Log.DEBUG, "Dir len " + entries.length);
+				for(File entry : entries) {
+					//myLog.l(Log.DEBUG, "Handling dentry");
+					String curLine = makeLsString(entry);
+					if(curLine != null) {
+						response.append(curLine + "\r\n");
+					}
+				}
+			} else {
+				// The given path is a file and not a directory
+				response.append(makeLsString(fileToList));
+				response.append("\r\n");
+			}
+			
+			switch(sessionThread.initDataSocket()) {
+			case 1: // success
+				myLog.l(Log.DEBUG, "LIST done making socket");
+				break;
+			case 2:
+				myLog.l(Log.DEBUG, "data socket create failure 2");
+				errString = "425 Must use PASV mode\r\n";
+				break mainblock;
+			case 0:
+				myLog.l(Log.DEBUG, "data socket create failure 0");
+				// no break here, fall through to default case
+			default:
+				errString = "425 Error opening data socket\r\n";
+				break mainblock;
+			}
 			sessionThread.writeString("150 Beginning transmission\r\n");
 			myLog.l(Log.DEBUG, "Sent code 150, sending listing string now");
 			if(!sessionThread.sendViaDataSocket(response.toString())) {
@@ -122,7 +93,7 @@ public class CmdLIST extends FtpCmd implements Runnable {
 			}
 		}
 		sessionThread.closeDataSocket();
-		if(err) {
+		if(errString != null) {
 			sessionThread.writeString(errString);
 			myLog.l(Log.DEBUG, "Failed with: " + errString);
 		} else {

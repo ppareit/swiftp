@@ -20,7 +20,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package org.swiftp;
 
 import java.io.File;
-import java.io.IOException;
 
 import android.util.Log;
 
@@ -41,18 +40,12 @@ public class CmdMKD extends FtpCmd implements Runnable {
 			// If the param is an absolute path, use it as is. If it's a
 			// relative path, prepend the current working directory.
 			if(param.length() < 1) {
-				errString = "550 Invalid name";
+				errString = "550 Invalid name\r\n";
 				break mainblock;
 			}
-			if(param.charAt(0) == '/') {
-				toCreate = new File(param);
-			} else {
-				toCreate = new File(sessionThread.getPrefix(), param);
-			}
-			try {
-				toCreate = toCreate.getCanonicalFile().getAbsoluteFile();
-			} catch(IOException e) {
-				errString = "550 Invalid name\r\n";
+			toCreate = inputPathToChrootedFile(sessionThread.getPrefix(), param);
+			if(violatesChroot(toCreate)) {
+				errString = "550 Invalid name or chroot violation\r\n";
 				break mainblock;
 			}
 			if(toCreate.exists()) {

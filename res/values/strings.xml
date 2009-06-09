@@ -20,8 +20,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
-<string name="menu_top_string">SwiFTP Server Control (BETA)</string>
-<string name="menu_byline">SwiFTP is open source software by Dave Revell and contributors</string>
+<string name="menu_top_string">SwiFTP Server 1.11</string>
+<string name="menu_byline">By Dave Revell and contributors</string>
 
 <string name="add_user">Add User</string>
 <string name="manage_users">Manage Users</string>
@@ -31,52 +31,93 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 
 <string name="menu_url">http://www.swiftp.org</string>
-<string name="stop_server">Stop server</string>
-<string name="start_server">Start server</string>
+<string name="start_server"><b>Start</b></string>
+<string name="stop_server"><b>Stop</b></string>
 
 
 <string name="no_url_yet">none yet</string>
 <string name="server_status">&quot;Server status: &quot;</string>
 <string name="my_url_is">&quot;Server URL: &quot;</string>
-<string name="cannot_start_until_wifi">&quot;Can't start until wifi is enabled, click here to refresh&quot;</string>
-<string name="cant_get_url">&quot;can't determine URL&quot;</string>
+<string name="cannot_start_until_wifi">No wifi</string>
+<string name="enable_wifi"><b>Enable wifi</b></string>
+<string name="disable_wifi">Disable wifi</string>
+<string name="wifi_waiting">Wifi waiting</string>
+<string name="wifi_status">Wifi status:</string>
+<string name="last_error">Last error:</string>
+<string name="cant_get_url">can't determine URL</string>
 <string name="running">running</string>
 <string name="stopped">stopped</string>
 <string name="unknown">unknown</string>
 <string name="session_monitor">Session monitor enabled:</string>
-<string name="enabled">Enabled:</string>
 <string name="server_log">Server log enabled:</string>
 <string name="submit_bug_reports">&quot;Submit bug reports: &quot;</string>
 <string name="ok">OK</string>
 <string name="instructions_label">Instructions</string>
-<string name="instructions_text">
-This is an early beta release of SwiFTP that lacks some features, so please be patient.\n\n\
+<string name="setup_label">Setup</string>
+<string name="save_settings">Save</string>
+<string name="config_username">Username:</string>
+<string name="config_password">Password:</string>
+<string name="config_portnum">Port number:</string>
+<string name="username_validation_error">The username must consist of 1 or more letters. No other characters are allowed.</string>
+<string name="password_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>
+<string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
+<string name="wifi_state_receiver_label">WifiStateReceiver</string>
+<string name="enabled">enabled</string>
+<string name="disabled">disabled</string>
+<string name="waiting">waiting</string>
+<string name="error_dialog_label">SwiFTP error</string>
+<string name="the_error_was">The error was:</string>
+<string name="stay_within_folder">Stay within folder (e.g. "/sdcard"):</string>
+<string name="cancel">Cancel</string>
+<string name="chrootDir_validation_error">The folder to stay within is either invalid \
+or nonexistent.</string> 
+<string name="violates_chroot">550 Server settings prevent leaving directory\r\n</string>
+<string name="must_config">Before SwiFTP can run, a username and password must be set up.</string>
+<string name="instructions_text">\
+Thanks for using SwiFTP! Here are some brief usage instructions. More information can be \
+found at http://www.swiftp.org.\n\n\
 \
-Once you have started the server, you may access it with the username \"anonymous\" and \
-any password. Your FTP client must use PASV mode.\n\n\
+You should have been prompted to enter a username and password when you started SwiFTP \
+for the first time. You must use this username and password when accessing the server. \
+This information can be changed later by clicking the Setup button from the main screen.\
+\n\n\
 \
 Look in the /sdcard directory for your music and other files.\n\n\
 \
-Wifi must be enabled before the server will start. This version of SwiFTP doesn't use the \
-3G network.\n\n\
+SwiFTP allows you to enable and disable wifi from the main control screen. However, this \
+only works if you are using a network that you have connected to before.\n\n\
 \
-For security reasons, it's recommended that the server be stopped after use.\n\n\
-Full instructions are on the wiki at http://www.swiftp.org/.\n\n\
+For power and security reasons, it's recommended that the server be stopped after use.\n\n\
 \
-Don't be alarmed by messages about ignored or unrecognized commands, these are normal as \
+If you're watching the server log, don't be alarmed by messages about ignored or unrecognized commands, these are normal as \
 long as they don't cause undesired behavior.\n\n\
 \
-Thanks for using SwiFTP, and look for fixes and improvements soon.\n\
+SwiFTP is open source, and help with graphic design and non-English translation are badly needed (look \
+at that awful icon)! \n\n\
+\
+If something is not working the way you expect it to, please report it to me at www.swiftp.org.\n\n\
+\
+Thanks for using SwiFTP, and look for more improvements soon.\n\n\
 </string>
-<string name="configure_label">Configure</string>
-<string name="save_settings">Save settings</string>
-<string name="config_username">Username:</string>
-<string name="config_password">Password:</string>
-<string name="config_portnum">Port number (>1024):</string>
+<string name="error_dialog_text">\
+SwiFTP has encountered the following error: \n\
+\n\
+<b>%%%Replace_Here%%%</b>\n\
+\n\
+If you think that this error should not have occurred, it would be very helpful if you \
+would email <b>swiftp-devel @ googlegroups.com</b> or visit <b>http://www.swiftp.org</b> 
+and report this as a bug (go to the <b>"Issues"</b> \
+section).\n\
+\n\
+Thanks very much for your help!\n\
+\n\
+- The SwiFTP team\n\
+</string>
 <string name="config_header">SwiFTP Settings</string>
-<string name="config_intro">Settings will take effect when the server is started/restarted.</string>
-<string name="username_validation_error">The username must consist of 1 or more letters. No other characters are allowed.</string>
-<string name="password_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>
-<string name="port_validation_error">The port number must be in the range 1025 to 65535.</string>
-</resources>
+<string name="config_intro">These settings control the behavior of the SwiFTP server. They \
+will take effect when the server is started or restarted. They will be saved, but can be \
+changed later by pressing the <b>Setup</b> button.</string>
+<string name="user_password_intro">To log in, clients will have to provide this information.</string>
 
+
+</resources>
