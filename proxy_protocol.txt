@@ -1,0 +1,170 @@
+This document describes the protocol for communication between the SwiFTP server app
+and the cloud proxy app, which is running on some server out on the net.
+
+BASIC DESIGN
+------------
+This whole proxy system exists in order to work around limitations on inbound connections.
+For example, my cellular service provider, T-Mobile, blocks inbound TCP connections.
+The workaround is to create a proxy service out on the internet. 
+
+The Android device is not able to accept inbound connections, but it is free to create
+outbound connections. The Android device therefore establishes and permanently maintains
+a TCP connection to the proxy server. We call this the "command connection." This
+connection exists as long as SwiFTP is running, unless the user explicitly disables it.
+
+When an FTP client wishes to connect via the proxy, it initiates a normal FTP 
+connection to the proxy. The proxy informs the SwiFTP Android app that there is an 
+incoming
+FTP session waiting to be established. The SwiFTP Android app then establishes another
+TCP connection to the proxy (in addition to the existing control connection), which 
+will be used
+exclusively to send and receive data from the FTP client.
+
+An important bit of vocabulary:
+ - The "command" connection is the TCP connection from the SwiFTP Android app to the 
+   proxy server. This connection uses our own brand-new protocol which is documented 
+   below.
+ - The "control" connection is the normal FTP connection between the FTP client and the
+   SwiFTP Android app. This uses the normal FTP protocol, where the client sends things
+   like USER, LIST, RETR and the server responds with "200 OK", "503 Forbidden", etc.
+   
+DATA SOCKETS
+------------
+The design of the FTP protocol dictates that new TCP connections, separate from the
+control connection, be created every time there is a directory listing or file transfer.
+When it is time to perform an action that requires a new data socket (a new TCP connection
+with the client, the SwiFTP Android app creates another TCP connection to the proxy. The
+exact details depend on whether the connection is in PORT or PASV mode (see the API
+section).
+
+
+DISAMBIGUATING DEVICES AND SESSIONS
+-----------------------------------
+Since the proxy server is running on a single IP and port that serves multiple devices
+and users, it needs some way of matching up incoming connections. For instance, in
+PASV mode file transfer, both the SwiFTP Android app and the FTP client make an inbound
+connection to the proxy server. How does the proxy know to match up these two 
+connections out of the many others that are being created at the same time? The answer
+is that we use something called a "prefix."
+
+A prefix is a six-character alphanumeric code that uniquely identifies a device running
+the SwiFTP Android app. It is assigned by the proxy server upon creation of
+a control connection and given to the SwiFTP Android app.  
+
+AUTHENTICATION
+--------------
+Secure identification of devices is accomplished by assigning a unique "secret" to each
+device running the SwiFTP Android app. This secret is assigned the first time that the
+device connects to the proxy, and is persisted on the device. This is not terribly
+secure but is considered good enough.
+ 
+This system is not secure against spoofed values of ANDROID_ID. This is unfortunate
+but probably good enough.
+ 
+API
+---
+Requests and responses are all in JSON. All requests have a top-level string named
+"action" that gives the request type. For instance, the request to create an account
+would look something like the following: 
+
+{
+  "action"    : "create_account"  
+  "android_id : "1234567890"
+}
+
+A response is a JSON object that is given in response to a request. As a convention,
+if an error occurred while processing a request, the response object will contain 
+top-level strings named "errorCode" and "errorString" identifying the error. The
+errorCode is a number uniquely identifying the error, and errorString is a human-
+readable description of the error.
+
+For example, the following object might be returned as a response to the above 
+create_account request if the account could not be created:
+{
+  "errorCode"  : 10
+  "errorString": "An account already exists for that ANDROID_ID"
+} 
+
+Or, if the operation was successful,
+{
+  "secret" : "abcdefghijklmnopqrstuvwxyz0123456789"
+}
+
+Successful requests may result in an empty response if there is no error to report and 
+the request did not require any values to be returned. This would be the empty JSON
+object, "{}". For instance, a request with action "noop" would prompt an empty response.
+
+All the requests and responses are sent over the command connection.
+
+After the TCP connection has been created from the SwiFTP Android app to the proxy
+server, the SwiFTP Android app must send one of:
+ - create_account
+ - authenticate
+
+List of requests from SwiFTP Android app to proxy server:
+ Action:  create_account
+ Purpose: Called only once upon first run of the SwiFTP Android app. Causes an account
+          to be created and a secret to be created.
+ Params:  "android_id": the unique device identifier provided by the Android API
+ Returns: "secret": the secret "password" that this device will use to authenticate
+ Errors:  12: the ANDROID_ID failed sanity check
+ 
+ Action:  authenticate
+ Purpose: Authenticate the device. Called before any other command (except
+ 		  create_account).
+ Params:  "android_id": the unique device identifier provided by the Android API
+          "secret": this device's secret
+          "swiftp_version": the version of SwiFTP server installed
+ Returns: Empty object on success
+ Errors:  11: The ANDROID_ID isn't in the database, or the secret is wrong
+ 
+ Action:  start_command_session
+ Purpose: Authenticate device and begin a command session
+ Params:  None
+ Returns: "prefix": the prefix string identifying this session and device (see above) 
+ 
+ Action:  pasv_listen
+ Purpose: Cause proxy to start listening on a new port for
+          an incoming TCP connection from an FTP client. This will be called by the
+          SwiFTP Android app after it has received a PASV command from the FTP client,
+          so the proxy can begin listening for an inbound data connection from the
+          FTP client.
+ Params:  None
+ Returns: "address": a string giving the address to which the FTP client should connect
+          "port": a number giving the port that the server is listening on.
+ Errors:  None specific to this request
+ 
+ Action:  pasv_accept
+ Purpose: After a pasv_listen action, the proxy will be listening for an
+ 	  	  inbound connection from an FTP client.
+ Params:
+ Returns:
+ Errors:  13: Proxy waited too long without receiving an incoming connection
+ 		  14: 
+ 		   
+ Action:  port_connect
+ Purpose: Open an outbound connection to the given address and port and begin data
+ 		  transfer. If this action is successful, the TCP connection will no longer
+ 		  accept JSON requests and will become a simple bidirectional proxy between
+ 		  the FTP client and the SwiFTP Android app.
+ Params:  "address": the address to which the proxy should open a connection
+ 	      "port": the port to which the proxy should open a connection
+ Returns: 
+ 
+Requests from proxy server to SwiFTP app:
+ Action:  
+
+Requests that may be sent by either party:
+ Action:  noop
+ Purpose: Does nothing, could be used as a connection keepalive
+ Params:  none
+ Returns: empty response
+ 
+LIST OF ERROR CODES
+-------------------
+
+0:   Internal server error. The errorString value may elaborate.
+10:  An account could not be created because that ANDROID_ID already has an account
+11:  Either the ANDROID_ID or secret is not valid
+12:  Invalid ANDROID_ID value
+13:  PASV accept timeout

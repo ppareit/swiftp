@@ -80,8 +80,7 @@ public class CmdPORT extends FtpCmd implements Runnable {
 			int port = Integer.parseInt(substrs[4]) * 256 + 
 			           Integer.parseInt(substrs[5]);
 			
-			sessionThread.setPortSocket(inetAddr, port);
-			sessionThread.setPasvMode(false);
+			sessionThread.onPort(inetAddr, port);
 		}
 		if(errString == null) {
 			sessionThread.writeString("200 PORT OK\r\n");

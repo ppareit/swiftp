@@ -68,13 +68,7 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 				errString = "451 Couldn't open file for writing\r\n";
 				break storing;
 			}
-			switch(sessionThread.initDataSocket()) {
-			case 1:  // successfully opened socket
-				break;
-			case 2:
-				errString = "450 Must use PASV mode\r\n";
-				break storing;
-			case 0:
+			if(!sessionThread.startUsingDataSocket()) {
 				errString = "425 Couldn't open data socket\r\n";
 				break storing;
 			}
@@ -83,7 +77,7 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 			byte[] buffer = new byte[Defaults.getDataChunkSize()];
 			//dedicatedWriter = new DedicatedWriter(out);
 			//dedicatedWriter.start();  // start the writer thread executing
-			myLog.l(Log.DEBUG, "Started DedicatedWriter");
+			//myLog.l(Log.DEBUG, "Started DedicatedWriter");
 			int numRead;
 			//Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 			//int newPriority = Thread.currentThread().getPriority();

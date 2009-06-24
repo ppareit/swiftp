@@ -136,6 +136,44 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 		android:background="#666666"
 		/>
 
+	<TableLayout 
+		android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:stretchColumns="*"
+    	>
+		<TableRow>
+			<TextView
+			   	android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:text="@string/accept_connections_from_wifi"
+		    	/>
+			<CheckBox 
+				android:id="@+id/config_wifi_checkbox"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+		    	android:checked="true"
+				/>
+		</TableRow>
+		<TableRow>
+			<TextView
+			   	android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:text="@string/accept_connections_from_net"
+		    	/>
+			<CheckBox 
+				android:id="@+id/config_net_checkbox"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+		    	android:checked="true"
+				/>
+		</TableRow>
+	</TableLayout>
+
+	<FrameLayout android:layout_height="1px"
+		android:layout_width="fill_parent"
+		android:background="#666666"
+		/>
+
 	<LinearLayout 
 		android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"

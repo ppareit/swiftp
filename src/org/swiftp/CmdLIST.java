@@ -68,18 +68,9 @@ public class CmdLIST extends FtpCmd implements Runnable {
 				response.append("\r\n");
 			}
 			
-			switch(sessionThread.initDataSocket()) {
-			case 1: // success
+			if(sessionThread.startUsingDataSocket()) {
 				myLog.l(Log.DEBUG, "LIST done making socket");
-				break;
-			case 2:
-				myLog.l(Log.DEBUG, "data socket create failure 2");
-				errString = "425 Must use PASV mode\r\n";
-				break mainblock;
-			case 0:
-				myLog.l(Log.DEBUG, "data socket create failure 0");
-				// no break here, fall through to default case
-			default:
+			} else {
 				errString = "425 Error opening data socket\r\n";
 				break mainblock;
 			}

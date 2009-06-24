@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 public class ConfigureActivity extends Activity implements OnClickListener {
@@ -36,6 +37,8 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 	private EditText passwordBox;
 	private EditText portNumberBox;
 	private EditText chrootDirBox;
+	private CheckBox wifiCheckBox;
+	private CheckBox netCheckBox;
 	
 	private Button saveButton;
 	private Button cancelButton;
@@ -44,6 +47,8 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 	public final static String PASSWORD = "password";
 	public final static String PORTNUM = "portNum";
 	public final static String CHROOTDIR = "chrootDir";
+	public final static String ACCEPT_WIFI = "allowWifi";
+	public final static String ACCEPT_NET = "allowNet";
 	
     public ConfigureActivity() {
 	}
@@ -64,6 +69,8 @@ public class ConfigureActivity extends Activity implements OnClickListener {
         passwordBox = (EditText) findViewById(R.id.config_password);
         portNumberBox = (EditText) findViewById(R.id.config_portnum);
         chrootDirBox = (EditText) findViewById(R.id.config_chroot);
+        wifiCheckBox = (CheckBox) findViewById(R.id.config_wifi_checkbox);
+        netCheckBox = (CheckBox) findViewById(R.id.config_net_checkbox);
         
 		settings = getSharedPreferences(Defaults.getSettingsName(),
 				Defaults.getSettingsMode());
@@ -72,11 +79,16 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 		String password = settings.getString(PASSWORD, "");
 		int portNumber = settings.getInt(PORTNUM, Defaults.getPortNumber());
 		String chroot = settings.getString(CHROOTDIR, Defaults.chrootDir);
+		boolean acceptNet = settings.getBoolean(ACCEPT_NET, true);
+		boolean acceptWifi = settings.getBoolean(ACCEPT_WIFI, true);
 		
 		usernameBox.setText(username);
 		passwordBox.setText(password);
 		portNumberBox.setText(Integer.toString(portNumber));
 		chrootDirBox.setText(chroot);
+		wifiCheckBox.setChecked(acceptNet);
+		netCheckBox.setChecked(acceptWifi);
+		
 	}
 	
 	protected void onStart() {
@@ -109,11 +121,12 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 		// Let's validate all the input fields.
 		String errString = null;
 		int portNum = 0;
-		String username, password, portNumberString, chrootDir;
-		username = usernameBox.getText().toString();
-		password = passwordBox.getText().toString();
-		portNumberString = portNumberBox.getText().toString();
-		chrootDir = chrootDirBox.getText().toString();
+		String username = usernameBox.getText().toString();
+		String password = passwordBox.getText().toString();
+		String portNumberString = portNumberBox.getText().toString();
+		String chrootDir = chrootDirBox.getText().toString();
+		boolean acceptWifi = wifiCheckBox.isChecked();
+		boolean acceptNet = netCheckBox.isChecked();
 		
 		validateBlock: {
 			if(!username.matches("[a-zA-Z0-9]+")) {
@@ -139,6 +152,12 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 				errString = getString(R.string.chrootDir_validation_error);
 				break validateBlock;
 			}
+			// At least one of the wifi/net listeners must be enabled,
+			// otherwise there's nothing for the server to do.
+			if(!acceptNet && !acceptWifi) {
+				errString = getString(R.string.at_least_one_listener);
+				break validateBlock;
+			}
 		}
 		if(errString != null) {
 			AlertDialog dialog =  new AlertDialog.Builder(this).create();
@@ -162,6 +181,8 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 		editor.putString(PASSWORD, password);
 		editor.putInt(PORTNUM, portNum);
 		editor.putString(CHROOTDIR, chrootDir);
+		editor.putBoolean(ACCEPT_WIFI, acceptWifi );
+		editor.putBoolean(ACCEPT_NET, acceptNet);
 		editor.commit();
 		
 		finish();  // close this Activity

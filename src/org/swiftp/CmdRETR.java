@@ -68,31 +68,29 @@ public class CmdRETR extends FtpCmd implements Runnable {
 				FileInputStream in = new FileInputStream(fileToRetr);
 				byte[] buffer = new byte[Defaults.getDataChunkSize()];
 				int bytesRead;
-				switch(sessionThread.initDataSocket()) {
-				case 1:
+				if(sessionThread.startUsingDataSocket()) {
 					myLog.l(Log.DEBUG, "RETR opened data socket");
-					break;
-				case 2:
-					errString = "425 Only PASV mode is supported\r\n";
-					myLog.l(Log.INFO, "Failed RETR without PASV");
-					break mainblock;
-				case 0:
-				default:
+				} else {
 					errString = "425 Error opening socket\r\n";
-					myLog.l(Log.INFO, "");
+					myLog.l(Log.INFO, "Error in initDataSocket()");
 					break mainblock;
 				}
 				sessionThread.writeString("150 Sending file\r\n");
 				if(sessionThread.isBinaryMode()) {
+					myLog.l(Log.DEBUG, "Transferring in binary mode");
 					while((bytesRead = in.read(buffer)) != -1) {
+						myLog.l(Log.DEBUG,
+								String.format("CmdRETR sending %d bytes", bytesRead));
 						if(sessionThread
 						   .sendViaDataSocket(buffer, bytesRead) == false) 
 						{
 							errString = "426 Data socket error\r\n";
+							myLog.l(Log.INFO, "Data socket error");
 							break mainblock;
 						}
 					}
 				} else { // We're in ASCII mode
+					myLog.l(Log.DEBUG, "Transferring in ASCII mode");
 					// We have to convert all solitary \n to \r\n
 					boolean lastBufEndedWithCR = false;
 					while((bytesRead = in.read(buffer)) != -1) {
@@ -145,7 +143,6 @@ public class CmdRETR extends FtpCmd implements Runnable {
 		} else {
 			sessionThread.writeString("226 Transmission finished\r\n");
 		}
-		sessionThread.closeDataSocket();
 		myLog.l(Log.DEBUG, "RETR done");
 	}
 }

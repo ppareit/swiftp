@@ -29,16 +29,27 @@ public class CmdPASV extends FtpCmd implements Runnable {
 	}
 	
 	public void run() {
+		String cantOpen = "502 Couldn't open a port\r\n";
 		myLog.l(Log.DEBUG, "PASV running");
-		
-		int port = sessionThread.openPasvSocket();
-		if(port < 0) {
+		if(!sessionThread.onPasv()) {
 			// There was a problem opening a port
 			myLog.l(Log.ERROR, "Couldn't open a port for PASV");
-			sessionThread.writeString("502 Couldn't open a port\r\n");
+			sessionThread.writeString(cantOpen);
 			return;
 		}
-		String ipAsString = FTPServerService.getWifiIpAsString();
+		String ipAsString = sessionThread.getDataSocketPasvIp();
+		int port = sessionThread.getDataSocketPort();
+		
+		if(ipAsString == null) {
+			myLog.l(Log.ERROR, "PASV IP string invalid");
+			sessionThread.writeString(cantOpen);
+			return;
+		}
+		if(port < 1) {
+			myLog.l(Log.ERROR, "PASV port number invalid");
+			sessionThread.writeString(cantOpen);
+			return;
+		}
 		ipAsString = ipAsString.replace('.',',');
 		StringBuilder response = new StringBuilder(
 				"227 Entering Passive Mode (");
@@ -52,7 +63,6 @@ public class CmdPASV extends FtpCmd implements Runnable {
 		response.append(").\r\n");
 		String responseString = response.toString();
 		sessionThread.writeString(responseString);
-		sessionThread.setPasvMode(true);
 		myLog.l(Log.DEBUG, "PASV completed, sent: " + responseString);
 	}
 }

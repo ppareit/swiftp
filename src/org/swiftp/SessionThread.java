@@ -19,22 +19,23 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.swiftp;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
 import android.util.Log;
 
 public class SessionThread extends Thread {
 	protected boolean shouldExit = false;
-	protected SocketChannel socket;
+	protected Socket socket;
 	protected MyLog myLog = new MyLog(getClass().getName());
 	protected ByteBuffer buffer = 
 		ByteBuffer.allocate(Defaults.getInputBufferSize());
@@ -43,23 +44,25 @@ public class SessionThread extends Thread {
 	protected Account account = new Account();
 	protected boolean authenticated = false;
 	protected File prefix = Globals.getChrootDir();
-	protected ServerSocket dataServerSocket = null;
+	//protected ServerSocket dataServerSocket = null;
 	protected Socket dataSocket = null;
-	protected FTPServerService service;
+	//protected FTPServerService service;
 	protected File renameFrom = null;
-	protected InetAddress outDataDest = null; 
-	protected int outDataPort = 20; // 20 is the default ftp-data port
+	//protected InetAddress outDataDest = null; 
+	//protected int outDataPort = 20; // 20 is the default ftp-data port
+	protected DataSocketFactory dataSocketFactory;
+	OutputStream dataOutputStream = null;
 	
 	/**
 	 * Used when we get a PORT command to open up an outgoing socket.
 	 * @return
 	 */
-	public void setPortSocket(InetAddress dest, int port) {
-		myLog.l(Log.DEBUG, "Setting PORT dest to " +
-				dest.getHostAddress() + " port " + port);
-		outDataDest = dest;
-		outDataPort = port;
-	}
+//	public void setPortSocket(InetAddress dest, int port) {
+//		myLog.l(Log.DEBUG, "Setting PORT dest to " +
+//				dest.getHostAddress() + " port " + port);
+//		outDataDest = dest;
+//		outDataPort = port;
+//	}
 	
 	/**
 	 * Sends a string over the already-established data socket
@@ -89,19 +92,19 @@ public class SessionThread extends Thread {
 	 * @return
 	 */
 	public boolean sendViaDataSocket(byte[] bytes, int start, int len) {
-		if(!dataSocket.isConnected()) {
-			myLog.l(Log.ERROR, "Can't send via unconnected socket");
+		
+		if(dataOutputStream == null) {
+			myLog.l(Log.ERROR, "Can't send via null dataOutputStream");
 			return false;
 		}
 		if(len == 0) {
 			return true; // this isn't an "error" 
 		}
-		OutputStream out;
 		try {
-			out = dataSocket.getOutputStream();
-			out.write(bytes, start, len);
+			dataOutputStream.write(bytes, start, len);
 		} catch(IOException e) {
 			myLog.l(Log.INFO, "Couldn't write output stream for data socket");
+			myLog.l(Log.INFO, e.toString());
 			return false;
 		}
 		return true;
@@ -119,6 +122,10 @@ public class SessionThread extends Thread {
 	public int receiveFromDataSocket(byte[] buf) {
 		int bytesRead;
 		
+		if(dataSocket == null) {
+			myLog.l(Log.INFO, "Can't receive from null dataSocket");
+			return -2;
+		}
 		if(!dataSocket.isConnected()) {
 			myLog.l(Log.INFO, "Can't receive from unconnected socket");
 			return -2;
@@ -142,36 +149,81 @@ public class SessionThread extends Thread {
 	}
 	
 	/**
-	 * Prepares the data socket for transmission. The action taken depends on
-	 * the value of pasvMode. Currently, only pasvMode == true is supported.
-	 * @return 0 if the socket open failed, 1 if the socket open was successful,
-	 * 2 if pasvMode was not true
+	 * Called when we receive a PASV command.
+	 * @return Whether the necessary initialization was successful.
 	 */
-	public int initDataSocket() {
-		if (pasvMode) {
-			myLog.l(Log.DEBUG, "to accept() data connection");
-			if(acceptPasvSocket()) {
-				myLog.l(Log.DEBUG, "accept() success");
-				return 1;
-			} else {
-				myLog.l(Log.DEBUG, "accept() fail");
-				return 0;
+	public boolean onPasv() {
+		return dataSocketFactory.onPasv();
+	}
+	
+	/**
+	 * Called when we receive a PORT command.
+	 * @return Whether the necessary initialization was successful.
+	 */
+	public boolean onPort(InetAddress dest, int port) {
+		return dataSocketFactory.onPort(dest, port);
+	}
+	
+	public String getDataSocketPasvIp() {
+		return dataSocketFactory.getPasvIp();
+	}
+
+	public int getDataSocketPort() {
+		return dataSocketFactory.getPortNumber();
+	}
+	
+	/**
+	 * Will be called by (e.g.) CmdSTOR, CmdRETR, CmdLIST, etc. when they are about
+	 * to start actually doing IO over the data socket.
+	 * @return
+	 */
+	public boolean startUsingDataSocket() {
+		try {
+			dataSocket = dataSocketFactory.onTransfer();
+			if(dataSocket == null) {
+				myLog.l(Log.INFO, "dataSocketFactory.onTransfer() returned null");
+				return false;
 			}
-		} else {
-			if(connectOutDataSocket()) {
-				return 1;
-			} else {
-				return 0;
-			}
+			dataOutputStream = dataSocket.getOutputStream();
+			return true;
+		} catch (IOException e) {
+			myLog.l(Log.INFO, "IOException getting OutputStream for data socket");
+			dataSocket = null;
+			return false;
 		}
 	}
 	
+//	public boolean initDataSocket() {
+//		if (pasvMode) {
+//			// In pasv mode, the socket is already open
+//			/*if(acceptPasvSocket()) {
+//				myLog.l(Log.DEBUG, "accept() success");
+//				return 1;
+//			} else {
+//				myLog.l(Log.DEBUG, "accept() fail");
+//				return 0;
+//			}*/
+//		} else {
+//			if(outDataDest == null) {
+//				myLog.l(Log.INFO, "pasvMode is false but no outDataDest set");
+//				dataSocket = null;
+//			}
+//			dataSocket = dataSocketFactory.port(outDataDest, outDataPort);
+//		}
+//		if(dataSocket == null) {
+//			return false;
+//		} else {
+//			return true;
+//		}
+//	}
+	
+	/*
 	boolean connectOutDataSocket() {
 		try {
 			// If the user never specified an address, use the same one
 			// that their other connection came from
 			if(outDataDest == null) {
-				outDataDest = socket.socket().getInetAddress();
+				outDataDest = socket.getInetAddress();
 				myLog.l(Log.DEBUG, "Defaulting data address to " + 
 						outDataDest.getHostAddress());
 			}
@@ -181,13 +233,13 @@ public class SessionThread extends Thread {
 			myLog.l(Log.INFO, "Couldn't open outbound data socket");
 			return false;
 		}
-	}
+	}*/
 	
 	/**
 	 * Opens a random port for an incoming data connection.
 	 * @return The port number that is listening, or -1 on failure.
 	 */
-	public int openPasvSocket() {
+	/*public int openPasvSocket() {
 		closeDataSocket();
 		if(dataServerSocket != null) {
 			if(dataServerSocket.isBound()) {
@@ -209,28 +261,34 @@ public class SessionThread extends Thread {
 		dataServerSocket = server;
 		myLog.l(Log.DEBUG, "Data socket creation success");
 		return server.getLocalPort();
-	}
+	}*/
 	
 
-	public boolean acceptPasvSocket() {
-		if(dataSocket != null) {
-			if(dataSocket.isConnected()) {
-				myLog.l(Log.INFO, "Can't accept pasv socket, already open");
-				return false;
-			}
-		}
-		try {
-			dataSocket = dataServerSocket.accept();
-		} catch (IOException e) {
-			myLog.l(Log.ERROR, "Couldn't accept pasv socket");
-			dataSocket = null;
-			return false;
-		}
-		return true;
-	}
+//	public boolean acceptPasvSocket() {
+//		if(dataSocket != null) {
+//			if(dataSocket.isConnected()) {
+//				myLog.l(Log.INFO, "Can't accept pasv socket, already open");
+//				return false;
+//			}
+//		}
+//		try {
+//			dataSocket = dataServerSocket.accept();
+//		} catch (IOException e) {
+//			myLog.l(Log.ERROR, "Couldn't accept pasv socket");
+//			dataSocket = null;
+//			return false;
+//		}
+//		return true;
+//	}
 	
 	public void closeDataSocket() {
 		myLog.l(Log.DEBUG, "Closing data socket");
+		if(dataOutputStream != null) {
+			try {
+				dataOutputStream.close();
+			} catch (IOException e) {}
+			dataOutputStream = null;
+		}
 		if(dataSocket != null) {
 			try {
 				dataSocket.close();
@@ -240,7 +298,7 @@ public class SessionThread extends Thread {
 	}
 	
 	protected InetAddress getLocalAddress() {
-		return socket.socket().getLocalAddress();
+		return socket.getLocalAddress();
 	}
 
 	public void run() {
@@ -249,9 +307,12 @@ public class SessionThread extends Thread {
 		writeString("220 SwiFTP ready\r\n");
 		// Main loop: read an incoming line and process it
 		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					socket.getInputStream()), 8192); // use 8k buffer
 			while(true) {
-				buffer.clear();
-				int bytesRead = socket.read(buffer);
+				/*buffer.clear();
+				socket.
+				//int bytesRead = socket.read(buffer);
 				
 				if(bytesRead == -1) {
 					return;  // no more bytes can be read from channel, goodbye
@@ -263,11 +324,6 @@ public class SessionThread extends Thread {
 				
 				String asString = new String(tempArr, "UTF-8");
 				
-				// A single read from the OS may have returned multiple command
-				// lines. So we break it up on "\n". Correct clients will use 
-				// the string "\r\n" to end their lines, but some only use 
-				// "\n". FtpCmd.getParameter() can handle the "\r" if it's 
-				// still there.
 				
 				String[] lines = asString.split("\n");
 				for (String line : lines) {
@@ -277,7 +333,18 @@ public class SessionThread extends Thread {
 					FTPServerService.writeMonitor(true, line);
 					FtpCmd.dispatchCommand(this, line);
 				}
+				
 				buffer.flip();
+				*/
+				String line;
+				line = in.readLine();  // will accept \r\n or \n for line terminator
+				FTPServerService.writeMonitor(true, line);
+				if(line != null) {
+					myLog.l(Log.DEBUG, "Received line from client: " + line);
+					FtpCmd.dispatchCommand(this, line);
+				} else {
+					myLog.l(Log.DEBUG, "Skipping null line");
+				}
 			}
 		} catch (IOException e) {
 			myLog.l(Log.INFO, "Client dropped connection");
@@ -308,8 +375,11 @@ public class SessionThread extends Thread {
 		
 	public void writeBytes(byte[] bytes) {
 		try {
-			socket.write(ByteBuffer.wrap(bytes));
-			// todo: flush here?
+			//socket.write(ByteBuffer.wrap(bytes)); // from old SocketChannel impln.
+			BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream(),
+					Defaults.dataChunkSize);
+			out.write(bytes);
+			out.flush();			
 		} catch (IOException e) {
 			myLog.l(Log.INFO, "Exception writing socket");
 			closeSocket();
@@ -322,7 +392,7 @@ public class SessionThread extends Thread {
 		writeBytes(str.getBytes());
 	}
 	
-	protected SocketChannel getSocket() {
+	protected Socket getSocket() {
 		return socket;
 	}
 
@@ -338,13 +408,15 @@ public class SessionThread extends Thread {
 		return pasvMode;
 	}
 
-	public void setPasvMode(boolean pasvMode) {
-		this.pasvMode = pasvMode;
-	}
+//	public void setPasvMode(boolean pasvMode) {
+//		this.pasvMode = pasvMode;
+//	}
 
-	public SessionThread(SocketChannel socket, FTPServerService service) {
+	//public SessionThread(SocketChannel socket, FTPServerService service) {
+	public SessionThread(Socket socket, DataSocketFactory dataSocketFactory) {
 		this.socket = socket;
-		this.service = service;
+		this.dataSocketFactory = dataSocketFactory;
+		//this.service = service;
 	}
 	
 	static public ByteBuffer stringToBB(String s) {
@@ -383,13 +455,13 @@ public class SessionThread extends Thread {
 		}
 	}
 
-	public FTPServerService getService() {
+	/*public FTPServerService getService() {
 		return service;
 	}
 
 	public void setService(FTPServerService service) {
 		this.service = service;
-	}
+	}*/
 
 	public Socket getDataSocket() {
 		return dataSocket;
@@ -399,9 +471,9 @@ public class SessionThread extends Thread {
 		this.dataSocket = dataSocket;
 	}
 
-	public ServerSocket getServerSocket() {
-		return dataServerSocket;
-	}
+//	public ServerSocket getServerSocket() {
+//		return dataServerSocket;
+//	}
 
 	public File getRenameFrom() {
 		return renameFrom;

@@ -20,7 +20,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
-<string name="menu_top_string">SwiFTP Server 1.11</string>
+<string name="menu_top_string">SwiFTP Server 2.0 (dev)</string>
 <string name="menu_byline">By Dave Revell and contributors</string>
 
 <string name="add_user">Add User</string>
@@ -69,6 +69,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 <string name="the_error_was">The error was:</string>
 <string name="stay_within_folder">Stay within folder (e.g. "/sdcard"):</string>
 <string name="cancel">Cancel</string>
+<string name="accept_connections_from_net">Accept connections from the net</string>
+<string name="accept_connections_from_wifi">Accept connections from wifi</string>
+<string name="at_least_one_listener">Please check either the wifi or net checkbox</string>
 <string name="chrootDir_validation_error">The folder to stay within is either invalid \
 or nonexistent.</string> 
 <string name="violates_chroot">550 Server settings prevent leaving directory\r\n</string>

@@ -34,9 +34,13 @@ public class Defaults {
 	//protected static String password = "";
 	protected static int portNumber = 2121; 
 	protected static int ipRetrievalAttempts = 5;
+	public static final int tcpConnectionBacklog = 5;
 	public static final String chrootDir = "/sdcard";
-	public static final boolean release = true;
+	public static final boolean acceptWifi = true;
+	public static final boolean acceptNet = true;
 	
+	// This is a flag that should be true for public builds and false for dev builds
+	public static final boolean release = false;
 	
 	public static int getIpRetrievalAttempts() {
 		return ipRetrievalAttempts;

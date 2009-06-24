@@ -23,8 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +51,9 @@ public class FTPServerService extends Service implements Runnable {
 	protected static final int BACKLOG = 21;
 	protected static final int MAX_SESSIONS = 5;
 	
-	protected ServerSocketChannel mainSocket;
+	//protected ServerSocketChannel wifiSocket;
+	protected ServerSocket wifiSocket;
+	protected Socket netSocket;
 	protected static WifiLock wifiLock = null;
 	
 	protected static InetAddress serverAddress = null;
@@ -67,9 +69,14 @@ public class FTPServerService extends Service implements Runnable {
 	public static final int WAKE_INTERVAL_MS = 1000; // milliseconds
 	
 	protected static int port;
+	protected static boolean acceptWifi;
+	protected static boolean acceptNet;
 	
-		public FTPServerService() {
-		
+	private TcpListener wifiListener = null;
+	private CloudListener cloudListener = null;
+	private List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
+	
+	public FTPServerService() {
 	}
 
 	public IBinder onBind(Intent intent) {
@@ -78,7 +85,6 @@ public class FTPServerService extends Service implements Runnable {
 	}
 	
 	public void onCreate() {
-		// Don't do anything until onStart()
 		myLog.l(Log.DEBUG, "SwiFTP server created");
 		// Set the application-wide context global, if not already set
 		Context myContext = Globals.getContext();
@@ -139,7 +145,9 @@ public class FTPServerService extends Service implements Runnable {
 		}
 		try {
 			myLog.l(Log.INFO, "Closing mainSocket");
-			mainSocket.close();
+			if(wifiSocket != null) {
+				wifiSocket.close();
+			}
 		} catch (IOException e) {}
 		UiUpdater.updateClients();
 		if(wifiLock != null) {
@@ -149,23 +157,27 @@ public class FTPServerService extends Service implements Runnable {
 		// todo: we should broadcast an intent to inform anyone who cares
 	}
 	
-	public void run() {
-		// The UI will want to check the server status to update its 
-		// start/stop server button
-		UiUpdater.updateClients();
-		List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
-				
-		myLog.l(Log.DEBUG, "Server thread running");
-		
+	private boolean loadSettings() {
 		myLog.l(Log.DEBUG, "Loading settings");
 		SharedPreferences settings = getSharedPreferences(
 				Defaults.getSettingsName(), Defaults.getSettingsMode());
-		int port = settings.getInt("portNum", Defaults.portNumber);
+		port = settings.getInt("portNum", Defaults.portNumber);
 		if(port == 0) {
 			// If port number from settings is invalid, use the default
 			port = Defaults.portNumber;
 		}
-		FTPServerService.port = port;
+		myLog.l(Log.DEBUG, "Using port " + port);
+		
+		acceptNet = settings.getBoolean(ConfigureActivity.ACCEPT_NET,
+									    Defaults.acceptNet);
+		acceptWifi = settings.getBoolean(ConfigureActivity.ACCEPT_WIFI,
+										 Defaults.acceptWifi);
+		if(!acceptNet && !acceptWifi) {
+			myLog.l(Log.ERROR, "No listeners are enabled. Check your setup.");
+			return false;
+		}
+		
+		// The username, password, and chrootDir are just checked for sanity
 		String username = settings.getString(ConfigureActivity.USERNAME, null);
 		String password = settings.getString(ConfigureActivity.PASSWORD, null);
 		String chrootDir = settings.getString(ConfigureActivity.CHROOTDIR,
@@ -173,52 +185,75 @@ public class FTPServerService extends Service implements Runnable {
 		
 		if(username == null || password == null) {
 			myLog.l(Log.ERROR, "Username or password is invalid");
-			cleanupAndStopService();
-			return;
+			return false;
 		}
 		File chrootDirAsFile = new File(chrootDir);
 		if(!chrootDirAsFile.isDirectory()) {
 			myLog.l(Log.ERROR, "Chroot dir is invalid");
+			return false;
+		}
+		Globals.setChrootDir(chrootDirAsFile);
+		return true;
+	}
+
+	void setupWifiListener() throws IOException {
+		//wifiSocket = ServerSocketChannel.open();
+		//wifiSocket.configureBlocking(false);
+		myLog.l(Log.DEBUG, "About to get wifi IP");
+		String wifiIp = null;
+		int loops = 0;
+		while(wifiIp == null) {
+			// If IP address retrieval fails, it may be because DHCP is
+			// still coming up. So we wait one second between attempts,
+			// with a max # of attempts Defaults.getIpRetrievalAttempts().
+			wifiIp = getWifiIpAsString();
+			if(wifiIp != null) {
+				break;
+			}
+			myLog.l(Log.DEBUG, "Wifi IP string was null");
+			loops++;
+			if(loops > Defaults.getIpRetrievalAttempts()) {
+				throw new IOException("IP retrieval failure");	
+			}
+			try {
+				Thread.sleep(1000);
+			} catch(InterruptedException e) {}
+		}
+		myLog.l(Log.DEBUG, "Wifi IP: " + wifiIp);
+		serverAddress = InetAddress.getByName(wifiIp);
+		wifiSocket = new ServerSocket();
+		wifiSocket.bind(new InetSocketAddress(serverAddress, port));
+		// The following line listens on all interfaces
+		// mainSocket.socket().bind(new InetSocketAddress(port));
+		
+	}
+	
+	public void run() {
+		// The UI will want to check the server status to update its 
+		// start/stop server button
+		UiUpdater.updateClients();
+				
+		myLog.l(Log.DEBUG, "Server thread running");
+		
+		// set our members according to user preferences
+		if(!loadSettings()) {
+			// loadSettings returns false if settings are not sane
 			cleanupAndStopService();
 			return;
 		}
-		Globals.setChrootDir(chrootDirAsFile);
-		
-		myLog.l(Log.DEBUG, "Using port " + port);
-		
-		try {
-			mainSocket = ServerSocketChannel.open();
-			mainSocket.configureBlocking(false);
-			myLog.l(Log.DEBUG, "About to get wifi IP");
-			String wifiIp = null;
-			int loops = 0;
-			while(wifiIp == null) {
-				// If IP address retrieval fails, it may be because DHCP is
-				// still coming up. So we wait one second between attempts,
-				// with a max # of attempts Defaults.getIpRetrievalAttempts().
-				wifiIp = getWifiIpAsString();
-				if(wifiIp != null) {
-					break;
-				}
-				myLog.l(Log.DEBUG, "Wifi IP string was null");
-				loops++;
-				if(loops > Defaults.getIpRetrievalAttempts()) {
-					throw new IOException("IP retrieval failure");	
-				}
-				try {
-					Thread.sleep(1000);
-				} catch(InterruptedException e) {}
+		if(acceptWifi) {
+			// If configured to accept connections via wifi, then set up the socket
+			try {
+				setupWifiListener();
+			} catch (IOException e) {
+				myLog.l(Log.ERROR, "Error opening port, check your network connection.");
+				serverAddress = null;
+				cleanupAndStopService();
+				return;
 			}
-			myLog.l(Log.DEBUG, "Wifi IP: " + wifiIp);
-			serverAddress = InetAddress.getByName(wifiIp);
-			mainSocket.socket().bind(new InetSocketAddress(serverAddress, port));
-			// The following line listens on all interfaces
-			// mainSocket.socket().bind(new InetSocketAddress(port));
-		} catch (IOException e) {
-			myLog.l(Log.ERROR, "Error opening port, check your network connection.");
-			serverAddress = null;
-			cleanupAndStopService();
-			return;
+		}
+		if(acceptNet) {
+			myLog.l(Log.DEBUG, "Would open cloud listener");
 		}
 		myLog.l(Log.INFO, "SwiFTP server ready");
 		
@@ -231,10 +266,10 @@ public class FTPServerService extends Service implements Runnable {
 		// then remove them from our sessionThreads list.
 		
 		while(!shouldExit) {
-			SocketChannel clientSocket;
+			/*SocketChannel clientSocket;
 			try {
 				// Handle one or more incoming connection requests
-				while((clientSocket = mainSocket.accept()) != null) {
+				while((clientSocket = wifiSocket.accept()) != null) {
 					// If the accept was successful, spawn a new session
 					myLog.l(Log.INFO, "New connection, spawned thread");
 					SessionThread newSession = new SessionThread(clientSocket, this);
@@ -246,6 +281,39 @@ public class FTPServerService extends Service implements Runnable {
 				myLog.l(Log.WARN, e.toString());
 				cleanupAndStopService();
 				return;
+			}
+			*/
+			if(acceptWifi) {
+				if(wifiListener != null) {
+					if(!wifiListener.isAlive()) {
+						myLog.l(Log.INFO, "Joining crashed wifiListener thread");
+						try {
+							wifiListener.join();
+						} catch (InterruptedException e) {}
+						wifiListener = null;
+					}
+				}
+				if(wifiListener == null) {
+					// Either our wifi listener hasn't been created yet, or has crashed,
+					// so spawn it
+					wifiListener = new TcpListener(wifiSocket); 
+					wifiListener.start();
+				}
+			}
+			if(acceptNet) {
+				if(cloudListener != null) {
+					if(!cloudListener.isAlive()) {
+						myLog.l(Log.INFO, "Joining crashed cloudListener");
+						try {
+							cloudListener.join();
+						} catch (InterruptedException e) {}
+						cloudListener = null;
+					}
+				}
+				if(cloudListener == null) {
+					cloudListener = new CloudListener();
+					cloudListener.start();
+				}
 			}
 			try {
 				// todo: think about using ServerSocket, and just closing
@@ -281,9 +349,9 @@ public class FTPServerService extends Service implements Runnable {
 		}
 			
 		myLog.l(Log.DEBUG, "Exiting cleanly");
-		shouldExit = false; // we handled the exit flag, so reset it
+		shouldExit = false; // we handled the exit flag, so reset it to acknowledge
 	}
-		
+	
 	public void cleanupAndStopService() {
 		// Call the Android Service shutdown function
 		Context context = getApplicationContext();
@@ -300,6 +368,50 @@ public class FTPServerService extends Service implements Runnable {
 		cleanupAndStopService();
 	}
 
+	private class CloudListener extends Thread {
+		/* A normal TCP listener has the pattern where there is one listening
+		 * socket, and we create an additional socket for each session by calling 
+		 * accept() on the listening socket. The CloudListener does NOT follow
+		 * this pattern. We simply create one persistent connection to the cloud
+		 * server. The proxy sends various control messages over this connection.
+		 * See the wiki for developer docs to get the full story. 
+		 */ 
+		
+		public 
+	}
+	
+	private class TcpListener extends Thread {
+		ServerSocket listenSocket;
+		
+		public TcpListener(ServerSocket listenSocket) {
+			this.listenSocket = listenSocket;
+		}
+		
+		public void exit() {
+			try {
+				listenSocket.close(); // if the TcpListener thread is blocked on accept,
+				                      // closing the socket will raise an exception
+			} catch (Exception e) {
+				myLog.l(Log.DEBUG, "Exception closing TcpListener listenSocket");
+			}
+		}
+		
+		public void run() {
+			try {
+				while(true) {
+					Socket clientSocket = listenSocket.accept();
+					myLog.l(Log.INFO, "New connection, spawned thread");
+					SessionThread newSession = new SessionThread(clientSocket,
+							new NormalDataSocketFactory());
+					sessionThreads.add(newSession);
+					newSession.start();
+				}
+			} catch (Exception e) {
+				myLog.l(Log.INFO, "Exception in TcpListener");
+			}
+		}
+	}
+	
 	/**
 	 * Gets the IP address of the wifi connection.
 	 * @return The integer IP address if wifi enabled, or 0 if not.

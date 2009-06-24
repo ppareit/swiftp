@@ -26,3 +26,7 @@ Error text wrapping
 Move MainActivity launchConf.. toast into configuration activity
 Force serialization of transfers to improve throughput?
 Don't put a title bar on our window: requestWindowFeature(Window.FEATURE_NO_TITLE);
+Request root if on rooted device
+Update wiki instructions for cloud proxy
+Generate and automate translations
+Add warning about fundamental security problems upon first cloud startup
