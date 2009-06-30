@@ -90,11 +90,10 @@ Or, if the operation was successful,
   "secret" : "abcdefghijklmnopqrstuvwxyz0123456789"
 }
 
-Successful requests may result in an empty response if there is no error to report and 
+Successful requests may result in a response that is the empty object, if there is no 
+error to report and 
 the request did not require any values to be returned. This would be the empty JSON
 object, "{}". For instance, a request with action "noop" would prompt an empty response.
-
-All the requests and responses are sent over the command connection.
 
 After the TCP connection has been created from the SwiFTP Android app to the proxy
 server, the SwiFTP Android app must send one of:
@@ -105,8 +104,11 @@ List of requests from SwiFTP Android app to proxy server:
  Action:  create_account
  Purpose: Called only once upon first run of the SwiFTP Android app. Causes an account
           to be created and a secret to be created. The returned secret should be
-          stored in persistent memory.
+          stored in persistent memory. If a device sends this request and receives
+          a response indicating success, then that session is authenticated, and the
+          device can send other requests.
  Params:  "android_id": the unique device identifier provided by the Android API
+          "swiftp_version": the version of SwiFTP server installed
  Returns: "secret": the secret "password" that this device will use to authenticate
  Errors:  12: the ANDROID_ID failed sanity check
  
@@ -124,7 +126,7 @@ List of requests from SwiFTP Android app to proxy server:
  Params:  None
  Returns: "prefix": the prefix string identifying this session and device (see above) 
  
- Action:  pasv_listen
+ Action:  data_pasv_listen
  Purpose: Cause proxy to start listening on a new port for
           an incoming TCP connection from an FTP client. This will be called by the
           SwiFTP Android app after it has received a PASV command from the FTP client,
@@ -135,7 +137,7 @@ List of requests from SwiFTP Android app to proxy server:
           "port": a number giving the port that the server is listening on.
  Errors:  None specific to this request
  
- Action:  pasv_accept
+ Action:  data_pasv_accept
  Purpose: After a pasv_listen action, the proxy will be listening for an
  	  	  inbound connection from an FTP client. This request will cause the proxy
  	  	  to do an accept() for incoming conections from the FTP client. A pasv_accept
@@ -147,7 +149,7 @@ List of requests from SwiFTP Android app to proxy server:
  Returns: Empty object on success
  Errors:  13: Proxy waited too long without receiving an incoming connection
  		   
- Action:  port_connect
+ Action:  data_port_connect
  Purpose: Open an outbound connection to the given address and port and begin data
  		  transfer. If this action is successful, the TCP connection will no longer
  		  accept JSON requests and will become a simple bidirectional proxy between
@@ -157,8 +159,24 @@ List of requests from SwiFTP Android app to proxy server:
  Returns: Empty object on success
  Errors:  14: The proxy couldn't open a connection to the given address and port. 
  
+ Action:  accept_control_connection
+ Purpose: When there is a control connection from an FTP client, the Android device will
+          be notified, at which point it will connect a new socket, authenticate, and
+          send this request. If this request is successful, the socket will stop
+          accepting requests and become a pure proxy between the FTP client and the
+          SwiFTP Android app.
+ Returns: Empty object on success
+ Errors:  11: Authentication failure
+          
 Requests from proxy server to SwiFTP app:
- Action:  
+ Action:  control_connection_waiting
+ Purpose: This is sent over the command connection to instruct the SwiFTP Android app to
+          open a new socket to the given location and use it as a new FTP connection.
+          This means there is an FTP client that has connected and is waiting to be
+          serviced. The SwiFTP Android app should open a new connection to the proxy,
+          authenticate, then send accept_control_connection.
+ Params:  "port": the port to which the SwiFTP Android app should connect
+ Errors:  None specific to this request
 
 Requests that may be sent by either party:
  Action:  noop

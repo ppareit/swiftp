@@ -296,7 +296,7 @@ public class FTPServerService extends Service implements Runnable {
 				if(wifiListener == null) {
 					// Either our wifi listener hasn't been created yet, or has crashed,
 					// so spawn it
-					wifiListener = new TcpListener(wifiSocket); 
+					wifiListener = new TcpListener(wifiSocket, this); 
 					wifiListener.start();
 				}
 			}
@@ -330,7 +330,7 @@ public class FTPServerService extends Service implements Runnable {
 			// later from the sessionThreads list.
 			List <SessionThread> toBeRemoved = new ArrayList<SessionThread>();
 			for(SessionThread sessionThread : sessionThreads) {
-				if(!sessionThread.isAlive()) {
+				if(!sessionThread.is()) {
 					myLog.l(Log.DEBUG, "Cleaning up finished session...");
 					try {
 						sessionThread.join();
@@ -368,50 +368,6 @@ public class FTPServerService extends Service implements Runnable {
 		cleanupAndStopService();
 	}
 
-	private class CloudListener extends Thread {
-		/* A normal TCP listener has the pattern where there is one listening
-		 * socket, and we create an additional socket for each session by calling 
-		 * accept() on the listening socket. The CloudListener does NOT follow
-		 * this pattern. We simply create one persistent connection to the cloud
-		 * server. The proxy sends various control messages over this connection.
-		 * See the wiki for developer docs to get the full story. 
-		 */ 
-		
-		public 
-	}
-	
-	private class TcpListener extends Thread {
-		ServerSocket listenSocket;
-		
-		public TcpListener(ServerSocket listenSocket) {
-			this.listenSocket = listenSocket;
-		}
-		
-		public void exit() {
-			try {
-				listenSocket.close(); // if the TcpListener thread is blocked on accept,
-				                      // closing the socket will raise an exception
-			} catch (Exception e) {
-				myLog.l(Log.DEBUG, "Exception closing TcpListener listenSocket");
-			}
-		}
-		
-		public void run() {
-			try {
-				while(true) {
-					Socket clientSocket = listenSocket.accept();
-					myLog.l(Log.INFO, "New connection, spawned thread");
-					SessionThread newSession = new SessionThread(clientSocket,
-							new NormalDataSocketFactory());
-					sessionThreads.add(newSession);
-					newSession.start();
-				}
-			} catch (Exception e) {
-				myLog.l(Log.INFO, "Exception in TcpListener");
-			}
-		}
-	}
-	
 	/**
 	 * Gets the IP address of the wifi connection.
 	 * @return The integer IP address if wifi enabled, or 0 if not.
@@ -507,5 +463,7 @@ public class FTPServerService extends Service implements Runnable {
 		FTPServerService.port = port;
 	}
 
-
+	public void registerSessionThread(SessionThread newSession) {
+		sessionThreads.add(newSession);
+	}
 }

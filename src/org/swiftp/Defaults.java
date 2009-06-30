@@ -38,6 +38,7 @@ public class Defaults {
 	public static final String chrootDir = "/sdcard";
 	public static final boolean acceptWifi = true;
 	public static final boolean acceptNet = true;
+	public static final int cloudProxyPort = 2121;
 	
 	// This is a flag that should be true for public builds and false for dev builds
 	public static final boolean release = false;

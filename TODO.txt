@@ -30,3 +30,9 @@ Request root if on rooted device
 Update wiki instructions for cloud proxy
 Generate and automate translations
 Add warning about fundamental security problems upon first cloud startup
+Copyright notices on all files
+Generate proxy_architecture.pdf from XOJ file
+For CloudListener, retrieve proxy server list from s3 or cloudfront
+Standardize whitespace style
+Think about SSL for proxy and client connections
+Throttle CloudListener respawns in FtpServerService

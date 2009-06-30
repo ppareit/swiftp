@@ -160,7 +160,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 		    	android:layout_height="wrap_content"
 		    	android:text="@string/accept_connections_from_net"
 		    	/>
-			<CheckBox 
+			<CheckBox  
 				android:id="@+id/config_net_checkbox"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
