@@ -14,7 +14,6 @@ Configurable log level
 Put static finals in Defaults and runtime values in Globals
 Add a save+restart button to config activity
 Fix session monitor 
-Tune retry delay in DedicatedWriter
 Javadocs for everything
 Cleaner scrollable server log
 Figure out why getCanonicalPath chokes on trailing dots (.)
@@ -35,4 +34,9 @@ Generate proxy_architecture.pdf from XOJ file
 For CloudListener, retrieve proxy server list from s3 or cloudfront
 Standardize whitespace style
 Think about SSL for proxy and client connections
-Throttle CloudListener respawns in FtpServerService
+User message support via cloud proxy
+Figure out EC2 instance kernel tuning for high tcp conns
+Look at chef, cfengine, puppet for EC2 instance config mgmt
+Add options to listen on all interfaces or just wifi
+Add checkbox (default checked) for "my internet connection is firewalled" to activate cloud proxy
+Add explanation of pricing model and costs

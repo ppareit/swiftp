@@ -26,6 +26,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Service;
@@ -231,6 +232,9 @@ public class FTPServerService extends Service implements Runnable {
 	public void run() {
 		// The UI will want to check the server status to update its 
 		// start/stop server button
+		int consecutiveProxyStartFailures = 0;
+		long proxyStartMillis = 0;
+
 		UiUpdater.updateClients();
 				
 		myLog.l(Log.DEBUG, "Server thread running");
@@ -308,11 +312,43 @@ public class FTPServerService extends Service implements Runnable {
 							cloudListener.join();
 						} catch (InterruptedException e) {}
 						cloudListener = null;
+						long nowMillis = new Date().getTime();
+						myLog.l(Log.DEBUG, "Now:"+nowMillis+" start:"+proxyStartMillis);
+						if(nowMillis - proxyStartMillis < 3000) {
+							// We assume that if the proxy thread crashed within 3
+							// seconds of starting, it was a startup or connection
+							// failure.
+							myLog.l(Log.DEBUG, "Incrementing proxy start failures");
+							consecutiveProxyStartFailures++;
+						} else {
+							// Otherwise assume the proxy started successfully and
+							// crashed later.
+							myLog.l(Log.DEBUG, "Resetting proxy start failures");
+							consecutiveProxyStartFailures = 0;
+						}
 					}
 				}
 				if(cloudListener == null) {
-					cloudListener = new CloudListener();
-					cloudListener.start();
+					long nowMillis = new Date().getTime();
+					boolean shouldStartListener = false;
+					// We want to restart the proxy listener without much delay 
+					// for the first few attempts, but add a much longer delay 
+					// if we consistently fail to connect.
+					if(consecutiveProxyStartFailures < 3 
+							&& (nowMillis - proxyStartMillis) > 5000) 
+					{
+						// Retry every 5 seconds for the first 3 tries
+						shouldStartListener = true;
+					} else if(nowMillis - proxyStartMillis > 60000) {
+						// After the first 3 tries, only retry once per minute
+						shouldStartListener = true;
+					}
+					if(shouldStartListener) {
+						myLog.l(Log.DEBUG, "Spawning CloudListener");
+						cloudListener = new CloudListener(this);
+						cloudListener.start();
+						proxyStartMillis = nowMillis;
+					}
 				}
 			}
 			try {
@@ -330,7 +366,7 @@ public class FTPServerService extends Service implements Runnable {
 			// later from the sessionThreads list.
 			List <SessionThread> toBeRemoved = new ArrayList<SessionThread>();
 			for(SessionThread sessionThread : sessionThreads) {
-				if(!sessionThread.is()) {
+				if(!sessionThread.isAlive()) {
 					myLog.l(Log.DEBUG, "Cleaning up finished session...");
 					try {
 						sessionThread.join();

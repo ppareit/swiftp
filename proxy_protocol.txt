@@ -184,10 +184,19 @@ Requests that may be sent by either party:
  Params:  none
  Returns: empty response
  
+ Action:  message
+ Purpose: Pass a human-readable message. If received by the Android device, the
+          message should be displayed to the user in a dialog box. This could
+          be used for service alerts.
+ Params:  text: a string containing the message
+ Returns: empty response
+ Errors:  None specific to this request
+
 LIST OF ERROR CODES
 -------------------
 
 0:   Internal server error. The errorString value may contain more information.
+9:   The request was not correctly formatted, or was missing arguments.
 10:  An account could not be created because that ANDROID_ID already has an account
 11:  Either the ANDROID_ID or secret is not valid
 12:  Invalid ANDROID_ID value

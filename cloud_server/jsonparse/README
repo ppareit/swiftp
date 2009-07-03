@@ -1,0 +1,29 @@
+To run the tests for the EEP JSON parser:
+
+# erl
+
+c(leex).
+
+leex:file(json_lex2), c(json_lex2).
+
+yecc:file(json_grammar), c(json_grammar).
+
+c(json_eep).
+
+% Run the tests
+
+json_eep:test().
+
+
+% To profile the parser:
+
+json_eep:profile().
+
+
+% Example usage:
+
+E = json_eep:json_to_term("[1,3.14,{\"key\":\"value\"}]").
+%-> [1,3.14,{[{<<"key">>,<<"value">>}]}]
+
+json_eep:term_to_json(E).
+% "[1,3.14000000000000012434,{\"key\":\"value\"}]"

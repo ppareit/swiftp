@@ -3,10 +3,10 @@
 -export([start/0, add/2, remove/1, lookup/1, dump_state/0]).
 
 start() ->
-    log(info, "Session registry active~n"),
+    log(info, "Session registry thread active~n", []),
     register(registry_process, self()),
     main_loop([]),
-    log(info, "Session registry quitting~n").
+    log(info, "Session registry quitting~n", []).
 
 % The external interface to other modules
 add(Prefix, Pid) when is_list(Prefix), is_pid(Pid) ->

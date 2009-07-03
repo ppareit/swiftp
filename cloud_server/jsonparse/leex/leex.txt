@@ -1,0 +1,258 @@
+MODULE
+
+	leex
+
+MODULE SUMMARY
+
+	Lexical analyzer generator for Erlang.
+
+DESCRIPTION
+
+	A regular expression based lexical analyzer generator for
+	Erlang, similar to lex or flex.
+
+DATATYPES
+
+	ScanRet = {ok,Tokens,EndLine} |
+		  {eof,EndLine} |
+		  {error,ErrorDescriptor,EndLine}
+	Cont = continuation()
+	ErrorDescriptor = {ErrorLine,Module,Error}
+
+EXPORTS
+
+file(FileName) -> ok | error
+file(FileName, Options) -> ok | error
+
+	The current options are:
+
+	{outdir,Dir} - generate the scanner file in directory Dir
+	dfa_graph    - generate a .dot file which contains a
+		       desciption of the DFA in a format which can be
+		       viewd with Graphviz, www.graphviz.com
+
+	Generate a lexical analyzer from the definition in the input
+	file. The input file has the extension .xrl. This is added to
+	the filename if it is not given. The resulting module is the
+	Xrl filename without the .xrl extension.
+
+GENERATED SCANNER EXPORTS
+
+string(String) -> ScanRet
+string(String, StartLine) -> ScanRet
+
+	Scan String and return all the tokens in it, or an error.
+	N.B. it is an error if all of the characters in String are
+	consumed.
+
+token(Cont, Chars) -> {more,Cont} | {done,ScanRet,RestChars}
+token(Cont, Chars, StartLine) -> {more,Cont} | {done,ScanRet,RestChars}
+
+	This is a re-entrant call to try and scan one token from
+	Chars. If there are enough characters in Chars to either scan
+	a token or detect an error then this will be returned with
+	{done,...}. Otherwise {cont,Cont} will be returned where Cont
+	is used in the next call to token with more characters to try
+	an scan the token. This is continued until a token has been
+	scanned. Cont is initially [].
+
+	It is not designed to be called directly by an application but
+	used through the i/o system where it can typically called in
+	an application by:
+
+	io:request(InFile, {get_until,Prompt,Module,token,[Line]})
+		-> ScanRet
+
+tokens(Cont, Chars) -> {more,Cont} | {done,ScanRet,RestChars}
+tokens(Cont, Chars, StartLine) -> {more,Cont} | {done,ScanRet,RestChars}
+
+	This is a re-entrant call to try and scan tokens from Chars.
+	If there are enough characters in Chars to either scan tokens
+	or detect an error then this will be returned with {done,...}.
+	Otherwise {cont,Cont} will be returned where Cont is used in
+	the next call to tokens with more characters to try an scan
+	the tokens. This is continued until all tokens have been
+	scanned. Cont is initially [].
+
+	This functions differs from token in that it will continue to
+	scan tokens upto and including an {end_token,Token} has been
+	scanned (see next section). It will then return all the
+	tokens. This is typically used for scanning grammars like
+	Erlang where there is an explicit end token, '.'.  If no end
+	token is found then the whole file will be scanned and
+	returned. If an error occurs then all tokens upto and
+	including the next end token will be skipped.
+
+	It is not designed to be called directly by an application but
+	used through the i/o system where it can typically called in
+	an application by:
+
+	io:request(InFile, {get_until,Prompt,Module,tokens,[Line]})
+		-> ScanRet
+
+format_error(ErrorDescriptor) -> Chars
+
+	Types:
+
+	ErrorDescriptor = errordesc()
+	Chars = [char() | Chars]
+
+	Returns a string which describes the error ErrorDescriptor
+	returned when there is an error in a regular expression.
+
+Input File Format
+
+	Erlang style comments starting with a '%' are allowed in
+	scanner files. A definition file has the following format:
+
+	<Header>
+
+	Definitions.
+
+	<Macro Definitions>
+
+	Rules.
+
+	<Token Rules>
+
+	Erlang Code.
+
+	<Erlang Code>
+
+	The "Definitions.", "Rules." and "Erlang Code." headings are
+	mandatory and must occur at the beginning of a source line.
+	The <Header>, <Macro Definitions> and <Erlang Code> sections
+	maybe empty but there must be at least one rule.
+
+	Macro definitions have the following format:
+
+	NAME = VALUE
+
+	and there must be spaces around '='. Macros can be used in the
+	regular expressions of rules by writing {NAME}. N.B. when
+	macros are expanded in expressions the macro calls are
+	replaced by the macro value without any form of quoting or
+	enclosing in parentheses.
+
+	Rules have the following format:
+
+	<Regexp> : <Erlang code>.
+
+	The <Regexp> must occur at the start of a line and not include
+	any blanks, use \t and \s to include TAB and SPACE characters
+	in the regular expression. If <Regexp> matches then the
+	corresponding <Erlang code> is evaluated to generate a
+	token. With the Erlang code the following predefined variables
+	are available:
+
+	TokenChars - a list of the characters in the matched token
+	TokenLen   - the number of characters in the matched token
+	TokenLine  - the line number where the token occured
+
+	The code must return:
+
+	{token,Token}     - return Token to the caller
+	{end_token,Token} - return Token and is last token in a tokens
+			    call
+	skip_token        - skip this token completely
+	{error,ErrString} - an error in the token, ErrString is a string
+			    describing the error
+
+	The following example would match a simple Erlang integer or
+	float and return a token which could be sent to the Erlang
+	parser:
+
+	D = [0-9]
+
+	{D}+ :  {token,{integer,
+			TokenLine,
+			list_to_integer(TokenChars)}}.
+	{D}+\.{D}+((E|e)(\+|\-)?{D}+)? :
+		{token,{float,TokenLine,list_to_float(TokenChars)}}.
+
+	The Erlang code in the "Erlang Code." section is written into
+	the output file directly after the module declaration and
+	predefined exports declaration so it is possible to add extra
+	exports, define imports and other attributes which are then
+	visible in the whole file.
+	
+Regular Expressions
+
+	The regular expressions allowed here is a subset of the set
+	found in egrep and in the AWK programming language, as defined
+	in the book, The AWK Programming Language, by A. V. Aho,
+	B. W. Kernighan, P. J. Weinberger. They are composed of the
+	following characters:
+
+	c
+	    matches the non-metacharacter c.
+	\c
+	    matches the escape sequence or literal character c.
+	.
+	    matches any character.
+	^
+	    matches the beginning of a string.
+	$
+	    matches the end of a string.
+	[abc...]
+	    character class, which matches any of the characters
+	    abc... Character ranges are specified by a pair of
+	    characters separated by a -.
+	[^abc...]
+	    negated character class, which matches any character
+	    except abc....
+	r1 | r2
+	    alternation. It matches either r1 or r2.
+	r1r2
+	    concatenation. It matches r1 and then r2.
+	r+
+	    matches one or more rs.
+	r*
+	    matches zero or more rs.
+	r?
+	    matches zero or one rs.
+	(r)
+	    grouping. It matches r.
+
+	The escape sequences allowed are the same as for Erlang strings:
+
+	\b
+	    backspace
+	\f
+	    form feed
+	\n
+	    newline (line feed)
+	\r
+	    carriage return
+	\t
+	    tab
+	\e
+	    escape
+	\v
+	    vertical tab
+	\s
+	    space
+	\d
+	    delete
+	\ddd
+	    the octal value ddd
+	\c
+	    any other character literally, for example \\ for
+	    backslash, \" for ")
+
+	The following examples define Erlang data types:
+
+	Atoms     [a-z][0-9a-zA-Z_]*
+
+	Variables [A-Z_][0-9a-zA-Z_]*
+
+	Floats    (\+|-)?[0-9]+\.[0-9]+((E|e)(\+|-)?[0-9]+)?
+
+	N.B. Anchoring a regular expression with ^ and $ is not
+	implemented in the current version of leex and just generates
+	a nasty error.
+
+AUTHORS
+	Robert Virding - rvirding@gmail.com
+
+	Copyright © 2008 Robert Virding

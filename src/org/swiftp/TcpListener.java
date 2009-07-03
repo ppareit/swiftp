@@ -35,7 +35,7 @@ public class TcpListener extends Thread {
 				ftpServerService.registerSessionThread(newSession);
 			}
 		} catch (Exception e) {
-			myLog.l(Log.INFO, "Exception in TcpListener");
+			myLog.l(Log.DEBUG, "Exception in TcpListener");
 		}
 	}
 }

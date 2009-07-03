@@ -6,15 +6,15 @@
 -define(CLIENT_PORT, 2221).
 
 start() ->
-    log(info, "Running!~n"),
+    log(info, "Running!~n", []),
     process_flag(trap_exit, true),
     register(random_thread, spawn_link(rand, start, [])),
     _Registry = spawn_link(session_registry, start, []),
-    _SessionSpawner = spawn_link(?MODULE, listener, [?DEVICE_PORT,
+    _CommandSpawner = spawn_link(?MODULE, listener, [?DEVICE_PORT,
                                                     "SessionListener",
-                                                    session,
+                                                    command_session,
                                                     start]),
-    _MatcherSpawner = spawn_link(?MODULE, listener, [?CLIENT_PORT,
+    _ClientSpawner = spawn_link(?MODULE, listener, [?CLIENT_PORT,
                                                     "MatcherListener",
                                                     connection_matcher,
                                                     start]),
@@ -22,14 +22,14 @@ start() ->
     ReceiveLoop = fun(F) ->
         receive 
             {quit, Why} -> 
-                log("Got quit request with: ~p~n", [Why]);
+                log(info, "Got quit request with: ~p~n", [Why]);
             X -> 
-                log("Main thread got message: ~p~n", [X]),
+                log(debug, "Main thread got message: ~p~n", [X]),
                 F()
         end
     end,
     ReceiveLoop(ReceiveLoop),
-    log(info, "Server stopping.~n").
+    log(info, "Server stopping.~n", []).
 
 listener(Port, Name, Mod, Func) ->
     case tcp_listen(Port) of 

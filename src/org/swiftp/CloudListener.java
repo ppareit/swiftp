@@ -19,6 +19,8 @@ public class CloudListener extends Thread {
 	MyLog myLog = new MyLog(getClass().getName());
 	private byte[] outboundData = null;
 	private byte[] inboundData = null;
+	JSONObject response = null;
+	Thread responseWaiter = null;
 	
 	/* We establish a so-called "command session" to the proxy. New connections
 	 * will be handled by creating addition control and data connections to the
@@ -31,7 +33,7 @@ public class CloudListener extends Thread {
 	}
 	
 	public void run() {
-		Socket commandSocket;
+		Socket commandSocket = null;
 		String[] candidateProxies = getProxyList();
 		for(String hostname : candidateProxies) {
 			try {
@@ -40,105 +42,135 @@ public class CloudListener extends Thread {
 				myLog.l(Log.INFO, "Failed proxy connection to: " + hostname + ",  trying next");
 				continue;
 			}
-			myLog.l(Log.INFO, "Proxy connection open, authenticating");
-			JSONObject json = new JSONObject();
-			String secret = retrieveSecret();
+		}
+		if(commandSocket == null) {
+			myLog.l(Log.INFO, "No proxies accepted connection, failing.");
+			return;
+		}
+		myLog.l(Log.INFO, "Proxy connection open, authenticating");
+		JSONObject json = new JSONObject();
+		String secret = retrieveSecret();
+		try {
+			json.put("android_id", Util.getAndroidId());
+			json.put("swiftp_version", Util.getVersion());
+			if(secret == null) {
+				// We don't have a secret stored. This implies that we haven't yet
+				// created an account, or that our account information was somehow
+				// lost. In either case, we need to send a create_account request
+				// to the proxy. The fields are "android_id" and "action."
+				json.put("action", "create_account");
+			} else {
+				// We have a valid secret, so do an "authenticate" request
+				json.put("action", "authenticate");
+				json.put("secret", secret);
+			}
 			try {
-				json.put("android_id", Util.getAndroidId());
-				json.put("swiftp_version", Util.getVersion());
-				if(secret == null) {
-					// We don't have a secret stored. This implies that we haven't yet
-					// created an account, or that our account information was somehow
-					// lost. In either case, we need to send a create_account request
-					// to the proxy. The fields are "android_id" and "action."
-					json.put("action", "create_account");
-				} else {
-					// We have a valid secret, so do an "authenticate" request
-					json.put("action", "authenticate");
-					json.put("secret", secret);
-				}
-				try {
-					OutputStream out = commandSocket.getOutputStream();
-					InputStream in = commandSocket.getInputStream();
-					int numBytes;
-					
-					out.write(json.toString().getBytes(ENCODING));
-					// Read and parse the server's response
-					byte[] bytes = new byte[IN_BUF_SIZE];
-					// Here we assume that the server's response will all be contained in
-					// a single read, which may be unsafe for large responses
-					numBytes = in.read(bytes);
-					json = new JSONObject(new String(bytes, 0, numBytes, ENCODING));
-					if(checkAndPrintJsonError(json)) {
-						return;
-					}
-					
-					// If we reach here, we have a response to our create_account or authenticate
-					// request that indicates success.
-					if(secret == null) {
-						// If our local variable "secret" is null, then we did a create_account request,
-						// and the proxy should have replied with a object containing a field named
-						// "secret" that will be our persistent secret.
-						if(!json.has("secret")) {
-							myLog.l(Log.INFO, "Proxy didn't reply to create_account with secret");
-							return;
-						}
-						secret = json.getString("secret");
-						storeSecret(secret);
-					}
-					
-					// Now that we have authenticated, we want to start the command session so we can
-					// be notified of pending control sessions.
-					json = new JSONObject();
-					json.put("action", "start_command_session");
-					out.write(json.toString().getBytes(ENCODING));
-					numBytes = in.read(bytes);
-					
-					// Get the response to the start_command_session request
-					json = new JSONObject(new String(bytes, 0, numBytes, ENCODING));
-					if(checkAndPrintJsonError(json)) {
-						return;
-					}
-					if(!json.has("prefix")) {
-						myLog.l(Log.INFO, "start_command_session didn't receive a prefix in response");
-						return;
-					}
-					String prefix = json.getString("prefix");
-					while(true) {
-						numBytes = in.read(bytes);
-						if(numBytes == -1) {
-							continue;
-						}
-						if(outboundData != null) {
-							myLog.l(Log.DEBUG, "Outbound command data queued, sending");
-							out.write(outboundData);
-						}
-						// Get the response to the request that we just sent
-						numBytes = in.read(bytes);
-						inboundData = new byte[numBytes];
-						System.arraycopy(bytes, 0, inboundData, 0, numBytes);
-					}
-					// Think about: how to prevent multiple simultaneous requests
-					//              how the datasocketfactory finds the valid cloudlistener
-					//              how to multiplex between listening and sending requests
-					//              how to prevent simultaneous requests by both parties
-					
-				} catch (IOException e) {
-					myLog.l(Log.INFO, "IOException in command session: " + e);
+				OutputStream out = commandSocket.getOutputStream();
+				InputStream in = commandSocket.getInputStream();
+				int numBytes;
+				
+				out.write(json.toString().getBytes(ENCODING));
+				// Read and parse the server's response
+				byte[] bytes = new byte[IN_BUF_SIZE];
+				// Here we assume that the server's response will all be contained in
+				// a single read, which may be unsafe for large responses
+				numBytes = in.read(bytes);
+				json = new JSONObject(new String(bytes, 0, numBytes, ENCODING));
+				if(checkAndPrintJsonError(json)) {
 					return;
 				}
-			} catch (JSONException e) {
-				myLog.l(Log.ERROR, "JSONException: " + e);
+				
+				// If we reach here, we have a response to our create_account or authenticate
+				// request that indicates success.
+				if(secret == null) {
+					// If our local variable "secret" is null, then we did a create_account request,
+					// and the proxy should have replied with a object containing a field named
+					// "secret" that will be our persistent secret.
+					if(!json.has("secret")) {
+						myLog.l(Log.INFO, "Proxy didn't reply to create_account with secret");
+						return;
+					}
+					secret = json.getString("secret");
+					storeSecret(secret);
+				}
+				
+				// Now that we have authenticated, we want to start the command session so we can
+				// be notified of pending control sessions.
+				json = new JSONObject();
+				json.put("action", "start_command_session");
+				out.write(json.toString().getBytes(ENCODING));
+				numBytes = in.read(bytes);
+				
+				// Get the response to the start_command_session request
+				json = new JSONObject(new String(bytes, 0, numBytes, ENCODING));
+				if(checkAndPrintJsonError(json)) {
+					return;
+				}
+				if(!json.has("prefix")) {
+					myLog.l(Log.INFO, "start_command_session didn't receive a prefix in response");
+					return;
+				}
+				String prefix = json.getString("prefix");
+				while(true) {
+					numBytes = in.read(bytes);
+					JSONObject incomingJson = null;
+					if(numBytes != -1) {
+						incomingJson = new JSONObject(new String(bytes, ENCODING));
+						if(incomingJson.has("action")) {
+							// If the incoming JSON object has an "action" field, then it is a
+							// request, and not a response
+							incomingCommand(incomingJson);
+						} else {
+							// If the incoming JSON object does not have an "action" field, then
+							// it is a response to a request we sent earlier.
+							// If there's an object waiting for a response, then that object
+							// will be referenced by responseWaiter.
+							if(responseWaiter != null) {
+								if(response != null) {
+									myLog.l(Log.INFO, "Overwriting existing cmd session response");
+								}
+								response = incomingJson;
+								responseWaiter.interrupt();
+							} else {
+								myLog.l(Log.INFO, "Response received but no responseWaiter");
+							}
+						}
+					} else {
+						myLog.l(Log.DEBUG, "Command socket read returned -1");
+					}
+					
+					if(outboundData != null) {
+						myLog.l(Log.DEBUG, "Outbound command data queued, sending");
+						out.write(outboundData);
+					}
+					// Get the response to the request that we just sent
+					numBytes = in.read(bytes);
+					inboundData = new byte[numBytes];
+					System.arraycopy(bytes, 0, inboundData, 0, numBytes);
+				}
+				// Think about: how to prevent multiple simultaneous requests
+				//              how the datasocketfactory finds the valid cloudlistener
+				//              how to multiplex between listening and sending requests
+				//              how to prevent simultaneous requests by both parties
+				
+			} catch (IOException e) {
+				myLog.l(Log.INFO, "IOException in command session: " + e);
 				return;
 			}
-			
-			
+		} catch (JSONException e) {
+			myLog.l(Log.ERROR, "JSONException: " + e);
+			return;
 		}
 	}
 	
 	private String[] getProxyList() {
-		// TODO: retrieve this from the net instead of hardcoding
-		return new String[] {"c1.swiftp.org"};
+		// TODO: retrieve this from the net instead of hardcoding, maybe store on s3/cloudfront
+		if(Defaults.release) {
+			myLog.l(Log.INFO, "getProxyList stub");
+			return null;
+		} else {
+			return new String[] {"cdev.swiftp.org"};
+		}
 	}
 	
 	private boolean checkAndPrintJsonError(JSONObject json) throws JSONException {
@@ -176,6 +208,14 @@ public class CloudListener extends Thread {
 		Editor editor = settings.edit();
 		editor.putString("proxySecret", secret);
 		editor.commit();
+	}
+	
+	private void incomingCommand(JSONObject json) {
+		try {
+			myLog.l(Log.DEBUG, "Incoming command stub, action=" + json.getString("action"));
+		} catch (JSONException e){
+			myLog.l(Log.INFO, "JSONException in proxy incomingCommand");
+		}
 	}
 	
 }

@@ -29,13 +29,13 @@ start(Socket) ->
                     gen_tcp:close(Socket)
 
             end;
-        _ -> log(info, "Client closed without ever sending valid USER~n")
+        _ -> log(info, "Client closed without ever sending valid USER~n", [])
     catch
         X : Y -> 
             log("Matcher exception ~p:~p~n", [X, Y]),
             gen_tcp:close(Socket)
     end,
-    log(info, "Matcher exiting~n").
+    log(info, "Matcher exiting~n", []).
 
 get_parse_login(Socket) ->
     receive
@@ -47,7 +47,7 @@ get_parse_login(Socket) ->
         {tcp_closed, Socket} ->
             tcp_closed;
         Data ->
-            log(debug, "Didn't match~n"),
+            log(debug, "Didn't match~n", []),
             case Data of
                 <<"USER ", _/binary>> ->
                     gen_tcp:send(Socket, <<"530 Check your username prefix\r\n">>);
