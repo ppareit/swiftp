@@ -120,6 +120,8 @@ List of requests from SwiFTP Android app to proxy server:
           "swiftp_version": the version of SwiFTP server installed
  Returns: Empty object on success
  Errors:  11: The ANDROID_ID isn't in the database, or the secret is wrong
+          12: There has been a database error, and account info was lost. Delete
+              stored secret and create a new account.
  
  Action:  start_command_session
  Purpose: Authenticate device and begin a command session
@@ -133,8 +135,7 @@ List of requests from SwiFTP Android app to proxy server:
           so the proxy can begin listening for an inbound data connection from the
           FTP client.
  Params:  None
- Returns: "address": a string giving the address to which the FTP client should connect
-          "port": a number giving the port that the server is listening on.
+ Returns: "port": a number giving the port that the server is listening on.
  Errors:  None specific to this request
  
  Action:  data_pasv_accept
@@ -177,6 +178,15 @@ Requests from proxy server to SwiFTP app:
           authenticate, then send accept_control_connection.
  Params:  "port": the port to which the SwiFTP Android app should connect
  Errors:  None specific to this request
+ 
+ Action:  reconnect
+ Purpose: The proxy might send this message before it goes down for maintenance. The
+          SwiFTP Android app should disconnect soon and restart the connection process,
+          which will probably result in a connection to a different proxy server. The
+          Android app should do this in a way that doesn't interrupt the user in the
+          middle of a transfer, if possible.
+ Params:  None
+ Errors:  None specific to this message
 
 Requests that may be sent by either party:
  Action:  noop

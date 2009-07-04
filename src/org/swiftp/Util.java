@@ -1,6 +1,5 @@
 package org.swiftp;
 
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 

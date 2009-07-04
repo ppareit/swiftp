@@ -10,11 +10,11 @@ start() ->
     process_flag(trap_exit, true),
     register(random_thread, spawn_link(rand, start, [])),
     _Registry = spawn_link(session_registry, start, []),
-    _CommandSpawner = spawn_link(?MODULE, listener, [?DEVICE_PORT,
+    _DeviceThreadSpawner = spawn_link(?MODULE, listener, [?DEVICE_PORT,
                                                     "SessionListener",
-                                                    command_session,
+                                                    device_session,
                                                     start]),
-    _ClientSpawner = spawn_link(?MODULE, listener, [?CLIENT_PORT,
+    _ClientThreadSpawner = spawn_link(?MODULE, listener, [?CLIENT_PORT,
                                                     "MatcherListener",
                                                     connection_matcher,
                                                     start]),
@@ -32,7 +32,7 @@ start() ->
     log(info, "Server stopping.~n", []).
 
 listener(Port, Name, Mod, Func) ->
-    case tcp_listen(Port) of 
+    case util:tcp_listen(Port) of 
         {ok, TcpListener} -> listener(Port, Name, Mod, Func, TcpListener);
         X -> log("~p listener TCP listen error: ~p~n", [Name, X])
     end.
@@ -47,10 +47,6 @@ listener(Port, Name, Mod, Func, TcpListener) ->
             gen_tcp:close(TcpListener)
     end.
 
-tcp_listen(Port) -> 
-    gen_tcp:listen(Port, [binary, %{packet, 4}, 
-                                   {reuseaddr, true}, 
-                                   {active, true}]).
 
 
 

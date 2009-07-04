@@ -37,11 +37,11 @@ authenticate_json({JsonKeyValList}) ->
     case proplists:get_value(<<"android_id">>, JsonKeyValList) of
         undefined -> 
             log(info, "authenticate request didn't contain android_id~n", []),
-            {false, term_to_json({[{9, "android_id not present"}]})};
+            {false, term_to_json({[{9, <<"android_id not present">>}]})};
         AndroidId -> 
             log(info, "Stub authenticate_json always allowing. android_id ~p~n", 
                 [AndroidId]),
-            {true, term_to_json({[{}]})}  % empty object returned on successful auth
+            {true, term_to_json({[]})}  % empty object returned on successful auth
     end.
     
 % Unpack and execute an incoming JSON "create_account" action
@@ -52,12 +52,12 @@ create_account_json({JsonKeyValList}) ->
             log(info, "create_account didn't contain android_id~n", []),
             {false, term_to_json({[{9, "android_id not present"}]})};
         AndroidId ->
-            Secret = generate_secret(AndroidId),
+            Secret = list_to_binary(generate_secret(AndroidId)),
             {true, term_to_json({[{"secret", Secret}]})}
     end.
     
     
-generate_secret(AndroidId)->
-    log(info, "Stub generate_secret persisting its secret like it should~n", []),
+generate_secret(_AndroidId)->
+    log(info, "Stub generate_secret not actually persisting~n", []),
     random_alnum(16).
     

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-erl -s server start
+erlc *.erl && erl -s server start

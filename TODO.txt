@@ -29,6 +29,8 @@ Request root if on rooted device
 Update wiki instructions for cloud proxy
 Generate and automate translations
 Add warning about fundamental security problems upon first cloud startup
+Host own DNS on AWS
+Add warning about fundamental security problems upon first cloud startup
 Copyright notices on all files
 Generate proxy_architecture.pdf from XOJ file
 For CloudListener, retrieve proxy server list from s3 or cloudfront
@@ -40,3 +42,5 @@ Look at chef, cfengine, puppet for EC2 instance config mgmt
 Add options to listen on all interfaces or just wifi
 Add checkbox (default checked) for "my internet connection is firewalled" to activate cloud proxy
 Add explanation of pricing model and costs
+Don't use proplist for prefix registry in proxy
+Persist prefixes and stats in Mnesia
