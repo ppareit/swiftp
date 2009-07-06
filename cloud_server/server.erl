@@ -1,11 +1,36 @@
 -module(server).
--export([start/0, listener/4]).
--import(log, [log/2, log/3]).
+-export([start/0, start/1, ping/0, listener/4]).
+-import(log, [log/3]).
+-import(db, [create_master_schema/0, join_db/1]).
 
 -define(DEVICE_PORT, 2222).
 -define(CLIENT_PORT, 2221).
 
+% Called when we are the first node of a cluster (create a new db schema)
 start() ->
+    case create_master_schema() of
+        ok -> 
+            log(info, "Master schema created~n", []),
+            start_listeners();
+        _X -> 
+            log(error, "Master schema create failed, stopping.~n", [])
+    end,
+    init:stop().
+    
+% Called when we are to join an existing cluster. The argument comes from
+% the command line (e.g. erl -s server start 'name@host' -detached)
+start([ConnectTo]) ->
+    case join_db(ConnectTo) of
+        ok -> 
+            log(info, "Connected to mnesia cluster ok", []),
+            start_listeners();
+        X ->
+            log(error, "Mnesia join failed: ~p~n", [X])
+    end,
+    init:stop().
+
+start_listeners() ->    
+    % TODO: trap exits
     log(info, "Running!~n", []),
     process_flag(trap_exit, true),
     register(random_thread, spawn_link(rand, start, [])),
@@ -34,7 +59,7 @@ start() ->
 listener(Port, Name, Mod, Func) ->
     case util:tcp_listen(Port) of 
         {ok, TcpListener} -> listener(Port, Name, Mod, Func, TcpListener);
-        X -> log("~p listener TCP listen error: ~p~n", [Name, X])
+        X -> log(error, "~p listener TCP listen error: ~p~n", [Name, X])
     end.
 listener(Port, Name, Mod, Func, TcpListener) ->
     case gen_tcp:accept(TcpListener) of
@@ -43,10 +68,13 @@ listener(Port, Name, Mod, Func, TcpListener) ->
             gen_tcp:controlling_process(Socket, Child),
             listener(Port, Name, Mod, Func, TcpListener);
         X -> 
-            log("Accept error: ~p~n", [X]),
+            log(error, "Accept error: ~p~n", [X]),
             gen_tcp:close(TcpListener)
     end.
 
+% Called via RPC from remote nodes to test communication.
+ping() ->
+    ok.
 
 
 

@@ -1,0 +1,49 @@
+#!/usr/bin/python
+import sys
+import os
+
+logfilename = "./autostart.log"
+fh = open(logfilename, 'a')
+
+def log(string):
+    """Writes a string to both stdout and the log file"""
+    string += "\n"
+    fh.write(string)
+    sys.stdout.write(string)
+
+logfile = 'autostart.log'
+user = 'swiftp-proxy'
+erlnodename = 'swiftp-proxy'
+erlcookie = 'abc123'
+installdir = '/swiftp_proxy'
+# The "-mnesia dir" parameter to erl requires some strange quoting...
+mnesiadir = "\\\"" + installdir + "/mnesia_dir\\\"" 
+detachstring = '-detached'
+
+log('Changing directory owner...')
+os.system('chown ' + user + ' ' + installdir + ' -R')
+
+# All command line params not beginning with '-' should be passed to the
+# erlang server:start/1 function.
+startarg = ""
+if len(sys.argv) > 1:
+    for param in sys.argv[1:]:
+        if param[0] != '-':
+            log("Will pass param to start(): " + param)
+	    startarg += param + ' '
+        elif param == '-nodetach':
+            log("Won't detach")
+            detachstring = ''
+
+log('Starting erlang...')
+
+# Run backgrounded, entry point server:start/0,1
+command = 'su '+user+' -c \'erl ' \
+               + detachstring \
+               + ' -name ' +erlnodename \
+               + ' -s server start ' + startarg \
+               + ' -mnesia dir ' + mnesiadir \
+               + ' -setcookie ' + erlcookie \
+               + '\''
+log("Running start command: " + command)
+os.system(command)
