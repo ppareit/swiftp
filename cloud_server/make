@@ -1,0 +1,5 @@
+#!/usr/bin/escript
+
+main(_Args) ->
+	Output = make:all(),
+	io:format("~p~n", [Output]).

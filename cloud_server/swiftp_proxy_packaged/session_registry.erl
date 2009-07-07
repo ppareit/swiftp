@@ -1,6 +1,6 @@
--module(session_registry).
+-module(swiftp_proxy.session_registry).
 -export([start/0, add/2, remove/1, lookup/1, dump_state/0]).
--import(log, [log/3]).
+-import(swiftp_proxy.log, [log/3]).
 
 start() ->
     log(info, "Session registry thread active~n", []),

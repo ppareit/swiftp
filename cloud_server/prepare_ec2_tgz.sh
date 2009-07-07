@@ -1,5 +1,13 @@
 #!/bin/bash
 
+erlc *.erl
+
+if [ "$?" != "0" ]
+then
+	echo "Compilation failed, stopping."
+	exit
+fi
+
 if [ "$1" != "-dev" ]
 then
 	DATE=`date +'%y%m%d_%H%M%S'`
@@ -8,7 +16,7 @@ else
 	FILE="/var/www/swiftp_proxy_dev.tgz"
 fi
 
-sudo tar -cvz --exclude='*.svn' --exclude='*~' -f $FILE ./
+sudo tar -cz --exclude='*.svn' --exclude='*~' -f $FILE ./
 
 if [ "$?" == "0" ]
 then

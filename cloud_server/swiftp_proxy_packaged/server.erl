@@ -1,7 +1,7 @@
--module(server).
+-module(swiftp_proxy.server).
 -export([start/0, start/1, ping/0, listener/4]).
--import(log, [log/3]).
--import(db, [create_master_schema/0, join_db/1]).
+-import(swiftp_proxy.log, [log/3]).
+-import(swiftp_proxy.db, [create_master_schema/0, join_db/1]).
 
 -define(DEVICE_PORT, 2222).
 -define(CLIENT_PORT, 2221).

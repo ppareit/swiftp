@@ -1,10 +1,10 @@
--module(device_session).
+-module(swiftp_proxy.device_session).
 -export([start/1]).
 -import(gen_tcp, [recv/2]).
--import(log, [log/2, log/3]).
--import(security, [auth_or_create_account/1]).
--import(rand, [random_alnum/1]).
--import(json_eep, [json_to_term/1, term_to_json/1]).
+-import(swiftp_proxy.log, [log/2, log/3]).
+-import(swiftp_proxy.security, [auth_or_create_account/1]).
+-import(swiftp_proxy.rand, [random_alnum/1]).
+-import(jsonparse.json_eep, [json_to_term/1, term_to_json/1]).
 
 -record(state, {device_id, session_bytes, total_bytes, quota}).
 

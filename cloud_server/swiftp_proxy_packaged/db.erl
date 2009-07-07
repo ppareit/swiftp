@@ -1,7 +1,7 @@
--module(db).
+-module(swiftp_proxy.db).
 -include("records.hrl").
 -export([create_master_schema/0, join_db/1]).
--import(log, [log/3]).
+-import(swiftp_proxy.log, [log/3]).
 
 % Creates schema, should only be called on initial master node.
 % Returns either {error, Reason} or ok.

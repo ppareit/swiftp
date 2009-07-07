@@ -5,7 +5,7 @@ import urllib
 
 # Config section
 apps = [("/swiftp_proxy", "http://24.21.195.59/swiftp_proxy_dev.tgz", "")]
-do_apt_upgrade = True
+do_apt_upgrade = False
 
 
 # Code section
@@ -52,9 +52,8 @@ for i in range(0, len(apps)):
 
     if not os.access('./autostart', os.R_OK | os.X_OK):
         log("autostart did not exist after unpacking TGZ, skipping: " + url)
-        continue
-    
-    log("Running autostart script...")
-    os.system('./autostart' + ' ' + autostart_args)
+    else:
+        log("Running autostart script...")
+        os.system('./autostart' + ' ' + autostart_args)
 
-log("All scripts run, exiting.")
+log("Finished, exiting.")

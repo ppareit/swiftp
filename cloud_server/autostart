@@ -41,7 +41,7 @@ log('Starting erlang...')
 command = 'su '+user+' -c \'erl ' \
                + detachstring \
                + ' -name ' +erlnodename \
-               + ' -s server start ' + startarg \
+               + ' -s launcher start ' + startarg \
                + ' -mnesia dir ' + mnesiadir \
                + ' -setcookie ' + erlcookie \
                + '\''

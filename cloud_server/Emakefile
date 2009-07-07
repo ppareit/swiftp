@@ -1,0 +1,2 @@
+{'json_eep/*', [debug_info]}.
+{'*', [debug_info, {i, "./json_eep"}]}.

@@ -1,4 +1,4 @@
--module(log).
+-module(swiftp_proxy.log).
 -export([start/4, log/3, logger_thread_start/3]).
 
 % A wrapper for log() providing a default log level of "info"

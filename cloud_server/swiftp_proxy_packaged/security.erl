@@ -1,8 +1,8 @@
--module(security).
+-module(swiftp_proxy.security).
 -export([auth_or_create_account/1]).
--import(log, [log/2, log/3]).
--import(rand, [random_alnum/1]).
--import(json_eep, [term_to_json/1, json_to_term/1]).
+-import(swiftp_proxy.log, [log/2, log/3]).
+-import(swiftp_proxy.rand, [random_alnum/1]).
+-import(jsonparse.json_eep, [term_to_json/1, json_to_term/1]).
 
 auth_or_create_account(Socket) ->
     receive
