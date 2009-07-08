@@ -72,9 +72,9 @@ command_session(Socket) ->
         {tcp_closed, Socket} ->
             log(info, "Command session closed~n", []);
         {control_connection_waiting, Port} ->
-            PortString = integer_to_list(Port),
+            PortBinary = list_to_binary(integer_to_list(Port)),
             Json = term_to_json({[{<<"action">>, <<"control_connection_waiting">>},
-                                  {<<"port">>, <<PortString>>}]}),
+                                  {<<"port">>, PortBinary}]}),
             gen_tcp:send(Socket, Json),
             log(debug, "Told client about waiting control connection on ~p~n", [Port]),
             command_session(Socket)
@@ -89,9 +89,9 @@ data_pasv_listen(Socket) ->
             gen_tcp:send(Socket, Json);
         {ok, NewSocket} ->
             {ok, Port} = inet:port(NewSocket),
-            PortString = integer_to_list(Port),
+            PortBinary = list_to_binary(integer_to_list(Port)),
             log(debug, "Opened pasv socket on port: ~p~n", [Port]),
-            Json = term_to_json({[{<<"port">>, <<PortString>>}]}),
+            Json = term_to_json({[{<<"port">>, PortBinary}]}),
             gen_tcp:send(Socket, Json),
             wait_for_pasv_accept(Socket, NewSocket),
             % When we return here, the proxying is over, and it's time to clean up
@@ -112,7 +112,7 @@ wait_for_pasv_accept(DeviceSocket, ListenSocket) ->
                             log(warn, "pasv accept error: ~p~n", [X])
                     end;
                 Other ->
-                    log("Got unexpected request waiting for pasv_accept: ~p~n", 
+                    log(error, "Got unexpected request waiting for pasv_accept: ~p~n", 
                         [Other])
             end
     after 120000 ->
@@ -160,6 +160,7 @@ proxy_loop(DevSocket, CliSocket) ->
 
 % Repeated generate prefix strings until we find an unused one
 get_unused_prefix() -> get_unused_prefix(50). % Try max 50 times
+-spec get_unused_prefix(integer()) -> string().
 get_unused_prefix(0) -> throw("Could not find unused prefix");
 get_unused_prefix(TriesLeft) ->
     Candidate = random_alnum(6),

@@ -33,7 +33,7 @@ create_table_list([{Name, Attributes} | Rest]) ->
 
 join_db(Target) ->
     ok = mnesia:delete_schema([node()]),
-    case rpc:call(Target, server, ping) of
+    case rpc:call(Target, server, ping, []) of
         {badrpc, X} ->
             log(error, "Couldn't connect to node ~p due to ~p~n", [Target, X]);
         ok ->
