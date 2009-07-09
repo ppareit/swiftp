@@ -1,5 +1,5 @@
 -module(server).
--export([start/0, start/1, ping/0, listener/4]).
+-export([start/0, start/1, ping/0, listener/4, become_cluster_logger/0]).
 -import(log, [log/3]).
 -import(db, [create_master_schema/0, join_db/1]).
 
@@ -8,31 +8,28 @@
 
 % Called when we are the first node of a cluster (create a new db schema)
 start() ->
-    case create_master_schema() of
-        ok -> 
-            log(info, "Master schema created~n", []),
-            start_listeners();
-        _X -> 
-            log(error, "Master schema create failed, stopping.~n", [])
-    end,
+    become_cluster_logger(),  % The master starts out as cluster logger
+    ok = create_master_schema(),
+    log(info, "Master schema created, DB ready~n", []),
+    db_init_completed(),
     init:stop().
     
 % Called when we are to join an existing cluster. The argument comes from
-% the command line (e.g. erl -s server start 'name@host' -detached)
+% the command line (e.g. erl -s server start 'name@host')
 start([ConnectTo]) ->
-    case join_db(ConnectTo) of
-        ok -> 
-            log(info, "Connected to mnesia cluster ok", []),
-            start_listeners();
-        X ->
-            log(error, "Mnesia join failed: ~p~n", [X])
+    case net_adm:ping(ConnectTo) of
+        pang ->
+            io:format("Couldn't ping master ~p~n", [ConnectTo]);
+        pong ->
+            global:sync(),   % sync global names so logging works
+            join_db(ConnectTo),
+            log(info, "Connected to mnesia cluster ok, DB ready~n", []),
+            db_init_completed()
     end,
     init:stop().
 
-start_listeners() ->
-    log(info, "Running!~n", []),
+db_init_completed() ->
     process_flag(trap_exit, true),
-    LogPid = spawn_link_logger(), 
     register(random_thread, spawn_link(rand, start, [])),
     _Registry = spawn_link(session_registry, start, []),
     _DeviceThreadSpawner = spawn_link(?MODULE, listener, [?DEVICE_PORT,
@@ -44,27 +41,41 @@ start_listeners() ->
                                                     connection_matcher,
                                                     start]),
     % Loop until we receive a quit request or exception/error occurs
-    ReceiveLoop = fun(F, InLogPid) ->
+    ReceiveLoop = fun(F) ->
         receive 
             {quit, Why} -> 
                 log(info, "Got quit request with: ~p~n", [Why]);
-            {'EXIT', LogPid, normal} ->
-                io:format("Logger exited normally, not respawning~n", []),
-                F(F, none);
-            {'EXIT', LogPid, Reason} ->
-                io:format("Logger exited, restarting. Reason: ~p~n", [Reason]),
-                NewLogPid = spawn_link_logger(),
-                F(F, NewLogPid);
             X -> 
                 log(debug, "Main thread got message: ~p~n", [X]),
-                F(F, InLogPid)
+                F(F)
         end
     end,
-    ReceiveLoop(ReceiveLoop, LogPid),
+    ReceiveLoop(ReceiveLoop),
     log(info, "Server stopping.~n", []).
 
-spawn_link_logger() ->
-    spawn_link(log, start, ["/swiftp_proxy/logs", "proxy.log", debug, 10]).
+become_cluster_logger() ->
+    spawn(log, start, ["/swiftp_proxy/logs", "proxy.log", debug, 10]).    
+
+%% log_respawner(LogPid) ->
+%%     process_flag(trap_exit, true),
+%%     % This function will be called with 'none' if no logger exists yet
+%%     case LogPid of
+%%         none -> 
+%%             spawn_link(log, start, ["/swiftp_proxy/logs", "proxy.log", debug, 10]);
+%%         _ ->
+%%             ok
+%%     end,
+%%     receive
+%%         {'EXIT', LogPid, normal} ->
+%%             io:format("Log respawner quitting, normal exit~n", []);
+%%         {'EXIT', LogPid, Reason} ->
+%%             io:format("Log thread died with reason ~p, respawning~n", [Reason]),
+%%             log_respawner(none);
+%%         Other ->
+%%             io:format("Log respawner go unexpected message ~p~n", [Other]),
+%%             log_respawner(LogPid)
+%%     end.
+
 
 listener(Port, Name, Mod, Func) ->
     case util:tcp_listen(Port) of 

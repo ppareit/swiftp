@@ -40,8 +40,9 @@ log('Starting erlang...')
 # Run backgrounded, entry point server:start/0,1
 command = 'su '+user+' -c \'erl ' \
                + detachstring \
+               + ' -pa ./ebin ' \
                + ' -name ' +erlnodename \
-               + ' -s launcher start ' + startarg \
+               + ' -s server start ' + startarg \
                + ' -mnesia dir ' + mnesiadir \
                + ' -setcookie ' + erlcookie \
                + '\''

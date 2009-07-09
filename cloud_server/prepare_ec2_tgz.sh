@@ -1,6 +1,6 @@
 #!/bin/bash
 
-erlc *.erl
+./make
 
 if [ "$?" != "0" ]
 then

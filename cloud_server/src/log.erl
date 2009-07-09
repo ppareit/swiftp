@@ -1,5 +1,7 @@
 -module(log).
--export([start/4, log/3, logger_thread_start/3]).
+-behavior(gen_event).
+-export([start/4, log/3, logger_thread_start/3,
+         init/1, handle_event/2, terminate/2, code_change/3, handle_call/2, handle_info/2]).
 
 % A wrapper for log() providing a default log level of "info"
 %log(Message) -> log(info, Message).
@@ -23,19 +25,26 @@ start(Directory, Filename, Threshold, Tries) ->
         {'EXIT', ChildPid, _Reason} ->
             start(Directory, Filename, Threshold, Tries - 1)
     end.
-        
+    
 %% @spec logger_thread_start(Directory::string(), File::string(), Threshold::atom())
 %%                           -> none()
 logger_thread_start(Directory, File, Threshold) ->
-    become_cluster_logger(),
-    case file:open(Directory ++ "/" ++ File, [append]) of
-        {ok, Fh} ->
-            io:format("Log file open~n", []),
-            main_loop(Fh, Directory, File, Threshold);
-        X ->
-            io:format("Failed opening log file: ~p~n", [X]),
-            exit(file_open_failure)
+    case register_logger_name() of
+        no ->
+            io:format("Failed to register global logger name, exiting normally"),
+            exit(normal);
+        yes ->
+            io:format("Registered this node as cluster logger~n", []),
+            case file:open(Directory ++ "/" ++ File, [append]) of
+                {ok, Fh} ->
+                    io:format("Log file open~n", []),
+                    main_loop(Fh, Directory, File, Threshold);
+                X ->
+                    io:format("Failed opening log file: ~p~n", [X]),
+                    exit(file_open_failure)
+            end
     end.
+            
 
 %% @spec main_loop(Fh::iodevice(), Directory::string(), File::string(), Threshold::atom())
 %%                 -> ok
@@ -70,8 +79,8 @@ main_loop(Fh, Directory, File, Threshold) ->
             main_loop(Fh, Directory, File, Threshold)
     end.
 
-%% @spec become_cluster_logger() -> yes | no
-become_cluster_logger() ->
+%% @spec register_logger_name() -> yes | no
+register_logger_name() ->
     MyPid = self(),
     case global:whereis_name(logger) of
         undefined -> ok;
@@ -94,7 +103,8 @@ become_cluster_logger() ->
 log(Level, Message, Args) when is_atom(Level), is_list(Message), is_list(Args) ->
     case global:whereis_name(logger) of
         undefined ->
-            io:format("No logger for msg: ~p~n", [Message]),
+            io:format("No logger for msg: ", []),
+            io:format(Message, Args),
             {error, "No logger registered"};
         LoggerPid ->
             %{{Year,Month,Day},{Hours,Minutes,Seconds}} = erlang:localtime(),
@@ -111,3 +121,13 @@ numeric_level(warn)  -> 4;
 numeric_level(info)  -> 3;
 numeric_level(debug) -> 2;
 numeric_level(trace) -> 1.
+
+
+% Callbacks for gen_event, which lets us log events originating within the Erlang runtime
+init(_Args) -> {ok, []}.
+handle_event(ErrorMsg, State) -> log(error, "gen_event error: ~p~n", [ErrorMsg]), {ok, State}.
+terminate(_Args, _State) -> ok.
+handle_call(_Request, State) ->  {noreply, State}.
+handle_info(_Info, State) -> {ok, State}.
+code_change(_OldVsn, State, _Extra) -> {ok, State}.
+

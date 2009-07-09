@@ -1,5 +1,15 @@
 #!/usr/bin/escript
 
+main(["clean"]) ->
+	Command = "rm ebin/*.beam",
+	io:format("Running ~p...~n", [Command]),
+	case os:cmd(Command) of
+		[] -> 
+			io:format("Done~n"),
+			halt(0);
+		X -> io:format("Problem: ~p~n", [X]),
+			halt(1)
+	end;
 main(_Args) ->
 	Output = make:all(),
 	io:format("~p~n", [Output]).

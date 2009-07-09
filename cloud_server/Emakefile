@@ -1,2 +1,7 @@
-{'json_eep/*', [debug_info]}.
-{'*', [debug_info, {i, "./json_eep"}]}.
+{'json_eep/*', [debug_info, 
+                {i, "./include"},
+                {outdir, "./ebin"}]}.
+{'src/*', [debug_info, 
+          {i, "./json_eep"},
+          {i, "./include"}, 
+          {outdir, "./ebin"}]}.
