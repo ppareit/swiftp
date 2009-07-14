@@ -1,0 +1,26 @@
+Remote = 'test@domU-12-31-39-04-38-01.compute-1.internal'.
+net_adm:ping(Remote).
+mnesia:delete_schema([node()]).
+mnesia:create_schema([node()]).
+mnesia:start().
+rd(scratch, {a, b, c}).
+mnesia:create_table(scratch, [{attributes, record_info(fields, scratch)}, {disc_copies, [node()]}, {record_name, scratch}]).
+mnesia:add_table_copy(schema, Remote, ram_copies).
+mnesia:transaction(fun() -> Row = #scratch{a="Hey", b="hey", c="!"}, mnesia:write(Row) end).
+mnesia:transaction(fun() -> qlc:e(qlc:q([Row || Row <- mnesia:table(scratch)])) end).
+
+
+Remote = 'test@domU-12-31-39-04-1E-37.compute-1.internal'.
+rd(scratch, {a, b, c}).
+net_adm:ping(Remote).
+mnesia:delete_schema([node()]).
+mnesia:start().
+Me = node().
+rpc:call(Remote, mnesia, change_config, [extra_db_nodes, [Me]]).
+mnesia:change_table_copy_type(schema, Me, disc_copies).
+mnesia:add_table_copy(scratch, Me, disc_copies).
+mnesia:transaction(fun() -> qlc:e(qlc:q([Row || Row <- mnesia:table(scratch)])) end).
+
+% Moved from master to slave+RPC
+mnesia:add_table_copy(schema, Target, ram_copies).
+

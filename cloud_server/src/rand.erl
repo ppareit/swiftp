@@ -1,21 +1,44 @@
+%% A gen_server that can provide random strings.
+%%
+%% This is a separate process because the state of the randomizer seems to
+%% be maintained on a per-process basis. That means that either:
+%%
+%%  a) each process wanting a random number has to seed the randomizer
+%%  b) we seed the randomizer in a designated process, and ask it for random numbers.
+%%
+%% This module implements approach (b), which seems cleanest.
+
 -module(rand).
--import(log, [log/2, log/3]).
--export([start/0, rand/1, random_alnum/1]).
+-behavior(gen_server).
+%% gen_server callbacks
+-export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
+         code_change/3]).
+-import(log, [log/3]).
+-export([start_link/0, random_alnum/1]).
 
-% This is our interface to callers who want a random number.
-rand(Modulus) ->
-    random_thread ! {self(), Modulus},
-    receive
-        R -> R
-    end.
 
+start_link() ->
+    gen_server:start_link({local, random_thread}, ?MODULE, [], []).
+
+%% The interface to other modules:
+% This is our interface to callers who want a random string.
+random_alnum(Length) ->
+    gen_server:call(random_thread, {random_alnum, Length}).
+
+init(_) ->
+    seed_randomizer(),
+    {ok, []}.
+
+handle_call({random_alnum, Length}, _From, State) ->
+    {reply, random_alnum_internal(Length), State}.
+    
 % Generate a random alphanumeric string of the given length
 % TODO: this could be much more efficient
-random_alnum(Length) -> random_alnum(Length, []).
-random_alnum(0, Accum) -> Accum;
-random_alnum(Length, Accum) ->
+random_alnum_internal(Length) -> random_alnum_internal(Length, []).
+random_alnum_internal(0, Accum) -> Accum;
+random_alnum_internal(Length, Accum) ->
     % There are 26+26+10=62 possible alphanumeric characters
-    R = case rand:rand(62) of
+    R = case random:uniform(62) of
         X when 1 =< X, X =< 10 -> 
             % Range 1 to 10 will be treated as digits
             % since ASCII integers start at 48, we add 48-1=44
@@ -29,29 +52,14 @@ random_alnum(Length, Accum) ->
             % lower case letters start at ASCII 97, so add 97-37=60
             X+60
     end,
-    random_alnum(Length-1, [R|Accum]).
+    random_alnum_internal(Length-1, [R|Accum]).
 
-start()->
-    seed_randomizer(),
-    main_loop().
-
-main_loop() ->
-    try
-        receive
-            {From, Modulus} -> 
-                From ! random:uniform(Modulus);
-            _ -> 
-                ignore
-        end,
-        main_loop()
-    catch
-        X : Y -> log(error, "Exception in random_thread ~p/~p", [X, Y]),
-        main_loop()
-    after
-        main_loop()
-    end.
-    
 % Seed the randomizer with the current time
 seed_randomizer() ->
     {X, Y, Z} = now(),
     random:seed(X, Y, Z).
+
+terminate(_Args, _State) -> ok.
+handle_cast(_Request, State) ->  {noreply, State}.
+handle_info(_Info, State) -> {ok, State}.
+code_change(_OldVsn, State, _Extra) -> {ok, State}.

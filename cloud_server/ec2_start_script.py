@@ -4,7 +4,7 @@ import os
 import urllib
 
 # Config section
-apps = [("/swiftp_proxy", "http://24.21.195.59/swiftp_proxy_dev.tgz", "")]
+apps = [("/swiftp_proxy", "http://24.21.195.59/swiftp_proxy_dev.tgz", "-detach -jointo ''")]
 do_apt_upgrade = False
 
 

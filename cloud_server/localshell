@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Runs an erlang shell attached to the local host
+# Runs an erlang shell attached to swiftp-proxy erlang instance on the local host
 
 HOST=`dnsdomainname --fqdn`
 erl -remsh swiftp-proxy\@$HOST -name shell -setcookie abc123

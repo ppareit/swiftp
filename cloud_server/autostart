@@ -13,38 +13,53 @@ def log(string):
 
 logfile = 'autostart.log'
 user = 'swiftp-proxy'
-erlnodename = 'swiftp-proxy'
+erlnodename = 'swiftp_proxy'
 erlcookie = 'abc123'
 installdir = '/swiftp_proxy'
-# The "-mnesia dir" parameter to erl requires some strange quoting...
+# The "-mnesia dir" parameter to erl requires some strange quoting
 mnesiadir = "\\\"" + installdir + "/mnesia_dir\\\"" 
-detachstring = '-detached'
 
-log('Changing directory owner...')
-os.system('chown ' + user + ' ' + installdir + ' -R')
+def main(argv):
+    log('Changing directory owner...')
+    os.system('chown ' + user + ' ' + installdir + ' -R')
 
-# All command line params not beginning with '-' should be passed to the
-# erlang server:start/1 function.
-startarg = ""
-if len(sys.argv) > 1:
-    for param in sys.argv[1:]:
-        if param[0] != '-':
-            log("Will pass param to start(): " + param)
-	    startarg += param + ' '
-        elif param == '-nodetach':
-            log("Won't detach")
-            detachstring = ''
+    log('Calling iptables setup script...')
 
-log('Starting erlang...')
+    # Install the iptables rule to forward from port 21 to port 2121, if not installed
+    returnval = os.system('iptables -t nat -S PREROUTING | ' \
+                        + 'grep -- \'-A PREROUTING -p tcp -m tcp --dport 21 -j REDIRECT --to-ports 2121\'')
+    if returnval == 0:
+        log("Iptables redirect already in place, taking no action")
+    else:
+        log("Iptables redirect not in place yet, installing...")
+        os.system('iptables -t nat -A PREROUTING -p tcp --dport 21 -j REDIRECT --to-port 2121')
+        log("Done installing iptables rule.")
+        
+    # All command line params not beginning with '-' should be passed to the
+    # erlang server:start/1 function.
+    startargs = ""
+    if len(argv) > 1:
+        for param in argv[1:]:
+            startargs += param + ' '
 
-# Run backgrounded, entry point server:start/0,1
-command = 'su '+user+' -c \'erl ' \
-               + detachstring \
-               + ' -pa ./ebin ' \
-               + ' -name ' +erlnodename \
-               + ' -s server start ' + startarg \
-               + ' -mnesia dir ' + mnesiadir \
-               + ' -setcookie ' + erlcookie \
-               + '\''
-log("Running start command: " + command)
-os.system(command)
+    log('Starting erlang...')
+
+
+    # Run backgrounded, entry point server:start/0,1
+    command = 'su '+user+' -c \'erl ' \
+                   + ' -pa ./ebin ' \
+                   + ' -name ' + erlnodename \
+                   + ' -s swiftp_proxy do_app_start ' \
+                   + ' -mnesia dir ' + mnesiadir \
+                   + ' -boot start_sasl ' \
+                   + ' -config errlogconf ' \
+                   + ' -setcookie ' + erlcookie \
+                   + ' ' + startargs + ' ' \
+                   + '\''
+    log("Running start command: " + command)
+    os.system(command)
+    
+if __name__ == '__main__':
+    main(sys.argv)
+
+

@@ -1,121 +1,101 @@
 -module(log).
--behavior(gen_event).
--export([start/4, log/3, logger_thread_start/3,
-         init/1, handle_event/2, terminate/2, code_change/3, handle_call/2, handle_info/2]).
+-behavior(gen_server).
+-export([start_link/3, log/3, init/1, terminate/2, code_change/3, handle_call/3,
+         handle_info/2, handle_cast/2]).
 
-% A wrapper for log() providing a default log level of "info"
-%log(Message) -> log(info, Message).
+-record(state, {fh, directory, file, threshold}).
+-record(log_msg, {pid, level, time, message, args}).
 
-% A wrapper for log() providing a default empty argument list
-%log(Level, Message) -> log(Level, Message, []).
+% TODO: implement logger process at each node that stores threshold, to eliminate
+% extraneous inter-node traffic
 
-%% @spec start(_Directory::string(), _Filename::string(), _Threshold::atom(), int())
-%%             -> atom().
-start(_Directory, _Filename, _Threshold, 0) ->
-    out_of_tries;
-%% @spec start(Directory::string(), Filename::string(), Threshold::atom(), Tries::int()) 
-%%             -> ok
-start(Directory, Filename, Threshold, Tries) ->
-    process_flag(trap_exit, true),
-    ChildPid = spawn_link(?MODULE, logger_thread_start, [Directory, Filename, Threshold]),
-    timer:sleep(10000),  % Only retry every 10 seconds
-    receive
-        {'EXIT', ChildPid, normal} ->
-            ok;
-        {'EXIT', ChildPid, _Reason} ->
-            start(Directory, Filename, Threshold, Tries - 1)
+start_link(Directory, File, Threshold) ->
+    gen_server:start_link({global, logger}, 
+                          ?MODULE, 
+                          [Directory, File, Threshold],
+                          []).
+
+init([Directory, File, Threshold]) ->
+    case file:open(Directory ++ "/" ++ File, [append]) of
+        {ok, Fh} ->
+            State = #state{fh=Fh, 
+                           directory=Directory, 
+                           file=File, 
+                           threshold=Threshold},
+            log(info, "Logger running!~n", []),
+            {ok, State};
+        X ->
+            io:format("log:init() failed to open log file: ~p~n", [X]),
+            {stop, "log file open failure"}
     end.
-    
-%% @spec logger_thread_start(Directory::string(), File::string(), Threshold::atom())
-%%                           -> none()
-logger_thread_start(Directory, File, Threshold) ->
-    case register_logger_name() of
-        no ->
-            io:format("Failed to register global logger name, exiting normally"),
-            exit(normal);
-        yes ->
-            io:format("Registered this node as cluster logger~n", []),
-            case file:open(Directory ++ "/" ++ File, [append]) of
-                {ok, Fh} ->
-                    io:format("Log file open~n", []),
-                    main_loop(Fh, Directory, File, Threshold);
-                X ->
-                    io:format("Failed opening log file: ~p~n", [X]),
-                    exit(file_open_failure)
-            end
-    end.
-            
 
 %% @spec main_loop(Fh::iodevice(), Directory::string(), File::string(), Threshold::atom())
 %%                 -> ok
-main_loop(Fh, Directory, File, Threshold) ->
-    receive
-        {Pid, log_message, MsgLevel, Timestamp, Message, Args} ->
-            case numeric_level(MsgLevel) >= numeric_level(Threshold) of 
-                true ->
-                    % TODO: use delayed write for performance
-                    {{Year,Month,Day},{Hour,Minute,Second}} = Timestamp,
-                    io:format(Fh, "~5p|~7p|~p/~p/~p,~2p:~2p:~2p|" ++ Message, 
-                              [MsgLevel | [Pid | 
-                              [ Year | [Month | [Day | [Hour | [Minute | [Second | 
-                              Args]]]]]]]] ),
-                    main_loop(Fh, Directory, File, Threshold);
-                false ->
-                    io:format("Main loop, level ~p not >= ~p~n", [MsgLevel, Threshold]),
-                    % Don't log, because the log level is insufficient
-                    main_loop(Fh, Directory, File, Threshold)
-            end;
-        {_Pid, change_file, NewDirectory, NewFile} ->
-            file:close(Fh),
-            logger_thread_start(NewDirectory, NewFile, Threshold);
-        {_Pid, change_threshold, NewThreshold} ->
-            log(info, "Changing logging threshold to: ~p~n", [NewThreshold]),
-            main_loop(Fh, Directory, File, NewThreshold);
-        {Pid, quit} ->
-            log(info, "Exiting because pid ~p is taking over logging duties.~n", [Pid]),
-            ok;
-        Other ->
-            io:format("Unexpected message to logger: ~p~n", [Other]),
-            main_loop(Fh, Directory, File, Threshold)
-    end.
+%% main_loop(Fh, Directory, File, Threshold) ->
+%%     receive
+%%         {Pid, log_message, MsgLevel, Timestamp, Message, Args} ->
+%%             case numeric_level(MsgLevel) >= numeric_level(Threshold) of 
+%%                 true ->
+%%                     % TODO: use delayed write for performance
+%%                     {{Year,Month,Day},{Hour,Minute,Second}} = Timestamp,
+%%                     io:format(Fh, "~5p|~7p|~p/~p/~p,~2p:~2p:~2p|" ++ Message, 
+%%                               [MsgLevel | [Pid | 
+%%                               [ Year | [Month | [Day | [Hour | [Minute | [Second | 
+%%                               Args]]]]]]]] ),
+%%                     main_loop(Fh, Directory, File, Threshold);
+%%                 false ->
+%%                     io:format("Main loop, level ~p not >= ~p~n", [MsgLevel, Threshold]),
+%%                     % Don't log, because the log level is insufficient
+%%                     main_loop(Fh, Directory, File, Threshold)
+%%             end;
+%%         {_Pid, change_file, NewDirectory, NewFile} ->
+%%             file:close(Fh),
+%%             logger_thread_start(NewDirectory, NewFile, Threshold);
+%%         {_Pid, change_threshold, NewThreshold} ->
+%%             log(info, "Changing logging threshold to: ~p~n", [NewThreshold]),
+%%             main_loop(Fh, Directory, File, NewThreshold);
+%%         {Pid, quit} ->
+%%             log(info, "Exiting because pid ~p is taking over logging duties.~n", [Pid]),
+%%             ok;
+%%         Other ->
+%%             io:format("Unexpected message to logger: ~p~n", [Other]),
+%%             main_loop(Fh, Directory, File, Threshold)
+%%     end.
 
-%% @spec register_logger_name() -> yes | no
-register_logger_name() ->
-    MyPid = self(),
-    case global:whereis_name(logger) of
-        undefined -> ok;
-        MyPid -> ok;
-        OtherPid when is_pid(OtherPid) ->
-            % Tell the existing logger process to quit, if it exists
-            OtherPid ! {self(), quit}
+handle_cast(#log_msg{pid=Pid, level=Level, time=Time, message=Message, args=Args},
+            State = #state{fh=Fh, threshold=Threshold}) ->
+    case numeric_level(Level) >= numeric_level(Threshold) of 
+        true ->
+            % TODO: use delayed write for performance
+            {{Year,Month,Day},{Hour,Minute,Second}} = Time,
+            io:format(Fh, "~5p|~7p|~p/~p/~p,~2p:~2p:~2p|" ++ Message, 
+                      [Level | [Pid | 
+                      [ Year | [Month | [Day | [Hour | [Minute | [Second | 
+                      Args]]]]]]]] );
+        false -> 
+            % Don't log, because the log level is insufficient
+            ok
     end,
-    MyPid = self(),
-    ChooseSelfResolver = fun() -> MyPid end,
-    case Success = global:register_name(logger, self(), ChooseSelfResolver) of
-        yes ->
-            log(info, "I (~p) took over logger duties.~n", [node()]);
-        no ->
-            log(error, "I (~p) failed to take over logger duties.~n", [node()])
-    end,
-    Success.
+    {noreply, State}.
 
-%% @spec log(Level::atom(), Message::string(), Args::list() -> ok | {error, Reason}
-log(Level, Message, Args) when is_atom(Level), is_list(Message), is_list(Args) ->
+
+% Send a "cast" to the globally registered logger process if it exists,
+% otherwise print to standard output.
+log(Level, Message, Args) ->
     case global:whereis_name(logger) of
         undefined ->
             io:format("No logger for msg: ", []),
             io:format(Message, Args),
             {error, "No logger registered"};
-        LoggerPid ->
-            %{{Year,Month,Day},{Hours,Minutes,Seconds}} = erlang:localtime(),
-            %Timestamp = lists:flatten(io_lib:format("~p/~p/~p,~p:~p:~p",
-            %                    [Year, Month, Day, Hours, Minutes, Seconds])),
+        _X ->
             Timestamp = erlang:localtime(),
-            LoggerPid ! {self(), log_message, Level, Timestamp, Message, Args},
-            ok
+            gen_server:cast({global, logger}, #log_msg{level=Level, 
+                                                       time=Timestamp, 
+                                                       message=Message, 
+                                                       args=Args})
     end.
-    
-%% @spec numeric_level(atom()) -> int()
+
+-spec numeric_level(atom()) -> integer().
 numeric_level(error) -> 5;
 numeric_level(warn)  -> 4;
 numeric_level(info)  -> 3;
@@ -124,10 +104,8 @@ numeric_level(trace) -> 1.
 
 
 % Callbacks for gen_event, which lets us log events originating within the Erlang runtime
-init(_Args) -> {ok, []}.
-handle_event(ErrorMsg, State) -> log(error, "gen_event error: ~p~n", [ErrorMsg]), {ok, State}.
 terminate(_Args, _State) -> ok.
-handle_call(_Request, State) ->  {noreply, State}.
+handle_call(_Request, _From, State) ->  {noreply, State}.
 handle_info(_Info, State) -> {ok, State}.
 code_change(_OldVsn, State, _Extra) -> {ok, State}.
 
