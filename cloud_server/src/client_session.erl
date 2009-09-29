@@ -1,28 +1,20 @@
 -module(client_session).
+-include("records.hrl").
 -behavior(gen_fsm).
 -export([code_change/4, handle_event/3, handle_info/3, handle_sync_event/4, init/1,
          terminate/3]).
--import(log, [log/2, log/3]).
 -import(json_eep, [term_to_json/1, json_to_term/1]).
 -compile(export_all).   % Because exporting each state function is a pain.
 
--record(state, {devicesocket, clientsocket, devicerow, authfails, listenref, username}).
+-record(state, {devicesocket, clientsocket, listensocket, devicerow, authfails, 
+                listenref, username, datafordevice}).
 
 -define(MAXAUTHFAILS, 3).
 -define(AUTH_TIMEOUT, 10000).
+-define(MAX_QUEUED_DATA, 1024).
 
 %TODO: Finish state machine (all states)
 %TODO: add state timeouts
-
-% TODO: clean this up (remove it?)
-% The job of a "matcher" is to: 
-% 1. take an incoming connection from an FTP client
-% 2. Pretend to be an FTP server
-% 3. When the client sends "USER prefix_username", take the prefix and resolve
-%    it to an existing PID
-% 4. Pass the client socket along with the username to the PID, which will
-%    proxy between the socket representing the FTP client and the socket
-%    representing the device running SwiFTP server.
 
 start_link() ->
     gen_fsm:start_link(?MODULE, [], []).
@@ -41,7 +33,8 @@ state_fresh_start({socket, ClientSocket}, _ ) ->
             devicerow=none,
             authfails=0,
             listenref=none,
-            username=none},
+            username=none,
+            datafordevice=none},
      ?AUTH_TIMEOUT}.
 
 % Called by tcp_listener. After we have spawned a client session and are
@@ -52,9 +45,10 @@ set_socket(Pid, Socket) ->
 
 % Called when the device connects to the listening socket that we set up.
 handle_info({inet_async, ListenSocket, Ref, {ok, DeviceSocket}},
-            StateName, StateData = #state{listenref=Ref} ) ->
-    Opts = [binary, {active, once}, {packet, 0}],
-    ok = inet:setopts(DeviceSocket, Opts),
+            StateName, StateData = #state{listenref=Ref, listensocket=ListenSocket} ) ->
+    log(debug, "handle_info has devicesocket ~p~n", [DeviceSocket]),
+    set_sockopt(ListenSocket, DeviceSocket),
+    inet:setopts(DeviceSocket, [{active, once}]),
     gen_tcp:close(ListenSocket),
     ?MODULE:StateName({devicesocket, DeviceSocket}, StateData);
 
@@ -67,69 +61,32 @@ handle_info({tcp, Socket, Data}, StateName, StateData) ->
     % The following call will return a {next_state, ...} tuple as required.
     ?MODULE:StateName({tcp, Socket, Data}, StateData);
 
+handle_info({inet_async, ListSock, Ref, {ok, DeviceSocket}}, StateName,
+            StateData = #state{listenref=Ref}) ->
+    ok = inet:setopts(DeviceSocket, [{active, once}, {packet, 0}, binary]),
+    % The following line will return a {next_state, ..} tuple, which is what we want.
+    NextStateTuple = ?MODULE:StateName({devicesocket, DeviceSocket}, StateData),
+    gen_tcp:close(ListSock),  % We don't need the listener socket anymore
+    NextStateTuple;
+    
+
 % If any open socket is closed, close all sockets and terminate this process
-handle_info({tcp_closed, Socket}, 
-            _StateName,
-            #state{clientsocket=ClientSocket,
-                   devicesocket=DeviceSocket} = StateData) ->
-    case Socket of
-        ClientSocket -> log(info, "Client socket closed, terminating~n", []);
-        DeviceSocket -> log(info, "Device socket closed, terminating~n", [])
-    end,
-    gen_tcp:close(ClientSocket),
-    gen_tcp:close(DeviceSocket),
+% It's unclear what the difference is between tcp_close and tcp_closed, we handle
+% them identically.
+handle_info({tcp_close, Socket}, StateName, StateData) -> 
+    handle_info({tcp_closed, Socket}, StateName, StateData);
+handle_info({tcp_closed, _Socket}, _StateName, StateData) ->
+    log(info, "Socket closed, terminating~n", []),
+    {stop, normal, StateData};
+handle_info({tcp_error, _Socket, Reason}, _StateName, StateData) ->
+    log(info, "TCP socket error, exiting normally: ~p~n", [Reason]),
     {stop, normal, StateData};
 handle_info(Info, StateName, StateData) ->
     log(warn, "Unrecognized info in device_session: ~p~n", [Info]),
     {noreply, StateName, StateData}.
 
-%% start(Socket) ->
-%%     gen_tcp:controlling_process(Socket, self()),
-%%     gen_tcp:send(Socket, <<"220 SwiFTP cloud proxy ready\r\n">>),
-%%     try get_parse_login(Socket) of
-%%         {Prefix, Username} ->
-%%             case session_registry:lookup(Prefix) of
-%%                 Pid when is_pid(Pid) ->
-%%                     log(debug, "Looked up ~p: ~p~n", [Prefix, Pid]),
-%%                     Pid ! {clientsocket, Socket, binary_to_list(Username)},
-%%                     gen_tcp:controlling_process(Socket, Pid);
-%%                 Other ->
-%%                     log(info, "Prefix pid lookup: ~p, err: ~p~n", [Prefix, Other]),
-%%                     gen_tcp:send(Socket, <<"530 Bad credentials, check prefix ",
-%%                                            "and username\r\n">>),
-%%                     gen_tcp:close(Socket)
-%% 
-%%             end;
-%%         _ -> log(info, "Client closed without ever sending valid USER~n", [])
-%%     catch
-%%         X : Y -> 
-%%             log("Matcher exception ~p:~p~n", [X, Y]),
-%%             gen_tcp:close(Socket)
-%%     end,
-%%     log(info, "Matcher exiting~n", []).
-
-%% get_parse_login(Socket) ->
-%%     receive
-%%         %{tcp, Socket, <<"USER ", P1, P2, P3, P4, P5, P6, "_", Username/binary>> } ->
-%%         {tcp, Socket, <<"USER ", PrefixBin:6/binary-unit:8, "_", Username/binary>>} ->
-%%             Prefix = binary_to_list(PrefixBin),
-%%             log(debug, "Matched with ~p/~p~n", [Prefix, Username]),
-%%             {Prefix, Username};
-%%         {tcp_closed, Socket} ->
-%%             tcp_closed;
-%%         Data ->
-%%             log(debug, "Didn't match~n", []),
-%%             case Data of
-%%                 <<"USER ", _/binary>> ->
-%%                     gen_tcp:send(Socket, <<"530 Check your username prefix\r\n">>);
-%%                 _ ->                                         
-%%                     gen_tcp:send(Socket, <<"500 Login with USER first\r\n">>)
-%%             end,
-%%             get_parse_login(Socket)
-%%     end.
-
 state_waiting_login({tcp, ClientSocket, Data}, State = #state{clientsocket = ClientSocket}) ->
-    FailResponse = <<"530 Check your login credentials\r\n">>,
+    FailResponse = <<"530 Check your login credentials (they're case sensitive)\r\n">>,
     case Data of
          <<"USER ", PrefixBin:6/binary-unit:8, "_", Username/binary>> ->
             Prefix = binary_to_list(PrefixBin),
@@ -139,24 +96,27 @@ state_waiting_login({tcp, ClientSocket, Data}, State = #state{clientsocket = Cli
                     % There's an open command session that matches that prefix. Open
                     % a listening socket and inform the command session that it's ready.
                     Opts = [binary, {packet, 0}, {reuseaddr, true},
-                            {keepalive, true}, {backlog, 30}, {active, false}],
+                            {keepalive, true}, {backlog, 1}, {active, false}],
                     case gen_tcp:listen(0, Opts) of
                         {ok, ListenSocket} ->
                             % Start non-blocking accept
                             {ok, Ref} = prim_inet:async_accept(ListenSocket, -1),
-                            ListenPort = inet:port(ListenSocket),
+                            {ok, ListenPort} = inet:port(ListenSocket),
                             gen_fsm:send_event(CmdSessionPid, {control_waiting, ListenPort}),
                             {next_state, 
                              state_listening, 
-                             State#state{listenref=Ref, username=Username}};
+                             State#state{listenref=Ref, 
+                                         listensocket=ListenSocket,
+                                         username=Username}};
                         {error, Reason} ->
                             gen_tcp:send(ClientSocket, <<"500 Internal err in listener\r\n">>),
                             log(warn, "Client session listen fail: ~p~n", [Reason]),
                             {stop, listen_fail, State}
                     end;
-                _ ->
-                    log(info, "Failed user/prefix lookup ~p/~p~n", [Username, Prefix]),
-                    gen_tcp:send(ClientSocket, FailResponse),
+                Other ->
+                    log(warn, "Failed prefix lookup ~p: ~p~n", [Prefix, Other]),
+                    Response = <<"530 Prefix not valid, make sure your Android device has signed in\r\n">>,
+                    gen_tcp:send(ClientSocket, Response),
                     handle_auth_fail(State)
             end;
         Other ->
@@ -188,36 +148,67 @@ handle_auth_fail(State) ->
 % it indirectly via a {inet_async, ...} message to handle_info, which
 % will get forwarded to here.
 state_listening({devicesocket, DeviceSocket}, StateData) ->
-    log(debug, "Received device socket~n", []),
-    % The client already sent us its username earlier, when it sent the prefix.
-    % Now we should forward it on to the device. It already has trailing \n.
-    Username = StateData#state.username,
-    UserCmd = <<"USER ", Username>>,
-    gen_tcp:send(DeviceSocket, UserCmd),
+    log(debug, "client_session received device socket~n", []),
     {next_state, state_device_connected, 
         StateData#state{devicesocket=DeviceSocket, listenref=none}}.
 
-%% % The device has connected but not yet authenticated.
-%% state_device_connected({tcp, DeviceSocket, Data}, StateData) ->
-%%     JsonTerm = json_to_term(Data),
-%%     case util:get_json_value(JsonTerm, <<"action">>) of
-%%         <<"authenticate">> ->
-%%             {WhetherAuth, Response, DeviceRow} = util:authenticate_json(JsonTerm),
-%%             gen_tcp:send(DeviceSocket, Response),
-%%             case WhetherAuth of
-%%                 true ->
-%%                     log(debug, "Device authenticated~n", []),
-%%                     NewStateData = StateData#state{devicerow=DeviceRow},
-%%                     {next_state, state_proxying, NewStateData};
-%%                 false ->
-%%                     log(warn, "Device failed auth: ~n", []),
-%%                     {stop, failed_device_auth, StateData}
-%%             end;
-%%         X ->
-%%             log(warn, "Device sent something other than auth: ~p~n,", [X]),
-%%             {stop, failed_device_auth, StateData}
-%%     end.
-       
+state_device_connected({tcp, DeviceSocket, Data}, 
+                       StateData = #state{devicesocket=DeviceSocket}) ->
+    log(debug, "Got data from device in state_device_connected: ~p~n", [Data]),
+    Json = json_to_term(binary_to_list(Data)),
+    case util:get_json_value(Json, <<"action">>) of
+        <<"authenticate">> ->
+            {WhetherAuth, Response, DeviceRow} = util:authenticate_json(Json),
+            gen_tcp:send(DeviceSocket, Response),
+            case WhetherAuth of
+                true ->
+                    AndroidId = DeviceRow#device.android_id,
+                    log(info, "client_session device authed: ~p~n", [AndroidId]),
+                    % The client already sent us its username earlier, when it 
+                    % sent the prefix. Now we should forward it on to the device. 
+                    % It already has trailing \r\n.
+                    Username = StateData#state.username,
+                    UserString = <<"USER ">>,
+                    log(debug, "Username is ~p~n", [Username]),
+                    log(debug, "UserString is ~p~n", [UserString]),
+                    UserCmd = <<UserString/binary, Username/binary>>,
+                    log(debug, "2~n", []),
+                    log(debug, "Sending line: ~p to ~p~n", [UserCmd, DeviceSocket]),
+                    apply(gen_tcp, send, [DeviceSocket, UserCmd]),
+                    log(debug, "3~n", []),
+                    % If any data was queued up from the client to the device,
+                    % it should be sent now.
+                    case StateData#state.datafordevice of
+                        none -> ok;
+                        Data -> gen_tcp:send(DeviceSocket, Data)
+                    end,
+                    {next_state, state_proxying, 
+                     StateData#state{devicerow=DeviceRow,datafordevice=none}};
+                false ->
+                    log(info, "client_session device failed auth~n", []),
+                    {stop, authenticate_failed, StateData}
+            end;
+        OtherAction ->
+            log(info, "Expected authentication but got action: ~p~n", [OtherAction]),
+            {stop, no_authenticate, StateData}
+    end;
+
+% If we receive data from the client while both sockets are connected but the 
+% device hasn't authenticated, we should queue up the data. We will send it
+% after the device authenticates.
+state_device_connected({tcp, ClientSocket, Data}, 
+                       StateData = #state{clientsocket=ClientSocket}) ->
+    log(debug, "Got data from client in state_device_connected~n", []),
+    QueuedData = StateData#state.datafordevice,
+    if 
+        size(QueuedData) + size(Data) > ?MAX_QUEUED_DATA ->
+            {stop, too_much_queued_data, StateData};
+        true ->
+            NextStateData = StateData#state{datafordevice= <<QueuedData, Data>>},
+            {next_state, state_device_connected, NextStateData}
+    end.
+              
+
 state_proxying({tcp, Socket, Data}, StateData = #state{devicesocket=DeviceSocket,
                                                        clientsocket=ClientSocket}) ->
     case Socket of
@@ -240,3 +231,18 @@ handle_sync_event(_Event, _From, StateName, StateData) ->
 terminate(_Reason, _StateName, _StateData) ->
     ok.
 
+% Copied from tcp_listener to set internal tcp state correctly and copy socket options.
+set_sockopt(ListSock, CliSocket) ->
+    true = inet_db:register_socket(CliSocket, inet_tcp),
+    case prim_inet:getopts(ListSock, [active, nodelay, keepalive, delay_send, priority, tos]) of
+    {ok, Opts} ->
+        case prim_inet:setopts(CliSocket, Opts) of
+        ok    -> ok;
+        Error -> gen_tcp:close(CliSocket), Error
+        end;
+    Error ->
+        gen_tcp:close(CliSocket), Error
+    end.
+
+log(Level, Format, Args) ->
+    log:log(Level, ?MODULE, Format, Args).

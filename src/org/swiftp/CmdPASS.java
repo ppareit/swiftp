@@ -59,6 +59,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
 		password = settings.getString("password", null);
 		if(username == null || password == null) {
 			myLog.l(Log.ERROR, "Username or password misconfigured");
+			sessionThread.writeString("500 Internal error during authentication");
 		} else if(username.equals(attemptUsername) && 
 				password.equals(attemptPassword)) {
 			sessionThread.writeString("230 Access granted\r\n");

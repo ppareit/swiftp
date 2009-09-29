@@ -27,7 +27,21 @@ public class Globals {
 	private static Context context;
 	private static String lastError;
 	private static File chrootDir = null;
+	private static ProxyConnector proxyConnector = null;
 	
+	public static ProxyConnector getProxyConnector() {
+		if(proxyConnector != null) {
+			if(!proxyConnector.isAlive()) {
+				return null;
+			}
+		}
+		return proxyConnector;
+	}
+
+	public static void setProxyConnector(ProxyConnector proxyConnector) {
+		Globals.proxyConnector = proxyConnector;
+	}
+
 	public static File getChrootDir() {
 		return chrootDir;
 	}

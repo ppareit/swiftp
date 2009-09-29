@@ -34,9 +34,18 @@ def main(argv):
         log("Iptables redirect not in place yet, installing...")
         os.system('iptables -t nat -A PREROUTING -p tcp --dport 21 -j REDIRECT --to-port 2121')
         log("Done installing iptables rule.")
+
+    log("Copying Apache virtualhost config and restarting Apache")
+    returnval = os.system('cp ./swiftp_vhost /etc/apache2/sites-enabled/')
+    if returnval == 0:
+        log("Copied vhost config OK")
+        os.system('apache2ctl restart')
+    else:
+        log("Failed to copy Apache vhost config!")
+    
         
-    # All command line params not beginning with '-' should be passed to the
-    # erlang server:start/1 function.
+    # All command line params not after the first (the script name)
+    # should be passed to the erlang server:start/1 function.
     startargs = ""
     if len(argv) > 1:
         for param in argv[1:]:
@@ -48,6 +57,7 @@ def main(argv):
     # Run backgrounded, entry point server:start/0,1
     command = 'su '+user+' -c \'erl ' \
                    + ' -pa ./ebin ' \
+                   + ' -pa ./yaws-1.84/ebin ' \
                    + ' -name ' + erlnodename \
                    + ' -s swiftp_proxy do_app_start ' \
                    + ' -mnesia dir ' + mnesiadir \

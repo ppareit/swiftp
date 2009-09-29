@@ -1,5 +1,5 @@
 %%% -------------------------------------------------------------------
-%%% Description : Implements a simple_one_for_one supervisor that spawns device
+%%% Description : Implements a simple_one_for_one supervisor that spawns client
 %%%               session threads.
 %%% -------------------------------------------------------------------
 -module(client_session_sup).

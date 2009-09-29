@@ -38,7 +38,7 @@ public class CmdRNTO extends FtpCmd implements Runnable {
 		myLog.l(Log.DEBUG, "RNTO executing\r\n");
 		mainblock: {
 			myLog.l(Log.INFO, "param: " + param); 
-			toFile = inputPathToChrootedFile(sessionThread.getPrefix(), param);
+			toFile = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
 			myLog.l(Log.INFO, "RNTO parsed: " + toFile.getPath());
 			if(violatesChroot(toFile)) {
 				errString = "550 Invalid name or chroot violation\r\n";

@@ -1,6 +1,5 @@
 -module(util).
 -include("records.hrl").
--import(log, [log/3]).
 -import(json_eep, [json_to_term/1, term_to_json/1]).
 
 -compile(export_all).
@@ -31,13 +30,18 @@ tcp_listen(Port) ->
 %%     end.
 
 -spec get_json_value(Object :: json_term(), Key :: binary()) -> any().
+% A shorter way to extract a value from a json term.
+% The Object argument should have been returned from json_to_term().
 get_json_value({JsonKeyVals}, Key) ->
-    Value = proplists:get_value(Key, JsonKeyVals),
-%%     log(debug, "get_json_value: Looking up ~p in ~p gave ~p~n", [Key,
-%%                                                                  JsonKeyVals,
-%%                                                                  Value]),
-    Value.
-    
+    proplists:get_value(Key, JsonKeyVals).
+
+-spec get_json_string(Json :: json_term(), Key :: binary()) -> any().
+% A convenience function to call get_json_value using the given arguments
+% and convert the return value to a string before returning it to the caller.
+get_json_string(Json, Key) ->
+    %log(debug, "Getting key ~p from ~p~n", [Key, Json]),
+    binary_to_list(get_json_value(Json, Key)).
+
 
 %% @spec open_data_port(Address, Port) -> {ok, Socket} | {error, Reason}
 %%              Address = string() | atom() | ip_address()
@@ -64,11 +68,12 @@ create_account_json({JsonKeyValList}) ->
             true = length(AndroidId) > 1,
             case db:create_account(AndroidId) of
                 {ok, DeviceRow} ->
-                    SecretAsBinary = DeviceRow#device.secret,
+                    SecretAsBinary = list_to_binary(DeviceRow#device.secret),
                     {true, term_to_json({[{<<"secret">>, SecretAsBinary}]}), DeviceRow};
                 {error, _} ->
                     % The failure and reason will have been logged already by the db module
-                    {false, json_err_obj(0, "Database failure"), none}
+                    Response = json_err_obj(11, "Invalid creation attempt or DB failure"),
+                    {false, Response, none}
             end
     end.
     
@@ -92,8 +97,10 @@ authenticate_json({JsonKeyValList}) ->
                             % We return empty json object on success
                             {true, term_to_json({[]}), DeviceRow};
                         false ->
+                            log(info, "Invalid credentials in auth attempt~n", []),
                             {false, json_err_obj(11, "Invalid authentication attempt"), none};
                         error ->
+                            log(info, "DB error in auth attempt~n", []),
                             {false, json_err_obj(0, "Database failure"), none}
                     end
             end
@@ -106,3 +113,14 @@ authenticate_json({JsonKeyValList}) ->
 json_err_obj(Code, String) when is_integer(Code) and is_list(String) ->
     term_to_json({[{<<"error_code">>, Code}, 
                    {<<"error_string">>, list_to_binary(String)}]}).
+
+-spec maxint(X::integer(), Y::integer()) -> integer().
+maxint(X, Y) ->
+    if 
+        X > Y -> X;
+        true  -> Y
+    end.
+
+log(Level, Format, Args) ->
+    log:log(Level, ?MODULE, Format, Args).
+

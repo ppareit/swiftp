@@ -19,6 +19,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.swiftp;
 
+import java.net.InetAddress;
+
 import android.util.Log;
 
 public class CmdPASV extends FtpCmd implements Runnable {
@@ -31,16 +33,16 @@ public class CmdPASV extends FtpCmd implements Runnable {
 	public void run() {
 		String cantOpen = "502 Couldn't open a port\r\n";
 		myLog.l(Log.DEBUG, "PASV running");
-		if(!sessionThread.onPasv()) {
+		int port;
+		if((port = sessionThread.onPasv()) == 0) {
 			// There was a problem opening a port
 			myLog.l(Log.ERROR, "Couldn't open a port for PASV");
 			sessionThread.writeString(cantOpen);
 			return;
 		}
-		String ipAsString = sessionThread.getDataSocketPasvIp();
-		int port = sessionThread.getDataSocketPort();
+		InetAddress addr = sessionThread.getDataSocketPasvIp();
 		
-		if(ipAsString == null) {
+		if(addr == null) {
 			myLog.l(Log.ERROR, "PASV IP string invalid");
 			sessionThread.writeString(cantOpen);
 			return;
@@ -50,11 +52,11 @@ public class CmdPASV extends FtpCmd implements Runnable {
 			sessionThread.writeString(cantOpen);
 			return;
 		}
-		ipAsString = ipAsString.replace('.',',');
 		StringBuilder response = new StringBuilder(
 				"227 Entering Passive Mode (");
 		// Output our IP address in the format xxx,xxx,xxx,xxx
-		response.append(ipAsString + ",");
+		response.append(addr.getHostAddress().replace('.', ','));
+		response.append(",");
 		
 		// Output our port in the format p1,p2 where port=p1*256+p2 
 		response.append(port / 256);

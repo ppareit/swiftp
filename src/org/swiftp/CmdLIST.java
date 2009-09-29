@@ -45,7 +45,7 @@ public class CmdLIST extends FtpCmd implements Runnable {
 		File fileToList = null;
 		mainblock: {
 			// An FTP "LIST" verb always means list current directory
-			fileToList = sessionThread.getPrefix();
+			fileToList = sessionThread.getWorkingDir();
 	
 			myLog.l(Log.DEBUG, "Listing: " + fileToList.toString());
 			StringBuilder response = new StringBuilder();

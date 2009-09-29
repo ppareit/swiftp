@@ -3,5 +3,6 @@
                 {outdir, "./ebin"}]}.
 {'src/*', [debug_info, 
           {i, "./json_eep"},
-          {i, "./include"}, 
+          {i, "./include"},
+          {i, "./yaws-1.84/include"},
           {outdir, "./ebin"}]}.

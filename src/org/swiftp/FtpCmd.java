@@ -50,7 +50,8 @@ public abstract class FtpCmd implements Runnable {
 			new CmdMap("MKD",  CmdMKD.class),
 			new CmdMap("PORT", CmdPORT.class),
 			new CmdMap("QUIT", CmdQUIT.class),
-			new CmdMap("FEAT", CmdFEAT.class)
+			new CmdMap("FEAT", CmdFEAT.class),
+			new CmdMap("SIZE", CmdSIZE.class)
 	};
 	
 	public FtpCmd(SessionThread sessionThread, String logName) {

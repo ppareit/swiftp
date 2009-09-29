@@ -110,8 +110,7 @@ handle_info({inet_async, ListSock, Ref, {ok, CliSocket}},
             {error, Reason} -> exit({set_sockopt, Reason})
         end,
 
-        %% New client connected - spawn a new process using the simple_one_for_one
-        %% supervisor.
+        %% New client connected - spawn a new process
         {ok, Pid} = Creater(),
         gen_tcp:controlling_process(CliSocket, Pid),
         %% Instruct the new FSM that it owns the socket.
@@ -174,3 +173,6 @@ set_sockopt(ListSock, CliSocket) ->
     Error ->
         gen_tcp:close(CliSocket), Error
     end.
+
+log(Level, Format, Args) ->
+    log:log(Level, ?MODULE, Format, Args).

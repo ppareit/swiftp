@@ -12,7 +12,7 @@ public class NormalDataSocketFactory extends DataSocketFactory {
 	 * This class implements normal, traditional opening and closing of data sockets
 	 * used for transmitting directory listings and file contents. PORT and PASV
 	 * work according to the FTP specs. This is in contrast to a 
-	 * CloudDataSocketFactory, which performs contortions to allow data sockets
+	 * ProxyDataSocketFactory, which performs contortions to allow data sockets
 	 * to be proxied through a server out in the cloud.
 	 * 
 	 */
@@ -22,6 +22,7 @@ public class NormalDataSocketFactory extends DataSocketFactory {
 	// Remote IP & port information used for PORT mode
 	InetAddress remoteAddr;
 	int remotePort;
+	boolean isPasvMode = true;
 	
 	public NormalDataSocketFactory() {
 		clearState();
@@ -44,33 +45,32 @@ public class NormalDataSocketFactory extends DataSocketFactory {
 		myLog.l(Log.DEBUG, "NormalDataSocketFactory state cleared");
 	}
 	
-	public boolean onPasv() {
+	public int onPasv() {
 		clearState();
 		try {
 			// Listen on any port (port parameter 0)
 			server = new ServerSocket(0, Defaults.tcpConnectionBacklog);
 			myLog.l(Log.DEBUG, "Data socket pasv() listen successful");
-			return true;
+			return server.getLocalPort();
 		} catch(IOException e) {
 			myLog.l(Log.ERROR, "Data socket creation error");
 			clearState();
-			return false;
+			return 0;
 		}
 	}
 
 	public boolean onPort(InetAddress remoteAddr, int remotePort) {
 		clearState();
-		myLog.l(Log.DEBUG, "Data Socket port() accept stub");
 		this.remoteAddr = remoteAddr;
 		this.remotePort = remotePort;
-		return false;
+		return true;
 	}
 	
 	public Socket onTransfer() {
 		if(server == null) {
 			// We're in PORT mode (not PASV)
 			if(remoteAddr == null || remotePort == 0) {
-				myLog.l(Log.INFO, "PORT mode but no remote data given");
+				myLog.l(Log.INFO, "PORT mode but not initialized correctly");
 				clearState();
 				return null;
 			}
@@ -113,10 +113,8 @@ public class NormalDataSocketFactory extends DataSocketFactory {
 		}
 	}
 	
-	public String getPasvIp() {
+	public InetAddress getPasvIp() {
 		//String retVal = server.getInetAddress().getHostAddress();
-		String retVal = FTPServerService.getWifiIpAsString();
-		myLog.l(Log.DEBUG, String.format("getPasvIp() returning %s", retVal));
-		return retVal;  
+		return FTPServerService.getWifiIp();
 	}
 }

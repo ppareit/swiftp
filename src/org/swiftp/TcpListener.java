@@ -15,7 +15,7 @@ public class TcpListener extends Thread {
 		this.ftpServerService = ftpServerService;
 	}
 	
-	public void exit() {
+	public void quit() {
 		try {
 			listenSocket.close(); // if the TcpListener thread is blocked on accept,
 			                      // closing the socket will raise an exception
@@ -27,10 +27,11 @@ public class TcpListener extends Thread {
 	public void run() {
 		try {
 			while(true) {
+				
 				Socket clientSocket = listenSocket.accept();
 				myLog.l(Log.INFO, "New connection, spawned thread");
 				SessionThread newSession = new SessionThread(clientSocket,
-						new NormalDataSocketFactory());
+						new NormalDataSocketFactory(), true);
 				newSession.start();
 				ftpServerService.registerSessionThread(newSession);
 			}

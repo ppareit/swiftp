@@ -79,15 +79,15 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 		String password = settings.getString(PASSWORD, "");
 		int portNumber = settings.getInt(PORTNUM, Defaults.getPortNumber());
 		String chroot = settings.getString(CHROOTDIR, Defaults.chrootDir);
-		boolean acceptNet = settings.getBoolean(ACCEPT_NET, true);
-		boolean acceptWifi = settings.getBoolean(ACCEPT_WIFI, true);
+		boolean acceptNet = settings.getBoolean(ACCEPT_NET, Defaults.acceptNet);
+		boolean acceptWifi = settings.getBoolean(ACCEPT_WIFI, Defaults.acceptWifi);
 		
 		usernameBox.setText(username);
 		passwordBox.setText(password);
 		portNumberBox.setText(Integer.toString(portNumber));
 		chrootDirBox.setText(chroot);
-		wifiCheckBox.setChecked(acceptNet);
-		netCheckBox.setChecked(acceptWifi);
+		wifiCheckBox.setChecked(acceptWifi);
+		netCheckBox.setChecked(acceptNet);
 		
 	}
 	

@@ -43,7 +43,7 @@ public class CmdMKD extends FtpCmd implements Runnable {
 				errString = "550 Invalid name\r\n";
 				break mainblock;
 			}
-			toCreate = inputPathToChrootedFile(sessionThread.getPrefix(), param);
+			toCreate = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
 			if(violatesChroot(toCreate)) {
 				errString = "550 Invalid name or chroot violation\r\n";
 				break mainblock;

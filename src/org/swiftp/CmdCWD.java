@@ -35,13 +35,13 @@ public class CmdCWD extends FtpCmd implements Runnable {
 	public void run() {
 		myLog.l(Log.DEBUG, "CWD executing");
 		String param = getParameter(input);
-		File newPrefix;
+		File newDir;
 		String errString = null;
 		mainblock: {
-			newPrefix = inputPathToChrootedFile(sessionThread.getPrefix(), param);
+			newDir = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
 
 			// Ensure the new path does not violate the chroot restriction
-			if(violatesChroot(newPrefix)) {
+			if(violatesChroot(newDir)) {
 				errString = "550 Invalid name or chroot violation\r\n";
 				sessionThread.writeString(errString);
 				myLog.l(Log.INFO, errString);
@@ -49,11 +49,11 @@ public class CmdCWD extends FtpCmd implements Runnable {
 			}
 
 			try {
-				newPrefix = newPrefix.getCanonicalFile();
-				if(!newPrefix.isDirectory()) {
+				newDir = newDir.getCanonicalFile();
+				if(!newDir.isDirectory()) {
 					sessionThread.writeString("550 Can't CWD to invalid directory\r\n");
-				} else if(newPrefix.canRead()) {
-					sessionThread.setPrefix(newPrefix);
+				} else if(newDir.canRead()) {
+					sessionThread.setWorkingDir(newDir);
 					sessionThread.writeString("250 CWD successful\r\n");
 				} else {
 					sessionThread.writeString("550 That path is inaccessible\r\n");

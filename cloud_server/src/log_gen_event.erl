@@ -45,7 +45,7 @@ init([]) ->
 %%          remove_handler
 %% --------------------------------------------------------------------
 handle_event(ErrorMsg, State) -> 
-    log:log(error, "gen_event error: ~p~n", [ErrorMsg]),
+    log(error, "gen_event error: ~p~n", [ErrorMsg]),
     {ok, State}.
 
 %% --------------------------------------------------------------------
@@ -86,4 +86,7 @@ code_change(_OldVsn, State, _Extra) ->
 %% --------------------------------------------------------------------
 %%% Internal functions
 %% --------------------------------------------------------------------
+
+log(Level, Format, Args) ->
+    log:log(Level, ?MODULE, Format, Args).
 

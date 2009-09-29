@@ -74,15 +74,15 @@ would look something like the following:
 
 A response is a JSON object that is given in response to a request. As a convention,
 if an error occurred while processing a request, the response object will contain 
-top-level strings named "errorCode" and "errorString" identifying the error. The
-errorCode is a number uniquely identifying the error, and errorString is a human-
+top-level strings named "error_code" and "error_string" identifying the error. The
+error_code is a number uniquely identifying the error, and error_string is a human-
 readable description of the error.
 
 For example, the following object might be returned as a response to the above 
 create_account request if the account could not be created:
 {
-  "errorCode"  : 10
-  "errorString": "An account already exists for that ANDROID_ID"
+  "error_code"  : 10
+  "error_string": "An account already exists for that ANDROID_ID"
 } 
 
 Or, if the operation was successful,
@@ -136,7 +136,7 @@ List of requests from SwiFTP Android app to proxy server:
           FTP client.
  Params:  None
  Returns: "port": a number giving the port that the server is listening on.
- Errors:  None specific to this request
+ Errors:  15: The device has overrun its quota
  
  Action:  data_pasv_accept
  Purpose: After a pasv_listen action, the proxy will be listening for an
@@ -159,15 +159,24 @@ List of requests from SwiFTP Android app to proxy server:
  	      "port": the port to which the proxy should open a connection
  Returns: Empty object on success
  Errors:  14: The proxy couldn't open a connection to the given address and port. 
+          15: The device has overrun its quota
+
+ Action:  check_quota
+ Purpose: Retrieve the number of bytes used by the device, as well as the maximum number
+          of bytes that the device may use. The user should be prompted to increase
+          their quota if the quota is near exhaustion.
+ Params:  None
+ Returns: "quota": the max number of bytes that the device may use
+          "used": the number of bytes used so far
+ Errors:  None specific to this request
  
- Action:  accept_control_connection
- Purpose: When there is a control connection from an FTP client, the Android device will
-          be notified, at which point it will connect a new socket, authenticate, and
-          send this request. If this request is successful, the socket will stop
-          accepting requests and become a pure proxy between the FTP client and the
-          SwiFTP Android app.
+ Action:  finished
+ Purpose: Send by the client to log out. It is not required to be sent, but it might be
+          useful someday to distinguish between normal exits and dropped connections.
+ Params:  None
  Returns: Empty object on success
- Errors:  11: Authentication failure
+ Errors:  None specific to this request
+ 
           
 Requests from proxy server to SwiFTP app:
  Action:  control_connection_waiting
@@ -185,7 +194,8 @@ Requests from proxy server to SwiFTP app:
           which will probably result in a connection to a different proxy server. The
           Android app should do this in a way that doesn't interrupt the user in the
           middle of a transfer, if possible.
- Params:  None
+ Params:  Optional: "newserver": the hostname of a new server that is recommended for
+          the client to connect to next.
  Errors:  None specific to this message
 
 Requests that may be sent by either party:

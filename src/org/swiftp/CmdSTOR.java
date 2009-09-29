@@ -38,7 +38,7 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 	public void run() {
 		myLog.l(Log.DEBUG, "STOR executing");
 		String param = getParameter(input);
-		File storeFile = inputPathToChrootedFile(sessionThread.getPrefix(), param);
+		File storeFile = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
 		
 		String errString = null;
 		FileOutputStream out = null;

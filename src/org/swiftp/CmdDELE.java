@@ -34,7 +34,7 @@ public class CmdDELE extends FtpCmd implements Runnable {
 	public void run() {
 		myLog.l(Log.INFO, "DELE executing");
 		String param = getParameter(input);
-		File storeFile = inputPathToChrootedFile(sessionThread.getPrefix(), param);
+		File storeFile = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
 		String errString = null;
 		if(violatesChroot(storeFile)) {
 			errString = "550 Invalid name or chroot violation\r\n";

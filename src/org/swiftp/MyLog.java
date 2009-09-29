@@ -42,4 +42,17 @@ public class MyLog {
 			}
 		}
 	}
+	
+	public void e(String s) {
+		l(Log.ERROR, s);
+	}
+	public void w(String s) {
+		l(Log.WARN, s);
+	}
+	public void i(String s) {
+		l(Log.INFO, s);
+	}
+	public void d(String s) {
+		l(Log.DEBUG, s);
+	}
 }

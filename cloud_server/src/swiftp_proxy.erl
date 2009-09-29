@@ -1,11 +1,12 @@
 -module(swiftp_proxy).
 -behaviour(application).
 -export([start/2, stop/1, client_session_create/0, device_session_create/0, 
-         init/1, do_app_start/0]).
--import(log, [log/3]).
+         checkout_session_create/0, init/1, do_app_start/0]).
 
 -define(DEVICE_PORT, 2222).
 -define(CLIENT_PORT, 2121).
+-define(CHECKOUT_PORT, 2001).
+
 % TODO: find out what these mean and tweak them
 -define(MAX_RESTART, 5).
 -define(MAX_TIME, 60).
@@ -36,7 +37,7 @@ start(_Type, _Args) ->
             log(info, "Connected to mnesia cluster ok, DB ready~n", []),
             supervisor:start_link({local, swiftp_proxy}, swiftp_proxy, [log_no]);
         Other ->
-            io:format("Give -dbstart of master_new|reuse|child\n"),
+            io:format("Give one of -dbstart master_new|reuse|child\n"),
             io:format("You gave dbstart of: ~p~n", [Other]),
             {error, bad_dbstart_type}
     end.
@@ -88,6 +89,28 @@ init([WhetherLog]) ->
                 supervisor,
                 []
             },
+            % The listener for local checkout database sessions
+            {
+                checkout_tcp_listener,
+                {tcp_listener, start_link, [?CHECKOUT_PORT,
+                                            checkout_session,
+                                            fun ?MODULE:checkout_session_create/0]},
+                permanent,
+                2000,
+                worker,
+                [tcp_listener]
+            },
+            % Supervisor for checkout session processes
+            {
+                checkout_session_sup,
+                {supervisor, start_link, [{local, checkout_session_sup},
+                                          checkout_session_sup,
+                                          []]},
+                permanent,
+                infinity,
+                supervisor,
+                []
+            },
             % The local random number generator process
             {
                 rand_worker,
@@ -105,6 +128,15 @@ init([WhetherLog]) ->
                 1000,
                 worker,
                 [session_registry]
+            },
+            % The local quota manager process
+            {
+                quota_manager,
+                {quota, start_link, []},
+                permanent,
+                1000,
+                worker,
+                [session_registry]
             }
         ],
     Children = case WhetherLog of 
@@ -113,6 +145,31 @@ init([WhetherLog]) ->
         log_yes ->
             [log_child_spec() | ChildrenExceptLogger]
     end,
+%%     yaws_wrapper:start(),
+    
+    %%     log(info, "Starting httpd~n", []),
+%%     ok = inets:start(),
+%%     {ok, _Pid} = inets:start(httpd, [{port, 4443}, 
+%%                                      {modules, [mod_alias, 
+%%                                                 mod_auth, 
+%%                                                 mod_esi, 
+%%                                                 mod_actions, 
+%%                                                 mod_cgi, 
+%%                                                 mod_dir, 
+%%                                                 mod_get, 
+%%                                                 mod_head, 
+%%                                                 mod_log, 
+%%                                                 mod_disk_log]},
+%%                                      {server_root, "httpd_server_root"}, 
+%%                                      {document_root, "httpd_doc_root"},
+%%                                      {ssl_certificate_file, "ssl/www_swiftp_org.crt"},
+%%                                      {ssl_ca_certificate_file, "ssl/www_swiftp_org.ca-bundle"},
+%%                                      {server_name, "testserver"}, 
+%%                                      {socket_type, ssl},
+%%                                      {erl_script_alias, {"/web_int", [web_int]}},
+%%                                      {error_log, "error.log"},
+%%                                      {security_log, "security.log"},
+%%                                      {transfer_log, "transfer.log"} ]),
     {ok, {{one_for_one, ?MAX_RESTART, ?MAX_TIME}, Children}}.
 
 
@@ -141,72 +198,9 @@ device_session_create() ->
 client_session_create() ->
     {ok, _Pid} = supervisor:start_child(client_session_sup, []).
 
-%% db_init_completed() ->
-%%     process_flag(trap_exit, true),
-%%     register(random_thread, spawn_link(rand, start, [])),
-%%     _Registry = spawn_link(session_registry, start, []),
-%%     _DeviceThreadSpawner = spawn_link(?MODULE, listener, [?DEVICE_PORT,
-%%                                                     "SessionListener",
-%%                                                     device_session,
-%%                                                     start]),
-%%     _ClientThreadSpawner = spawn_link(?MODULE, listener, [?CLIENT_PORT,
-%%                                                     "MatcherListener",
-%%                                                     connection_matcher,
-%%                                                     start]),
-%%     % Loop until we receive a quit request or exception/error occurs
-%%     ReceiveLoop = fun(F) ->
-%%         receive 
-%%             {quit, Why} -> 
-%%                 log(info, "Got quit request with: ~p~n", [Why]);
-%%             X -> 
-%%                 log(debug, "Main thread got message: ~p~n", [X]),
-%%                 F(F)
-%%         end
-%%     end,
-%%     ReceiveLoop(ReceiveLoop),
-%%     log(info, "Server stopping.~n", []).
+checkout_session_create() ->
+    {ok, _Pid} = supervisor:start_child(checkout_session_sup, []).
 
-%% spawn_cluster_logger() ->
-%%     spawn(log, start, ["/swiftp_proxy/logs", "proxy.log", debug, 10]).    
+log(Level, Format, Args) ->
+    log:log(Level, ?MODULE, Format, Args).
 
-%% log_respawner(LogPid) ->
-%%     process_flag(trap_exit, true),
-%%     % This function will be called with 'none' if no logger exists yet
-%%     case LogPid of
-%%         none -> 
-%%             spawn_link(log, start, ["/swiftp_proxy/logs", "proxy.log", debug, 10]);
-%%         _ ->
-%%             ok
-%%     end,
-%%     receive
-%%         {'EXIT', LogPid, normal} ->
-%%             io:format("Log respawner quitting, normal exit~n", []);
-%%         {'EXIT', LogPid, Reason} ->
-%%             io:format("Log thread died with reason ~p, respawning~n", [Reason]),
-%%             log_respawner(none);
-%%         Other ->
-%%             io:format("Log respawner go unexpected message ~p~n", [Other]),
-%%             log_respawner(LogPid)
-%%     end.
-
-
-%% listener(Port, Name, Mod, Func) ->
-%%     case util:tcp_listen(Port, [{active, false}, 
-%%                                 binary, 
-%%                                 {backlog, 10},
-%%                                 {reuseaddr, true},
-%%                                 inet % IPv4 only
-%%                                ]) of 
-%%         {ok, TcpListener} -> listener(Port, Name, Mod, Func, TcpListener);
-%%         X -> log(error, "~p listener TCP listen error: ~p~n", [Name, X])
-%%     end.
-%% listener(Port, Name, Mod, Func, TcpListener) ->
-%%     case gen_tcp:accept(TcpListener) of
-%%         {ok, Socket} -> 
-%%             Child = spawn(Mod, Func, [Socket]),
-%%             gen_tcp:controlling_process(Socket, Child),
-%%             listener(Port, Name, Mod, Func, TcpListener);
-%%         X -> 
-%%             log(error, "Accept error: ~p~n", [X]),
-%%             gen_tcp:close(TcpListener)
-%%     end.

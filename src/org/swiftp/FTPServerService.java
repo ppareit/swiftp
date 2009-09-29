@@ -74,7 +74,7 @@ public class FTPServerService extends Service implements Runnable {
 	protected static boolean acceptNet;
 	
 	private TcpListener wifiListener = null;
-	private CloudListener cloudListener = null;
+	private ProxyConnector proxyConnector = null;
 	private List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
 	
 	public FTPServerService() {
@@ -150,6 +150,9 @@ public class FTPServerService extends Service implements Runnable {
 				wifiSocket.close();
 			}
 		} catch (IOException e) {}
+		
+		terminateAllSessions();
+
 		UiUpdater.updateClients();
 		if(wifiLock != null) {
 			wifiLock.release();
@@ -201,14 +204,14 @@ public class FTPServerService extends Service implements Runnable {
 		//wifiSocket = ServerSocketChannel.open();
 		//wifiSocket.configureBlocking(false);
 		myLog.l(Log.DEBUG, "About to get wifi IP");
-		String wifiIp = null;
 		int loops = 0;
-		while(wifiIp == null) {
+		serverAddress = null;
+		while(serverAddress == null) {
 			// If IP address retrieval fails, it may be because DHCP is
 			// still coming up. So we wait one second between attempts,
 			// with a max # of attempts Defaults.getIpRetrievalAttempts().
-			wifiIp = getWifiIpAsString();
-			if(wifiIp != null) {
+			serverAddress = getWifiIp();
+			if(serverAddress != null) {
 				break;
 			}
 			myLog.l(Log.DEBUG, "Wifi IP string was null");
@@ -220,8 +223,7 @@ public class FTPServerService extends Service implements Runnable {
 				Thread.sleep(1000);
 			} catch(InterruptedException e) {}
 		}
-		myLog.l(Log.DEBUG, "Wifi IP: " + wifiIp);
-		serverAddress = InetAddress.getByName(wifiIp);
+		myLog.l(Log.DEBUG, "Wifi IP: " + serverAddress.getHostAddress());
 		wifiSocket = new ServerSocket();
 		wifiSocket.bind(new InetSocketAddress(serverAddress, port));
 		// The following line listens on all interfaces
@@ -256,41 +258,17 @@ public class FTPServerService extends Service implements Runnable {
 				return;
 			}
 		}
-		if(acceptNet) {
-			myLog.l(Log.DEBUG, "Would open cloud listener");
-		}
 		myLog.l(Log.INFO, "SwiFTP server ready");
 		
 		// We should update the UI now that we have a socket open, so the UI
 		// can present the URL
 		UiUpdater.updateClients();
 		
-		// The main loop: wait for inbound TCP connections and dispatch
-		// them to handler threads. If any session threads have finished,
-		// then remove them from our sessionThreads list.
-		
 		while(!shouldExit) {
-			/*SocketChannel clientSocket;
-			try {
-				// Handle one or more incoming connection requests
-				while((clientSocket = wifiSocket.accept()) != null) {
-					// If the accept was successful, spawn a new session
-					myLog.l(Log.INFO, "New connection, spawned thread");
-					SessionThread newSession = new SessionThread(clientSocket, this);
-					sessionThreads.add(newSession);
-					newSession.start();
-				}
-			} catch(IOException e) {
-				myLog.l(Log.WARN, "Error in socket accept");
-				myLog.l(Log.WARN, e.toString());
-				cleanupAndStopService();
-				return;
-			}
-			*/
 			if(acceptWifi) {
 				if(wifiListener != null) {
 					if(!wifiListener.isAlive()) {
-						myLog.l(Log.INFO, "Joining crashed wifiListener thread");
+						myLog.l(Log.DEBUG, "Joining crashed wifiListener thread");
 						try {
 							wifiListener.join();
 						} catch (InterruptedException e) {}
@@ -305,15 +283,15 @@ public class FTPServerService extends Service implements Runnable {
 				}
 			}
 			if(acceptNet) {
-				if(cloudListener != null) {
-					if(!cloudListener.isAlive()) {
-						myLog.l(Log.INFO, "Joining crashed cloudListener");
+				if(proxyConnector != null) {
+					if(!proxyConnector.isAlive()) {
+						myLog.l(Log.DEBUG, "Joining crashed proxy connector");
 						try {
-							cloudListener.join();
+							proxyConnector.join();
 						} catch (InterruptedException e) {}
-						cloudListener = null;
+						proxyConnector = null;
 						long nowMillis = new Date().getTime();
-						myLog.l(Log.DEBUG, "Now:"+nowMillis+" start:"+proxyStartMillis);
+						//myLog.l(Log.DEBUG, "Now:"+nowMillis+" start:"+proxyStartMillis);
 						if(nowMillis - proxyStartMillis < 3000) {
 							// We assume that if the proxy thread crashed within 3
 							// seconds of starting, it was a startup or connection
@@ -328,7 +306,7 @@ public class FTPServerService extends Service implements Runnable {
 						}
 					}
 				}
-				if(cloudListener == null) {
+				if(proxyConnector == null) {
 					long nowMillis = new Date().getTime();
 					boolean shouldStartListener = false;
 					// We want to restart the proxy listener without much delay 
@@ -339,14 +317,14 @@ public class FTPServerService extends Service implements Runnable {
 					{
 						// Retry every 5 seconds for the first 3 tries
 						shouldStartListener = true;
-					} else if(nowMillis - proxyStartMillis > 60000) {
-						// After the first 3 tries, only retry once per minute
+					} else if(nowMillis - proxyStartMillis > 30000) {
+						// After the first 3 tries, only retry once per 30 sec
 						shouldStartListener = true;
 					}
 					if(shouldStartListener) {
-						myLog.l(Log.DEBUG, "Spawning CloudListener");
-						cloudListener = new CloudListener(this);
-						cloudListener.start();
+						myLog.l(Log.DEBUG, "Spawning ProxyConnector");
+						proxyConnector = new ProxyConnector(this);
+						proxyConnector.start();
 						proxyStartMillis = nowMillis;
 					}
 				}
@@ -358,34 +336,31 @@ public class FTPServerService extends Service implements Runnable {
 			} catch(InterruptedException e) {
 				myLog.l(Log.DEBUG, "Thread interrupted");
 			}
-			// Look for finished session threads and stop tracking them in
-			// the sessionThreads list
-			
-			// Since we're not allowed to modify the list while iterating over
-			// it, we construct a list in toBeRemoved of threads to remove
-			// later from the sessionThreads list.
-			List <SessionThread> toBeRemoved = new ArrayList<SessionThread>();
-			for(SessionThread sessionThread : sessionThreads) {
-				if(!sessionThread.isAlive()) {
-					myLog.l(Log.DEBUG, "Cleaning up finished session...");
-					try {
-						sessionThread.join();
-						myLog.l(Log.DEBUG, "Thread joined");
-						toBeRemoved.add(sessionThread);
-						sessionThread.closeSocket(); // make sure socket closed
-					} catch (InterruptedException e) {
-						myLog.l(Log.DEBUG, "Interrupted while joining");
-						// We will try again in the next loop iteration
-					}
-				}
-			}
-			for(SessionThread removeThread : toBeRemoved) {
-				sessionThreads.remove(removeThread);
-			}
 		}
 			
 		myLog.l(Log.DEBUG, "Exiting cleanly");
+		terminateAllSessions();
+
+		if(proxyConnector != null) {
+			proxyConnector.quit();
+			proxyConnector = null;
+		}
+		if(wifiListener != null) {
+			wifiListener.quit();
+			wifiListener = null;
+		}
 		shouldExit = false; // we handled the exit flag, so reset it to acknowledge
+	}
+	
+	private void terminateAllSessions() {
+		myLog.i("Terminating " + sessionThreads.size() + " session thread(s)");
+		synchronized(this) {
+			for(SessionThread sessionThread : sessionThreads) {
+				if(sessionThread != null) {
+					sessionThread.closeSocket();
+				}
+			}
+		}
 	}
 	
 	public void cleanupAndStopService() {
@@ -408,7 +383,7 @@ public class FTPServerService extends Service implements Runnable {
 	 * Gets the IP address of the wifi connection.
 	 * @return The integer IP address if wifi enabled, or 0 if not.
 	 */
-	public static int getWifiIpAsInt() {
+	public static InetAddress getWifiIp() {
 		Context myContext = Globals.getContext();
 		if(myContext == null) {
 			throw new NullPointerException("Global context is null");
@@ -416,9 +391,10 @@ public class FTPServerService extends Service implements Runnable {
 		WifiManager wifiMgr = (WifiManager)myContext
 		                        .getSystemService(Context.WIFI_SERVICE);
 		if(isWifiEnabled()) {
-			return wifiMgr.getConnectionInfo().getIpAddress();
+			int ipAsInt = wifiMgr.getConnectionInfo().getIpAddress();
+			return Util.intToInet(ipAsInt);
 		} else {
-			return 0;
+			return null;
 		}
 	}
 	
@@ -436,21 +412,22 @@ public class FTPServerService extends Service implements Runnable {
 		}
 	}
 	
-	public static String getWifiIpAsString() {
-		int addr = getWifiIpAsInt();
-		staticLog.l(Log.DEBUG, "IP as int: " + addr);
-		if(addr != 0) {
-			StringBuffer buf = new StringBuffer();
-			buf.append(addr & 0xff).append('.').
-			append((addr >>>= 8) & 0xff).append('.').
-			append((addr >>>= 8) & 0xff).append('.').
-			append((addr >>>= 8) & 0xff);
-			staticLog.l(Log.DEBUG, "Returning IP string: " + buf.toString());
-			return buf.toString();
-		} else {
-			return null;
-		}
-	}
+//  Deprecated in favor of Util.ipToString()
+//	public static String getWifiIpAsString() {
+//		int addr = getWifiIpAsInt();
+//		staticLog.l(Log.DEBUG, "IP as int: " + addr);
+//		if(addr != 0) {
+//			StringBuffer buf = new StringBuffer();
+//			buf.append(addr & 0xff).append('.').
+//			append((addr >>>= 8) & 0xff).append('.').
+//			append((addr >>>= 8) & 0xff).append('.').
+//			append((addr >>>= 8) & 0xff);
+//			staticLog.l(Log.DEBUG, "Returning IP string: " + buf.toString());
+//			return buf.toString();
+//		} else {
+//			return null;
+//		}
+//	}
 	
 	public static InetAddress getServerAddress() {
 		return serverAddress;
@@ -500,6 +477,33 @@ public class FTPServerService extends Service implements Runnable {
 	}
 
 	public void registerSessionThread(SessionThread newSession) {
-		sessionThreads.add(newSession);
+		// Look for finished session threads and stop tracking them in
+		// the sessionThreads list
+		
+		// Since we're not allowed to modify the list while iterating over
+		// it, we construct a list in toBeRemoved of threads to remove
+		// later from the sessionThreads list.
+		synchronized(this) {
+			List <SessionThread> toBeRemoved = new ArrayList<SessionThread>();
+			for(SessionThread sessionThread : sessionThreads) {
+				if(!sessionThread.isAlive()) {
+					myLog.l(Log.DEBUG, "Cleaning up finished session...");
+					try {
+						sessionThread.join();
+						myLog.l(Log.DEBUG, "Thread joined");
+						toBeRemoved.add(sessionThread);
+						sessionThread.closeSocket(); // make sure socket closed
+					} catch (InterruptedException e) {
+						myLog.l(Log.DEBUG, "Interrupted while joining");
+						// We will try again in the next loop iteration
+					}
+				}
+			}
+			for(SessionThread removeThread : toBeRemoved) {
+				sessionThreads.remove(removeThread);
+			}
+			sessionThreads.add(newSession);
+		}
+		myLog.d("Registered session thread");
 	}
 }

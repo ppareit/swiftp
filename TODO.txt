@@ -19,7 +19,7 @@ Cleaner scrollable server log
 Figure out why getCanonicalPath chokes on trailing dots (.)
 Figure out why RMD complains but works anyway
 Generalize interface support for non-wifi
-Integrated error reporting (launch google code page?)
+Automatic error reporting
 Provide ability to launch wifi config
 Error text wrapping
 Move MainActivity launchConf.. toast into configuration activity
@@ -28,7 +28,6 @@ Don't put a title bar on our window: requestWindowFeature(Window.FEATURE_NO_TITL
 Request root if on rooted device
 Update wiki instructions for cloud proxy
 Generate and automate translations
-Add warning about fundamental security problems upon first cloud startup
 Host own DNS on AWS
 Add warning about fundamental security problems upon first cloud startup
 Copyright notices on all files
@@ -44,3 +43,11 @@ Add checkbox (default checked) for "my internet connection is firewalled" to act
 Add explanation of pricing model and costs
 Don't use proplist for prefix registry in proxy
 Persist prefixes and stats in Mnesia
+Only popup error dialog once, to allow reuse after error and preserve error msg
+Test and tweak proxy VM + OS config for max # TCP connections
+Android TCP keepalive
+Google Checkout / billing support
+Investigate kernel polling for proxy
+Turn off PythonDebug
+grep for TODO
+Switch proxy default to on (in 

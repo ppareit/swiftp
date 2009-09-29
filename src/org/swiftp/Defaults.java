@@ -26,7 +26,7 @@ public class Defaults {
 	protected static int inputBufferSize = 256;
 	protected static int dataChunkSize = 65536;  // do file I/O in 64k chunks 
 	protected static int sessionMonitorScrollBack = 10;
-	protected static int serverLogScrollBack = 10;
+	protected static int serverLogScrollBack = 50;
 	protected static int uiLogLevel = Defaults.release ? Log.INFO : Log.DEBUG;
 	protected static int consoleLogLevel = Defaults.release ? Log.INFO : Log.DEBUG;
 	protected static String settingsName = "SwiFTP";
@@ -37,8 +37,9 @@ public class Defaults {
 	public static final int tcpConnectionBacklog = 5;
 	public static final String chrootDir = "/sdcard";
 	public static final boolean acceptWifi = true;
-	public static final boolean acceptNet = true;
-	public static final int cloudProxyPort = 2121;
+	public static final boolean acceptNet = false;
+	public static final int REMOTE_PROXY_PORT = 2222;
+	public static final String STRING_ENCODING = "UTF-8";
 	
 	// This is a flag that should be true for public builds and false for dev builds
 	public static final boolean release = false;

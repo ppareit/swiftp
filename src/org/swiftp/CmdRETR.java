@@ -42,7 +42,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
 		String errString = null;
 		
 		mainblock: {
-			fileToRetr = inputPathToChrootedFile(sessionThread.getPrefix(), param);
+			fileToRetr = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
 			if(violatesChroot(fileToRetr)) {
 				errString = "550 Invalid name or chroot violation\r\n";
 				break mainblock;

@@ -11,7 +11,7 @@ abstract public class DataSocketFactory {
 	 * of the data sockets which are used to transmit directory listings and
 	 * file contents. This is necessary because normal FTP data sockets are
 	 * opened and closed very differently from the abnormal sort of data sockets
-	 * we use in conjunction with our cloud proxy system.
+	 * we use in conjunction with our proxy system.
 	 */
 	protected MyLog myLog = new MyLog(getClass().getName());
 	
@@ -27,7 +27,7 @@ abstract public class DataSocketFactory {
 	 * perform whatever initialization is necessary.
 	 * @return Whether the necessary actions completed successfully
 	 */
-	abstract public boolean onPasv();
+	abstract public int onPasv();
 
 	/**
 	 * When it's time for data transfer to begin, the SessionThread will call this
@@ -37,13 +37,11 @@ abstract public class DataSocketFactory {
 	 */
 	abstract public Socket onTransfer();
 	
-	abstract public int getPortNumber();
-	
 	/**
 	 * Sometimes we'll need to know the IP address at which we can be contacted. For
 	 * instance, the response to a PASV command will be the IP and port that the
 	 * client should use to connect it's data socket.
 	 */
-	abstract public String getPasvIp();
+	abstract public InetAddress getPasvIp();
 }
 
