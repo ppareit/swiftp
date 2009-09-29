@@ -1,0 +1,38 @@
+<html><head><title>SwiFTP Transfer Credits</title></head>
+<body>
+<p>Thanks for using SwiFTP! This page allows you to purchase proxy transfer credits.
+
+<h3>You don't have to pay to use SwiFTP!</h3>
+If you don't use the proxy feature, you don't have to worry about this. SwiFTP
+can accept connections without using the proxy server, just like a normal FTP server.
+If your ISP or cellular provider has set up a firewall, you may be limited to connecting via wifi only.
+
+<h3>Why can't the SwiFTP proxy be free?</h3>
+In order to work around the firewalls set up by various ISPs, I had to come up
+with a way bounce FTP traffic off of a proxy server out on the internet. This proxy
+server incurs hosting and bandwidth costs. As a graduate student, I'm not in a position
+to cover these costs myself, so I have to pass them on to SwiFTP users.
+
+<h3>If you can't pay</h3>
+If there's a really good reason why you're unable to pay for the bandwidth that you use, send
+me an email (<a href="mailto:admin@swiftp.org">admin@swiftp.org</a>) describing your situation 
+and I'll give you free transfer credits.
+
+<h3>If you have problems</h3>
+<p>I'm Dave Revell, the main developer for SwiFTP, and I can be reached at <b>
+<a href="mailto:admin@swiftp.org">admin@swiftp.org</a></b> with any ordering questions.
+
+<p>If you are having technical problems with SwiFTP, please use the public mailing list
+ <a href="mailto:swiftp-users@googlegroups.com"> swiftp-users@googlegroups.com</a> instead.
+
+<h3>The order form</h3>
+<br>TODO: insert Google Checkout logo</br>
+<form action="py/place_order.py" method="POST">
+You can find your Android ID by (TODO):<br>
+Your Android ID (case sensitive!): <input name="android_id" type="text" size="20"><br>
+<input type="radio" name="price" value="3">10 GB transfer - $3<br>
+<input type="radio" name="price" value="6">50 GB transfer - $6<br>
+<input type="radio" name="price" value="10">100 GB transfer - $10<br>
+<input type="radio" name="price" value="15">Unlimited transfer - $15<br>
+<input type="submit" value="Go to Google Checkout">
+</form>
