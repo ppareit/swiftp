@@ -62,6 +62,8 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 						errString = "451 Couldn't truncate file\r\n";
 						break storing;
 					}
+					// Notify other apps that we just deleted a file
+					Util.deletedFileNotify(storeFile.getPath());
 				}
 				out = new FileOutputStream(storeFile, false); // don't append
 			} catch(FileNotFoundException e) {
@@ -148,9 +150,14 @@ public class CmdSTOR extends FtpCmd implements Runnable {
 			sessionThread.writeString(errString);
 		} else {
 			sessionThread.writeString("226 Transmission complete\r\n");
+			// Notify the music player (and possibly others) that a few file has
+			// been uploaded.
+			Util.newFileNotify(storeFile.getPath());
 		}
 		sessionThread.closeDataSocket();
 		myLog.l(Log.DEBUG, "STOR finished");
 	}
+	
+
 	
 }

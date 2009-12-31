@@ -113,6 +113,8 @@ public class CmdLIST extends FtpCmd implements Runnable {
 		{
 			staticLog.l(Log.INFO, "Filename omitted due to disallowed character");
 			return null;
+		} else {
+			staticLog.l(Log.DEBUG, "Filename: " + lastNamePart);
 		}
 				
 		

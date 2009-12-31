@@ -8,7 +8,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.media.MediaScannerConnection;
+import android.media.MediaScannerConnection.MediaScannerConnectionClient;
+import android.net.Uri;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -98,4 +102,39 @@ abstract public class Util {
 			return null;
 		}
 	}
+	
+	public static void newFileNotify(String path) {
+		myLog.l(Log.DEBUG, "Notifying others about new file: " + path);
+		new MediaScannerNotifier(Globals.getContext(), path);
+	}
+	
+	public static void deletedFileNotify(String path) {
+		// This probably doesn't work, I couldn't find an API call for this.
+		myLog.l(Log.DEBUG, "Notifying others about deleted file: " + path);
+		new MediaScannerNotifier(Globals.getContext(), path);
+	}
+	
+	// A class to help notify the Music Player and other media services when
+	// a file has been uploaded. Thanks to Dave Sparks in his post to the
+	// Android Developers mailing list on 14 Feb 2009.
+	private static class MediaScannerNotifier implements MediaScannerConnectionClient {
+	    private MediaScannerConnection connection;
+	    private String path;
+
+	    public MediaScannerNotifier(Context context, String path) {
+	        this.path = path;
+	        connection = new MediaScannerConnection(context, this);
+	        connection.connect();
+	    }
+
+	    public void onMediaScannerConnected() {
+	        connection.scanFile(path, null); // null: we don't know MIME type
+	    }
+
+	    public void onScanCompleted(String path, Uri uri) {
+            connection.disconnect();
+ 	    }
+	}
+
+	
 }

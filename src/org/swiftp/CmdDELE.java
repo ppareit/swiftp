@@ -49,6 +49,7 @@ public class CmdDELE extends FtpCmd implements Runnable {
 			myLog.l(Log.INFO, "DELE failed: " + errString.trim());
 		} else {
 			sessionThread.writeString("250 File successfully deleted\r\n");
+			Util.deletedFileNotify(storeFile.getPath());
 		}
 		myLog.l(Log.INFO, "DELE finished");
 	}
