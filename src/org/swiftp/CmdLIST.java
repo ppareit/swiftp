@@ -17,6 +17,13 @@ You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/* The code that is common to LIST and NLST is implemented in the abstract
+ * class CmdAbstractListing, which is inherited here. In particular, the
+ * run() function is inherited. CmdLIST and CmdNLST just override the
+ * makeLsString() function in different ways to provide the different forms
+ * of output.
+ */
+
 package org.swiftp;
 
 import java.io.File;
@@ -25,76 +32,74 @@ import java.util.Date;
 
 import android.util.Log;
 
-public class CmdLIST extends FtpCmd implements Runnable {
-	//public static final String message = "LIST";
-	protected static MyLog staticLog = new MyLog(CmdLIST.class.toString());
-	protected String input;
+public class CmdLIST extends CmdAbstractListing implements Runnable {
 	// The approximate number of milliseconds in 6 months
-	public final static long MS_IN_SIX_MONTHS = 6 * 30 * 24 * 60 * 60 * 1000; 
+	public final static long MS_IN_SIX_MONTHS = 6 * 30 * 24 * 60 * 60 * 1000;
+	private String input;
 	
 	public CmdLIST(SessionThread sessionThread, String input) {
-		super(sessionThread, CmdLIST.class.toString());
-		this.input = input; 
+		super(sessionThread, input);
+		this.input = input;
 	}
 	
 	public void run() {
-		myLog.l(Log.DEBUG, "LIST executing");
-
-		//String param = getParameter(input);
 		String errString = null;
-		File fileToList = null;
+		
 		mainblock: {
-			// An FTP "LIST" verb always means list current directory
-			fileToList = sessionThread.getWorkingDir();
-	
-			myLog.l(Log.DEBUG, "Listing: " + fileToList.toString());
-			StringBuilder response = new StringBuilder();
-			
-			if(fileToList.isDirectory()) {
-				myLog.l(Log.DEBUG, "Listing directory");
-				// Get a listing of all files and directories in the path
-				File[] entries = fileToList.listFiles();
-				myLog.l(Log.DEBUG, "Dir len " + entries.length);
-				for(File entry : entries) {
-					//myLog.l(Log.DEBUG, "Handling dentry");
-					String curLine = makeLsString(entry);
-					if(curLine != null) {
-						response.append(curLine + "\r\n");
-					}
-				}
-			} else {
-				// The given path is a file and not a directory
-				response.append(makeLsString(fileToList));
-				response.append("\r\n");
+			String param = getParameter(input);
+			myLog.d("LIST parameter: " + param);
+			if(param.startsWith("-")) {
+				// Ignore options to list, which start with a dash
+				param = "";
 			}
-			
-			if(sessionThread.startUsingDataSocket()) {
-				myLog.l(Log.DEBUG, "LIST done making socket");
+			File fileToList = null;
+			if(param.equals("")) {
+				fileToList = sessionThread.getWorkingDir();
 			} else {
-				errString = "425 Error opening data socket\r\n";
+				if(param.contains("*")) {
+					errString = "550 LIST does not support wildcards\r\n";
+					break mainblock;
+				}
+				fileToList = new File(sessionThread.getWorkingDir(), param);
+				if(violatesChroot(fileToList)) {
+					errString = "450 Listing target violates chroot\r\n";
+					break mainblock;
+				}				
+			}
+			String listing;
+			if(fileToList.isDirectory()) {
+				StringBuilder response = new StringBuilder();
+				errString = listDirectory(response, fileToList);
+				if(errString != null) {
+					break mainblock;
+				}
+				listing = response.toString();
+			} else {
+				listing = makeLsString(fileToList);
+				if(listing == null) {
+					errString = "450 Couldn't list that file\r\n";
+					break mainblock;
+				}
+			}
+			errString = sendListing(listing);
+			if(errString != null) {
 				break mainblock;
 			}
-			sessionThread.writeString("150 Beginning transmission\r\n");
-			myLog.l(Log.DEBUG, "Sent code 150, sending listing string now");
-			if(!sessionThread.sendViaDataSocket(response.toString())) {
-				errString = "426 Data socket or network error\r\n";
-				myLog.l(Log.DEBUG, "sendViaDataSocket failure");
-			} else {
-				myLog.l(Log.DEBUG, "sendViaDataSocket success");
-			}
-		}
-		sessionThread.closeDataSocket();
+		}	
+		
 		if(errString != null) {
 			sessionThread.writeString(errString);
-			myLog.l(Log.DEBUG, "Failed with: " + errString);
+			myLog.l(Log.DEBUG, "LIST failed with: " + errString);
 		} else {
-			sessionThread.writeString("226 Data transmission OK\r\n");
-			myLog.l(Log.DEBUG, "List completed OK");
+			myLog.l(Log.DEBUG, "LIST completed OK");
 		}
-		//myLog.l(Log.DEBUG, "LIST complete");
+		// The success or error response over the control connection will
+		// have already been handled by sendListing, so we can just quit now.
 	}
 	
-	private static String makeLsString(File file) {
+	// Generates a line of a directory listing in the traditional /bin/ls
+	// format.
+	protected String makeLsString(File file) {
 		StringBuilder response = new StringBuilder();
 		
 		if(!file.exists()) {
@@ -147,6 +152,7 @@ public class CmdLIST extends FtpCmd implements Runnable {
 		}
 		response.append(format.format(new Date(file.lastModified())));
 		response.append(lastNamePart);
+		response.append("\r\n");
 		return response.toString();
 	}
 

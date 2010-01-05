@@ -55,7 +55,7 @@ public class ServerControlActivity extends Activity {
     //private Button serverOptionsButton;
     private Button instructionsButton;
     private Button setupButton;
-    private Button wifiButton;
+    //private Button wifiButton;
     
     private TextView wifiStatusText;
     private TextView serverStatusText;
@@ -117,7 +117,7 @@ public class ServerControlActivity extends Activity {
         //serverOptionsButton = (Button) findViewById(R.id.server_options_button);
         instructionsButton = (Button) findViewById(R.id.instructions);
         setupButton = (Button) findViewById(R.id.setup);
-        wifiButton = (Button)findViewById(R.id.wifi_button);
+        //wifiButton = (Button)findViewById(R.id.wifi_button);
         
         startStopButton.setOnClickListener(startStopListener);
         //addUserButton.setOnClickListener(addUserListener);
@@ -125,7 +125,7 @@ public class ServerControlActivity extends Activity {
         //serverOptionsButton.setOnClickListener(serverOptionsListener);
         instructionsButton.setOnClickListener(instructionsListener);
         setupButton.setOnClickListener(setupListener);
-        wifiButton.setOnClickListener(wifiButtonListener);
+        //wifiButton.setOnClickListener(wifiButtonListener);
         
         sessionMonitor = (TextView) findViewById(R.id.session_monitor);
         sessionMonitorCheckBox = 
@@ -211,11 +211,12 @@ public class ServerControlActivity extends Activity {
     	
     	// Set the start/stop button text and server status text
     	if(FTPServerService.isRunning()) {
-    		InetAddress address =  FTPServerService.getServerAddress();
+    		InetAddress address =  FTPServerService.getWifiIp();
         	if(address != null) {
         		ipText.setText("ftp://" + address.getHostAddress() + 
     		               ":" + FTPServerService.getPort() + "/");
         	} else {
+        		myLog.l(Log.VERBOSE, "Null address from getServerAddress()", true);
         		ipText.setText(R.string.cant_get_url);
         	}
         	startStopButton.setVisibility(View.VISIBLE);
@@ -228,31 +229,34 @@ public class ServerControlActivity extends Activity {
     		startStopButton.setText(R.string.start_server);
     	}
 
-    	// Manage the visibility of the start/stop button based on wifi state
-    	if(wifiState == WifiManager.WIFI_STATE_ENABLED) {
-			//myLog.l(Log.DEBUG, "Showing start/stop button due to enabled wifi");
-			startStopButton.setVisibility(View.VISIBLE);
-		} else {
-			// Only hide the button if the server is not running. If it is
-			// running, the button should be left visible so the server
-			// can be stopped, regardless of wifi state.
-			if(!FTPServerService.isRunning()) {
-				//myLog.l(Log.DEBUG, "Hiding start/stop button due to disabled wifi");
-				startStopButton.setVisibility(View.GONE);
-			} else {
-				//myLog.l(Log.DEBUG, "Would hide startStopButton but running");
-			}
-		}
+    	// This is old code, from when the server would refuse to start without
+    	// wifi being enabled. Now, the server can start at any time.
+//    	// Manage the visibility of the start/stop button based on wifi state
+//    	if(wifiState == WifiManager.WIFI_STATE_ENABLED) {
+//			//myLog.l(Log.DEBUG, "Showing start/stop button due to enabled wifi");
+//			startStopButton.setVisibility(View.VISIBLE);
+//		} else {
+//			// Only hide the button if the server is not running. If it is
+//			// running, the button should be left visible so the server
+//			// can be stopped, regardless of wifi state.
+//			if(!FTPServerService.isRunning()) {
+//				//myLog.l(Log.DEBUG, "Hiding start/stop button due to disabled wifi");
+//				startStopButton.setVisibility(View.GONE);
+//			} else {
+//				//myLog.l(Log.DEBUG, "Would hide startStopButton but running");
+//			}
+//		}
+    	
     	
     	// Manage the text of the wifi enable/disable button and the 
     	// wifi status text.
     	switch(wifiState) {
     	case WifiManager.WIFI_STATE_ENABLED:
-    		wifiButton.setText(R.string.disable_wifi);
+    		//wifiButton.setText(R.string.disable_wifi);
     		wifiStatusText.setText(R.string.enabled);
     		break;
     	case WifiManager.WIFI_STATE_DISABLED:
-    		wifiButton.setText(R.string.enable_wifi);
+    		//wifiButton.setText(R.string.enable_wifi);
     		wifiStatusText.setText(R.string.disabled);
     		break;
     	default:
@@ -384,26 +388,27 @@ public class ServerControlActivity extends Activity {
         }
     };
 
-    OnClickListener wifiButtonListener = new OnClickListener() {
-        public void onClick(View v) {
-        	Resources resources = getResources(); // fetch app resources
-        	String enableString = resources.getString(R.string.enable_wifi);
-        	String disableString = resources.getString(R.string.disable_wifi);
-        	
-        	String buttonText = wifiButton.getText().toString();
-    		WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        	
-        	if (buttonText.equals(enableString)) {
-        		myLog.l(Log.INFO, "User requested enable wifi");
-        		wifi.setWifiEnabled(true);
-        		wifiButton.setText(R.string.wifi_waiting);
-        	} else if (buttonText.equals(disableString)){
-        		myLog.l(Log.INFO, "User requested disable wifi");
-        		wifiButton.setText(R.string.wifi_waiting);
-        		wifi.setWifiEnabled(false);
-        	}
-        }
-    };
+    /* SwiFTP no longer offers wifi enable/disable functionality */
+//    OnClickListener wifiButtonListener = new OnClickListener() {
+//        public void onClick(View v) {
+//        	Resources resources = getResources(); // fetch app resources
+//        	String enableString = resources.getString(R.string.enable_wifi);
+//        	String disableString = resources.getString(R.string.disable_wifi);
+//        	
+//        	String buttonText = wifiButton.getText().toString();
+//    		WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+//        	
+//        	if (buttonText.equals(enableString)) {
+//        		myLog.l(Log.INFO, "User requested enable wifi");
+//        		wifi.setWifiEnabled(true);
+//        		wifiButton.setText(R.string.wifi_waiting);
+//        	} else if (buttonText.equals(disableString)){
+//        		myLog.l(Log.INFO, "User requested disable wifi");
+//        		wifiButton.setText(R.string.wifi_waiting);
+//        		wifi.setWifiEnabled(false);
+//        	}
+//        }
+//    };
     
     OnClickListener addUserListener = new OnClickListener() {
         public void onClick(View v) {

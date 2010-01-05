@@ -41,6 +41,7 @@ public abstract class FtpCmd implements Runnable {
 			new CmdMap("LIST", CmdLIST.class),
 			new CmdMap("PASV", CmdPASV.class),
 			new CmdMap("RETR", CmdRETR.class),
+			new CmdMap("NLST", CmdNLST.class),
 			new CmdMap("NOOP", CmdNOOP.class),
 			new CmdMap("STOR", CmdSTOR.class),
 			new CmdMap("DELE", CmdDELE.class),
@@ -48,6 +49,7 @@ public abstract class FtpCmd implements Runnable {
 			new CmdMap("RNTO", CmdRNTO.class),
 			new CmdMap("RMD",  CmdRMD.class),
 			new CmdMap("MKD",  CmdMKD.class),
+			new CmdMap("OPTS", CmdOPTS.class),
 			new CmdMap("PORT", CmdPORT.class),
 			new CmdMap("QUIT", CmdQUIT.class),
 			new CmdMap("FEAT", CmdFEAT.class),
@@ -135,6 +137,9 @@ public abstract class FtpCmd implements Runnable {
 	 * we want to chop off the trailing '\r\n', if present.
 	 */
 	static public String getParameter(String input) {
+		if(input == null) {
+			return "";
+		}
 		int firstSpacePosition = input.indexOf(' ');
 		if(firstSpacePosition == -1) {
 			return "";

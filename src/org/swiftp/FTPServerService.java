@@ -22,9 +22,7 @@ package org.swiftp;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,11 +51,10 @@ public class FTPServerService extends Service implements Runnable {
 	protected static final int MAX_SESSIONS = 5;
 	
 	//protected ServerSocketChannel wifiSocket;
-	protected ServerSocket wifiSocket;
-	protected Socket netSocket;
+	protected ServerSocket listenSocket;
 	protected static WifiLock wifiLock = null;
 	
-	protected static InetAddress serverAddress = null;
+//	protected static InetAddress serverAddress = null;
 	
 	protected static List<String> sessionMonitor = new ArrayList<String>();
 	protected static List<String> serverLog = new ArrayList<String>();
@@ -146,8 +143,8 @@ public class FTPServerService extends Service implements Runnable {
 		}
 		try {
 			myLog.l(Log.INFO, "Closing mainSocket");
-			if(wifiSocket != null) {
-				wifiSocket.close();
+			if(listenSocket != null) {
+				listenSocket.close();
 			}
 		} catch (IOException e) {}
 		
@@ -200,34 +197,43 @@ public class FTPServerService extends Service implements Runnable {
 		return true;
 	}
 
-	void setupWifiListener() throws IOException {
-		//wifiSocket = ServerSocketChannel.open();
-		//wifiSocket.configureBlocking(false);
-		myLog.l(Log.DEBUG, "About to get wifi IP");
-		int loops = 0;
-		serverAddress = null;
-		while(serverAddress == null) {
-			// If IP address retrieval fails, it may be because DHCP is
-			// still coming up. So we wait one second between attempts,
-			// with a max # of attempts Defaults.getIpRetrievalAttempts().
-			serverAddress = getWifiIp();
-			if(serverAddress != null) {
-				break;
-			}
-			myLog.l(Log.DEBUG, "Wifi IP string was null");
-			loops++;
-			if(loops > Defaults.getIpRetrievalAttempts()) {
-				throw new IOException("IP retrieval failure");	
-			}
-			try {
-				Thread.sleep(1000);
-			} catch(InterruptedException e) {}
-		}
-		myLog.l(Log.DEBUG, "Wifi IP: " + serverAddress.getHostAddress());
-		wifiSocket = new ServerSocket();
-		wifiSocket.bind(new InetSocketAddress(serverAddress, port));
-		// The following line listens on all interfaces
-		// mainSocket.socket().bind(new InetSocketAddress(port));
+	// This is old code. We used to get the Wifi IP address from Android, then 
+	// listen only on that IP. The new way is to listen on all interfaces.
+//	void setupWifiListener() throws IOException {
+//		//wifiSocket = ServerSocketChannel.open();
+//		//wifiSocket.configureBlocking(false);
+//		myLog.l(Log.DEBUG, "About to get wifi IP");
+//		int loops = 0;
+//		serverAddress = null;
+//		while(serverAddress == null) {
+//			// If IP address retrieval fails, it may be because DHCP is
+//			// still coming up. So we wait one second between attempts,
+//			// with a max # of attempts Defaults.getIpRetrievalAttempts().
+//			serverAddress = getWifiIp();
+//			if(serverAddress != null) {
+//				break;
+//			}
+//			myLog.l(Log.DEBUG, "Wifi IP string was null");
+//			loops++;
+//			if(loops > Defaults.getIpRetrievalAttempts()) {
+//				throw new IOException("IP retrieval failure");	
+//			}
+//			try {
+//				Thread.sleep(1000);
+//			} catch(InterruptedException e) {}
+//		}
+//		myLog.l(Log.DEBUG, "Wifi IP: " + serverAddress.getHostAddress());
+//		wifiSocket = new ServerSocket();
+//		wifiSocket.bind(new InetSocketAddress(serverAddress, port));
+//		// The following line listens on all interfaces
+//		// mainSocket.socket().bind(new InetSocketAddress(port));
+//		
+//	}
+	
+	// This opens a listening socket on all interfaces. 
+	void setupListener() throws IOException {
+		listenSocket = new ServerSocket(port); // use default connection backlog,
+										     // all addresses.
 		
 	}
 	
@@ -250,10 +256,10 @@ public class FTPServerService extends Service implements Runnable {
 		if(acceptWifi) {
 			// If configured to accept connections via wifi, then set up the socket
 			try {
-				setupWifiListener();
+				setupListener();
 			} catch (IOException e) {
 				myLog.l(Log.ERROR, "Error opening port, check your network connection.");
-				serverAddress = null;
+//				serverAddress = null;
 				cleanupAndStopService();
 				return;
 			}
@@ -278,7 +284,7 @@ public class FTPServerService extends Service implements Runnable {
 				if(wifiListener == null) {
 					// Either our wifi listener hasn't been created yet, or has crashed,
 					// so spawn it
-					wifiListener = new TcpListener(wifiSocket, this); 
+					wifiListener = new TcpListener(listenSocket, this); 
 					wifiListener.start();
 				}
 			}
@@ -381,7 +387,7 @@ public class FTPServerService extends Service implements Runnable {
 
 	/**
 	 * Gets the IP address of the wifi connection.
-	 * @return The integer IP address if wifi enabled, or 0 if not.
+	 * @return The integer IP address if wifi enabled, or null if not.
 	 */
 	public static InetAddress getWifiIp() {
 		Context myContext = Globals.getContext();
@@ -429,9 +435,9 @@ public class FTPServerService extends Service implements Runnable {
 //		}
 //	}
 	
-	public static InetAddress getServerAddress() {
-		return serverAddress;
-	}
+//	public static InetAddress getServerAddress() {
+//		return serverAddress;
+//	}
 	
 	public static List<String> getSessionMonitorContents() {
 		return new ArrayList<String>(sessionMonitor);

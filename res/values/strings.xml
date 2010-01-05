@@ -20,7 +20,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
-<string name="menu_top_string">SwiFTP Server 2.0 (dev)</string>
+<string name="name_version">SwiFTP Server 1.12</string>
 <string name="menu_byline">By Dave Revell and contributors</string>
 
 <string name="add_user">Add User</string>
@@ -36,15 +36,15 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 
 <string name="no_url_yet">none yet</string>
-<string name="server_status">&quot;Server status: &quot;</string>
-<string name="my_url_is">&quot;Server URL: &quot;</string>
+<string name="server_status">Server status:</string>
+<string name="my_url_is">Wifi URL:</string>
 <string name="cannot_start_until_wifi">No wifi</string>
 <string name="enable_wifi"><b>Enable wifi</b></string>
 <string name="disable_wifi">Disable wifi</string>
 <string name="wifi_waiting">Wifi waiting</string>
 <string name="wifi_status">Wifi status:</string>
 <string name="last_error">Last error:</string>
-<string name="cant_get_url">can't determine URL</string>
+<string name="cant_get_url">unknown</string>
 <string name="running">running</string>
 <string name="stopped">stopped</string>
 <string name="unknown">unknown</string>
@@ -85,8 +85,6 @@ for the first time. You must use this username and password when accessing the s
 This information can be changed later by clicking the Setup button from the main screen.\
 \n\n\
 \
-Look in the /sdcard directory for your music and other files.\n\n\
-\
 SwiFTP allows you to enable and disable wifi from the main control screen. However, this \
 only works if you are using a network that you have connected to before.\n\n\
 \
@@ -94,9 +92,6 @@ For power and security reasons, it's recommended that the server be stopped afte
 \
 If you're watching the server log, don't be alarmed by messages about ignored or unrecognized commands, these are normal as \
 long as they don't cause undesired behavior.\n\n\
-\
-SwiFTP is open source, and help with graphic design and non-English translation are badly needed (look \
-at that awful icon)! \n\n\
 \
 If something is not working the way you expect it to, please report it to me at www.swiftp.org.\n\n\
 \

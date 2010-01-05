@@ -33,7 +33,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     	android:id="@+id/menu_top_text" 
     	android:layout_height="wrap_content"
     	android:layout_width="wrap_content"
-    	android:text="@string/menu_top_string"
+    	android:text="@string/name_version"
     	android:textSize="20sp"
     	android:textColor="#ffffff" 
     	/>
@@ -94,12 +94,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 				android:layout_width="wrap_content"
 				android:text="@string/start_server"
 				/>
-			<Button
-				android:id="@+id/wifi_button" 
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:text="@string/enable_wifi"
-				/>
+<!--  This doesn't need to exist -->
+<!--			<Button-->
+<!--				android:id="@+id/wifi_button" -->
+<!--				android:layout_height="wrap_content"-->
+<!--				android:layout_width="wrap_content"-->
+<!--				android:text="@string/enable_wifi"-->
+<!--				/>-->
 			<Button
 				android:id="@+id/instructions"
 				android:layout_height="wrap_content"

@@ -53,6 +53,7 @@ public class SessionThread extends Thread {
 	protected DataSocketFactory dataSocketFactory;
 	OutputStream dataOutputStream = null;
 	private boolean sendWelcomeBanner;
+	protected String encoding = Defaults.SESSION_ENCODING;
 
 	/**
 	 * Used when we get a PORT command to open up an outgoing socket.
@@ -73,11 +74,11 @@ public class SessionThread extends Thread {
 	 */
 	public boolean sendViaDataSocket(String string) {
 		try {
-			byte[] bytes = string.getBytes("UTF-8");
+			byte[] bytes = string.getBytes(encoding);
+			myLog.d("Using data connection encoding: " + encoding);
 			return sendViaDataSocket(bytes, bytes.length);
 		} catch (UnsupportedEncodingException e) {
-			// There's no plausible way this can happen
-			myLog.l(Log.ERROR, "UTF-8 output failure");
+			myLog.l(Log.ERROR, "Unsupported encoding for data socket send");
 			return false;
 		}
 	}
@@ -235,7 +236,9 @@ public class SessionThread extends Thread {
 		myLog.l(Log.INFO, "SessionThread started");
 
 		if(sendWelcomeBanner) {
-			writeString("220 SwiFTP server ready\r\n");
+			String serverNameVersion = Globals.getContext().
+										 getString(R.string.name_version); 
+			writeString("220 SwiFTP " + Util.getVersion() + " ready\r\n");
 		}
 		// Main loop: read an incoming line and process it
 		try {
@@ -298,7 +301,14 @@ public class SessionThread extends Thread {
 
 	public void writeString(String str) {
 		FTPServerService.writeMonitor(false, str);
-		writeBytes(str.getBytes());
+		byte[] strBytes;
+		try {
+			strBytes = str.getBytes(encoding);
+		} catch (UnsupportedEncodingException e) {
+			myLog.e("Unsupported encoding: " + encoding);
+			strBytes = str.getBytes();
+		}
+		writeBytes(strBytes);
 	}
 
 	protected Socket getSocket() {
@@ -385,4 +395,13 @@ public class SessionThread extends Thread {
 	public void setRenameFrom(File renameFrom) {
 		this.renameFrom = renameFrom;
 	}
+	
+	public String getEncoding() {
+		return encoding;
+	}
+
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+
 }

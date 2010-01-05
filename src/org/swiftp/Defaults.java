@@ -33,24 +33,28 @@ public class Defaults {
 	//protected static String username = "user";
 	//protected static String password = "";
 	protected static int portNumber = 2121; 
-	protected static int ipRetrievalAttempts = 5;
+//	protected static int ipRetrievalAttempts = 5;
 	public static final int tcpConnectionBacklog = 5;
 	public static final String chrootDir = "/sdcard";
 	public static final boolean acceptWifi = true;
 	public static final boolean acceptNet = false;
 	public static final int REMOTE_PROXY_PORT = 2222;
 	public static final String STRING_ENCODING = "UTF-8";
+	// FTP control sessions should start out in ASCII, according to the RFC.
+	// However, many clients don't turn on UTF-8 even though they support it,
+	// so we just turn it on by default.
+	public static final String SESSION_ENCODING = "UTF-8"; 
 	
 	// This is a flag that should be true for public builds and false for dev builds
-	public static final boolean release = false;
+	public static final boolean release = true;
 	
-	public static int getIpRetrievalAttempts() {
-		return ipRetrievalAttempts;
-	}
+//	public static int getIpRetrievalAttempts() {
+//		return ipRetrievalAttempts;
+//	}
 
-	public static void setIpRetrievalAttempts(int ipRetrievalAttempts) {
-		Defaults.ipRetrievalAttempts = ipRetrievalAttempts;
-	}
+//	public static void setIpRetrievalAttempts(int ipRetrievalAttempts) {
+//		Defaults.ipRetrievalAttempts = ipRetrievalAttempts;
+//	}
 
 	public static int getPortNumber() {
 		return portNumber;

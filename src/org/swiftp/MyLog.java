@@ -27,7 +27,8 @@ public class MyLog {
 	public MyLog(String tag) {
 		this.tag = tag;
 	}
-	public void l(int level, String str) {
+	
+	public void l(int level, String str, boolean sysOnly) {
 		synchronized (MyLog.class) {
 			str = str.trim();
 			// Messages of this severity are handled specially
@@ -37,22 +38,28 @@ public class MyLog {
 			if(level >= Defaults.getConsoleLogLevel()) {
 				Log.println(level,tag, str);
 			}
-			if(level >= Defaults.getUiLogLevel()) {
-				FTPServerService.log(level, str);
+			if(!sysOnly) { // some messages only go to the Android log
+				if(level >= Defaults.getUiLogLevel()) {
+					FTPServerService.log(level, str);
+				}
 			}
 		}
 	}
 	
+	public void l(int level, String str) {
+		l(level, str, false);
+	}
+	
 	public void e(String s) {
-		l(Log.ERROR, s);
+		l(Log.ERROR, s, false);
 	}
 	public void w(String s) {
-		l(Log.WARN, s);
+		l(Log.WARN, s, false);
 	}
 	public void i(String s) {
-		l(Log.INFO, s);
+		l(Log.INFO, s, false);
 	}
 	public void d(String s) {
-		l(Log.DEBUG, s);
+		l(Log.DEBUG, s, false);
 	}
 }

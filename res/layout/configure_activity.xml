@@ -142,29 +142,37 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     	android:stretchColumns="*"
     	>
 		<TableRow>
+          <!-- skipping net proxy for Jan 2010 release, hence visibility -->
+          <!-- since this option only makes sense in contrast with the net -->
+          <!-- proxy feature, it has been removed temporarily also. -->
 			<TextView
 			   	android:layout_width="wrap_content"
 		    	android:layout_height="wrap_content"
 		    	android:text="@string/accept_connections_from_wifi"
+		    	android:visibility="gone"
 		    	/>
 			<CheckBox 
 				android:id="@+id/config_wifi_checkbox"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 		    	android:checked="true"
+		    	android:visibility="gone"
 				/>
 		</TableRow>
 		<TableRow>
+		  <!-- skipping net proxy for Jan 2010 release, hence visibility -->
 			<TextView
 			   	android:layout_width="wrap_content"
 		    	android:layout_height="wrap_content"
 		    	android:text="@string/accept_connections_from_net"
+		    	android:visibility="gone" 
 		    	/>
 			<CheckBox  
 				android:id="@+id/config_net_checkbox"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 		    	android:checked="true"
+                android:visibility="gone" 
 				/>
 		</TableRow>
 	</TableLayout>

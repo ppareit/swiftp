@@ -82,6 +82,14 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 		boolean acceptNet = settings.getBoolean(ACCEPT_NET, Defaults.acceptNet);
 		boolean acceptWifi = settings.getBoolean(ACCEPT_WIFI, Defaults.acceptWifi);
 		
+		// The String named chroot holds the default chroot directory. If the
+		// directory doesn't actually exist in the file system, then use
+		// the root directory instead.
+		File chrootTest = new File(chroot); 
+		if(!chrootTest.isDirectory() || !chrootTest.canRead()) {
+			chroot = "/";
+		}
+		
 		usernameBox.setText(username);
 		passwordBox.setText(password);
 		portNumberBox.setText(Integer.toString(portNumber));
