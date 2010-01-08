@@ -103,7 +103,7 @@ public class CmdNLST extends CmdAbstractListing implements Runnable {
 	
 	protected String makeLsString(File file) {
 		if(!file.exists()) {
-			staticLog.l(Log.ERROR, "makeLsString had nonexistent file");
+			staticLog.l(Log.INFO, "makeLsString had nonexistent file");
 			return null;
 		}
 
