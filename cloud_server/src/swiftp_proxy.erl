@@ -1,11 +1,10 @@
 -module(swiftp_proxy).
 -behaviour(application).
 -export([start/2, stop/1, client_session_create/0, device_session_create/0, 
-         checkout_session_create/0, init/1, do_app_start/0]).
+         init/1, do_app_start/0]).
 
 -define(DEVICE_PORT, 2222).
 -define(CLIENT_PORT, 2121).
--define(CHECKOUT_PORT, 2001).
 
 % TODO: find out what these mean and tweak them
 -define(MAX_RESTART, 5).
@@ -89,28 +88,6 @@ init([WhetherLog]) ->
                 supervisor,
                 []
             },
-            % The listener for local checkout database sessions
-            {
-                checkout_tcp_listener,
-                {tcp_listener, start_link, [?CHECKOUT_PORT,
-                                            checkout_session,
-                                            fun ?MODULE:checkout_session_create/0]},
-                permanent,
-                2000,
-                worker,
-                [tcp_listener]
-            },
-            % Supervisor for checkout session processes
-            {
-                checkout_session_sup,
-                {supervisor, start_link, [{local, checkout_session_sup},
-                                          checkout_session_sup,
-                                          []]},
-                permanent,
-                infinity,
-                supervisor,
-                []
-            },
             % The local random number generator process
             {
                 rand_worker,
@@ -124,15 +101,6 @@ init([WhetherLog]) ->
             {
                 session_registry,
                 {session_registry, start_link, []},
-                permanent,
-                1000,
-                worker,
-                [session_registry]
-            },
-            % The local quota manager process
-            {
-                quota_manager,
-                {quota, start_link, []},
                 permanent,
                 1000,
                 worker,
@@ -197,9 +165,6 @@ device_session_create() ->
 
 client_session_create() ->
     {ok, _Pid} = supervisor:start_child(client_session_sup, []).
-
-checkout_session_create() ->
-    {ok, _Pid} = supervisor:start_child(checkout_session_sup, []).
 
 log(Level, Format, Args) ->
     log:log(Level, ?MODULE, Format, Args).

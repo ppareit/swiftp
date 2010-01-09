@@ -76,6 +76,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 or nonexistent.</string> 
 <string name="violates_chroot">550 Server settings prevent leaving directory\r\n</string>
 <string name="must_config">Before SwiFTP can run, a username and password must be set up.</string>
+<string name="proxy_status">Proxy status:</string>
+<string name="proxy_transferred">Proxy used:</string>
+<string name="proxy_url">Proxy URL:</string>
+<string name="donation">Proxy servers are expensive, please show your support by donating \
+(www.swiftp.org). The suggested donation is 25 cents per gigabyte of proxy traffic. \
+Thank you!</string>
 <string name="instructions_text">\
 Thanks for using SwiFTP! Here are some brief usage instructions. More information can be \
 found at http://www.swiftp.org.\n\n\

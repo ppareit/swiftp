@@ -49,8 +49,6 @@ state_have_socket({tcp, DeviceSocket, Data}, StateData = #state{devicesocket=Dev
                 true ->
                     AndroidId = DeviceRow#device.android_id,
                     BytesUsed = DeviceRow#device.totalbytes,
-                    Quota = DeviceRow#device.quota,
-                    quota:session_starting(AndroidId, BytesUsed, Quota),
                     log(info, "Device authenticated: ~p~n", [AndroidId]),
                     {next_state, state_authenticated, StateData#state{devicerow=DeviceRow}};
                 false ->
@@ -65,8 +63,6 @@ state_have_socket({tcp, DeviceSocket, Data}, StateData = #state{devicesocket=Dev
                 true -> 
                     AndroidId = DeviceRow#device.android_id,
                     log(info, "Created account for: ~p~n", [AndroidId]),
-                    quota:session_starting(AndroidId, DeviceRow#device.totalbytes, 
-                                           DeviceRow#device.quota),
                     {next_state, state_authenticated, StateData#state{devicerow=DeviceRow}};
                 false -> 
                     log(warn, "Account create failed~n ", []),
@@ -121,52 +117,38 @@ state_authenticated({tcp, DeviceSocket, Data}, StateData= #state{devicesocket=De
             {next_state, state_cmd_session, StateData};
         <<"data_pasv_listen">> ->
             log(debug, "Starting pasv listen~n", []),
-            case quota:check(AndroidId) of
-                over_quota ->
-                    ResponseTerm = util:json_err_obj(15, "Transfer quota has been used up"),
-                    gen_tcp:send(DeviceSocket, ResponseTerm),
-                    {stop, normal, StateData};
-                under_quota ->
-                    Opts = [binary, {packet, 0}, {reuseaddr, true},
-                            {keepalive, true}, {backlog, 30}, {active, false}],
-                    case gen_tcp:listen(0, Opts) of
-                        {ok, ListenSocket} ->
-                            % Send JSON with port number on successful listen
-                            {ok, Port} = inet:port(ListenSocket),
-                            ResponseObj = term_to_json({[{<<"port">>, Port}]}),
-                            gen_tcp:send(DeviceSocket, ResponseObj),
-                            % In StateData, the clientsocket is the listener
-                            {next_state, state_pasv_listen, 
-                                StateData#state{clientsocket=ListenSocket}};
-                        {error, Reason} ->
-                            % Send error object if listen fails
-                            log(warn, "device_session pasv_listen failed~n", []),
-                            ResponseJson = util:json_err_obj(0, "Listen failed"),
-                            gen_tcp:send(DeviceSocket, ResponseJson),
-                            {stop, Reason, StateData}
-                            end
+            Opts = [binary, {packet, 0}, {reuseaddr, true},
+                       {keepalive, true}, {backlog, 30}, {active, false}],
+            case gen_tcp:listen(0, Opts) of
+                {ok, ListenSocket} ->
+                    % Send JSON with port number on successful listen
+                    {ok, Port} = inet:port(ListenSocket),
+                    ResponseObj = term_to_json({[{<<"port">>, Port}]}),
+                    gen_tcp:send(DeviceSocket, ResponseObj),
+                    % In StateData, the clientsocket is the listener
+                    {next_state, state_pasv_listen, 
+                        StateData#state{clientsocket=ListenSocket}};
+                {error, Reason} ->
+                    % Send error object if listen fails
+                    log(warn, "device_session pasv_listen failed~n", []),
+                    ResponseJson = util:json_err_obj(0, "Listen failed"),
+                    gen_tcp:send(DeviceSocket, ResponseJson),
+                    {stop, Reason, StateData}
             end;
         <<"data_port_connect">> ->
             Address = binary_to_list(util:get_json_value(JsonTerm, <<"address">>)),
             Port = util:get_json_value(JsonTerm, <<"port">>),
             log(debug, "Connecting PORT to ~p:~p~n", [Address, Port]),
-            case quota:check(AndroidId) of
-                over_quota ->
-                    ResponseTerm = util:json_err_obj(15, "Transfer quota has been used up"),
-                    gen_tcp:send(DeviceSocket, ResponseTerm),
-                    {stop, normal, StateData};
-                under_quota ->
-                    case util:open_data_port(Address, Port) of
-                        {ok, ClientSocket} ->
-                            gen_tcp:send(DeviceSocket, term_to_json({[]})),
-                            {next_state, state_proxying, 
-                             StateData#state{clientsocket=ClientSocket}};
-                        _ ->
-                            log(info, "Failed connecting port to ~p:~p~n", [Address, Port]),
-                            ResponseJson = util:json_err_obj(14, "Connect failed"),
-                            gen_tcp:send(DeviceSocket, ResponseJson),
-                            {stop, data_port_connect_failed, StateData}
-                    end
+            case util:open_data_port(Address, Port) of
+                {ok, ClientSocket} ->
+                    gen_tcp:send(DeviceSocket, term_to_json({[]})),
+                    {next_state, state_proxying, 
+                     StateData#state{clientsocket=ClientSocket}};
+                _ ->
+                    log(info, "Failed connecting port to ~p:~p~n", [Address, Port]),
+                    ResponseJson = util:json_err_obj(14, "Connect failed"),
+                    gen_tcp:send(DeviceSocket, ResponseJson),
+                    {stop, data_port_connect_failed, StateData}
             end
     end.
 
@@ -199,13 +181,6 @@ state_cmd_session({tcp, DeviceSocket, Data},
             log(debug, "Device sent action \"finished\", closing~n", []),
             gen_tcp:close(DeviceSocket),
             {stop, normal, StateData};
-        <<"check_quota">> ->
-            AndroidId = DeviceRow#device.android_id,
-            {Used, Quota} = quota:report_usage(AndroidId),
-            Response = term_to_json({[{<<"quota">>, Quota}, {<<"used">>, Used}]}),
-            log(debug, "Sending quota response for ~p: ~p/~p~n", [AndroidId, Used, Quota]),
-            gen_tcp:send(DeviceSocket, Response),
-            {next_state, state_cmd_session, StateData};
         _Other ->
             ResponseJson = util:json_err_obj(0, "Command not implemented"),
             gen_tcp:send(DeviceSocket, ResponseJson),
@@ -247,20 +222,12 @@ handle_sync_event(_Event, _From, StateName, StateData) ->
 
 terminate(_Reason, StateName, StateData) ->
     DeviceRow = StateData#state.devicerow,
-    
     case StateName of
         state_cmd_session ->
             % If this was a command session, and not an file data session, then
             % remove it from the active session registry
-            quota:closed_session((StateData#state.devicerow)#device.android_id),
             Prefix = DeviceRow#device.prefix,
             session_registry:remove(Prefix);
-        state_proxying ->
-            BytesUsed = StateData#state.sessionbytes,
-            % If this was a data session (PORT or PASV), then we inform the quota
-            % module when we're done so it can track quota usage
-            AndroidId  = DeviceRow#device.android_id,
-            quota:note_usage(AndroidId, BytesUsed);            
         _OtherState -> ok
     end.
     

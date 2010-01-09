@@ -113,28 +113,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 				android:layout_width="wrap_content"
 				android:text="@string/setup_label"
 				/>
-		</LinearLayout>		
-<!--		<Button-->
-<!--			android:id="@+id/add_user_button" -->
-<!--			android:layout_height="wrap_content"-->
-<!--			android:layout_width="fill_parent"-->
-<!--			android:text="@string/add_user"-->
-<!--			>-->
-<!--		</Button>-->
-<!--		<Button-->
-<!--			android:id="@+id/manage_users_button" -->
-<!--			android:layout_height="wrap_content"-->
-<!--			android:layout_width="fill_parent"-->
-<!--			android:text="@string/manage_users"-->
-<!--			>-->
-<!--		</Button>-->
-<!--		<Button-->
-<!--			android:id="@+id/server_options_button" -->
-<!--			android:layout_height="wrap_content"-->
-<!--			android:layout_width="fill_parent"-->
-<!--			android:text="@string/server_options"-->
-<!--			>-->
-<!--		</Button>-->
+		</LinearLayout>
+		
 	</LinearLayout>
 	
 	<!--  A horizontal line -->
@@ -240,13 +220,108 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
   				/>
   		</TableRow>
 	</TableLayout>
-	
+
 	<!--  A horizontal line -->
 	<FrameLayout android:layout_height="1px"
 		android:layout_width="fill_parent"
 		android:background="#666666"
 		>
 	</FrameLayout>
+
+    <TableLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:shrinkColumns="2">
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/proxy_status"
+                android:textSize="16sp"
+                android:gravity="left"
+                />
+            <!--A small spacer between the columns -->
+            <FrameLayout
+                android:layout_width="3sp"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/proxy_status" 
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/unknown"
+                android:textColor="#ffffff" 
+                android:textSize="16sp" 
+                />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/proxy_url"
+                android:textSize="16sp"
+                android:gravity="left"
+            />
+            <!--A small spacer between the columns -->
+            <FrameLayout
+                android:layout_width="3sp"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/proxy_url" 
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/no_url_yet"
+                android:textSize="16sp"
+                android:textColor="#ffffff" 
+            />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/proxy_transferred"
+                android:textSize="16sp"
+                android:gravity="left"
+            />
+            <!--A small spacer between the columns -->
+            <FrameLayout
+                android:layout_width="3sp"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/proxy_transferred" 
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/unknown"
+                android:textColor="#ffffff" 
+                android:textSize="16sp" 
+                />
+        </TableRow>
+        
+    </TableLayout>
+
+    <!--  A horizontal line -->
+    <FrameLayout android:layout_height="1px"
+        android:layout_width="fill_parent"
+        android:background="#666666"
+        >
+    </FrameLayout>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/donation"
+        android:textSize="12sp"
+    />
+
+    <!--  A horizontal line -->
+    <FrameLayout android:layout_height="1px"
+        android:layout_width="fill_parent"
+        android:background="#666666"
+        >
+    </FrameLayout>
+
 	
 	<LinearLayout 
 		android:orientation="horizontal" 
