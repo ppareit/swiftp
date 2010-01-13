@@ -103,7 +103,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
 		StringBuilder response = new StringBuilder();
 		
 		if(!file.exists()) {
-			staticLog.l(Log.ERROR, "makeLsString had nonexistent file");
+			staticLog.l(Log.INFO, "makeLsString had nonexistent file");
 			return null;
 		}
 
