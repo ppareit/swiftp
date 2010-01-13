@@ -27,8 +27,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package org.swiftp;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import android.util.Log;
 
@@ -74,7 +72,9 @@ public abstract class CmdAbstractListing extends FtpCmd {
 			sessionThread.closeDataSocket();
 			return "425 Error opening data socket\r\n";
 		}
-		sessionThread.writeString("150 Beginning transmission\r\n");
+		String mode = sessionThread.isBinaryMode() ? "BINARY" : "ASCII";
+		sessionThread.writeString(
+				"150 Opening "+mode+" mode data connection for file list\r\n");
 		myLog.l(Log.DEBUG, "Sent code 150, sending listing string now");
 		if(!sessionThread.sendViaDataSocket(listing)) {
 			myLog.l(Log.DEBUG, "sendViaDataSocket failure");

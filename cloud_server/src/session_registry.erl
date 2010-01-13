@@ -3,11 +3,12 @@
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
--export([start_link/0, lookup/1, remove/1, add/2]).
+-export([start_link/0, lookup/1, remove/1, remove_self/1, add/2]).
 
 -import(json_eep, [json_to_term/1, term_to_json/1, get_state/0]).
 
 % TODO: implement a "clean/0" function that scans the table and removes stale entries
+
 
 %% The external interface to other modules
 -spec add(Prefix :: string(), Pid :: pid()) -> ok | already_exists | error.
@@ -15,11 +16,20 @@ add(Prefix, Pid) when is_list(Prefix), is_pid(Pid) ->
     log(debug, "session_registry:add for ~p, ~p~n", [Prefix, Pid]),
     gen_server:call(session_registry, {add, {Prefix, Pid}}).
 
+% Sometimes we want to remove an entry from the session registry, but only the entry
+% points to the calling process. This works around a race condition where a
+% stale process will remove an entry to a newer process.
+-spec remove_self(Prefix :: string()) -> ok.
+remove_self(Prefix) when is_list(Prefix) ->
+    Pid = self(),
+    log(debug, "session_registry:remove_self for ~p from ~p~n", [Prefix, Pid]),
+    gen_server:call(session_registry, {remove_if_pid, Prefix, Pid}).
+    
 -spec remove(Prefix :: string()) -> ok.
 remove(Prefix) when is_list(Prefix) ->
     log(debug, "session_registry:remove for ~p~n", [Prefix]),
     gen_server:call(session_registry, {remove, Prefix}).
-    
+
 -spec lookup(Prefix :: string()) -> pid() | none. 
 lookup(Prefix) when is_list(Prefix) ->
     log(debug, "session_registry:lookup for ~p~n", [Prefix]),
@@ -45,6 +55,11 @@ handle_call({add, Prefix}, _From, State = EtsTable) ->
     {reply, 
      add_internal(EtsTable, Prefix), % Param has form {Prefix, Pid}
      State};
+handle_call({remove_if_pid, Prefix, Pid}, _From, State = EtsTable) ->
+    remove_if_pid_internal(EtsTable, Prefix, Pid), % Param has form string()
+    {reply,
+     ok,
+     State};
 handle_call({remove, Prefix}, _From, State = EtsTable) ->
     remove_internal(EtsTable, Prefix), % Param has form string()
     {reply,
@@ -52,15 +67,26 @@ handle_call({remove, Prefix}, _From, State = EtsTable) ->
      State}.
 
 
+
 add_internal(EtsTable, Param = {Prefix, Pid}) when is_list(Prefix), is_pid(Pid) ->
     ets:insert(EtsTable, Param).
 
 lookup_internal(EtsTable, Prefix) when is_list(Prefix) ->
     case ets:lookup(EtsTable, Prefix) of
-        [{Prefix, Pid}] when is_pid(Pid) ->
+        [{Prefix, Pid}]->
             Pid;
         _ ->
             none
+    end.
+
+remove_if_pid_internal(EtsTable, Prefix, Pid) when is_list(Prefix) ->
+    case ets:lookup(EtsTable, Prefix) of
+        [{Prefix, Pid}] ->
+            log(debug, "Pid ~p matched, removing~n", [Pid]),
+            ets:delete(EtsTable, Prefix);
+        _ ->
+            log(debug, "Pid ~p didn't match~n", [Pid]),
+            ok
     end.
 
 remove_internal(EtsTable, Prefix) ->

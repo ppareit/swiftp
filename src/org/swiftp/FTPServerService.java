@@ -22,11 +22,15 @@ package org.swiftp;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -38,9 +42,6 @@ import android.util.Log;
 
 
 public class FTPServerService extends Service implements Runnable {
-	/**
-	 * 
-	 */
 	protected static Thread serverThread = null;
 	protected boolean shouldExit = false;
 	protected MyLog myLog = new MyLog(getClass().getName());
@@ -74,6 +75,10 @@ public class FTPServerService extends Service implements Runnable {
 	private ProxyConnector proxyConnector = null;
 	private List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
 	
+	private static SharedPreferences settings = null;
+	
+	NotificationManager notificationMgr = null;
+	
 	public FTPServerService() {
 	}
 
@@ -99,9 +104,18 @@ public class FTPServerService extends Service implements Runnable {
 		super.onStart(intent, startId);
 		
 		shouldExit = false;
-		if(serverThread != null) {
-			myLog.l(Log.ERROR, "Won't start, server thread exists");
-			return;
+		int attempts = 10;
+		// The previous server thread may still be cleaning up, wait for it
+		// to finish.
+		while(serverThread != null) {
+			myLog.l(Log.WARN, "Won't start, server thread exists");
+			if(attempts > 0) {
+				attempts--;
+				Util.sleepIgnoreInterupt(1000);
+			} else {
+				myLog.l(Log.ERROR, "Server thread already exists");
+				return;
+			}
 		}
 		myLog.l(Log.DEBUG, "Creating server thread");
 		serverThread = new Thread(this);
@@ -120,47 +134,57 @@ public class FTPServerService extends Service implements Runnable {
 	
 	public static boolean isRunning() {
 		// return true if and only if a server Thread is running
-		return (serverThread != null);
+		if(serverThread == null) {
+			staticLog.l(Log.DEBUG, "Server is not running (null serverThread)");
+			return false;
+		}
+		if(!serverThread.isAlive()) {
+			staticLog.l(Log.DEBUG, "serverThread non-null but !isAlive()");
+		} else {
+			staticLog.l(Log.DEBUG, "Server is alive");
+		}
+		return true;
 	}
 	
 	public void onDestroy() {
-		myLog.l(Log.INFO, "Stopping server");
+		myLog.l(Log.INFO, "onDestroy() Stopping server");
 		shouldExit = true;
 		if(serverThread == null) {
 			myLog.l(Log.WARN, "Stopping with null serverThread");
 			return;
-		}
-		serverThread.interrupt();
-		try {
-			serverThread.join(1000);  // wait 1 sec for server thread to finish
-		} catch (InterruptedException e) {}
-		if(serverThread.isAlive()) {
-			myLog.l(Log.WARN, "Server thread failed to exit");
-			// it may still exit eventually if we just leave the
-			// shouldExit flag set
 		} else {
-			serverThread = null;
+			serverThread.interrupt();
+			try {
+				serverThread.join(10000);  // wait 10 sec for server thread to finish
+			} catch (InterruptedException e) {}
+			if(serverThread.isAlive()) {
+				myLog.l(Log.WARN, "Server thread failed to exit");
+				// it may still exit eventually if we just leave the
+				// shouldExit flag set
+			} else {
+				myLog.d("serverThread join()ed ok");
+				serverThread = null;
+			}
 		}
 		try {
-			myLog.l(Log.INFO, "Closing mainSocket");
 			if(listenSocket != null) {
+				myLog.l(Log.INFO, "Closing listenSocket");
 				listenSocket.close();
 			}
 		} catch (IOException e) {}
-		
-		terminateAllSessions();
 
 		UiUpdater.updateClients();
 		if(wifiLock != null) {
 			wifiLock.release();
 			wifiLock = null;
 		}
-		// todo: we should broadcast an intent to inform anyone who cares
+		clearNotification();
+		myLog.d("FTPServerService.onDestroy() finished");
 	}
 	
 	private boolean loadSettings() {
 		myLog.l(Log.DEBUG, "Loading settings");
-		SharedPreferences settings = getSharedPreferences(
+		settings = getSharedPreferences(
 				Defaults.getSettingsName(), Defaults.getSettingsMode());
 		port = settings.getInt("portNum", Defaults.portNumber);
 		if(port == 0) {
@@ -173,10 +197,6 @@ public class FTPServerService extends Service implements Runnable {
 									    Defaults.acceptNet);
 		acceptWifi = settings.getBoolean(ConfigureActivity.ACCEPT_WIFI,
 										 Defaults.acceptWifi);
-		if(!acceptNet && !acceptWifi) {
-			myLog.l(Log.ERROR, "No listeners are enabled. Check your setup.");
-			return false;
-		}
 		
 		// The username, password, and chrootDir are just checked for sanity
 		String username = settings.getString(ConfigureActivity.USERNAME, null);
@@ -184,17 +204,22 @@ public class FTPServerService extends Service implements Runnable {
 		String chrootDir = settings.getString(ConfigureActivity.CHROOTDIR,
 				Defaults.chrootDir);
 		
-		if(username == null || password == null) {
-			myLog.l(Log.ERROR, "Username or password is invalid");
-			return false;
+		validateBlock: {
+			if(username == null || password == null) {
+				myLog.l(Log.ERROR, "Username or password is invalid");
+				break validateBlock;
+			}
+			File chrootDirAsFile = new File(chrootDir);
+			if(!chrootDirAsFile.isDirectory()) {
+				myLog.l(Log.ERROR, "Chroot dir is invalid");
+				break validateBlock;
+			}
+			Globals.setChrootDir(chrootDirAsFile);
+			Globals.setUsername(username);
+			return true;
 		}
-		File chrootDirAsFile = new File(chrootDir);
-		if(!chrootDirAsFile.isDirectory()) {
-			myLog.l(Log.ERROR, "Chroot dir is invalid");
-			return false;
-		}
-		Globals.setChrootDir(chrootDirAsFile);
-		return true;
+		// We reach here if the settings were not sane
+		return false;
 	}
 
 	// This is old code. We used to get the Wifi IP address from Android, then 
@@ -232,9 +257,48 @@ public class FTPServerService extends Service implements Runnable {
 	
 	// This opens a listening socket on all interfaces. 
 	void setupListener() throws IOException {
-		listenSocket = new ServerSocket(port); // use default connection backlog,
-										     // all addresses.
+		listenSocket = new ServerSocket();
+		listenSocket.setReuseAddress(true);
+		listenSocket.bind(new InetSocketAddress(port));
+	}
+	
+	private void setupNotification() {
+		// http://developer.android.com/guide/topics/ui/notifiers/notifications.html
 		
+		// Get NotificationManager reference
+		String ns = Context.NOTIFICATION_SERVICE;
+		notificationMgr = (NotificationManager) getSystemService(ns);
+		
+		// Instantiate a Notification
+		int icon = R.drawable.notification;
+		CharSequence tickerText = getString(R.string.notif_server_starting);
+		long when = System.currentTimeMillis();
+		Notification notification = new Notification(icon, tickerText, when);
+
+		// Define Notification's message and Intent
+		CharSequence contentTitle = getString(R.string.notif_title);
+		CharSequence contentText = getString(R.string.notif_text);
+		Intent notificationIntent = new Intent(this, ServerControlActivity.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, 
+				notificationIntent, 0);
+		notification.setLatestEventInfo(getApplicationContext(), 
+				contentTitle, contentText, contentIntent);
+		notification.flags |= Notification.FLAG_ONGOING_EVENT;
+		
+		// Pass Notification to NotificationManager
+		notificationMgr.notify(0, notification);
+		
+		myLog.d("Notication setup done");
+	}
+	
+	private void clearNotification() {
+		if(notificationMgr == null) {
+			// Get NotificationManager reference
+			String ns = Context.NOTIFICATION_SERVICE;
+			notificationMgr = (NotificationManager) getSystemService(ns);
+		}
+		notificationMgr.cancelAll();
+		myLog.d("Cleared notification");
 	}
 	
 	public void run() {
@@ -253,12 +317,15 @@ public class FTPServerService extends Service implements Runnable {
 			cleanupAndStopService();
 			return;
 		}
+		
+		setupNotification();
+		
 		if(acceptWifi) {
 			// If configured to accept connections via wifi, then set up the socket
 			try {
 				setupListener();
 			} catch (IOException e) {
-				myLog.l(Log.ERROR, "Error opening port, check your network connection.");
+				myLog.l(Log.WARN, "Error opening port, check your network connection.");
 //				serverAddress = null;
 				cleanupAndStopService();
 				return;
@@ -323,8 +390,8 @@ public class FTPServerService extends Service implements Runnable {
 					{
 						// Retry every 5 seconds for the first 3 tries
 						shouldStartListener = true;
-					} else if(nowMillis - proxyStartMillis > 60000) {
-						// After the first 3 tries, only retry once per 60 sec
+					} else if(nowMillis - proxyStartMillis > 30000) {
+						// After the first 3 tries, only retry once per 30 sec
 						shouldStartListener = true;
 					}
 					if(shouldStartListener) {
@@ -344,7 +411,6 @@ public class FTPServerService extends Service implements Runnable {
 			}
 		}
 			
-		myLog.l(Log.DEBUG, "Exiting cleanly");
 		terminateAllSessions();
 
 		if(proxyConnector != null) {
@@ -356,6 +422,7 @@ public class FTPServerService extends Service implements Runnable {
 			wifiListener = null;
 		}
 		shouldExit = false; // we handled the exit flag, so reset it to acknowledge
+		myLog.l(Log.DEBUG, "Exiting cleanly, returning from run()");
 	}
 	
 	private void terminateAllSessions() {
@@ -363,6 +430,7 @@ public class FTPServerService extends Service implements Runnable {
 		synchronized(this) {
 			for(SessionThread sessionThread : sessionThreads) {
 				if(sessionThread != null) {
+					sessionThread.closeDataSocket();
 					sessionThread.closeSocket();
 				}
 			}
@@ -398,7 +466,11 @@ public class FTPServerService extends Service implements Runnable {
 		                        .getSystemService(Context.WIFI_SERVICE);
 		if(isWifiEnabled()) {
 			int ipAsInt = wifiMgr.getConnectionInfo().getIpAddress();
-			return Util.intToInet(ipAsInt);
+			if(ipAsInt == 0) {
+				return null;
+			} else {
+				return Util.intToInet(ipAsInt);
+			}
 		} else {
 			return null;
 		}
@@ -453,26 +525,27 @@ public class FTPServerService extends Service implements Runnable {
 		while(serverLog.size() > maxSize) {
 			serverLog.remove(0);
 		}
-		updateClients();
+		//updateClients();
 	}
 	
 	public static void updateClients() {
 		UiUpdater.updateClients();
 	}
 	
-	public static void writeMonitor(boolean incoming, String s) {
-		if(incoming) {
-			s = "> " + s;
-		} else {
-			s = "< " + s;
-		}
-		sessionMonitor.add(s.trim());
-		int maxSize = Defaults.getSessionMonitorScrollBack();
-		while(sessionMonitor.size() > maxSize) {
-			sessionMonitor.remove(0);
-		}
-		updateClients();
-	}
+	public static void writeMonitor(boolean incoming, String s) {}
+//	public static void writeMonitor(boolean incoming, String s) {
+//		if(incoming) {
+//			s = "> " + s;
+//		} else {
+//			s = "< " + s;
+//		}
+//		sessionMonitor.add(s.trim());
+//		int maxSize = Defaults.getSessionMonitorScrollBack();
+//		while(sessionMonitor.size() > maxSize) {
+//			sessionMonitor.remove(0);
+//		}
+//		updateClients();
+//	}
 
 	public static int getPort() {
 		return port;
@@ -516,5 +589,9 @@ public class FTPServerService extends Service implements Runnable {
 	/** Get the ProxyConnector, may return null if proxying is disabled. */
 	public ProxyConnector getProxyConnector() {
 		return proxyConnector;
+	}
+
+	static public SharedPreferences getSettings() {
+		return settings;
 	}
 }

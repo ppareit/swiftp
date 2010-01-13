@@ -10,7 +10,7 @@
 -record(state, {devicesocket, clientsocket, listenref, devicerow, sessionbytes}).
 
 -define(AUTH_TIMEOUT, 10000).
-
+-define(GENERAL_TIMEOUT, 30*60*1000). % Most states timeout after 30 minutes
 start_link() ->
     gen_fsm:start_link(?MODULE, [], []).
 
@@ -37,39 +37,48 @@ state_fresh_start({socket, Socket}, _ ) ->
 set_socket(Pid, Socket) ->
     gen_fsm:send_event(Pid, {socket, Socket}).
 
-%% This state occurs after we have an open TCP socket to the device but it has not
-%% yet authenticated.
 state_have_socket({tcp, DeviceSocket, Data}, StateData = #state{devicesocket=DeviceSocket}) ->
     Json = json_to_term(binary_to_list(Data)),
     case util:get_json_value(Json, <<"action">>) of
-        <<"authenticate">> ->
-            {WhetherAuth, Response, DeviceRow} = util:authenticate_json(Json),
+        <<"login">> ->
+            {Ok, Response, DeviceRow} = util:login_noauth_json(Json),
             gen_tcp:send(DeviceSocket, Response),
-            case WhetherAuth of
+            case Ok of
                 true ->
-                    AndroidId = DeviceRow#device.android_id,
-                    BytesUsed = DeviceRow#device.totalbytes,
-                    log(info, "Device authenticated: ~p~n", [AndroidId]),
-                    {next_state, state_authenticated, StateData#state{devicerow=DeviceRow}};
+                    {next_state, state_authenticated, StateData#state{devicerow=DeviceRow},
+                     ?GENERAL_TIMEOUT};
                 false ->
-                    log(info, "Device failed authentication~n", []),
-                    {stop, normal, StateData}
+                    log(warn, "Ill-formed login~n", []),
+                    {stop, normal, StateData, ?GENERAL_TIMEOUT}
             end;
-        <<"create_account">> ->
-            log(debug, "Creating account~n", []),
-            {WhetherAuth, Response, DeviceRow} = util:create_account_json(Json),
-            gen_tcp:send(DeviceSocket, Response),
-            case WhetherAuth of
-                true -> 
-                    AndroidId = DeviceRow#device.android_id,
-                    log(info, "Created account for: ~p~n", [AndroidId]),
-                    {next_state, state_authenticated, StateData#state{devicerow=DeviceRow}};
-                false -> 
-                    log(warn, "Account create failed~n ", []),
-                    {stop, normal, StateData}
-            end;
+%        <<"authenticate">> ->
+%            {WhetherAuth, Response, DeviceRow} = util:authenticate_json(Json),
+%            gen_tcp:send(DeviceSocket, Response),
+%            case WhetherAuth of
+%                true ->
+%                    AndroidId = DeviceRow#device.android_id,
+%                    BytesUsed = DeviceRow#device.totalbytes,
+%                    log(info, "Device authenticated: ~p~n", [AndroidId]),
+%                    {next_state, state_authenticated, StateData#state{devicerow=DeviceRow}};
+%                false ->
+%                    log(info, "Device failed authentication~n", []),
+%                    {stop, normal, StateData}
+%            end;
+%        <<"create_account">> ->
+%            log(debug, "Creating account~n", []),
+%            {WhetherAuth, Response, DeviceRow} = util:create_account_json(Json),
+%            gen_tcp:send(DeviceSocket, Response),
+%            case WhetherAuth of
+%                true -> 
+%                    AndroidId = DeviceRow#device.android_id,
+%                    log(info, "Created account for: ~p~n", [AndroidId]),
+%                    {next_state, state_authenticated, StateData#state{devicerow=DeviceRow}};
+%                false -> 
+%                    log(warn, "Account create failed~n ", []),
+%                    {stop, normal, StateData}
+%            end;
         OtherAction ->
-            log(info, "Expected authentication but got action: ~p~n", [OtherAction]),
+            %log(info, "Expected login but got action: ~p~n", [OtherAction]),
             {stop, normal, StateData}
     end;
 state_have_socket(timeout, State) ->
@@ -96,11 +105,10 @@ handle_info({tcp_error, _Socket, Reason}, _StateName, StateData) ->
     log(info, "TCP socket error, exiting normally: ~p~n", [Reason]),
     {stop, normal, StateData};
 handle_info(Info, StateName, StateData) ->
-    log(warn, "Unrecognized info in device_session: ~p~Dn", [Info]),
+    log(warn, "Unrecognized info in device_session: ~p~n", [Info]),
     {noreply, StateName, StateData}.
 
 
-% Can transition to states state_cmd_session, state_pasv_listen
 state_authenticated({tcp, DeviceSocket, Data}, StateData= #state{devicesocket=DeviceSocket}) ->
     JsonTerm = json_to_term(binary_to_list(Data)),
     AndroidId = (StateData#state.devicerow)#device.android_id,
@@ -114,7 +122,8 @@ state_authenticated({tcp, DeviceSocket, Data}, StateData= #state{devicesocket=De
             ResponseTerm = {[{<<"prefix">>, PrefixBin}]},
             gen_tcp:send(DeviceSocket, term_to_json(ResponseTerm)),
             session_registry:add(Prefix, self()),
-            {next_state, state_cmd_session, StateData};
+            do_queued_actions(DeviceSocket, DeviceRow),
+            {next_state, state_cmd_session, StateData, ?GENERAL_TIMEOUT};
         <<"data_pasv_listen">> ->
             log(debug, "Starting pasv listen~n", []),
             Opts = [binary, {packet, 0}, {reuseaddr, true},
@@ -127,7 +136,8 @@ state_authenticated({tcp, DeviceSocket, Data}, StateData= #state{devicesocket=De
                     gen_tcp:send(DeviceSocket, ResponseObj),
                     % In StateData, the clientsocket is the listener
                     {next_state, state_pasv_listen, 
-                        StateData#state{clientsocket=ListenSocket}};
+                     StateData#state{clientsocket=ListenSocket},
+                     ?GENERAL_TIMEOUT};
                 {error, Reason} ->
                     % Send error object if listen fails
                     log(warn, "device_session pasv_listen failed~n", []),
@@ -143,7 +153,8 @@ state_authenticated({tcp, DeviceSocket, Data}, StateData= #state{devicesocket=De
                 {ok, ClientSocket} ->
                     gen_tcp:send(DeviceSocket, term_to_json({[]})),
                     {next_state, state_proxying, 
-                     StateData#state{clientsocket=ClientSocket}};
+                     StateData#state{clientsocket=ClientSocket},
+                     ?GENERAL_TIMEOUT};
                 _ ->
                     log(info, "Failed connecting port to ~p:~p~n", [Address, Port]),
                     ResponseJson = util:json_err_obj(14, "Connect failed"),
@@ -163,7 +174,8 @@ state_pasv_listen({tcp, DeviceSocket, Data},
                     NewStateData = StateData#state{clientsocket=ClientSocket},
                     log(debug, "Device session accepted client socket ok~n", []),
                     gen_tcp:send(DeviceSocket, term_to_json({[]})),
-                    {next_state, state_proxying, NewStateData};
+                    inet:setopts(ClientSocket, [{active, once}, {packet, 0}, binary]),
+                    {next_state, state_proxying, NewStateData, ?GENERAL_TIMEOUT};
                 {error, Reason} ->
                     log(warn, "Device session pasv accept failed: ~p~n", [Reason]),
                     {stop, failed_pasv_accept, StateData}
@@ -174,17 +186,21 @@ state_pasv_listen({tcp, DeviceSocket, Data},
 
 state_cmd_session({tcp, DeviceSocket, Data}, 
                   StateData = #state{devicesocket=DeviceSocket, devicerow=DeviceRow}) ->
-    % This is noop for now. Will be implemented later.
     JsonTerm = json_to_term(binary_to_list(Data)),
     case util:get_json_value(JsonTerm, <<"action">>) of
         <<"finished">> ->
             log(debug, "Device sent action \"finished\", closing~n", []),
             gen_tcp:close(DeviceSocket),
             {stop, normal, StateData};
-        _Other ->
-            ResponseJson = util:json_err_obj(0, "Command not implemented"),
+        <<"noop">> ->
+            log(debug, "Noop received~n", []),
+            gen_tcp:send(DeviceSocket, term_to_json({[]})),
+            {next_state, state_cmd_session, StateData, ?GENERAL_TIMEOUT};        
+        Cmd ->
+            log(debug, "Unimplemented command: ~p~n", [Cmd]),
+            ResponseJson = util:json_err_obj(0, "Command not implemented~n"),
             gen_tcp:send(DeviceSocket, ResponseJson),
-            {nextstate, state_cmd_session, StateData}
+            {next_state, state_cmd_session, StateData, ?GENERAL_TIMEOUT}
     end;
 
 state_cmd_session({control_waiting, Port}, StateData) when is_integer(Port) ->
@@ -196,41 +212,90 @@ state_cmd_session({control_waiting, Port}, StateData) when is_integer(Port) ->
     Term = {[{<<"action">>, <<"control_connection_waiting">>},
              {<<"port">>, Port}]},
     gen_tcp:send(DeviceSocket, term_to_json(Term)),
-    {next_state, state_cmd_session, StateData}.  % Remain in the same state
+    {next_state, state_cmd_session, StateData, ?GENERAL_TIMEOUT}.
 
 state_proxying({tcp, Socket, Data}, StateData = #state{devicesocket=DeviceSocket,
                                                        clientsocket=ClientSocket}) ->
     case Socket of
         DeviceSocket ->
+            %log(debug, "Proxying a packet from device to client~n", []),
             gen_tcp:send(ClientSocket, Data);
         ClientSocket ->
+            %log(debug, "Proxying a packet from client to device~n", []),
             gen_tcp:send(DeviceSocket, Data)
     end,
     PacketBytes = size(Data),
     OldSessionBytes = StateData#state.sessionbytes,
     NewStateData = StateData#state{sessionbytes = OldSessionBytes+PacketBytes},
-    {next_state, state_proxying, NewStateData}.
+    {next_state, state_proxying, NewStateData, ?GENERAL_TIMEOUT}.
 
 code_change(_OldVsn, StateName, StateData, _Extra) ->
     {ok, StateName, StateData}.
 
 handle_event(_Event, StateName, StateData) ->
-    {next_state, StateName, StateData}.
+    {next_state, StateName, StateData, ?GENERAL_TIMEOUT}.
 
 handle_sync_event(_Event, _From, StateName, StateData) ->
-    {next_state, StateName, StateData}.
+    {next_state, StateName, StateData, ?GENERAL_TIMEOUT}.
 
 terminate(_Reason, StateName, StateData) ->
+    %gen_tcp:close(StateData#state.devicesocket),
+    %gen_tcp:close(StateData#state.clientsocket),
     DeviceRow = StateData#state.devicerow,
     case StateName of
         state_cmd_session ->
             % If this was a command session, and not an file data session, then
             % remove it from the active session registry
             Prefix = DeviceRow#device.prefix,
-            session_registry:remove(Prefix);
+            session_registry:remove_self(Prefix),
+            ok;
         _OtherState -> ok
     end.
     
+% There may be some actions queued up for this device in its device row, stored as
+% a list in the #device{} queued_actions field. The actions
+% should be performed as soon as is practical. The queued actions takes the
+% form of a function, whose input is a #device{} tuple, and returns either
+% the atom none, or a list to send to the device.
+do_queued_actions(Socket, DeviceRow) ->
+    AndroidId = DeviceRow#device.android_id,
+    ActionList = DeviceRow#device.queued_actions,
+    case ActionList of
+        [Action|Rest] ->
+            log(debug, "Performing queued action for ~p~n", [AndroidId]), 
+            NewDeviceRow = DeviceRow#device{queued_actions=Rest},
+            case Action(NewDeviceRow) of
+                Data when is_list(Data) ->
+                    gen_tcp:send(Socket, Data);
+                none -> ok;
+                _ ->
+                    log(warn, "Queued action returned something unexpected~n", [])
+            end,
+            do_queued_actions(Socket, NewDeviceRow); % recursive handle remaining actions
+        _ ->
+            log(debug, "No queued actions for ~p~n", [AndroidId]),
+            ok
+        
+    end.
+
+% These three functions are helpers for queueing up news messages for delivery to a client
+% at the next available opportunity.
+make_news_fun(Str) ->
+    fun(_DeviceRow) -> make_news_obj(Str) end.
+make_news_obj(Str) ->
+    term_to_json({[{<<"action">>,<<"message">>}, {<<"text">>,list_to_binary(Str)}]}).
+-spec enqueue_news(AndroidId::string(), String::string()) -> ok | error.
+enqueue_news(AndroidId, String) ->
+    Device = db:get_device_row(AndroidId),
+    case Device of
+        _X when is_record(Device, device) ->
+            Queue=[make_news_fun(String)],
+            db:write_device_row(Device#device{queued_actions=Queue}),
+            ok;
+        _ ->
+            log(warn, "Failed to enqueue news, invalid device row~n", []),
+            error
+    end.
 
 log(Level, Format, Args) ->
     log:log(Level, ?MODULE, Format, Args).

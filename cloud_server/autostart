@@ -57,7 +57,6 @@ def main(argv):
     # Run backgrounded, entry point server:start/0,1
     command = 'su '+user+' -c \'erl ' \
                    + ' -pa ./ebin ' \
-                   + ' -pa ./yaws-1.84/ebin ' \
                    + ' -name ' + erlnodename \
                    + ' -s swiftp_proxy do_app_start ' \
                    + ' -mnesia dir ' + mnesiadir \

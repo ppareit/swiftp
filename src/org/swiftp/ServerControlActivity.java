@@ -41,6 +41,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -65,6 +66,10 @@ public class ServerControlActivity extends Activity {
     private TextView proxyStatusText;
     private TextView proxyUrlText;
     private TextView proxyUsedText;
+    private TextView proxyUrlLabel;
+    private TextView proxyUsedLabel;
+    private TextView proxyNewsLabel;
+    private TextView proxyNews;
     
     private TextView sessionMonitor;
     private CheckBox sessionMonitorCheckBox;
@@ -86,7 +91,6 @@ public class ServerControlActivity extends Activity {
     		case 1:  // We are being told to display an error message
     			removeMessages(1);
     		}
-    	
     	}
     };
     
@@ -98,6 +102,10 @@ public class ServerControlActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Request no title bar on our window
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         // Set the application-wide context global, if not already set
 		Context myContext = Globals.getContext();
 		if(myContext == null) {
@@ -117,7 +125,12 @@ public class ServerControlActivity extends Activity {
         
         proxyStatusText = (TextView)findViewById(R.id.proxy_status);
         proxyUrlText = (TextView)findViewById(R.id.proxy_url);
+        proxyUrlLabel = (TextView)findViewById(R.id.proxy_url_label);
         proxyUsedText = (TextView)findViewById(R.id.proxy_transferred);
+        proxyUsedLabel = (TextView)findViewById(R.id.proxy_transferred_label);
+        proxyNewsLabel = (TextView)findViewById(R.id.proxy_news_label);
+        proxyNews = (TextView)findViewById(R.id.proxy_news);
+        
         
         startStopButton = (Button) findViewById(R.id.start_stop_button);
         //addUserButton = (Button) findViewById(R.id.add_user_button);
@@ -147,7 +160,7 @@ public class ServerControlActivity extends Activity {
         sessionMonitorCheckBox
         	.setOnClickListener(sessionMonitorCheckBoxListener);
         serverLogCheckBox.setOnClickListener(serverLogCheckBoxListener);
-
+        
         // If the required preferences are not present, launch the configuration
         // Activity.
 //        SharedPreferences settings = getSharedPreferences(
@@ -216,9 +229,13 @@ public class ServerControlActivity extends Activity {
     public void updateUi() {
     	WifiManager wifiMgr = (WifiManager)getSystemService(Context.WIFI_SERVICE);
     	int wifiState = wifiMgr.getWifiState();
-    	
-    	// Set the start/stop button text and server status text
+    	myLog.l(Log.DEBUG, "Updating UI", true);
     	if(FTPServerService.isRunning()) {
+    		myLog.l(Log.DEBUG, "updateUi: server is running", true);
+    		// Put correct text in start/stop button
+       		startStopButton.setText(R.string.stop_server);
+       		
+       		// Fill in wifi status and address
     		InetAddress address =  FTPServerService.getWifiIp();
         	if(address != null) {
         		ipText.setText("ftp://" + address.getHostAddress() + 
@@ -227,14 +244,51 @@ public class ServerControlActivity extends Activity {
         		myLog.l(Log.VERBOSE, "Null address from getServerAddress()", true);
         		ipText.setText(R.string.cant_get_url);
         	}
-        	startStopButton.setVisibility(View.VISIBLE);
-        	startStopButton.setText(R.string.stop_server);
-        	serverStatusText.setText(R.string.running);
+       		serverStatusText.setText(R.string.running);
     	} else {
-    		// Update the start/stop button to show the correct text
+    		myLog.l(Log.DEBUG, "updateUi: server is not running", true);
+       		// Update the start/stop button to show the correct text
+    		startStopButton.setText(R.string.start_server);
     		ipText.setText(R.string.no_url_yet);
     		serverStatusText.setText(R.string.stopped);
     		startStopButton.setText(R.string.start_server);
+    	}
+    	
+    	ProxyConnector proxyConnector = Globals.getProxyConnector();
+    	boolean proxyEnabled = getSettings().
+    		getBoolean(ConfigureActivity.ACCEPT_NET, false); 
+    	
+    	if(proxyEnabled) {
+    		proxyUrlText.setVisibility(View.VISIBLE);
+    		proxyUrlLabel.setVisibility(View.VISIBLE);
+    		proxyUsedText.setVisibility(View.VISIBLE);
+    		proxyUsedLabel.setVisibility(View.VISIBLE);
+	    	if(proxyConnector == null) {
+	    		proxyStatusText.setText(R.string.pst_disconnected);
+	    		proxyUrlText.setText(R.string.unknown);
+	    	} else {
+	    		ProxyConnector.State proxyState = proxyConnector.getProxyState();
+	    		proxyStatusText.setText(ProxyConnector.stateToString(proxyState));
+				float proxyGigs = Math.abs( // bytes to gigabytes
+					(float)proxyConnector.getProxyUsage() / (float)1073741824); 
+				proxyUsedText.setText(String.format("%.2f GB", proxyGigs));
+				proxyUrlText.setText(proxyConnector.getURL());
+	    	}
+    	} else {
+    		proxyStatusText.setText(R.string.disabled);
+    		proxyUrlText.setVisibility(View.GONE);
+    		proxyUrlLabel.setVisibility(View.GONE);
+    		proxyUsedText.setVisibility(View.GONE);
+    		proxyUsedLabel.setVisibility(View.GONE);
+    	}
+    	
+    	if(proxyConnector != null) {
+    		String news = proxyConnector.getProxyMessage(); 
+    		if(news != null) {
+    			proxyNews.setText(news);
+    			proxyNews.setVisibility(View.VISIBLE);
+    			proxyNewsLabel.setVisibility(View.VISIBLE);
+    		}
     	}
 
     	// This is old code, from when the server would refuse to start without
@@ -287,16 +341,16 @@ public class ServerControlActivity extends Activity {
     		//TextView textView = new TextView(this);
         	//textView.setText(R.string.error_dialog_text);
         	
-        	AlertDialog dialog =  new AlertDialog.Builder(this).create();
-        	CharSequence text = getText(R.string.error_dialog_text);
-        	String str = text.toString().replace("%%%Replace_Here%%%", errString);
-        	//text = text + "\n\n" + getText(R.string.the_error_was) + "\n\n" 
-        	//	+ errString;
-        	dialog.setMessage(str);
-        	dialog.setTitle(getText(R.string.error_dialog_label));
-        	dialog.setButton(getText(R.string.ok), ignoreDialogListener);
-        	dialog.show();
-        	
+    		// Commented out the below code for 1.20.
+//        	AlertDialog dialog =  new AlertDialog.Builder(this).create();
+//        	CharSequence text = getText(R.string.error_dialog_text);
+//        	String str = text.toString().replace("%%%Replace_Here%%%", errString);
+//        	//text = text + "\n\n" + getText(R.string.the_error_was) + "\n\n" 
+//        	//	+ errString;
+//        	dialog.setMessage(str);
+//        	dialog.setTitle(getText(R.string.error_dialog_label));
+//        	dialog.setButton(getText(R.string.ok), ignoreDialogListener);
+//        	dialog.show();        	
     	}
     	
     	
@@ -379,13 +433,14 @@ public class ServerControlActivity extends Activity {
         	 * the text on the button to see which action the user was 
         	 * expecting.
         	 */
-    		Resources resources = getResources(); // fetch app resources
-    		String startString = resources.getString(R.string.start_server);
-    		String stopString = resources.getString(R.string.stop_server);
+    		String startString = getString(R.string.start_server);
+    		String stopString = getString(R.string.stop_server);
     		String buttonText = startStopButton.getText().toString(); 
         	if(buttonText.equals(startString)) { 
     			/* The button had the "start server" text  */
-        		context.startService(intent);
+        		if(!FTPServerService.isRunning()) {
+        			context.startService(intent);
+        		}
         	} else if (buttonText.equals(stopString)) {
         		/* The button had the "stop server" text. We stop the server now. */
         		context.stopService(intent);
@@ -522,6 +577,18 @@ public class ServerControlActivity extends Activity {
 		} else {
 			return true;
 		}
+    }
+    
+    /** Get the settings from the FTPServerService if it's running, otherwise
+     * load the settings directly from persistent storage.
+     */
+    SharedPreferences getSettings() {
+    	SharedPreferences settings = FTPServerService.getSettings();
+    	if(settings != null) {
+    		return settings;
+    	} else {
+    		return this.getPreferences(MODE_PRIVATE);
+    	}
     }
 
 }

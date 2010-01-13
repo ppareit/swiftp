@@ -38,6 +38,10 @@ public class CmdPORT extends FtpCmd implements Runnable {
 		String errString = null;
 		mainBlock: {
 			String param = getParameter(input);
+			if(param.contains("|") && param.contains("::")) {
+				errString = "550 No IPv6 support, reconfigure your client\r\n";
+				break mainBlock;
+			}
 			String[] substrs = param.split(",");
 			if(substrs.length != 6) {
 				errString = "550 Malformed PORT argument\r\n";
@@ -84,10 +88,10 @@ public class CmdPORT extends FtpCmd implements Runnable {
 		}
 		if(errString == null) {
 			sessionThread.writeString("200 PORT OK\r\n");
+			myLog.l(Log.DEBUG, "PORT completed");
 		} else {
 			myLog.l(Log.INFO, "PORT error: " + errString);
 			sessionThread.writeString(errString);
 		}
-		myLog.l(Log.DEBUG, "PORT completed");
 	}
 }

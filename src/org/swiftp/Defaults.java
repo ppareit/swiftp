@@ -37,7 +37,7 @@ public class Defaults {
 	public static final int tcpConnectionBacklog = 5;
 	public static final String chrootDir = "/sdcard";
 	public static final boolean acceptWifi = true;
-	public static final boolean acceptNet = true;
+	public static final boolean acceptNet = false; // don't incur bandwidth charges
 	public static final int REMOTE_PROXY_PORT = 2222;
 	public static final String STRING_ENCODING = "UTF-8";
 	// FTP control sessions should start out in ASCII, according to the RFC.
@@ -46,7 +46,7 @@ public class Defaults {
 	public static final String SESSION_ENCODING = "UTF-8"; 
 	
 	// This is a flag that should be true for public builds and false for dev builds
-	public static final boolean release = false;
+	public static final boolean release = true;
 	
 //	public static int getIpRetrievalAttempts() {
 //		return ipRetrievalAttempts;

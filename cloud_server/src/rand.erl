@@ -13,7 +13,7 @@
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
--export([start_link/0, random_alnum/1]).
+-export([start_link/0, random_alnum/1, random_alpha/1]).
 
 start_link() ->
     gen_server:start_link({local, random_thread}, ?MODULE, [], []).
@@ -22,20 +22,24 @@ start_link() ->
 % This is our interface to callers who want a random string.
 random_alnum(Length) ->
     gen_server:call(random_thread, {random_alnum, Length}).
+random_alpha(Length) ->
+    gen_server:call(random_thread, {random_alpha, Length}).
 
 init(_) ->
     seed_randomizer(),
     {ok, []}.
 
 handle_call({random_alnum, Length}, _From, State) ->
-    {reply, random_alnum_internal(Length), State}.
+    {reply, random_alnum_internal(Length), State};
+handle_call({random_alpha, Length}, _From, State) ->
+    {reply, random_alpha_internal(Length), State}.
     
 % Generate a random string of digits+lowercase of the given length
 % TODO: this could be much more efficient
 random_alnum_internal(Length) -> random_alnum_internal(Length, []).
 random_alnum_internal(0, Accum) -> Accum;
 random_alnum_internal(Length, Accum) ->
-    % There are 26+26+10=62 possible alphanumeric characters
+    % There are 26+10=36 possible alphanumeric characters
     R = case random:uniform(36) of
         X when 1 =< X, X =< 10 -> 
             % Range 1 to 10 will be treated as digits
@@ -47,6 +51,12 @@ random_alnum_internal(Length, Accum) ->
             X+86
     end,
     random_alnum_internal(Length-1, [R|Accum]).
+
+random_alpha_internal(Length) -> random_alpha_internal(Length, []).
+random_alpha_internal(0, Accum) -> Accum;
+random_alpha_internal(Length, Accum) ->
+    R = random:uniform(26) + 96, % Since ASCII lowercase starts at 97
+    random_alpha_internal(Length-1, [R|Accum]).
 
 % Seed the randomizer with the current time
 seed_randomizer() ->

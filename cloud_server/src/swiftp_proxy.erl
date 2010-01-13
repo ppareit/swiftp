@@ -11,6 +11,7 @@
 -define(MAX_TIME, 60).
 
 do_app_start() ->
+    io:format("Calling application:start()~n", []),
     application:start(?MODULE).
 
 % application behavior start callback
@@ -29,10 +30,11 @@ start(_Type, _Args) ->
         {ok, [["reuse"]]} ->
             ok = db:reuse_schema(),
             supervisor:start_link({local, swiftp_proxy}, swiftp_proxy, [log_yes]);
-        {ok, ["child", MasterNode]} ->
-            pong = net_adm:ping(MasterNode),
+        {ok, [["child", MasterNode]]} ->
+            MasterNodeAtom = list_to_atom(MasterNode),
+            pong = net_adm:ping(MasterNodeAtom),
             global:sync(),   % sync global names so logging works
-            db:join_db(MasterNode),
+            db:join_db(MasterNodeAtom),
             log(info, "Connected to mnesia cluster ok, DB ready~n", []),
             supervisor:start_link({local, swiftp_proxy}, swiftp_proxy, [log_no]);
         Other ->
@@ -44,6 +46,15 @@ start(_Type, _Args) ->
 init([WhetherLog]) ->
     ChildrenExceptLogger = 
         [
+            % The local session registry process
+            {
+                session_registry,
+                {session_registry, start_link, []},
+                permanent,
+                1000,
+                worker,
+                [session_registry]
+            },
             % The listener that SwiFTP Android devices will connect to
             {
                 device_tcp_listener,   % Internal ID
@@ -96,15 +107,6 @@ init([WhetherLog]) ->
                 1000,
                 worker,
                 [rand]
-            },
-            % The local session registry process
-            {
-                session_registry,
-                {session_registry, start_link, []},
-                permanent,
-                1000,
-                worker,
-                [session_registry]
             }
         ],
     Children = case WhetherLog of 
@@ -154,11 +156,7 @@ log_child_spec() ->
     }.
 
 stop(_State) ->
-    log(info, "Application stop() called~n", []),
-    log(info, "Stopping Mnesia...~n", []),
-    mnesia:stop(),
-    log(info, "Done stopping~n", []).
-
+    log(info, "Application stop() called~n", []).
 
 device_session_create() ->
     {ok, _Pid} = supervisor:start_child(device_session_sup, []).

@@ -11,5 +11,7 @@ main(["clean"]) ->
 			halt(1)
 	end;
 main(_Args) ->
-	Output = make:all(),
-	io:format("~p~n", [Output]).
+	case make:all() of
+	    error -> halt(1);
+	    _     -> halt(0)
+    end.

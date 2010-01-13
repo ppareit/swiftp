@@ -54,7 +54,10 @@ public class SessionThread extends Thread {
 	OutputStream dataOutputStream = null;
 	private boolean sendWelcomeBanner;
 	protected String encoding = Defaults.SESSION_ENCODING;
-
+	protected Source source;
+	
+	public enum Source {LOCAL, PROXY}; // where did this connection come from?
+	
 	/**
 	 * Used when we get a PORT command to open up an outgoing socket.
 	 * 
@@ -97,7 +100,7 @@ public class SessionThread extends Thread {
 	public boolean sendViaDataSocket(byte[] bytes, int start, int len) {
 
 		if (dataOutputStream == null) {
-			myLog.l(Log.ERROR, "Can't send via null dataOutputStream");
+			myLog.l(Log.INFO, "Can't send via null dataOutputStream");
 			return false;
 		}
 		if (len == 0) {
@@ -330,10 +333,15 @@ public class SessionThread extends Thread {
 	}
 
 	public SessionThread(Socket socket, DataSocketFactory dataSocketFactory,
-			boolean sendWelcomeBanner) {
+			Source source) {
 		this.socket = socket;
+		this.source = source;
 		this.dataSocketFactory = dataSocketFactory;
-		this.sendWelcomeBanner = sendWelcomeBanner;
+		if(source == Source.LOCAL) {
+			this.sendWelcomeBanner = true;
+		} else {
+			this.sendWelcomeBanner = false;
+		}
 	}
 
 	static public ByteBuffer stringToBB(String s) {
@@ -352,11 +360,18 @@ public class SessionThread extends Thread {
 		return authenticated;
 	}
 
-	public void setAuthenticated(boolean authenticated) {
+	public void authAttempt(boolean authenticated) {
 		if (authenticated) {
 			myLog.l(Log.INFO, "Authentication complete");
+			this.authenticated = true;
+		} else {
+			// There was a failed auth attempt. If the connection came
+			// via the proxy, then drop it now. The client can't try again
+			// successfully because it doesn't know its real username. What
+			// it knows is prefix_username.
+			quit();
 		}
-		this.authenticated = authenticated;
+		
 	}
 
 	public File getWorkingDir() {

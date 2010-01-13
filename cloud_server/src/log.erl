@@ -37,9 +37,8 @@ handle_cast(#log_msg{pid=Pid, module=Module, level=Level, time=Time,
             {{Year,Month,Day},{Hour,Minute,Second}} = Time,
             io:format(Fh, "~5p|~7p|~p/~p/~p,~2p:~2p:~2p|" ++ ModuleString 
                      ++ "|" ++ Message, 
-                      [Level | [Pid | 
-                      [ Year | [Month | [Day | [Hour | [Minute | [Second | 
-                      Args]]]]]]]] );
+                      [Level, Pid, Year, Month, Day, Hour, Minute, Second] 
+                      ++ Args );
         false -> 
             % Don't log, because the log level is insufficient
             ok

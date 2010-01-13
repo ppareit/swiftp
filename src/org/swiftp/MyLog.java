@@ -32,7 +32,7 @@ public class MyLog {
 		synchronized (MyLog.class) {
 			str = str.trim();
 			// Messages of this severity are handled specially
-			if(level == Log.ERROR) {
+			if(level == Log.ERROR || level == Log.WARN) {
 				Globals.setLastError(str);
 			}
 			if(level >= Defaults.getConsoleLogLevel()) {

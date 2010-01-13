@@ -64,7 +64,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
 				password.equals(attemptPassword)) {
 			sessionThread.writeString("230 Access granted\r\n");
 			myLog.l(Log.INFO, "User " + username + " password verified");
-			sessionThread.setAuthenticated(true);
+			sessionThread.authAttempt(true);
 		} else {
 			try {
 				// If the login failed, sleep for one second to foil
@@ -73,7 +73,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
 			} catch(InterruptedException e) {}
 			myLog.l(Log.INFO, "Failed authentication");
 			sessionThread.writeString("530 Login incorrect.\r\n");
+			sessionThread.authAttempt(false);
 		}
 	}
-
 }

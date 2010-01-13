@@ -28,6 +28,7 @@ public class Globals {
 	private static String lastError;
 	private static File chrootDir = null;
 	private static ProxyConnector proxyConnector = null;
+	private static String username = null;
 	
 	public static ProxyConnector getProxyConnector() {
 		if(proxyConnector != null) {
@@ -68,6 +69,14 @@ public class Globals {
 		if(context != null) { 
 			Globals.context = context;
 		}
+	}
+
+	public static String getUsername() {
+		return username;
+	}
+
+	public static void setUsername(String username) {
+		Globals.username = username;
 	}
 	
 }

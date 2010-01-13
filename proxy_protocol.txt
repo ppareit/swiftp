@@ -101,7 +101,7 @@ server, the SwiFTP Android app must send one of:
  - authenticate
 
 List of requests from SwiFTP Android app to proxy server:
- Action:  create_account
+ Action:  create_account (DEPRECATED)
  Purpose: Called only once upon first run of the SwiFTP Android app. Causes an account
           to be created and a secret to be created. The returned secret should be
           stored in persistent memory. If a device sends this request and receives
@@ -112,7 +112,7 @@ List of requests from SwiFTP Android app to proxy server:
  Returns: "secret": the secret "password" that this device will use to authenticate
  Errors:  12: the ANDROID_ID failed sanity check
  
- Action:  authenticate
+ Action:  authenticate (DEPRECATED)
  Purpose: Authenticate the device. Called before any other command (except
  		  create_account).
  Params:  "android_id": the unique device identifier provided by the Android API
@@ -197,7 +197,15 @@ Requests from proxy server to SwiFTP app:
  Params:  Optional: "newserver": the hostname of a new server that is recommended for
           the client to connect to next.
  Errors:  None specific to this message
-
+ 
+ Action:  prefer_server
+ Purpose: The Android device should try to connect to the given server on its next
+          attempt, instead of picking a random server. If the connection to that
+          server fails, then the Android device should do the normal random server
+          selection.
+ Params:  "host": the DNS name of the preferred server
+ Errors:  None specific to this message
+ 
 Requests that may be sent by either party:
  Action:  noop
  Purpose: Does nothing, could be used as a connection keepalive

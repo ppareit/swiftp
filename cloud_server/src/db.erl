@@ -1,10 +1,10 @@
 -module(db).
 -include("records.hrl").
 -include_lib("stdlib/include/qlc.hrl").
--export([create_master_schema/0, join_db/1, authenticate/2, create_account/1,
-         reuse_schema/0, all_devices/0, clear_devices/0]).
+-export([create_master_schema/0, join_db/1,
+         reuse_schema/0, all_devices/0, clear_devices/0, create_or_login/1]).
 -export([make_prefix_lookup_q/1, get_device_row_dirty/1,
-         check_android_id_exists/1,
+         check_android_id_exists/1, get_device_row/1,
          write_device_row/1]).
 -import(json_eep, [term_to_json/1, json_to_term/1]).
 
@@ -102,53 +102,101 @@ get_device_row_dirty(AndroidId) ->
         _ -> no_exist
     end.
 
--spec authenticate(AndroidId :: string(), Secret :: string()) -> {true, #device{}}
-                                                               | false
-                                                               | error.
-authenticate(AndroidId, Secret) ->
-    log(debug, "Trying to auth with ~p/~p~n", [AndroidId, Secret]),
-    QueryFun = fun() ->
-        % TODO: update last login time
+-spec get_device_row(AndroidId::string()) -> #device{} | no_exist.
+get_device_row(AndroidId) ->
+    Q = fun() ->
         qlc:e(qlc:q([Row || Row <- mnesia:table(device),
-                            AndroidId == Row#device.android_id,
-                            Secret == Row#device.secret]))
+                            Row#device.android_id == AndroidId]))
     end,
-    case mnesia:transaction(QueryFun) of
-        {atomic, [DeviceRow]} ->
-            log(debug, "Authenticated android_id ~p~n", [AndroidId]),
-            {true, DeviceRow};
-        {atomic, _ }->
-            log(info, "Query success but no row for ~p~n", [AndroidId]),
-            false;
-        Err ->
-            log(error, "DB error looking up ~p: ~p~n", [AndroidId, Err]),
-            error
+    case mnesia:transaction(Q) of
+        {atomic, [Row]} -> Row;
+        _ -> no_exist
     end.
+
+-spec create_or_login(AndroidId :: string()) -> 
+    {ok, #device{}} | error.
+create_or_login(AndroidId) ->
+    QueryFun =  fun() ->
+        case qlc:e(qlc:q([R || R <- mnesia:table(device),
+                                    R#device.android_id == AndroidId])) of
+            [] -> % This android_id doesn't have a prefix yet                
+                Prefix = intrans_find_unused_prefix(),
+                NowTime = erlang:localtime(),
+                DeviceRow = #device{android_id = AndroidId,
+                                    prefix = Prefix,
+                                    creation_time = NowTime,
+                                    last_login = NowTime},
+                case mnesia:write(DeviceRow) of
+                    ok -> DeviceRow;
+                    _  -> mnesia:abort(write_failed)
+                end;
+            [DeviceRow] -> % This android_id exists in the DB
+                DeviceRow;
+            _Other ->  % Shouldn't have duplicates in the DB, but let's handle it
+                mnesia:abort(duplicate_device_row)
+        end
+    end,
+
+    case mnesia:transaction(QueryFun) of
+        {atomic, DeviceRow} ->
+            {ok, DeviceRow};
+        {aborted, Reason} ->
+            log(warn, "Couldn't add device row for ~p: ~p~n", [AndroidId, Reason]),
+            error;
+        _Other ->
+            log(warn, "Error adding device row for ~p~n", [AndroidId]),
+            error
+    end.            
+
+% This is obsolete now that there is no authentication and no secret data.
+%-spec authenticate(AndroidId :: string(), Secret :: string()) -> {true, #device{}}
+%                                                               | false
+%                                                               | error.
+%authenticate(AndroidId, Secret) ->
+%    log(debug, "Trying to auth with ~p/~p~n", [AndroidId, Secret]),
+%    QueryFun = fun() ->
+%        % TODO: update last login time
+%        qlc:e(qlc:q([Row || Row <- mnesia:table(device),
+%                            AndroidId == Row#device.android_id,
+%                            Secret == Row#device.secret]))
+%    end,
+%    case mnesia:transaction(QueryFun) of
+%        {atomic, [DeviceRow]} ->
+%            log(debug, "Authenticated android_id ~p~n", [AndroidId]),
+%            {true, DeviceRow};
+%        {atomic, _ }->
+%            log(info, "Query success but no row for ~p~n", [AndroidId]),
+%            false;
+%        Err ->
+%            log(error, "DB error looking up ~p: ~p~n", [AndroidId, Err]),
+%            error
+%    end.
         
     
+% This is obsolete now that there is no authentication and no secret data.
 % Unpack and execute an incoming JSON "create_account" action
 % Returns a response {ok, Row#device} on success, {error, Reason} on failure
--spec create_account(AndroidId :: string()) -> {ok, #device{}} | {error, Reason :: atom()}.
-create_account(AndroidId) ->
-    NowTime = erlang:localtime(),
-    DeviceRow = #device{android_id = AndroidId,
-                        secret = generate_secret(),
-                        prefix = none,  % will be filled in later when writing db
-                        creation_time = NowTime,
-                        last_login = NowTime,
-                        totalbytes=0},
-    AddFun = make_user_add_fun(DeviceRow),
-    case mnesia:transaction(AddFun) of
-        {atomic, CompleteRow} when is_record(CompleteRow, device) ->
-            log(info, "Added device ~p to database~n", [AndroidId]),
-            {ok, CompleteRow}; % Now the prefix has been set
-        {aborted, already_exists} ->
-            log(info, "Tried to create account for existing android_id ~p~n", [AndroidId]),
-            {error, already_exists};
-        ErrReason ->
-            log(error, "Failed adding device due to ~p~n", [ErrReason]),
-            {error, database_failed}
-    end.
+%-spec create_account(AndroidId :: string()) -> {ok, #device{}} | {error, Reason :: atom()}.
+%create_account(AndroidId) ->
+%    NowTime = erlang:localtime(),
+%    DeviceRow = #device{android_id = AndroidId,
+%                        secret = generate_secret(),
+%                        prefix = none,  % will be filled in later when writing db
+%                        creation_time = NowTime,
+%                        last_login = NowTime,
+%                        totalbytes=0},
+%    AddFun = make_user_add_fun(DeviceRow),
+%    case mnesia:transaction(AddFun) of
+%        {atomic, CompleteRow} when is_record(CompleteRow, device) ->
+%            log(info, "Added device ~p to database~n", [AndroidId]),
+%            {ok, CompleteRow}; % Now the prefix has been set
+%        {aborted, already_exists} ->
+%            log(info, "Tried to create account for existing android_id ~p~n", [AndroidId]),
+%            {error, already_exists};
+%        ErrReason ->
+%            log(error, "Failed adding device due to ~p~n", [ErrReason]),
+%            {error, database_failed}
+%    end.
 
 % This function returns a function that can be passed to mnesia:transaction 
 % that will add a new user to the database.
@@ -175,7 +223,7 @@ make_user_add_fun(Row) ->
 % mnesia transaction.
 -spec intrans_find_unused_prefix() -> string().
 intrans_find_unused_prefix() ->
-    Prefix = rand:random_alnum(6),
+    Prefix = rand:random_alpha(5),
     % See if prefix already exists in the database
     Query = make_prefix_lookup_q(Prefix),
     case qlc:e(Query) of

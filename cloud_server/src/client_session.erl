@@ -10,8 +10,9 @@
                 listenref, username, datafordevice}).
 
 -define(MAXAUTHFAILS, 3).
--define(AUTH_TIMEOUT, 10000).
+-define(AUTH_TIMEOUT, 120000). % 2 minutes to login after connecting
 -define(MAX_QUEUED_DATA, 1024).
+-define(GENERAL_TIMEOUT, 30*60*1000). % Most states time out after 30 min
 
 %TODO: Finish state machine (all states)
 %TODO: add state timeouts
@@ -86,9 +87,8 @@ handle_info(Info, StateName, StateData) ->
     {noreply, StateName, StateData}.
 
 state_waiting_login({tcp, ClientSocket, Data}, State = #state{clientsocket = ClientSocket}) ->
-    FailResponse = <<"530 Check your login credentials (they're case sensitive)\r\n">>,
     case Data of
-         <<"USER ", PrefixBin:6/binary-unit:8, "_", Username/binary>> ->
+         <<"USER ", PrefixBin:5/binary-unit:8, "_", Username/binary>> ->
             Prefix = binary_to_list(PrefixBin),
             log(debug, "Parsed user/prefix ~p/~p~n", [Username, Prefix]),
             case session_registry:lookup(Prefix) of
@@ -107,7 +107,8 @@ state_waiting_login({tcp, ClientSocket, Data}, State = #state{clientsocket = Cli
                              state_listening, 
                              State#state{listenref=Ref, 
                                          listensocket=ListenSocket,
-                                         username=Username}};
+                                         username=Username},
+                             ?GENERAL_TIMEOUT};
                         {error, Reason} ->
                             gen_tcp:send(ClientSocket, <<"500 Internal err in listener\r\n">>),
                             log(warn, "Client session listen fail: ~p~n", [Reason]),
@@ -119,13 +120,37 @@ state_waiting_login({tcp, ClientSocket, Data}, State = #state{clientsocket = Cli
                     gen_tcp:send(ClientSocket, Response),
                     handle_auth_fail(State)
             end;
+        % Some clients try to login as "anonymous" first, then ask the user for credentials
+        % only if the anonymous login fails.
+        <<"USER ", _/binary>> ->
+            gen_tcp:send(ClientSocket, <<"331 Send password\r\n">>),
+            log(info, "No prefix_ in username, waiting to reject password~n", []),
+            {next_state, state_waiting_to_reject_pass, State, ?GENERAL_TIMEOUT};
         Other ->
             log(info, "Got something instead of client login: ~p~n", [Other]),
-            gen_tcp:send(ClientSocket, FailResponse),
+            gen_tcp:send(ClientSocket, login_fail_response()),
             handle_auth_fail(State)
     end;
 state_waiting_login(timeout, State) ->
     {stop, timeout, State}.
+
+login_fail_response() -> <<"530 Check login credentials. Include the prefix_string.\r\n">>.
+
+% FTP servers shouldn't reject a login until after USER and PASS have both been received.
+% If we're in this state, we already know that we've received USER but not yet PASS.
+% So we're just waiting politely for the FTP client to send PASS so we can reject the
+% login attempt with code 530. We halt if we get anything besides PASS.
+state_waiting_to_reject_pass({tcp, ClientSocket, Data}, State) ->
+    case Data of
+        <<"PASS ", _/binary>> ->
+            gen_tcp:send(ClientSocket, login_fail_response()),
+            log(debug, "Rejected PASS as planned, waiting for actual login~n", []),
+            {next_state, state_waiting_login, State, ?GENERAL_TIMEOUT};
+        _ ->
+            gen_tcp:send(ClientSocket, <<"530 Login with USER and PASS">>),
+            log(info, "Waiting to reject PASS but got ~p~n", [Data]),
+            {stop, normal, State}
+    end.
                     
 %% @spec handle_auth_fail(State) -> {next_state, state_waiting_login, NewState} 
 %%                                | {stop, too_many_auth_fails, NewState}
@@ -140,7 +165,7 @@ handle_auth_fail(State) ->
         AuthFails >= ?MAXAUTHFAILS -> 
             {stop, too_many_auth_fails, NewState};
         true ->
-            {next_state, state_waiting_login, State}
+            {next_state, state_waiting_login, State, ?GENERAL_TIMEOUT}
     end.
 
 % We've told the device that there's a control client waiting, and
@@ -150,17 +175,50 @@ handle_auth_fail(State) ->
 state_listening({devicesocket, DeviceSocket}, StateData) ->
     log(debug, "client_session received device socket~n", []),
     {next_state, state_device_connected, 
-        StateData#state{devicesocket=DeviceSocket, listenref=none}}.
+     StateData#state{devicesocket=DeviceSocket, listenref=none},
+     ?GENERAL_TIMEOUT}.
 
 state_device_connected({tcp, DeviceSocket, Data}, 
                        StateData = #state{devicesocket=DeviceSocket}) ->
     log(debug, "Got data from device in state_device_connected: ~p~n", [Data]),
     Json = json_to_term(binary_to_list(Data)),
     case util:get_json_value(Json, <<"action">>) of
-        <<"authenticate">> ->
-            {WhetherAuth, Response, DeviceRow} = util:authenticate_json(Json),
+        % Obsolete, there's no authentication anymore
+        %<<"authenticate">> ->
+        %    {WhetherAuth, Response, DeviceRow} = util:authenticate_json(Json),
+        %    gen_tcp:send(DeviceSocket, Response),
+        %    case WhetherAuth of
+        %        true ->
+        %            AndroidId = DeviceRow#device.android_id,
+        %            log(info, "client_session device authed: ~p~n", [AndroidId]),
+        %            % The client already sent us its username earlier, when it 
+        %            % sent the prefix. Now we should forward it on to the device. 
+        %            % It already has trailing \r\n.
+        %            Username = StateData#state.username,
+        %            UserString = <<"USER ">>,
+        %            log(debug, "Username is ~p~n", [Username]),
+        %            log(debug, "UserString is ~p~n", [UserString]),
+        %            UserCmd = <<UserString/binary, Username/binary>>,
+        %            log(debug, "2~n", []),
+        %            log(debug, "Sending line: ~p to ~p~n", [UserCmd, DeviceSocket]),
+        %            apply(gen_tcp, send, [DeviceSocket, UserCmd]),
+        %            log(debug, "3~n", []),
+        %            % If any data was queued up from the client to the device,
+        %            % it should be sent now.
+        %            case StateData#state.datafordevice of
+        %                none -> ok;
+        %                Data -> gen_tcp:send(DeviceSocket, Data)
+        %            end,
+        %            {next_state, state_proxying, 
+        %             StateData#state{devicerow=DeviceRow,datafordevice=none}};
+        %        false ->
+        %            log(info, "client_session device failed auth~n", []),
+        %            {stop, authenticate_failed, StateData}
+        %    end;
+        <<"login">> ->
+            {Ok, Response, DeviceRow} = util:login_noauth_json(Json),
             gen_tcp:send(DeviceSocket, Response),
-            case WhetherAuth of
+            case Ok of
                 true ->
                     AndroidId = DeviceRow#device.android_id,
                     log(info, "client_session device authed: ~p~n", [AndroidId]),
@@ -169,13 +227,11 @@ state_device_connected({tcp, DeviceSocket, Data},
                     % It already has trailing \r\n.
                     Username = StateData#state.username,
                     UserString = <<"USER ">>,
-                    log(debug, "Username is ~p~n", [Username]),
-                    log(debug, "UserString is ~p~n", [UserString]),
+                    %log(debug, "Username is ~p~n", [Username]),
+                    %log(debug, "UserString is ~p~n", [UserString]),
                     UserCmd = <<UserString/binary, Username/binary>>,
-                    log(debug, "2~n", []),
-                    log(debug, "Sending line: ~p to ~p~n", [UserCmd, DeviceSocket]),
+                    %log(debug, "Sending line: ~p to ~p~n", [UserCmd, DeviceSocket]),
                     apply(gen_tcp, send, [DeviceSocket, UserCmd]),
-                    log(debug, "3~n", []),
                     % If any data was queued up from the client to the device,
                     % it should be sent now.
                     case StateData#state.datafordevice of
@@ -183,10 +239,11 @@ state_device_connected({tcp, DeviceSocket, Data},
                         Data -> gen_tcp:send(DeviceSocket, Data)
                     end,
                     {next_state, state_proxying, 
-                     StateData#state{devicerow=DeviceRow,datafordevice=none}};
+                     StateData#state{devicerow=DeviceRow,datafordevice=none},
+                     ?GENERAL_TIMEOUT};
                 false ->
-                    log(info, "client_session device failed auth~n", []),
-                    {stop, authenticate_failed, StateData}
+                    log(warn, "Ill-formed login~n", []),
+                    {stop, normal, StateData}
             end;
         OtherAction ->
             log(info, "Expected authentication but got action: ~p~n", [OtherAction]),
@@ -205,7 +262,7 @@ state_device_connected({tcp, ClientSocket, Data},
             {stop, too_much_queued_data, StateData};
         true ->
             NextStateData = StateData#state{datafordevice= <<QueuedData, Data>>},
-            {next_state, state_device_connected, NextStateData}
+            {next_state, state_device_connected, NextStateData, ?GENERAL_TIMEOUT}
     end.
               
 
@@ -213,20 +270,22 @@ state_proxying({tcp, Socket, Data}, StateData = #state{devicesocket=DeviceSocket
                                                        clientsocket=ClientSocket}) ->
     case Socket of
         DeviceSocket ->
+            %log(debug, "Proxying device to client~n", []),
             gen_tcp:send(ClientSocket, Data);
         ClientSocket ->
+            %log(debug, "Proxying client to device~n", []),
             gen_tcp:send(DeviceSocket, Data)
     end,
-    {next_state, state_proxying, StateData}.
+    {next_state, state_proxying, StateData, ?GENERAL_TIMEOUT}.
 
 code_change(_OldVsn, StateName, StateData, _Extra) ->
     {ok, StateName, StateData}.
 
 handle_event(_Event, StateName, StateData) ->
-    {next_state, StateName, StateData}.
+    {next_state, StateName, StateData, ?GENERAL_TIMEOUT}.
 
 handle_sync_event(_Event, _From, StateName, StateData) ->
-    {next_state, StateName, StateData}.
+    {next_state, StateName, StateData, ?GENERAL_TIMEOUT}.
 
 terminate(_Reason, _StateName, _StateData) ->
     ok.
