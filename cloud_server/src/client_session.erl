@@ -126,10 +126,14 @@ state_waiting_login({tcp, ClientSocket, Data}, State = #state{clientsocket = Cli
             gen_tcp:send(ClientSocket, <<"331 Send password\r\n">>),
             log(info, "No prefix_ in username, waiting to reject password~n", []),
             {next_state, state_waiting_to_reject_pass, State, ?GENERAL_TIMEOUT};
+        <<"QUIT", _/binary>> ->
+            gen_tcp:send(ClientSocket, <<"221 Goodbye\r\n">>),
+            log(info, "Client sent QUIT before logging in~n", []),
+            {stop, normal, State};
         Other ->
             log(info, "Got something instead of client login: ~p~n", [Other]),
-            gen_tcp:send(ClientSocket, login_fail_response()),
-            handle_auth_fail(State)
+            gen_tcp:send(ClientSocket, <<"530 Login before using that command\r\n">>),
+            {next_state, state_waiting_login, State, ?GENERAL_TIMEOUT}
     end;
 state_waiting_login(timeout, State) ->
     {stop, timeout, State}.
@@ -165,7 +169,7 @@ handle_auth_fail(State) ->
         AuthFails >= ?MAXAUTHFAILS -> 
             {stop, too_many_auth_fails, NewState};
         true ->
-            {next_state, state_waiting_login, State, ?GENERAL_TIMEOUT}
+            {next_state, state_waiting_to_reject_pass, State, ?GENERAL_TIMEOUT}
     end.
 
 % We've told the device that there's a control client waiting, and

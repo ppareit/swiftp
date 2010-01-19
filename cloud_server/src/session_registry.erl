@@ -3,7 +3,8 @@
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
--export([start_link/0, lookup/1, remove/1, remove_self/1, add/2]).
+-export([start_link/0, lookup/1, remove/1, remove_self/1, add/2,
+         get_as_list/0]).
 
 -import(json_eep, [json_to_term/1, term_to_json/1, get_state/0]).
 
@@ -35,6 +36,9 @@ lookup(Prefix) when is_list(Prefix) ->
     log(debug, "session_registry:lookup for ~p~n", [Prefix]),
     gen_server:call(session_registry, {lookup, Prefix}).
 
+get_as_list() ->
+    gen_server:call(session_registry, {get_as_list}).
+
 %% dump_state() ->
 %%     gen_server:call(session_registry, {remove, Prefix}).
 %%     wait_for_response().
@@ -64,8 +68,13 @@ handle_call({remove, Prefix}, _From, State = EtsTable) ->
     remove_internal(EtsTable, Prefix), % Param has form string()
     {reply,
      ok,
-     State}.
+     State};
 
+% For debugging, return the current ETS table as a list.
+handle_call({get_as_list}, _From, State = EtsTable) ->
+    {reply,
+     ets:tab2list(EtsTable),
+     State}.
 
 
 add_internal(EtsTable, Param = {Prefix, Pid}) when is_list(Prefix), is_pid(Pid) ->

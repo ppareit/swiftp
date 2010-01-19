@@ -11,6 +11,8 @@
 
 -define(AUTH_TIMEOUT, 10000).
 -define(GENERAL_TIMEOUT, 30*60*1000). % Most states timeout after 30 minutes
+-define(NOOP_TIMEOUT, 50*1000).  % Send a noop every 50 seconds
+
 start_link() ->
     gen_fsm:start_link(?MODULE, [], []).
 
@@ -123,7 +125,7 @@ state_authenticated({tcp, DeviceSocket, Data}, StateData= #state{devicesocket=De
             gen_tcp:send(DeviceSocket, term_to_json(ResponseTerm)),
             session_registry:add(Prefix, self()),
             do_queued_actions(DeviceSocket, DeviceRow),
-            {next_state, state_cmd_session, StateData, ?GENERAL_TIMEOUT};
+            {next_state, state_cmd_session, StateData, ?NOOP_TIMEOUT};
         <<"data_pasv_listen">> ->
             log(debug, "Starting pasv listen~n", []),
             Opts = [binary, {packet, 0}, {reuseaddr, true},
@@ -195,12 +197,12 @@ state_cmd_session({tcp, DeviceSocket, Data},
         <<"noop">> ->
             log(debug, "Noop received~n", []),
             gen_tcp:send(DeviceSocket, term_to_json({[]})),
-            {next_state, state_cmd_session, StateData, ?GENERAL_TIMEOUT};        
+            {next_state, state_cmd_session, StateData, ?NOOP_TIMEOUT};        
         Cmd ->
             log(debug, "Unimplemented command: ~p~n", [Cmd]),
             ResponseJson = util:json_err_obj(0, "Command not implemented~n"),
             gen_tcp:send(DeviceSocket, ResponseJson),
-            {next_state, state_cmd_session, StateData, ?GENERAL_TIMEOUT}
+            {next_state, state_cmd_session, StateData, ?NOOP_TIMEOUT}
     end;
 
 state_cmd_session({control_waiting, Port}, StateData) when is_integer(Port) ->
@@ -212,7 +214,12 @@ state_cmd_session({control_waiting, Port}, StateData) when is_integer(Port) ->
     Term = {[{<<"action">>, <<"control_connection_waiting">>},
              {<<"port">>, Port}]},
     gen_tcp:send(DeviceSocket, term_to_json(Term)),
-    {next_state, state_cmd_session, StateData, ?GENERAL_TIMEOUT}.
+    {next_state, state_cmd_session, StateData, ?NOOP_TIMEOUT};
+
+state_cmd_session(timeout, State = #state{devicesocket=DeviceSocket}) ->
+    Noop = term_to_json({[{<<"action">>, <<"noop">>}]}),
+    gen_tcp:send(DeviceSocket, Noop),
+    {next_state, state_cmd_session, State, ?NOOP_TIMEOUT}.
 
 state_proxying({tcp, Socket, Data}, StateData = #state{devicesocket=DeviceSocket,
                                                        clientsocket=ClientSocket}) ->

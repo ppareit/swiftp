@@ -26,7 +26,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
      own application, the package name must be changed from "com.example.*"
      to come from a domain that you own or have control over. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.swiftp" android:versionName="1.21" android:versionCode="13">
+    package="org.swiftp" android:versionCode="14" android:versionName="1.22">
 
     <!-- This package contains an application...  The 'label' is the name
          to display to the user for the overall application, and provides

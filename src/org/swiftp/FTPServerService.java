@@ -38,6 +38,7 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 
 
@@ -48,8 +49,9 @@ public class FTPServerService extends Service implements Runnable {
 	protected static MyLog staticLog = 
 		new MyLog(FTPServerService.class.getName());
 	
-	protected static final int BACKLOG = 21;
-	protected static final int MAX_SESSIONS = 5;
+	public static final int BACKLOG = 21;
+	public static final int MAX_SESSIONS = 5;
+	public static final String LOCK_TAG = "SwiFTP";
 	
 	//protected ServerSocketChannel wifiSocket;
 	protected ServerSocket listenSocket;
@@ -78,6 +80,7 @@ public class FTPServerService extends Service implements Runnable {
 	private static SharedPreferences settings = null;
 	
 	NotificationManager notificationMgr = null;
+	PowerManager.WakeLock wakeLock; 	
 	
 	public FTPServerService() {
 	}
@@ -121,14 +124,6 @@ public class FTPServerService extends Service implements Runnable {
 		serverThread = new Thread(this);
 		serverThread.start();
 		
-		// prevent sleeping as long as the service is running
-		if(wifiLock == null) {
-			WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-			wifiLock = manager.createWifiLock("SwiFTP");
-			wifiLock.setReferenceCounted(true);
-		}
-		wifiLock.acquire();
-
 		// todo: we should broadcast an intent to inform anyone who cares
 	}
 	
@@ -221,39 +216,6 @@ public class FTPServerService extends Service implements Runnable {
 		// We reach here if the settings were not sane
 		return false;
 	}
-
-	// This is old code. We used to get the Wifi IP address from Android, then 
-	// listen only on that IP. The new way is to listen on all interfaces.
-//	void setupWifiListener() throws IOException {
-//		//wifiSocket = ServerSocketChannel.open();
-//		//wifiSocket.configureBlocking(false);
-//		myLog.l(Log.DEBUG, "About to get wifi IP");
-//		int loops = 0;
-//		serverAddress = null;
-//		while(serverAddress == null) {
-//			// If IP address retrieval fails, it may be because DHCP is
-//			// still coming up. So we wait one second between attempts,
-//			// with a max # of attempts Defaults.getIpRetrievalAttempts().
-//			serverAddress = getWifiIp();
-//			if(serverAddress != null) {
-//				break;
-//			}
-//			myLog.l(Log.DEBUG, "Wifi IP string was null");
-//			loops++;
-//			if(loops > Defaults.getIpRetrievalAttempts()) {
-//				throw new IOException("IP retrieval failure");	
-//			}
-//			try {
-//				Thread.sleep(1000);
-//			} catch(InterruptedException e) {}
-//		}
-//		myLog.l(Log.DEBUG, "Wifi IP: " + serverAddress.getHostAddress());
-//		wifiSocket = new ServerSocket();
-//		wifiSocket.bind(new InetSocketAddress(serverAddress, port));
-//		// The following line listens on all interfaces
-//		// mainSocket.socket().bind(new InetSocketAddress(port));
-//		
-//	}
 	
 	// This opens a listening socket on all interfaces. 
 	void setupListener() throws IOException {
@@ -318,8 +280,8 @@ public class FTPServerService extends Service implements Runnable {
 			return;
 		}
 		
-		setupNotification();
 		
+		// Initialization of wifi
 		if(acceptWifi) {
 			// If configured to accept connections via wifi, then set up the socket
 			try {
@@ -330,9 +292,13 @@ public class FTPServerService extends Service implements Runnable {
 				cleanupAndStopService();
 				return;
 			}
-		}
-		myLog.l(Log.INFO, "SwiFTP server ready");
+			takeWifiLock();
+		}		
+		takeWakeLock();
 		
+		myLog.l(Log.INFO, "SwiFTP server ready");
+		setupNotification();
+
 		// We should update the UI now that we have a socket open, so the UI
 		// can present the URL
 		UiUpdater.updateClients();
@@ -423,6 +389,9 @@ public class FTPServerService extends Service implements Runnable {
 		}
 		shouldExit = false; // we handled the exit flag, so reset it to acknowledge
 		myLog.l(Log.DEBUG, "Exiting cleanly, returning from run()");
+		clearNotification();
+		releaseWakeLock();
+		releaseWifiLock();		
 	}
 	
 	private void terminateAllSessions() {
@@ -442,6 +411,42 @@ public class FTPServerService extends Service implements Runnable {
 		Context context = getApplicationContext();
 		Intent intent = new Intent(context,	FTPServerService.class);
 		context.stopService(intent);
+		releaseWifiLock();
+		releaseWakeLock();
+		clearNotification();
+	}
+	
+	private void takeWakeLock() {
+		myLog.d("Taking wake lock");
+		if(wakeLock == null) {
+			PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+			wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOCK_TAG);
+			wakeLock.setReferenceCounted(false);
+		}
+		wakeLock.acquire();
+	}
+	
+	private void releaseWakeLock() {
+		myLog.d("Releasing wake lock");
+		if(wakeLock != null) {
+			wakeLock.release();
+			wakeLock = null;
+		}
+		myLog.d("Finished releasing wake lock");
+	}
+	
+	private void takeWifiLock() {
+		myLog.d("Taking wifi lock");
+		if(wifiLock == null) {
+			WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+			wifiLock = manager.createWifiLock("SwiFTP");
+			wifiLock.setReferenceCounted(false);
+		}
+		wifiLock.acquire();
+	}
+	
+	private void releaseWifiLock() {
+		myLog.d("Releasing wifi lock");
 		if(wifiLock != null) {
 			wifiLock.release();
 			wifiLock = null;
@@ -489,27 +494,6 @@ public class FTPServerService extends Service implements Runnable {
 			return false;
 		}
 	}
-	
-//  Deprecated in favor of Util.ipToString()
-//	public static String getWifiIpAsString() {
-//		int addr = getWifiIpAsInt();
-//		staticLog.l(Log.DEBUG, "IP as int: " + addr);
-//		if(addr != 0) {
-//			StringBuffer buf = new StringBuffer();
-//			buf.append(addr & 0xff).append('.').
-//			append((addr >>>= 8) & 0xff).append('.').
-//			append((addr >>>= 8) & 0xff).append('.').
-//			append((addr >>>= 8) & 0xff);
-//			staticLog.l(Log.DEBUG, "Returning IP string: " + buf.toString());
-//			return buf.toString();
-//		} else {
-//			return null;
-//		}
-//	}
-	
-//	public static InetAddress getServerAddress() {
-//		return serverAddress;
-//	}
 	
 	public static List<String> getSessionMonitorContents() {
 		return new ArrayList<String>(sessionMonitor);

@@ -141,8 +141,11 @@ public abstract class FtpCmd implements Runnable {
 	 * An FTP parameter is that part of the input string that occurs
 	 * after the first space, including any subsequent spaces. Also,
 	 * we want to chop off the trailing '\r\n', if present.
+	 * 
+	 * Some parameters shouldn't be logged or output (e.g. passwords),
+	 * so the caller can use silent==true in that case.
 	 */
-	static public String getParameter(String input) {
+	static public String getParameter(String input, boolean silent) {
 		if(input == null) {
 			return "";
 		}
@@ -156,8 +159,17 @@ public abstract class FtpCmd implements Runnable {
 		// todo: trailing whitespace may be significant, just remove \r\n
 		retString = retString.replaceAll("\\s+$", "");
 		
-		staticLog.l(Log.DEBUG, "Parsed argument: " + retString);
+		if(!silent) {
+			staticLog.l(Log.DEBUG, "Parsed argument: " + retString);
+		}
 		return retString; 
+	}
+	
+	/**
+	 * A wrapper around getParameter, for when we don't want it to be silent.
+	 */
+	static public String getParameter(String input) {
+		return getParameter(input, false);
 	}
 
 	public static File inputPathToChrootedFile(File existingPrefix, String param) {

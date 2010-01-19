@@ -18,8 +18,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /* The code that is common to LIST and NLST is implemented in the abstract
- * class CmdAbstractListing, which is inherited here. In particular, the
- * run() function is inherited. CmdLIST and CmdNLST just override the
+ * class CmdAbstractListing, which is inherited here. 
+ * CmdLIST and CmdNLST just override the
  * makeLsString() function in different ways to provide the different forms
  * of output.
  */
@@ -29,6 +29,7 @@ package org.swiftp;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import android.util.Log;
 
@@ -143,12 +144,13 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
 		// is 6 months old
 		long mTime = file.lastModified();
 		SimpleDateFormat format;
+		// Temporarily commented out.. trying to fix Win7 display bug
 		if(System.currentTimeMillis() - mTime > MS_IN_SIX_MONTHS) {
 			// The mtime is less than 6 months ago
-			format = new SimpleDateFormat(" MMM dd HH:mm ");
+			format = new SimpleDateFormat(" MMM dd HH:mm ", Locale.US);
 		} else {
 			// The mtime is more than 6 months ago
-			format = new SimpleDateFormat(" MMM dd  yyyy ");
+			format = new SimpleDateFormat(" MMM dd  yyyy ", Locale.US);
 		}
 		response.append(format.format(new Date(file.lastModified())));
 		response.append(lastNamePart);

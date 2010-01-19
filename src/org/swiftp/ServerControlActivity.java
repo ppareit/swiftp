@@ -30,7 +30,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -47,6 +46,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Environment;
 
 public class ServerControlActivity extends Activity {
     
@@ -439,6 +439,7 @@ public class ServerControlActivity extends Activity {
         	if(buttonText.equals(startString)) { 
     			/* The button had the "start server" text  */
         		if(!FTPServerService.isRunning()) {
+        			warnIfNoExternalStorage();
         			context.startService(intent);
         		}
         	} else if (buttonText.equals(stopString)) {
@@ -451,6 +452,17 @@ public class ServerControlActivity extends Activity {
         }
     };
 
+    private void warnIfNoExternalStorage() {
+    	String storageState = Environment.getExternalStorageState();
+    	if(!storageState.equals(Environment.MEDIA_MOUNTED)) {
+    		myLog.i("Warning due to storage state " + storageState);
+    		Toast toast = Toast.makeText(this, R.string.storage_warning,
+					Toast.LENGTH_LONG);
+	    	toast.setGravity(Gravity.CENTER, 0, 0);
+	    	toast.show();
+    	}
+    }
+    
     /* SwiFTP no longer offers wifi enable/disable functionality */
 //    OnClickListener wifiButtonListener = new OnClickListener() {
 //        public void onClick(View v) {

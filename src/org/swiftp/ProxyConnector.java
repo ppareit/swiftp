@@ -92,6 +92,7 @@ public class ProxyConnector extends Thread {
 					continue;
 				}
 				commandSocket.setSoTimeout(0); // 0 == forever
+				//commandSocket.setKeepAlive(true);
 				// Now that we have authenticated, we want to start the command session so we can
 				// be notified of pending control sessions.
 				JSONObject request = makeJsonRequest("start_command_session");
@@ -149,8 +150,10 @@ public class ProxyConnector extends Thread {
 							myLog.l(Log.INFO, "Response received but no responseWaiter");
 						}
 					}
-				} else {
-					myLog.l(Log.DEBUG, "Command socket short read, exiting");
+				} else if(numBytes  == 0) {
+					myLog.d("Command socket read 0 bytes, looping");
+				} else { // numBytes < 0
+					myLog.l(Log.DEBUG, "Command socket end of stream, exiting");
 					if(proxyState != State.DISCONNECTED) {
 						// Set state to FAILED unless this was an intentional
 						// socket closure.
@@ -170,7 +173,6 @@ public class ProxyConnector extends Thread {
 			myLog.l(Log.INFO, "Other exception in ProxyConnector: " + e);
 			setProxyState(State.FAILED);
 		} finally {
-			commandSocket = null;
 			Globals.setProxyConnector(null);
 			hostname = null;
 			myLog.d("ProxyConnector.run() returning");
@@ -332,8 +334,9 @@ public class ProxyConnector extends Thread {
 				proxyMessage = json.getString("text");
 				myLog.i("Got news from proxy server: \"" + proxyMessage + "\"");
 				FTPServerService.updateClients(); // UI update to show message
-			}
-			else {
+			} else if(action.equals("noop")) {
+				myLog.d("Proxy noop");
+			} else {
 				myLog.l(Log.INFO, "Unsupported incoming action: " + action);
 			}
 			// If we're starting a control session register with ftpServerService
@@ -655,10 +658,11 @@ public class ProxyConnector extends Thread {
 	
 	public InetAddress getProxyIp() {
 		if(this.isAlive()) {
-			return commandSocket.getInetAddress();
-		} else {
-			return null;
+			if(commandSocket.isConnected()) {
+				return commandSocket.getInetAddress();
+			}
 		}
+		return null;
 	}
 	
 	private JSONObject makeJsonRequest(String action) throws JSONException {
@@ -731,6 +735,7 @@ public class ProxyConnector extends Thread {
 		proxyUsage += num;
 		if(proxyUsage % UPDATE_USAGE_BYTES < oldProxyUsage % UPDATE_USAGE_BYTES) {
 			FTPServerService.updateClients();
+			persistProxyUsage();
 		}
 	}
 	

@@ -20,13 +20,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
-<string name="name_version">SwiFTP Server 1.21</string>
+<string name="name_version">SwiFTP Server 1.22</string>
 <string name="menu_byline">By Dave Revell and contributors</string>
 
 <string name="add_user">Add User</string>
 <string name="manage_users">Manage Users</string>
 
-<string name="swiftp_name">SwiFTP</string>
+<string name="swiftp_name">SwiFTP</string>  
 <string name="server_options">Server Options</string>
 
 
@@ -91,6 +91,7 @@ or nonexistent.</string>
 <string name="pst_unreachable">unreachable</string>
 <string name="pst_disconnected">disconnected</string>
 <string name="proxy_news">News:</string>
+<string name="storage_warning">Warning: storage is not available. You may want to unmount it.</string>
 <string name="donation">Proxy servers are expensive, please show your support by donating \
 (www.swiftp.org). The suggested donation is 30 cents per gigabyte of proxy traffic. \
 Thank you!</string>

@@ -18,8 +18,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /* The code that is common to LIST and NLST is implemented in the abstract
- * class CmdAbstractListing, which is inherited here. In particular, the
- * run() function is inherited. CmdLIST and CmdNLST just override the
+ * class CmdAbstractListing, which is inherited here. 
+ * CmdLIST and CmdNLST just override the
  * makeLsString() function in different ways to provide the different forms
  * of output.
  */

@@ -86,9 +86,15 @@ public class ProxyDataSocketFactory extends DataSocketFactory {
 		proxyConnector = Globals.getProxyConnector();
 		if(proxyConnector == null) {
 			myLog.l(Log.INFO, "Unexpected null proxyConnector in onPasv");
+			clearState();
 			return 0;
 		}
 		ProxyDataSocketInfo info = proxyConnector.pasvListen();
+		if(info == null) {
+			myLog.l(Log.INFO, "Null ProxyDataSocketInfo");
+			clearState();
+			return 0;
+		}
 		socket = info.getSocket();
 		proxyListenPort = info.getRemotePublicPort();
 		return proxyListenPort;

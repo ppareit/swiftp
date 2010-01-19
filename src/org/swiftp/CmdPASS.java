@@ -39,7 +39,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
 		// populate the Account object's username
 		myLog.l(Log.DEBUG, "Executing PASS");
 	
-		String attemptPassword = getParameter(input);
+		String attemptPassword = getParameter(input, true); // silent
 		String attemptUsername = sessionThread.account.getUsername();
 		if(attemptUsername == null) {
 			sessionThread.writeString("503 Must send USER first\r\n");
