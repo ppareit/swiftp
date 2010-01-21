@@ -55,9 +55,10 @@ public class SessionThread extends Thread {
 	private boolean sendWelcomeBanner;
 	protected String encoding = Defaults.SESSION_ENCODING;
 	protected Source source;
+	int authFails = 0;
 	
 	public enum Source {LOCAL, PROXY}; // where did this connection come from?
-	
+	public static int MAX_AUTH_FAILS = 3;
 	/**
 	 * Used when we get a PORT command to open up an outgoing socket.
 	 * 
@@ -369,7 +370,16 @@ public class SessionThread extends Thread {
 			// via the proxy, then drop it now. The client can't try again
 			// successfully because it doesn't know its real username. What
 			// it knows is prefix_username.
-			quit();
+			if(source == Source.PROXY) {
+				quit();
+			} else {
+				authFails++;
+				myLog.i("Auth failed: " + authFails + "/" + MAX_AUTH_FAILS);
+			}
+			if(authFails > MAX_AUTH_FAILS) {
+				myLog.i("Too many auth fails, quitting session");
+				quit();
+			}
 		}
 		
 	}

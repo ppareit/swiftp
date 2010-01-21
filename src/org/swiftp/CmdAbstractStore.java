@@ -61,7 +61,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
 
 			try {
 				if(storeFile.exists()) {
-					if(!storeFile.delete()) {
+					if(!storeFile.delete() && !append) {
 						errString = "451 Couldn't truncate file\r\n";
 						break storing;
 					}
@@ -70,7 +70,12 @@ abstract public class CmdAbstractStore extends FtpCmd {
 				}
 				out = new FileOutputStream(storeFile, append);
 			} catch(FileNotFoundException e) {
-				errString = "451 Couldn't open file for writing\r\n";
+				try {
+					errString = "451 Couldn't open file \"" + param + "\" aka \"" + 
+						storeFile.getCanonicalPath() + "\" for writing\r\n";
+				} catch (IOException io_e) {
+					errString = "451 Couldn't open file, nested exception\r\n";
+				}
 				break storing;
 			}
 			if(!sessionThread.startUsingDataSocket()) {

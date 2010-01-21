@@ -20,7 +20,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
-<string name="name_version">SwiFTP Server 1.22</string>
+<string name="name_version">SwiFTP Server 1.23</string>
 <string name="menu_byline">By Dave Revell and contributors</string>
 
 <string name="add_user">Add User</string>
