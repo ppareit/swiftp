@@ -164,9 +164,22 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 				android:id="@+id/config_net_checkbox"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-		    	android:checked="true"
+		    	android:checked="false"
 				/>
 		</TableRow>
+		<TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stay_awake"
+                />
+            <CheckBox  
+                android:id="@+id/config_awake_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                />
+        </TableRow>
 	</TableLayout>
 
 	<FrameLayout android:layout_height="1px"

@@ -52,6 +52,9 @@ public abstract class CmdAbstractListing extends FtpCmd {
 		
 		// Get a listing of all files and directories in the path
 		File[] entries = dir.listFiles();
+		if(entries == null) {
+			return "500 Couldn't list directory. Check config and mount status.\r\n";
+		}
 		myLog.l(Log.DEBUG, "Dir len " + entries.length);
 		for(File entry : entries) {
 			String curLine = makeLsString(entry);

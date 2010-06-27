@@ -2,6 +2,10 @@
 import sys
 import os
 
+# Note to self: just run this with "./autostart -detached -dbstart reuse" for the common
+# case of starting a single-node config after a reboot.
+
+
 logfilename = "./autostart.log"
 fh = open(logfilename, 'a')
 

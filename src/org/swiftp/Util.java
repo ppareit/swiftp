@@ -123,14 +123,18 @@ abstract public class Util {
 	}
 	
 	public static void newFileNotify(String path) {
-		myLog.l(Log.DEBUG, "Notifying others about new file: " + path);
-		new MediaScannerNotifier(Globals.getContext(), path);
+		if(Defaults.do_mediascanner_notify) {
+			myLog.l(Log.DEBUG, "Notifying others about new file: " + path);
+			new MediaScannerNotifier(Globals.getContext(), path);
+		}
 	}
 	
 	public static void deletedFileNotify(String path) {
-		// This probably doesn't work, I couldn't find an API call for this.
-		myLog.l(Log.DEBUG, "Notifying others about deleted file: " + path);
-		new MediaScannerNotifier(Globals.getContext(), path);
+		// This might not work, I couldn't find an API call for this.
+		if(Defaults.do_mediascanner_notify) {
+			myLog.l(Log.DEBUG, "Notifying others about deleted file: " + path);
+			new MediaScannerNotifier(Globals.getContext(), path);
+		}
 	}
 	
 	// A class to help notify the Music Player and other media services when

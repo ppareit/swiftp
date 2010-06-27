@@ -21,7 +21,6 @@ package org.swiftp;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 
 import android.util.Log;
@@ -194,8 +193,9 @@ public abstract class FtpCmd implements Runnable {
 				return true; // the path must begin with the chroot path
 			}
 			return false;
-		} catch(IOException e) {
-			myLog.l(Log.INFO, "Path canonicalization problem");
+		} catch(Exception e) {
+			myLog.l(Log.INFO, "Path canonicalization problem: " + e.toString());
+			myLog.l(Log.INFO, "When checking file: " + file.getAbsolutePath());
 			return true;  // for security, assume violation
 		}
 	}

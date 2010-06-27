@@ -46,8 +46,8 @@ abstract public class CmdAbstractStore extends FtpCmd {
 		String errString = null;
 		FileOutputStream out = null;
 		//DedicatedWriter dedicatedWriter = null;
-		//int origPriority = Thread.currentThread().getPriority();
-		//myLog.l(Log.DEBUG, "STOR original priority: " + origPriority);
+//		int origPriority = Thread.currentThread().getPriority();
+//		myLog.l(Log.DEBUG, "STOR original priority: " + origPriority);
 		storing: {
 			// Get a normalized absolute path for the desired file
 			if(violatesChroot(storeFile)) {
@@ -61,12 +61,14 @@ abstract public class CmdAbstractStore extends FtpCmd {
 
 			try {
 				if(storeFile.exists()) {
-					if(!storeFile.delete() && !append) {
-						errString = "451 Couldn't truncate file\r\n";
-						break storing;
+					if(!append) {
+						if(!storeFile.delete()) {
+							errString = "451 Couldn't truncate file\r\n";
+							break storing;
+						}
+						// Notify other apps that we just deleted a file
+						Util.deletedFileNotify(storeFile.getPath());
 					}
-					// Notify other apps that we just deleted a file
-					Util.deletedFileNotify(storeFile.getPath());
 				}
 				out = new FileOutputStream(storeFile, append);
 			} catch(FileNotFoundException e) {
@@ -89,9 +91,16 @@ abstract public class CmdAbstractStore extends FtpCmd {
 			//dedicatedWriter.start();  // start the writer thread executing
 			//myLog.l(Log.DEBUG, "Started DedicatedWriter");
 			int numRead;
-			//Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-			//int newPriority = Thread.currentThread().getPriority();
-			//myLog.l(Log.DEBUG, "New STOR prio: " + newPriority);
+//			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+//			int newPriority = Thread.currentThread().getPriority();
+//			myLog.l(Log.DEBUG, "New STOR prio: " + newPriority);
+			if(sessionThread.isBinaryMode() ) {
+				myLog.d("Mode is binary");
+			} else {
+				myLog.d("Mode is ascii");
+			}
+			int bytesSinceReopen = 0;
+			int bytesSinceFlush = 0;
 			while(true) {
 				/*if(dedicatedWriter.checkErrorFlag()) {
 					errString = "451 File IO problem\r\n";
@@ -109,6 +118,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
 					errString = "425 Could not connect data socket\r\n";
 					break storing;
 				default:
+//					myLog.d("Read " + numRead + " bytes from socket");
 					try {
 						//myLog.l(Log.DEBUG, "Enqueueing buffer of " + numRead);
 						//dedicatedWriter.enqueueBuffer(buffer, numRead);
@@ -128,10 +138,44 @@ abstract public class CmdAbstractStore extends FtpCmd {
 							// left after handling the last \r
 							if(startPos < numRead) {
 								out.write(buffer, startPos, endPos-startPos);
-							} 
+							}
 						}
+						
+						// Attempted bugfix for transfer stalls. Reopen file periodically.
+						//bytesSinceReopen += numRead;
+						//if(bytesSinceReopen >= Defaults.bytes_between_reopen &&
+						//		Defaults.do_reopen_hack) {
+						//	myLog.d("Closing and reopening file: " + storeFile);
+						//	out.close();
+						//	out = new FileOutputStream(storeFile, true/*append*/);
+						//	bytesSinceReopen = 0;
+						//}
+						
+						// Attempted bugfix for transfer stalls. Flush file periodically.
+						//bytesSinceFlush += numRead;
+						//if(bytesSinceFlush >= Defaults.bytes_between_flush &&
+						//		Defaults.do_flush_hack) {
+						//	myLog.d("Flushing: " + storeFile);
+						//	out.flush();
+						//	bytesSinceFlush = 0;
+						//}
+						
+						// If this transfer fails, a later APPEND operation might be
+						// received. In that case, we will need to have flushed the
+						// previous writes in order for the append to work. The
+						// filesystem on my G1 doesn't seem to recognized unflushed
+						// data when appending.
+						out.flush();
+						
 					} catch (IOException e) {
-						errString = "451 File buffer queue problem\r\n";
+						errString = "451 File IO problem. Device might be full.\r\n";
+						myLog.d("Exception while storing: " + e);
+						myLog.d("Message: " + e.getMessage());
+						myLog.d("Stack trace: ");
+						StackTraceElement[] traceElems = e.getStackTrace();
+						for(StackTraceElement elem : traceElems) {
+							myLog.d(elem.toString());
+						}
 						break storing;
 					}
 					break;
@@ -143,7 +187,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
 //			dedicatedWriter.exit();  // set its exit flag
 //			dedicatedWriter.interrupt(); // make sure it wakes up to process the flag
 //		}
-		//Thread.currentThread().setPriority(origPriority);
+//		Thread.currentThread().setPriority(origPriority);
 		try {
 //			if(dedicatedWriter != null) {
 //				dedicatedWriter.exit();

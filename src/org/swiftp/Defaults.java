@@ -35,11 +35,13 @@ public class Defaults {
 	protected static int portNumber = 2121; 
 //	protected static int ipRetrievalAttempts = 5;
 	public static final int tcpConnectionBacklog = 5;
-	public static final String chrootDir = "/sdcard";
+	public static final String chrootDir = "/";
 	public static final boolean acceptWifi = true;
 	public static final boolean acceptNet = false; // don't incur bandwidth charges
+	public static final boolean stayAwake = true;
 	public static final int REMOTE_PROXY_PORT = 2222;
 	public static final String STRING_ENCODING = "UTF-8";
+	public static final int SO_TIMEOUT_MS = 30000; // socket timeout millis
 	// FTP control sessions should start out in ASCII, according to the RFC.
 	// However, many clients don't turn on UTF-8 even though they support it,
 	// so we just turn it on by default.
@@ -47,6 +49,17 @@ public class Defaults {
 	
 	// This is a flag that should be true for public builds and false for dev builds
 	public static final boolean release = true;
+	
+	// Try to fix the transfer stall bug, reopen the destination file periodically
+	//public static final boolean do_reopen_hack = false;
+	//public static final int bytes_between_reopen = 4000000;
+	
+	// Try to fix the transfer stall bug, flush the file periodically
+	//public static final boolean do_flush_hack = false;
+	//public static final int bytes_between_flush = 500000;
+	
+	public static final boolean do_mediascanner_notify = true;
+	
 	
 //	public static int getIpRetrievalAttempts() {
 //		return ipRetrievalAttempts;

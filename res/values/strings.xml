@@ -20,7 +20,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
-<string name="name_version">SwiFTP Server 1.23</string>
+<string name="name_version">SwiFTP Server 1.24</string>
 <string name="menu_byline">By Dave Revell and contributors</string>
 
 <string name="add_user">Add User</string>
@@ -71,6 +71,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 <string name="cancel">Cancel</string>
 <string name="accept_connections_from_net">Accept connections from the net</string>
 <string name="accept_connections_from_wifi">Accept connections from wifi</string>
+<string name="stay_awake">Keep phone awake (full CPU speed)</string>
 <string name="at_least_one_listener">Please check either the wifi or net checkbox</string>
 <string name="chrootDir_validation_error">The folder to stay within is either invalid \
 or nonexistent.</string> 
@@ -109,7 +110,7 @@ If you enable this feature, make sure you have a strong password, because anyone
 attempt to connect to your device. The global proxy feature can be enabled or disabled \
 from the setup screen.\n\n\
 \
-For power and security reasons, it's recommended that the server be stopped after use.\n\n\
+For power and security reasons, it is recommended that the server be stopped after use.\n\n\
 \
 If something is not working the way you expect it to, please report it to me at www.swiftp.org.\n\n\
 \

@@ -49,9 +49,10 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
 		mainblock: {
 			String param = getParameter(input);
 			myLog.d("LIST parameter: " + param);
-			if(param.startsWith("-")) {
-				// Ignore options to list, which start with a dash
-				param = "";
+			while(param.startsWith("-")) {
+				// Skip all dashed -args, if present
+				myLog.d("LIST is skipping dashed arg " + param);
+				param = getParameter(param);
 			}
 			File fileToList = null;
 			if(param.equals("")) {
@@ -120,7 +121,8 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
 			staticLog.l(Log.INFO, "Filename omitted due to disallowed character");
 			return null;
 		} else {
-			staticLog.l(Log.DEBUG, "Filename: " + lastNamePart);
+			// The following line generates many calls in large directories
+			//staticLog.l(Log.DEBUG, "Filename: " + lastNamePart);
 		}
 				
 		

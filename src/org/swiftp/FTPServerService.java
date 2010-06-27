@@ -51,7 +51,7 @@ public class FTPServerService extends Service implements Runnable {
 	
 	public static final int BACKLOG = 21;
 	public static final int MAX_SESSIONS = 5;
-	public static final String LOCK_TAG = "SwiFTP";
+	public static final String WAKE_LOCK_TAG = "SwiFTP";
 	
 	//protected ServerSocketChannel wifiSocket;
 	protected ServerSocket listenSocket;
@@ -72,6 +72,7 @@ public class FTPServerService extends Service implements Runnable {
 	protected static int port;
 	protected static boolean acceptWifi;
 	protected static boolean acceptNet;
+	protected static boolean fullWake;
 	
 	private TcpListener wifiListener = null;
 	private ProxyConnector proxyConnector = null;
@@ -192,6 +193,8 @@ public class FTPServerService extends Service implements Runnable {
 									    Defaults.acceptNet);
 		acceptWifi = settings.getBoolean(ConfigureActivity.ACCEPT_WIFI,
 										 Defaults.acceptWifi);
+		fullWake = settings.getBoolean(ConfigureActivity.STAY_AWAKE,
+										 Defaults.stayAwake);
 		
 		// The username, password, and chrootDir are just checked for sanity
 		String username = settings.getString(ConfigureActivity.USERNAME, null);
@@ -417,12 +420,24 @@ public class FTPServerService extends Service implements Runnable {
 	}
 	
 	private void takeWakeLock() {
-		myLog.d("Taking wake lock");
 		if(wakeLock == null) {
 			PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-			wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOCK_TAG);
+			
+			// Many (all?) devices seem to not properly honor a PARTIAL_WAKE_LOCK,
+			// which should prevent CPU throttling. This has been 
+			// well-complained-about on android-developers.
+			// For these devices, we have a config option to force the phone into a 
+			// full wake lock.
+			if(fullWake) {
+				wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, 
+						WAKE_LOCK_TAG);
+			} else {
+				wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, 
+						WAKE_LOCK_TAG);
+			}
 			wakeLock.setReferenceCounted(false);
 		}
+		myLog.d("Acquiring wake lock");
 		wakeLock.acquire();
 	}
 	
@@ -431,8 +446,10 @@ public class FTPServerService extends Service implements Runnable {
 		if(wakeLock != null) {
 			wakeLock.release();
 			wakeLock = null;
+			myLog.d("Finished releasing wake lock");
+		} else {
+			myLog.i("Couldn't release null wake lock");
 		}
-		myLog.d("Finished releasing wake lock");
 	}
 	
 	private void takeWifiLock() {
@@ -539,9 +556,13 @@ public class FTPServerService extends Service implements Runnable {
 		FTPServerService.port = port;
 	}
 
+	/**
+	 * The FTPServerService must know about all running session threads so they
+	 * can be terminated on exit. Called when a new session is created.
+	 */
 	public void registerSessionThread(SessionThread newSession) {
-		// Look for finished session threads and stop tracking them in
-		// the sessionThreads list
+		// Before adding the new session thread, clean up any finished session
+		// threads that are present in the list.
 		
 		// Since we're not allowed to modify the list while iterating over
 		// it, we construct a list in toBeRemoved of threads to remove
@@ -565,6 +586,8 @@ public class FTPServerService extends Service implements Runnable {
 			for(SessionThread removeThread : toBeRemoved) {
 				sessionThreads.remove(removeThread);
 			}
+			
+			// Cleanup is complete. Now actually add the new thread to the list.
 			sessionThreads.add(newSession);
 		}
 		myLog.d("Registered session thread");

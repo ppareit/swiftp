@@ -39,6 +39,7 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 	private EditText chrootDirBox;
 	private CheckBox wifiCheckBox;
 	private CheckBox netCheckBox;
+	private CheckBox awakeCheckBox;
 	
 	private Button saveButton;
 	private Button cancelButton;
@@ -49,6 +50,7 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 	public final static String CHROOTDIR = "chrootDir";
 	public final static String ACCEPT_WIFI = "allowWifi";
 	public final static String ACCEPT_NET = "allowNet";
+	public final static String STAY_AWAKE = "stayAwake";
 	
     public ConfigureActivity() {
 	}
@@ -71,6 +73,7 @@ public class ConfigureActivity extends Activity implements OnClickListener {
         chrootDirBox = (EditText) findViewById(R.id.config_chroot);
         wifiCheckBox = (CheckBox) findViewById(R.id.config_wifi_checkbox);
         netCheckBox = (CheckBox) findViewById(R.id.config_net_checkbox);
+        awakeCheckBox = (CheckBox) findViewById(R.id.config_awake_checkbox);
         
 		settings = getSharedPreferences(Defaults.getSettingsName(),
 				Defaults.getSettingsMode());
@@ -81,6 +84,7 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 		String chroot = settings.getString(CHROOTDIR, Defaults.chrootDir);
 		boolean acceptNet = settings.getBoolean(ACCEPT_NET, Defaults.acceptNet);
 		boolean acceptWifi = settings.getBoolean(ACCEPT_WIFI, Defaults.acceptWifi);
+		boolean stayAwake = settings.getBoolean(STAY_AWAKE, Defaults.stayAwake);
 		
 		// The String named chroot holds the default chroot directory. If the
 		// directory doesn't actually exist in the file system, then use
@@ -96,6 +100,7 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 		chrootDirBox.setText(chroot);
 		wifiCheckBox.setChecked(acceptWifi);
 		netCheckBox.setChecked(acceptNet);
+		awakeCheckBox.setChecked(stayAwake);
 		
 	}
 	
@@ -135,6 +140,7 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 		String chrootDir = chrootDirBox.getText().toString();
 		boolean acceptWifi = wifiCheckBox.isChecked();
 		boolean acceptNet = netCheckBox.isChecked();
+		boolean stayAwake = awakeCheckBox.isChecked();
 		
 		validateBlock: {
 			if(!username.matches("[a-zA-Z0-9]+")) {
@@ -191,6 +197,7 @@ public class ConfigureActivity extends Activity implements OnClickListener {
 		editor.putString(CHROOTDIR, chrootDir);
 		editor.putBoolean(ACCEPT_WIFI, acceptWifi );
 		editor.putBoolean(ACCEPT_NET, acceptNet);
+		editor.putBoolean(STAY_AWAKE, stayAwake);
 		editor.commit();
 		
 		finish();  // close this Activity

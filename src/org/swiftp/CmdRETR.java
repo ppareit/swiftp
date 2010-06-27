@@ -79,8 +79,8 @@ public class CmdRETR extends FtpCmd implements Runnable {
 				if(sessionThread.isBinaryMode()) {
 					myLog.l(Log.DEBUG, "Transferring in binary mode");
 					while((bytesRead = in.read(buffer)) != -1) {
-						myLog.l(Log.DEBUG,
-								String.format("CmdRETR sending %d bytes", bytesRead));
+						//myLog.l(Log.DEBUG,
+						//		String.format("CmdRETR sending %d bytes", bytesRead));
 						if(sessionThread
 						   .sendViaDataSocket(buffer, bytesRead) == false) 
 						{

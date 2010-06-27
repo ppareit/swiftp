@@ -35,7 +35,7 @@ import android.util.Log;
 
 public class SessionThread extends Thread {
 	protected boolean shouldExit = false;
-	protected Socket socket;
+	protected Socket cmdSocket;
 	protected MyLog myLog = new MyLog(getClass().getName());
 	protected ByteBuffer buffer = ByteBuffer.allocate(Defaults
 			.getInputBufferSize());
@@ -179,7 +179,13 @@ public class SessionThread extends Thread {
 	}
 
 	public InetAddress getDataSocketPasvIp() {
-		return dataSocketFactory.getPasvIp();
+		// When the client sends PASV, our reply will contain the address and port
+		// of the data connection that the client should connect to. For this purpose
+		// we always use the same IP address that the command socket is using.
+		return cmdSocket.getLocalAddress();
+
+		// The old code, not totally correct.
+		//		return dataSocketFactory.getPasvIp();
 	}
 
 	// public int getDataSocketPort() {
@@ -234,7 +240,7 @@ public class SessionThread extends Thread {
 	}
 
 	protected InetAddress getLocalAddress() {
-		return socket.getLocalAddress();
+		return cmdSocket.getLocalAddress();
 	}
 
 	static int numNulls = 0;
@@ -242,13 +248,11 @@ public class SessionThread extends Thread {
 		myLog.l(Log.INFO, "SessionThread started");
 
 		if(sendWelcomeBanner) {
-			String serverNameVersion = Globals.getContext().
-										 getString(R.string.name_version); 
 			writeString("220 SwiFTP " + Util.getVersion() + " ready\r\n");
 		}
 		// Main loop: read an incoming line and process it
 		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket
+			BufferedReader in = new BufferedReader(new InputStreamReader(cmdSocket
 					.getInputStream()), 8192); // use 8k buffer
 			while (true) {
 				String line;
@@ -282,18 +286,18 @@ public class SessionThread extends Thread {
 	}
 
 	public void closeSocket() {
-		if (socket == null) {
+		if (cmdSocket == null) {
 			return;
 		}
 		try {
-			socket.close();
+			cmdSocket.close();
 		} catch (IOException e) {}
 	}
 
 	public void writeBytes(byte[] bytes) {
 		try {
 			// TODO: do we really want to do all of this on each write? Why?
-			BufferedOutputStream out = new BufferedOutputStream(socket
+			BufferedOutputStream out = new BufferedOutputStream(cmdSocket
 					.getOutputStream(), Defaults.dataChunkSize);
 			out.write(bytes);
 			out.flush();
@@ -318,7 +322,7 @@ public class SessionThread extends Thread {
 	}
 
 	protected Socket getSocket() {
-		return socket;
+		return cmdSocket;
 	}
 
 	public Account getAccount() {
@@ -335,7 +339,7 @@ public class SessionThread extends Thread {
 
 	public SessionThread(Socket socket, DataSocketFactory dataSocketFactory,
 			Source source) {
-		this.socket = socket;
+		this.cmdSocket = socket;
 		this.source = source;
 		this.dataSocketFactory = dataSocketFactory;
 		if(source == Source.LOCAL) {

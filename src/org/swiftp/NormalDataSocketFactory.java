@@ -103,6 +103,16 @@ public class NormalDataSocketFactory extends DataSocketFactory {
 				clearState();
 				return null;
 			}
+			
+			// Kill the socket if nothing happens for X milliseconds
+			try {
+				socket.setSoTimeout(Defaults.SO_TIMEOUT_MS);
+			} catch (Exception e) {
+				myLog.l(Log.ERROR, "Couldn't set SO_TIMEOUT");
+				clearState();
+				return null;
+			}
+			
 			return socket;
 		} else {
 			// We're in PASV mode (not PORT)

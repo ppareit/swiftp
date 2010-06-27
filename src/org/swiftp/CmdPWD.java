@@ -24,7 +24,7 @@ import java.io.IOException;
 import android.util.Log;
 
 public class CmdPWD extends FtpCmd implements Runnable {
-	public static final String message = "TEMPLATE!!"; 
+//	public static final String message = "TEMPLATE!!"; 
 	
 	public CmdPWD(SessionThread sessionThread, String input) {
 		super(sessionThread, CmdPWD.class.toString());

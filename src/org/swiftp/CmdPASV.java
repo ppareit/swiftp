@@ -47,6 +47,7 @@ public class CmdPASV extends FtpCmd implements Runnable {
 			sessionThread.writeString(cantOpen);
 			return;
 		}
+		myLog.d("PASV sending IP: " + addr.getHostAddress());
 		if(port < 1) {
 			myLog.l(Log.ERROR, "PASV port number invalid");
 			sessionThread.writeString(cantOpen);

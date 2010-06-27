@@ -33,7 +33,7 @@ public class CmdUSER extends FtpCmd implements Runnable {
 	public void run() {
 		myLog.l(Log.DEBUG, "USER executing");
 		String username = FtpCmd.getParameter(input);
-		if(!username.matches("[A-Za-z1-9]+")) {
+		if(!username.matches("[A-Za-z0-9]+")) { 
 			sessionThread.writeString("530 Invalid username\r\n");
 			return;
 		}
