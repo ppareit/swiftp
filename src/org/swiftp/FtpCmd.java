@@ -172,14 +172,16 @@ public abstract class FtpCmd implements Runnable {
 	}
 
 	public static File inputPathToChrootedFile(File existingPrefix, String param) {
-		File chroot = Globals.getChrootDir();
-		if(param.charAt(0) == '/') {
-			// The STOR contained an absolute path
-			return new File(chroot, param);
-		} else {
-			// The STOR contained a relative path
-			return new File(existingPrefix, param); 
-		}
+		try {
+			if(param.charAt(0) == '/') {
+				// The STOR contained an absolute path
+				File chroot = Globals.getChrootDir();
+				return new File(chroot, param);
+			}
+		} catch (Exception e) {} 
+		
+		// The STOR contained a relative path
+		return new File(existingPrefix, param); 
 	}
 	
 	public boolean violatesChroot(File file) {

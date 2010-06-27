@@ -38,7 +38,7 @@ public class Defaults {
 	public static final String chrootDir = "/";
 	public static final boolean acceptWifi = true;
 	public static final boolean acceptNet = false; // don't incur bandwidth charges
-	public static final boolean stayAwake = true;
+	public static final boolean stayAwake = false;
 	public static final int REMOTE_PROXY_PORT = 2222;
 	public static final String STRING_ENCODING = "UTF-8";
 	public static final int SO_TIMEOUT_MS = 30000; // socket timeout millis
