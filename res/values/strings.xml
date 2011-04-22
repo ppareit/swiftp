@@ -140,6 +140,7 @@ Thanks very much for your help!\n\
 will take effect when the server is started or restarted. They will be saved, but can be \
 changed later by pressing the <b>Setup</b> button.</string>
 <string name="user_password_intro">To log in, clients will have to provide this information.</string>
+<string name="widget_name">SwiFTP Widget</string>
 
 
 </resources>

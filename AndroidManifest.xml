@@ -58,6 +58,26 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <activity android:name="ConfigureActivity" class=".ConfigureActivity" />
         <service android:name=".FTPServerService" />
 
+      <!-- Widget actions are registered here -->
+      <receiver android:name=".WidgetProvider" android:label="@string/widget_name">
+          <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- WidgetProvider will process this broadcast -->
+				<action android:name="org.swiftp.WidgetProvider.ACTION_WIDGET_BUTTON"/>
+          </intent-filter>
+          <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_provider" />
+      </receiver>
+      
+      <!-- Widget actions are registered here -->
+      <receiver android:name=".WidgetProvider" android:label="@string/widget_name">
+          <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- WidgetProvider will process this broadcast -->
+				<action android:name="org.swiftp.WidgetProvider.ACTION_WIDGET_BUTTON"/>
+          </intent-filter>
+          <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_provider" />
+      </receiver>
+
 <!--    <receiver-->
 <!--    	android:label="@string/wifi_state_receiver_label" -->
 <!--        android:name="org.swiftp.WifiStateReceiver" -->

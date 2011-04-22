@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent" android:gravity="center" android:orientation="vertical">
+  
+	<ImageButton 
+		android:visibility="gone"
+		android:text="On"
+		android:id="@+id/widget_button_on" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+        android:background="@null"
+		android:src="@drawable/widget_on">
+	</ImageButton>
+	
+	<ImageButton 
+		android:visibility="visible"
+		android:text="Off"
+		android:id="@+id/widget_button_off" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+        android:background="@null"
+		android:src="@drawable/widget_off">
+	</ImageButton>
+	
+</LinearLayout>
+
+
