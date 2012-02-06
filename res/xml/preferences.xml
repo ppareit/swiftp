@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="running_state"
+        android:summary="@string/running_summary"
+        android:title="@string/running_label" />
+
+    <PreferenceCategory
+        android:key="settings"
+        android:title="@string/settings_label" >
+
+        <EditTextPreference
+            android:defaultValue="@string/username_default"
+            android:key="username_preference"
+            android:title="@string/username_label" />
+
+        <EditTextPreference
+            android:defaultValue="@string/password_default"
+            android:key="password_preference"
+            android:title="@string/password_label" />
+        
+        <EditTextPreference 
+            android:defaultValue="@string/portnumber_default"
+            android:key="port_number_preference"
+            android:title="@string/portnumber_label" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="extra_category"
+        android:title="@string/extra_label" >
+
+        <Preference
+            android:key="help"
+            android:title="@string/help_label" />
+
+        <Preference
+            android:key="about"
+            android:title="@string/about_label" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

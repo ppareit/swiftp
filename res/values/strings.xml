@@ -20,6 +20,26 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
+
+<string name="running_label">Running</string>
+<string name="running_summary">Start FTP server</string>
+
+<string name="settings_label">Settings</string>
+
+<string name="username_label">Username</string>
+<string name="username_default">ftp</string>
+
+<string name="password_label">Password</string>
+<string name="password_default">ftp</string>
+
+<string name="portnumber_label">Port Number</string>
+<string name="portnumber_default">2121</string>
+
+<string name="extra_label">Extra</string>
+<string name="help_label">Help...</string>
+<string name="about_label">About...</string>
+
+<!-- old strings -->
 <string name="name_version">SwiFTP Server 1.24 beta2</string>
 <string name="menu_byline">By Dave Revell and contributors</string>
 

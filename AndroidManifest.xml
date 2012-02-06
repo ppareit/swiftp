@@ -26,7 +26,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <application
         android:icon="@drawable/logo"
         android:label="@string/swiftp_name" >
-        <activity android:name="ServerControlActivity" >
+        <activity android:name="org.swiftp.gui.ServerPreferenceActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
