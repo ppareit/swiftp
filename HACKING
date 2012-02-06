@@ -1,3 +1,5 @@
+SETUP ECLIPSE
+=============
 How to use Eclipse and the Android plugin with the SwiFTP project:
 
 1) Check out the trunk according to the instructions on the "Source" page on 
@@ -10,3 +12,24 @@ How to use Eclipse and the Android plugin with the SwiFTP project:
   - From there it's obvious
 
 
+RELEASE CHECKLIST
+=================
+Set Defaults.release to true
+Update version number on servercontrolactivity
+Update instructions if necessary
+Uninstall fully
+
+Test on
+ - Ubuntu GNOME browser
+ - Firefox
+ - FireFTP
+ - gFTP
+ - Command line FTP
+ - Windows explorer
+ - FileZilla
+ - AndFTP
+ 
+Export, sign, upload
+SVN commit
+Upload apk to Google Code
+Update wiki, site front page 
