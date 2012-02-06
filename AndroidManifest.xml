@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
 Copyright 2009 David Revell
 
@@ -19,83 +18,51 @@ You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-
-<!-- Declare the contents of this Android application.  The namespace
-     attribute brings in the Android platform namespace, and the package
-     supplies a unique name for the application.  When writing your
-     own application, the package name must be changed from "com.example.*"
-     to come from a domain that you own or have control over. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.swiftp" android:versionCode="18" android:versionName="1.3">
+    package="org.swiftp"
+    android:versionCode="18"
+    android:versionName="1.3" >
 
-    <!-- This package contains an application...  The 'label' is the name
-         to display to the user for the overall application, and provides
-         a default label for all following components.  The syntax here is a
-         reference to one of our string resources.-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
-    <application android:label="@string/swiftp_name" android:icon="@drawable/logo">
-
-        <!-- An Activity in the application - this is something the user
-             can launch and interact with.  The "name" attribute is the
-             name of the class within your package that implements this
-             activity. -->
-        <activity android:name="ServerControlActivity">
-
-            <!-- An IntentFilter tells the system when it should use your
-                 activity.  This allows the user to get to your activity
-                 without someone having to explicitly know to launch your
-                 class "com.examplel.android.skeletonapp.SkeletonActivity". -->
-            <intent-filter>
-                <!-- The MAIN action describes a main entry point into an
-                     activity, without any associated data. -->
+    <application
+        android:icon="@drawable/logo"
+        android:label="@string/swiftp_name" >
+        <activity android:name="ServerControlActivity" >
+            <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
-                <!-- This places this activity into the main app list. -->
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-        <activity android:name="ConfigureActivity" class=".ConfigureActivity" />
+        <activity
+            class=".ConfigureActivity"
+            android:name="ConfigureActivity" />
+
         <service android:name=".FTPServerService" />
 
-      <!-- Widget actions are registered here -->
-      <receiver android:name=".WidgetProvider" android:label="@string/widget_name">
-          <intent-filter>
+        <!-- Widget actions are registered here -->
+        <receiver
+            android:label="@string/widget_name"
+            android:name=".WidgetProvider" >
+            <intent-filter >
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <!-- WidgetProvider will process this broadcast -->
-				<action android:name="org.swiftp.WidgetProvider.ACTION_WIDGET_BUTTON"/>
-          </intent-filter>
-          <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_provider" />
-      </receiver>
-      
-      <!-- Widget actions are registered here -->
-      <receiver android:name=".WidgetProvider" android:label="@string/widget_name">
-          <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <!-- WidgetProvider will process this broadcast -->
-				<action android:name="org.swiftp.WidgetProvider.ACTION_WIDGET_BUTTON"/>
-          </intent-filter>
-          <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_provider" />
-      </receiver>
+                <action android:name="org.swiftp.WidgetProvider.ACTION_WIDGET_BUTTON" />
+            </intent-filter>
 
-<!--    <receiver-->
-<!--    	android:label="@string/wifi_state_receiver_label" -->
-<!--        android:name="org.swiftp.WifiStateReceiver" -->
-<!--        android:enabled="true"-->
-<!--        android:exported="true"-->
-<!--        >-->
-<!--	    <intent-filter>-->
-<!--			<action android:name="android.net.wifi.WifiManager.STATE_CHANGE" />-->
-<!--		</intent-filter>-->
-<!--	</receiver>-->
-</application>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_provider" />
+        </receiver>
+    </application>
 
-<uses-permission android:name="android.permission.INTERNET"></uses-permission>
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
-<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
-<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
-<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
-<uses-sdk android:minSdkVersion="12"></uses-sdk>
+    <uses-sdk android:minSdkVersion="12" >
+    </uses-sdk>
 
 </manifest>
