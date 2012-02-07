@@ -21,11 +21,12 @@ package org.swiftp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class CmdPASS extends FtpCmd implements Runnable {
 	String input;
-	
+
 	public CmdPASS(SessionThread sessionThread, String input) {
 		// We can just discard the password for now. We're just
 		// following the expected dialogue, we're going to allow
@@ -33,12 +34,13 @@ public class CmdPASS extends FtpCmd implements Runnable {
 		super(sessionThread, CmdPASS.class.toString());
 		this.input = input;
 	}
-	
-	public void run() {
+
+	@Override
+    public void run() {
 		// User must have already executed a USER command to
 		// populate the Account object's username
 		myLog.l(Log.DEBUG, "Executing PASS");
-	
+
 		String attemptPassword = getParameter(input, true); // silent
 		String attemptUsername = sessionThread.account.getUsername();
 		if(attemptUsername == null) {
@@ -47,20 +49,19 @@ public class CmdPASS extends FtpCmd implements Runnable {
 		}
 		Context ctx = Globals.getContext();
 		if(ctx == null) {
-			// This will probably never happen, since the global 
+			// This will probably never happen, since the global
 			// context is configured by the Service
 			myLog.l(Log.ERROR, "No global context in PASS\r\n");
 		}
 		String password;
 		String username;
-		SharedPreferences settings = ctx.getSharedPreferences(
-				Defaults.getSettingsName(), Defaults.getSettingsMode());
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
 		username = settings.getString("username", null);
 		password = settings.getString("password", null);
 		if(username == null || password == null) {
 			myLog.l(Log.ERROR, "Username or password misconfigured");
 			sessionThread.writeString("500 Internal error during authentication");
-		} else if(username.equals(attemptUsername) && 
+		} else if(username.equals(attemptUsername) &&
 				password.equals(attemptPassword)) {
 			sessionThread.writeString("230 Access granted\r\n");
 			myLog.l(Log.INFO, "User " + username + " password verified");
