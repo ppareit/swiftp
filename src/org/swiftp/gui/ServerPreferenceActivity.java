@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.CheckBoxPreference;
@@ -35,6 +36,7 @@ public class ServerPreferenceActivity extends PreferenceActivity {
         Globals.setContext(getApplicationContext());
         SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(this);
+        Resources resources = getResources();
 
         CheckBoxPreference running_state = (CheckBoxPreference) findPreference("running_state");
         running_state.setChecked(FTPServerService.isRunning());
@@ -43,30 +45,80 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference,
                             Object newValue) {
-                        Context context = getApplicationContext();
-                        Intent service = new Intent(context,
-                                FTPServerService.class);
                         if ((Boolean) newValue) {
-                            if (!FTPServerService.isRunning()) {
-                                // Start the FTP server
-                                warnIfNoExternalStorage();
-                                context.startService(service);
-                            }
+                            startServer();
                         } else {
-                            context.stopService(service);
+                            stopServer();
                         }
                         return true;
                     }
                 });
 
         EditTextPreference username_pref = (EditTextPreference) findPreference("username");
-        username_pref.setSummary(settings.getString("username", "ftp"));
+        username_pref.setSummary(settings.getString("username",
+                resources.getString(R.string.username_default)));
+        username_pref
+                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference,
+                            Object newValue) {
+                        String newUsername = (String) newValue;
+                        if (!preference.getSummary().equals(newUsername)) {
+                            preference.setSummary(newUsername);
+                            stopServer();
+                        }
+                        return true;
+                    }
+                });
 
         EditTextPreference password_pref = (EditTextPreference) findPreference("password");
-        password_pref.setSummary(settings.getString("password", "ftp"));
+        password_pref.setSummary(settings.getString("password",
+                resources.getString(R.string.password_default)));
+        password_pref
+                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference,
+                            Object newValue) {
+                        String newPassword = (String) newValue;
+                        if (!preference.getSummary().equals(newPassword)) {
+                            preference.setSummary(newPassword);
+                            stopServer();
+                        }
+                        return true;
+                    }
+                });
 
         EditTextPreference portnum_pref = (EditTextPreference) findPreference("portNum");
-        portnum_pref.setSummary(settings.getString("portNum", "2121"));
+        portnum_pref.setSummary(settings.getString("portNum",
+                resources.getString(R.string.portnumber_default)));
+        portnum_pref
+                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference,
+                            Object newValue) {
+                        String newPortnum = (String) newValue;
+                        if (!preference.getSummary().equals(newPortnum)) {
+                            preference.setSummary(newPortnum);
+                            stopServer();
+                        }
+                        return true;
+                    }
+                });
+    }
+
+    private void startServer() {
+        Context context = getApplicationContext();
+        Intent serverService = new Intent(context, FTPServerService.class);
+        if (!FTPServerService.isRunning()) {
+            warnIfNoExternalStorage();
+            context.startService(serverService);
+        }
+    }
+
+    private void stopServer() {
+        Context context = getApplicationContext();
+        Intent serverService = new Intent(context, FTPServerService.class);
+        context.stopService(serverService);
     }
 
     @Override
@@ -101,10 +153,14 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                 InetAddress address = FTPServerService.getWifiIp();
                 String iptext = "ftp://" + address.getHostAddress() + ":"
                         + FTPServerService.getPort() + "/";
-                running_state.setSummary(iptext);
-            } else if (intent.getAction().equals(FTPServerService.ACTION_STOPPED)){
+                Resources resources = getResources();
+                String summary = resources.getString(
+                        R.string.running_summary_started, iptext);
+                running_state.setSummary(summary);
+            } else if (intent.getAction().equals(
+                    FTPServerService.ACTION_STOPPED)) {
                 running_state.setChecked(false);
-                running_state.setSummary(R.string.running_summary);
+                running_state.setSummary(R.string.running_summary_stopped);
             }
         }
     };

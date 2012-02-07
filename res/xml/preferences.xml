@@ -4,7 +4,7 @@
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="running_state"
-        android:summary="@string/running_summary"
+        android:summary="@string/running_summary_stopped"
         android:title="@string/running_label" />
 
     <PreferenceCategory
