@@ -13,17 +13,17 @@
 
         <EditTextPreference
             android:defaultValue="@string/username_default"
-            android:key="username_preference"
+            android:key="username"
             android:title="@string/username_label" />
 
         <EditTextPreference
             android:defaultValue="@string/password_default"
-            android:key="password_preference"
+            android:key="password"
             android:title="@string/password_label" />
         
         <EditTextPreference 
             android:defaultValue="@string/portnumber_default"
-            android:key="port_number_preference"
+            android:key="portNum"
             android:title="@string/portnumber_label" />
     </PreferenceCategory>
 

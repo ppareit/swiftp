@@ -39,6 +39,7 @@ import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 
@@ -46,52 +47,54 @@ public class FTPServerService extends Service implements Runnable {
 	protected static Thread serverThread = null;
 	protected boolean shouldExit = false;
 	protected MyLog myLog = new MyLog(getClass().getName());
-	protected static MyLog staticLog = 
+	protected static MyLog staticLog =
 		new MyLog(FTPServerService.class.getName());
-	
+
 	public static final int BACKLOG = 21;
 	public static final int MAX_SESSIONS = 5;
 	public static final String WAKE_LOCK_TAG = "SwiFTP";
-	
+
 	//protected ServerSocketChannel wifiSocket;
 	protected ServerSocket listenSocket;
 	protected static WifiLock wifiLock = null;
-	
+
 //	protected static InetAddress serverAddress = null;
-	
+
 	protected static List<String> sessionMonitor = new ArrayList<String>();
 	protected static List<String> serverLog = new ArrayList<String>();
 	protected static int uiLogLevel = Defaults.getUiLogLevel();
-	
-	// The server thread will check this often to look for incoming 
+
+	// The server thread will check this often to look for incoming
 	// connections. We are forced to use non-blocking accept() and polling
 	// because we cannot wait forever in accept() if we want to be able
 	// to receive an exit signal and cleanly exit.
 	public static final int WAKE_INTERVAL_MS = 1000; // milliseconds
-	
+
 	protected static int port;
 	protected static boolean acceptWifi;
 	protected static boolean acceptNet;
 	protected static boolean fullWake;
-	
+
 	private TcpListener wifiListener = null;
 	private ProxyConnector proxyConnector = null;
-	private List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
-	
+	private final List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
+
 	private static SharedPreferences settings = null;
-	
+
 	NotificationManager notificationMgr = null;
-	PowerManager.WakeLock wakeLock; 	
-	
+	PowerManager.WakeLock wakeLock;
+
 	public FTPServerService() {
 	}
 
-	public IBinder onBind(Intent intent) {
+	@Override
+    public IBinder onBind(Intent intent) {
 		// We don't implement this functionality, so ignore it
 		return null;
 	}
-	
-	public void onCreate() {
+
+	@Override
+    public void onCreate() {
 		myLog.l(Log.DEBUG, "SwiFTP server created");
 		// Set the application-wide context global, if not already set
 		Context myContext = Globals.getContext();
@@ -103,10 +106,11 @@ public class FTPServerService extends Service implements Runnable {
 		}
 		return;
 	}
-	
-	public void onStart(Intent intent, int startId ){
+
+	@Override
+    public void onStart(Intent intent, int startId ){
 		super.onStart(intent, startId);
-		
+
 		shouldExit = false;
 		int attempts = 10;
 		// The previous server thread may still be cleaning up, wait for it
@@ -124,10 +128,10 @@ public class FTPServerService extends Service implements Runnable {
 		myLog.l(Log.DEBUG, "Creating server thread");
 		serverThread = new Thread(this);
 		serverThread.start();
-		
+
 		// todo: we should broadcast an intent to inform anyone who cares
 	}
-	
+
 	public static boolean isRunning() {
 		// return true if and only if a server Thread is running
 		if(serverThread == null) {
@@ -141,8 +145,9 @@ public class FTPServerService extends Service implements Runnable {
 		}
 		return true;
 	}
-	
-	public void onDestroy() {
+
+	@Override
+    public void onDestroy() {
 		myLog.l(Log.INFO, "onDestroy() Stopping server");
 		shouldExit = true;
 		if(serverThread == null) {
@@ -177,31 +182,30 @@ public class FTPServerService extends Service implements Runnable {
 		clearNotification();
 		myLog.d("FTPServerService.onDestroy() finished");
 	}
-	
+
 	private boolean loadSettings() {
 		myLog.l(Log.DEBUG, "Loading settings");
-		settings = getSharedPreferences(
-				Defaults.getSettingsName(), Defaults.getSettingsMode());
-		port = settings.getInt("portNum", Defaults.portNumber);
+		settings = PreferenceManager.getDefaultSharedPreferences(this);
+		port = Integer.valueOf(settings.getString("portNum", "2121"));
 		if(port == 0) {
 			// If port number from settings is invalid, use the default
 			port = Defaults.portNumber;
 		}
 		myLog.l(Log.DEBUG, "Using port " + port);
-		
+
 		acceptNet = settings.getBoolean(ConfigureActivity.ACCEPT_NET,
 									    Defaults.acceptNet);
 		acceptWifi = settings.getBoolean(ConfigureActivity.ACCEPT_WIFI,
 										 Defaults.acceptWifi);
 		fullWake = settings.getBoolean(ConfigureActivity.STAY_AWAKE,
 										 Defaults.stayAwake);
-		
+
 		// The username, password, and chrootDir are just checked for sanity
 		String username = settings.getString(ConfigureActivity.USERNAME, null);
 		String password = settings.getString(ConfigureActivity.PASSWORD, null);
 		String chrootDir = settings.getString(ConfigureActivity.CHROOTDIR,
 				Defaults.chrootDir);
-		
+
 		validateBlock: {
 			if(username == null || password == null) {
 				myLog.l(Log.ERROR, "Username or password is invalid");
@@ -219,21 +223,21 @@ public class FTPServerService extends Service implements Runnable {
 		// We reach here if the settings were not sane
 		return false;
 	}
-	
-	// This opens a listening socket on all interfaces. 
+
+	// This opens a listening socket on all interfaces.
 	void setupListener() throws IOException {
 		listenSocket = new ServerSocket();
 		listenSocket.setReuseAddress(true);
 		listenSocket.bind(new InetSocketAddress(port));
 	}
-	
+
 	private void setupNotification() {
 		// http://developer.android.com/guide/topics/ui/notifiers/notifications.html
-		
+
 		// Get NotificationManager reference
 		String ns = Context.NOTIFICATION_SERVICE;
 		notificationMgr = (NotificationManager) getSystemService(ns);
-		
+
 		// Instantiate a Notification
 		int icon = R.drawable.notification;
 		CharSequence tickerText = getString(R.string.notif_server_starting);
@@ -244,18 +248,18 @@ public class FTPServerService extends Service implements Runnable {
 		CharSequence contentTitle = getString(R.string.notif_title);
 		CharSequence contentText = getString(R.string.notif_text);
 		Intent notificationIntent = new Intent(this, ServerControlActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, 
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
-		notification.setLatestEventInfo(getApplicationContext(), 
+		notification.setLatestEventInfo(getApplicationContext(),
 				contentTitle, contentText, contentIntent);
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
-		
+
 		// Pass Notification to NotificationManager
 		notificationMgr.notify(0, notification);
-		
+
 		myLog.d("Notication setup done");
 	}
-	
+
 	private void clearNotification() {
 		if(notificationMgr == null) {
 			// Get NotificationManager reference
@@ -265,25 +269,25 @@ public class FTPServerService extends Service implements Runnable {
 		notificationMgr.cancelAll();
 		myLog.d("Cleared notification");
 	}
-	
+
 	public void run() {
-		// The UI will want to check the server status to update its 
+		// The UI will want to check the server status to update its
 		// start/stop server button
 		int consecutiveProxyStartFailures = 0;
 		long proxyStartMillis = 0;
 
 		UiUpdater.updateClients();
-				
+
 		myLog.l(Log.DEBUG, "Server thread running");
-		
+
 		// set our members according to user preferences
 		if(!loadSettings()) {
 			// loadSettings returns false if settings are not sane
 			cleanupAndStopService();
 			return;
 		}
-		
-		
+
+
 		// Initialization of wifi
 		if(acceptWifi) {
 			// If configured to accept connections via wifi, then set up the socket
@@ -296,16 +300,16 @@ public class FTPServerService extends Service implements Runnable {
 				return;
 			}
 			takeWifiLock();
-		}		
+		}
 		takeWakeLock();
-		
+
 		myLog.l(Log.INFO, "SwiFTP server ready");
 		setupNotification();
 
 		// We should update the UI now that we have a socket open, so the UI
 		// can present the URL
 		UiUpdater.updateClients();
-		
+
 		while(!shouldExit) {
 			if(acceptWifi) {
 				if(wifiListener != null) {
@@ -320,7 +324,7 @@ public class FTPServerService extends Service implements Runnable {
 				if(wifiListener == null) {
 					// Either our wifi listener hasn't been created yet, or has crashed,
 					// so spawn it
-					wifiListener = new TcpListener(listenSocket, this); 
+					wifiListener = new TcpListener(listenSocket, this);
 					wifiListener.start();
 				}
 			}
@@ -351,11 +355,11 @@ public class FTPServerService extends Service implements Runnable {
 				if(proxyConnector == null) {
 					long nowMillis = new Date().getTime();
 					boolean shouldStartListener = false;
-					// We want to restart the proxy listener without much delay 
-					// for the first few attempts, but add a much longer delay 
+					// We want to restart the proxy listener without much delay
+					// for the first few attempts, but add a much longer delay
 					// if we consistently fail to connect.
-					if(consecutiveProxyStartFailures < 3 
-							&& (nowMillis - proxyStartMillis) > 5000) 
+					if(consecutiveProxyStartFailures < 3
+							&& (nowMillis - proxyStartMillis) > 5000)
 					{
 						// Retry every 5 seconds for the first 3 tries
 						shouldStartListener = true;
@@ -379,7 +383,7 @@ public class FTPServerService extends Service implements Runnable {
 				myLog.l(Log.DEBUG, "Thread interrupted");
 			}
 		}
-			
+
 		terminateAllSessions();
 
 		if(proxyConnector != null) {
@@ -394,9 +398,9 @@ public class FTPServerService extends Service implements Runnable {
 		myLog.l(Log.DEBUG, "Exiting cleanly, returning from run()");
 		clearNotification();
 		releaseWakeLock();
-		releaseWifiLock();		
+		releaseWifiLock();
 	}
-	
+
 	private void terminateAllSessions() {
 		myLog.i("Terminating " + sessionThreads.size() + " session thread(s)");
 		synchronized(this) {
@@ -408,7 +412,7 @@ public class FTPServerService extends Service implements Runnable {
 			}
 		}
 	}
-	
+
 	public void cleanupAndStopService() {
 		// Call the Android Service shutdown function
 		Context context = getApplicationContext();
@@ -418,21 +422,21 @@ public class FTPServerService extends Service implements Runnable {
 		releaseWakeLock();
 		clearNotification();
 	}
-	
+
 	private void takeWakeLock() {
 		if(wakeLock == null) {
 			PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-			
+
 			// Many (all?) devices seem to not properly honor a PARTIAL_WAKE_LOCK,
-			// which should prevent CPU throttling. This has been 
+			// which should prevent CPU throttling. This has been
 			// well-complained-about on android-developers.
-			// For these devices, we have a config option to force the phone into a 
+			// For these devices, we have a config option to force the phone into a
 			// full wake lock.
 			if(fullWake) {
-				wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, 
+				wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK,
 						WAKE_LOCK_TAG);
 			} else {
-				wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, 
+				wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
 						WAKE_LOCK_TAG);
 			}
 			wakeLock.setReferenceCounted(false);
@@ -440,7 +444,7 @@ public class FTPServerService extends Service implements Runnable {
 		myLog.d("Acquiring wake lock");
 		wakeLock.acquire();
 	}
-	
+
 	private void releaseWakeLock() {
 		myLog.d("Releasing wake lock");
 		if(wakeLock != null) {
@@ -451,7 +455,7 @@ public class FTPServerService extends Service implements Runnable {
 			myLog.i("Couldn't release null wake lock");
 		}
 	}
-	
+
 	private void takeWifiLock() {
 		myLog.d("Taking wifi lock");
 		if(wifiLock == null) {
@@ -461,7 +465,7 @@ public class FTPServerService extends Service implements Runnable {
 		}
 		wifiLock.acquire();
 	}
-	
+
 	private void releaseWifiLock() {
 		myLog.d("Releasing wifi lock");
 		if(wifiLock != null) {
@@ -469,7 +473,7 @@ public class FTPServerService extends Service implements Runnable {
 			wifiLock = null;
 		}
 	}
-	
+
 	public void errorShutdown() {
 		myLog.l(Log.ERROR, "Service errorShutdown() called");
 		cleanupAndStopService();
@@ -497,7 +501,7 @@ public class FTPServerService extends Service implements Runnable {
 			return null;
 		}
 	}
-	
+
 	public static boolean isWifiEnabled() {
 		Context myContext = Globals.getContext();
 		if(myContext == null) {
@@ -511,15 +515,15 @@ public class FTPServerService extends Service implements Runnable {
 			return false;
 		}
 	}
-	
+
 	public static List<String> getSessionMonitorContents() {
 		return new ArrayList<String>(sessionMonitor);
 	}
-	
+
 	public static List<String> getServerLogContents() {
 		return new ArrayList<String>(serverLog);
 	}
-	
+
 	public static void log(int msgLevel, String s) {
 		serverLog.add(s);
 		int maxSize = Defaults.getServerLogScrollBack();
@@ -528,11 +532,11 @@ public class FTPServerService extends Service implements Runnable {
 		}
 		//updateClients();
 	}
-	
+
 	public static void updateClients() {
 		UiUpdater.updateClients();
 	}
-	
+
 	public static void writeMonitor(boolean incoming, String s) {}
 //	public static void writeMonitor(boolean incoming, String s) {
 //		if(incoming) {
@@ -563,7 +567,7 @@ public class FTPServerService extends Service implements Runnable {
 	public void registerSessionThread(SessionThread newSession) {
 		// Before adding the new session thread, clean up any finished session
 		// threads that are present in the list.
-		
+
 		// Since we're not allowed to modify the list while iterating over
 		// it, we construct a list in toBeRemoved of threads to remove
 		// later from the sessionThreads list.
@@ -586,7 +590,7 @@ public class FTPServerService extends Service implements Runnable {
 			for(SessionThread removeThread : toBeRemoved) {
 				sessionThreads.remove(removeThread);
 			}
-			
+
 			// Cleanup is complete. Now actually add the new thread to the list.
 			sessionThreads.add(newSession);
 		}
