@@ -44,6 +44,11 @@ import android.util.Log;
 
 
 public class FTPServerService extends Service implements Runnable {
+
+    // Service will broadcast (LocalBroadcast) when server start/stop
+    static public final String ACTION_STARTED = "org.swiftp.FTPServerService.STARTED";
+    static public final String ACTION_STOPPED = "org.swiftp.FTPServerService.STOPPED";
+
 	protected static Thread serverThread = null;
 	protected boolean shouldExit = false;
 	protected MyLog myLog = new MyLog(getClass().getName());
@@ -129,7 +134,7 @@ public class FTPServerService extends Service implements Runnable {
 		serverThread = new Thread(this);
 		serverThread.start();
 
-		// todo: we should broadcast an intent to inform anyone who cares
+		sendBroadcast(new Intent(ACTION_STARTED));
 	}
 
 	public static boolean isRunning() {
@@ -173,6 +178,8 @@ public class FTPServerService extends Service implements Runnable {
 				listenSocket.close();
 			}
 		} catch (IOException e) {}
+
+        sendBroadcast(new Intent(ACTION_STOPPED));
 
 		UiUpdater.updateClients();
 		if(wifiLock != null) {
