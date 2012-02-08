@@ -63,10 +63,17 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                     public boolean onPreferenceChange(Preference preference,
                             Object newValue) {
                         String newUsername = (String) newValue;
-                        if (!preference.getSummary().equals(newUsername)) {
-                            preference.setSummary(newUsername);
-                            stopServer();
+                        if (preference.getSummary().equals(newUsername))
+                            return false;
+                        if (!newUsername.matches("[a-zA-Z0-9]+")) {
+                            Toast.makeText(ServerPreferenceActivity.this,
+                                    R.string.username_validation_error,
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                            return false;
                         }
+                        preference.setSummary(newUsername);
+                        stopServer();
                         return true;
                     }
                 });
@@ -80,10 +87,17 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                     public boolean onPreferenceChange(Preference preference,
                             Object newValue) {
                         String newPassword = (String) newValue;
-                        if (!preference.getSummary().equals(newPassword)) {
-                            preference.setSummary(newPassword);
-                            stopServer();
+                        if (preference.getSummary().equals(newPassword))
+                            return false;
+                        if (!newPassword.matches("[a-zA-Z0-9]+")) {
+                            Toast.makeText(ServerPreferenceActivity.this,
+                                    R.string.password_validation_error,
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                            return false;
                         }
+                        preference.setSummary(newPassword);
+                        stopServer();
                         return true;
                     }
                 });
@@ -96,11 +110,22 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference,
                             Object newValue) {
-                        String newPortnum = (String) newValue;
-                        if (!preference.getSummary().equals(newPortnum)) {
-                            preference.setSummary(newPortnum);
-                            stopServer();
+                        String newPortnumString = (String) newValue;
+                        if (preference.getSummary().equals(newPortnumString))
+                            return false;
+                        int portnum = 0;
+                        try {
+                            portnum = Integer.parseInt(newPortnumString);
+                        } catch (Exception e) {}
+                        if (portnum <= 0 || 65535 < portnum) {
+                            Toast.makeText(ServerPreferenceActivity.this,
+                                    R.string.port_validation_error,
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                            return false;
                         }
+                        preference.setSummary(newPortnumString);
+                        stopServer();
                         return true;
                     }
                 });
