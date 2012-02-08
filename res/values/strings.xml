@@ -33,8 +33,22 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 <string name="password_label">Password</string>
 <string name="password_default">ftp</string>
 
+<string name="advancedsettings_label">Advanced Settings...</string>
+
 <string name="portnumber_label">Port Number</string>
 <string name="portnumber_default">2121</string>
+
+<string name="chroot_label">Stay in folder</string>
+<string name="chroot_default">/sdcard</string>
+
+<string name="acceptwifi_label">Accept connection from wifi</string>
+<string name="acceptwifi_default">true</string>
+
+<string name="acceptproxy_label">Accept connection from net proxy</string>
+<string name="acceptproxy_default">false</string>
+
+<string name="wakelock_label">Keep device awake (full CPU speed)</string>
+<string name="wakelock_default">true</string>
 
 <string name="extra_label">Extra</string>
 <string name="help_label">Help...</string>

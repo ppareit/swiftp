@@ -10,31 +10,49 @@
     <PreferenceCategory
         android:key="settings"
         android:title="@string/settings_label" >
-
         <EditTextPreference
             android:defaultValue="@string/username_default"
             android:key="username"
             android:title="@string/username_label" />
-
         <EditTextPreference
             android:defaultValue="@string/password_default"
             android:key="password"
             android:title="@string/password_label" />
         
-        <EditTextPreference 
-            android:defaultValue="@string/portnumber_default"
-            android:key="portNum"
-            android:title="@string/portnumber_label" />
-    </PreferenceCategory>
+        <PreferenceScreen
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="@string/advancedsettings_label" >
+            <EditTextPreference
+                android:defaultValue="@string/portnumber_default"
+                android:key="portNum"
+                android:title="@string/portnumber_label" />
+            <EditTextPreference
+                android:defaultValue="@string/chroot_default"
+                android:key="chrootDir"
+                android:title="@string/chroot_label" />
 
+            <CheckBoxPreference
+                android:defaultValue="@string/acceptwifi_default"
+                android:key="allowWifi"
+                android:title="@string/acceptwifi_label" />
+            <CheckBoxPreference
+                android:defaultValue="@string/acceptproxy_default"
+                android:key="allowNet"
+                android:title="@string/acceptproxy_label" />
+            <CheckBoxPreference
+                android:defaultValue="@string/wakelock_default"
+                android:key="stayAwake"
+                android:title="@string/wakelock_label" />
+        </PreferenceScreen>
+        
+    </PreferenceCategory>
+    
     <PreferenceCategory
         android:key="extra_category"
         android:title="@string/extra_label" >
-
         <Preference
             android:key="help"
             android:title="@string/help_label" />
-
         <Preference
             android:key="about"
             android:title="@string/about_label" />

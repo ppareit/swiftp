@@ -1,5 +1,6 @@
 package org.swiftp.gui;
 
+import java.io.File;
 import java.net.InetAddress;
 
 import org.swiftp.FTPServerService;
@@ -125,6 +126,64 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                             return false;
                         }
                         preference.setSummary(newPortnumString);
+                        stopServer();
+                        return true;
+                    }
+                });
+
+        EditTextPreference chroot_pref = (EditTextPreference) findPreference("chrootDir");
+        chroot_pref.setSummary(settings.getString("chrootDir",
+                resources.getString(R.string.chroot_default)));
+        chroot_pref
+                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference,
+                            Object newValue) {
+                        String newChroot = (String) newValue;
+                        if (preference.getSummary().equals(newChroot))
+                            return false;
+                        // now test the new chroot directory
+                        File chrootTest = new File(newChroot);
+                        if (!chrootTest.isDirectory() || !chrootTest.canRead())
+                            return false;
+                        preference.setSummary(newChroot);
+                        stopServer();
+                        return true;
+                    }
+                });
+
+        final CheckBoxPreference acceptwifi_pref = (CheckBoxPreference) findPreference("allowWifi");
+        final CheckBoxPreference acceptproxy_pref = (CheckBoxPreference) findPreference("allowNet");
+
+        acceptwifi_pref
+                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference,
+                            Object newValue) {
+                        if ((Boolean)newValue == false)
+                            acceptproxy_pref.setChecked(true);
+                        stopServer();
+                        return true;
+                    }
+                });
+        acceptproxy_pref
+                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference,
+                            Object newValue) {
+                        if ((Boolean)newValue == false)
+                            acceptwifi_pref.setChecked(true);
+                        stopServer();
+                        return true;
+                    }
+                });
+
+        final CheckBoxPreference wakelock_pref = (CheckBoxPreference) findPreference("stayAwake");
+        wakelock_pref
+                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference,
+                            Object newValue) {
                         stopServer();
                         return true;
                     }
