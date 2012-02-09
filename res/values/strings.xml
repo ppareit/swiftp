@@ -54,6 +54,37 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 <string name="help_label">Help...</string>
 <string name="about_label">About...</string>
 
+<string name="help_dlg_title">SwiFTP Help</string>
+<string name="help_dlg_message">\
+Thanks for using SwiFTP! Here are some brief usage instructions. More information can be \
+found at http://www.swiftp.org.\n\n\
+\
+SwiFTP allows you to run an ftp server on your android device. This means that any program \
+can access the files on your device while the ftp server is running. For example, entering \
+\'ftp://...\' in the firefox url bar will allow you to browse the files on your device from \
+a desktop pc or a laptop.\n\n\
+\
+By default, the user name and password are both \'ftp\', you should change them. You use \
+this username and password when accessing the server.\
+\n\n\
+The global proxy is a way to connect to your device from anywhere on the net. Your \
+traffic is routed through some proxy servers in order to avoid firewall and NAT problems. \
+If you enable this feature, make sure you have a strong password, because anyone can \
+attempt to connect to your device. The global proxy feature can be enabled or disabled \
+from the setup screen.\n\n\
+\
+There is a configuration option (\"keep phone awake\") that fixes a problem where \
+file transfers go slow or stop completely when the phone sleeps. If you have this \
+problem, check this box and restart SwiFTP. Your phone will stay awake as long as \
+the server is running.\
+\n\n\
+For power and security reasons, it is recommended that the server be stopped after use.\n\n\
+\
+If something is not working the way you expect it to, please report it to me at www.swiftp.org.\n\n\
+\
+Thanks for using SwiFTP, and look for more improvements soon.\n\n\
+</string>
+
 <!-- old strings -->
 <string name="name_version">SwiFTP Server 1.24 beta2</string>
 <string name="menu_byline">By Dave Revell and contributors</string>

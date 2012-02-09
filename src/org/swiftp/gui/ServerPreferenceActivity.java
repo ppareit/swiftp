@@ -7,6 +7,7 @@ import org.swiftp.FTPServerService;
 import org.swiftp.Globals;
 import org.swiftp.R;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -188,6 +190,19 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                         return true;
                     }
                 });
+
+        Preference help = findPreference("help");
+        help.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new AlertDialog.Builder(ServerPreferenceActivity.this)
+                .setTitle(R.string.help_dlg_title)
+                .setMessage(R.string.help_dlg_message)
+                .setPositiveButton(getText(R.string.ok), null)
+                .show();
+                return true;
+            }
+        });
     }
 
     private void startServer() {
