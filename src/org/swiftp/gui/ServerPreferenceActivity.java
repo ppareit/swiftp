@@ -235,14 +235,18 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                 running_state.setChecked(true);
                 // Fill in the FTP server address
                 InetAddress address = FTPServerService.getWifiIp();
+                if (address == null) {
+                    Log.v(TAG, "Unable to retreive wifi ip address");
+                    running_state.setSummary(R.string.cant_get_url);
+                    return;
+                }
                 String iptext = "ftp://" + address.getHostAddress() + ":"
                         + FTPServerService.getPort() + "/";
                 Resources resources = getResources();
                 String summary = resources.getString(
                         R.string.running_summary_started, iptext);
                 running_state.setSummary(summary);
-            } else if (intent.getAction().equals(
-                    FTPServerService.ACTION_STOPPED)) {
+            } else if (intent.getAction().equals(FTPServerService.ACTION_STOPPED)) {
                 running_state.setChecked(false);
                 running_state.setSummary(R.string.running_summary_stopped);
             }

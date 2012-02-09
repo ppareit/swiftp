@@ -133,8 +133,6 @@ public class FTPServerService extends Service implements Runnable {
 		myLog.l(Log.DEBUG, "Creating server thread");
 		serverThread = new Thread(this);
 		serverThread.start();
-
-		sendBroadcast(new Intent(ACTION_STARTED));
 	}
 
 	public static boolean isRunning() {
@@ -316,6 +314,10 @@ public class FTPServerService extends Service implements Runnable {
 		// We should update the UI now that we have a socket open, so the UI
 		// can present the URL
 		UiUpdater.updateClients();
+
+
+        sendBroadcast(new Intent(ACTION_STARTED));
+
 
 		while(!shouldExit) {
 			if(acceptWifi) {
