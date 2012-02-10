@@ -203,6 +203,19 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                 return true;
             }
         });
+
+        Preference about = findPreference("about");
+        about.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new AlertDialog.Builder(ServerPreferenceActivity.this)
+                .setTitle(R.string.about_dlg_title)
+                .setMessage(R.string.about_dlg_message)
+                .setPositiveButton(getText(R.string.ok), null)
+                .show();
+                return true;
+            }
+        });
     }
 
     private void startServer() {

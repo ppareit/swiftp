@@ -85,6 +85,18 @@ If something is not working the way you expect it to, please report it to me at 
 Thanks for using SwiFTP, and look for more improvements soon.\n\n\
 </string>
 
+<string name="about_dlg_title">SwiFTP About</string>
+<string name="about_dlg_message">\
+<b>Description: </b>\
+SwiFTP allows you to run an ftp server on your android device.\n\n\
+<b>Programming: </b>\
+Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
+<b>License: </b>\
+GNU General Public License v3.0\n\n\
+<b>Source Code: </b>\
+http://ppareit.github.com/swiftp/\n\n\
+</string>
+
 <!-- old strings -->
 <string name="name_version">SwiFTP Server 1.24 beta2</string>
 <string name="menu_byline">By Dave Revell and contributors</string>
