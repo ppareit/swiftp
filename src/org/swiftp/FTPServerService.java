@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.swiftp.gui.ServerPreferenceActivity;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -198,18 +200,14 @@ public class FTPServerService extends Service implements Runnable {
 		}
 		myLog.l(Log.DEBUG, "Using port " + port);
 
-		acceptNet = settings.getBoolean(ConfigureActivity.ACCEPT_NET,
-									    Defaults.acceptNet);
-		acceptWifi = settings.getBoolean(ConfigureActivity.ACCEPT_WIFI,
-										 Defaults.acceptWifi);
-		fullWake = settings.getBoolean(ConfigureActivity.STAY_AWAKE,
-										 Defaults.stayAwake);
+		acceptNet = settings.getBoolean("allowNet", Defaults.acceptNet);
+		acceptWifi = settings.getBoolean("allowWifi", Defaults.acceptWifi);
+		fullWake = settings.getBoolean("stayAwake", Defaults.stayAwake);
 
 		// The username, password, and chrootDir are just checked for sanity
-		String username = settings.getString(ConfigureActivity.USERNAME, null);
-		String password = settings.getString(ConfigureActivity.PASSWORD, null);
-		String chrootDir = settings.getString(ConfigureActivity.CHROOTDIR,
-				Defaults.chrootDir);
+		String username = settings.getString("username", null);
+		String password = settings.getString("password", null);
+		String chrootDir = settings.getString("chrootDir", Defaults.chrootDir);
 
 		validateBlock: {
 			if(username == null || password == null) {
@@ -252,7 +250,7 @@ public class FTPServerService extends Service implements Runnable {
 		// Define Notification's message and Intent
 		CharSequence contentTitle = getString(R.string.notif_title);
 		CharSequence contentText = getString(R.string.notif_text);
-		Intent notificationIntent = new Intent(this, ServerControlActivity.class);
+		Intent notificationIntent = new Intent(this, ServerPreferenceActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
 		notification.setLatestEventInfo(getApplicationContext(),
