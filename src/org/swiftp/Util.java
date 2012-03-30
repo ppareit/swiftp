@@ -37,11 +37,11 @@ import android.util.Log;
 
 abstract public class Util {
 	static MyLog myLog = new MyLog(Util.class.getName());
-	static String getAndroidId() {
+	public static String getAndroidId() {
 		ContentResolver cr = Globals.getContext().getContentResolver();
 		return Settings.Secure.getString(cr, Settings.Secure.ANDROID_ID);
 	}
-	
+
 	/**
 	 * Get the SwiFTP version from the manifest.
 	 * @return The version as a String.
@@ -55,13 +55,13 @@ abstract public class Util {
 			return null;
 		}
 	}
-	
-	
+
+
 	public static byte byteOfInt(int value, int which) {
 		int shift = which * 8;
-		return (byte)(value >> shift); 
+		return (byte)(value >> shift);
 	}
-	
+
 	public static String ipToString(int addr, String sep) {
 		//myLog.l(Log.DEBUG, "IP as int: " + addr);
 		if(addr > 0) {
@@ -75,9 +75,9 @@ abstract public class Util {
 			return buf.toString();
 		} else {
 			return null;
-		}	
+		}
 	}
-	
+
 	public static InetAddress intToInet(int value) {
 		byte[] bytes = new byte[4];
 		for(int i = 0; i<4; i++) {
@@ -90,7 +90,7 @@ abstract public class Util {
 			return null;
 		}
 	}
-	
+
 	public static String ipToString(int addr) {
 		if(addr == 0) {
 			// This can only occur due to an error, we shouldn't blindly
@@ -100,20 +100,20 @@ abstract public class Util {
 		}
 		return ipToString(addr, ".");
 	}
-	
-	// This exists to avoid cluttering up other code with 
+
+	// This exists to avoid cluttering up other code with
 	// UnsupportedEncodingExceptions.
-	static byte[] jsonToByteArray(JSONObject json) throws JSONException {
+	public static byte[] jsonToByteArray(JSONObject json) throws JSONException {
 		try {
 			return json.toString().getBytes(Defaults.STRING_ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			return null;
 		}
 	}
-	
-	// This exists to avoid cluttering up other code with 
+
+	// This exists to avoid cluttering up other code with
 	// UnsupportedEncodingExceptions.
-	static JSONObject byteArrayToJson(byte[] bytes) throws JSONException {
+	public static JSONObject byteArrayToJson(byte[] bytes) throws JSONException {
 		try {
 			return new JSONObject(new String(bytes, Defaults.STRING_ENCODING));
 		} catch (UnsupportedEncodingException e) {
@@ -121,14 +121,14 @@ abstract public class Util {
 			return null;
 		}
 	}
-	
+
 	public static void newFileNotify(String path) {
 		if(Defaults.do_mediascanner_notify) {
 			myLog.l(Log.DEBUG, "Notifying others about new file: " + path);
 			new MediaScannerNotifier(Globals.getContext(), path);
 		}
 	}
-	
+
 	public static void deletedFileNotify(String path) {
 		// This might not work, I couldn't find an API call for this.
 		if(Defaults.do_mediascanner_notify) {
@@ -136,13 +136,13 @@ abstract public class Util {
 			new MediaScannerNotifier(Globals.getContext(), path);
 		}
 	}
-	
+
 	// A class to help notify the Music Player and other media services when
 	// a file has been uploaded. Thanks to Dave Sparks in his post to the
 	// Android Developers mailing list on 14 Feb 2009.
 	private static class MediaScannerNotifier implements MediaScannerConnectionClient {
-	    private MediaScannerConnection connection;
-	    private String path;
+	    private final MediaScannerConnection connection;
+	    private final String path;
 
 	    public MediaScannerNotifier(Context context, String path) {
 	        this.path = path;
@@ -163,9 +163,9 @@ abstract public class Util {
 		String[] retArr = new String[a1.length + a2.length];
 		System.arraycopy(a1, 0, retArr, 0, a1.length);
 		System.arraycopy(a2, 0, retArr, a1.length, a2.length);
-		return retArr;		
+		return retArr;
 	}
-	
+
 	public static void sleepIgnoreInterupt(long millis) {
 		try {
 			Thread.sleep(millis);

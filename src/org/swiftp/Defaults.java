@@ -24,7 +24,7 @@ import android.util.Log;
 
 public class Defaults {
 	protected static int inputBufferSize = 256;
-	protected static int dataChunkSize = 65536;  // do file I/O in 64k chunks 
+	public static int dataChunkSize = 65536;  // do file I/O in 64k chunks
 	protected static int sessionMonitorScrollBack = 10;
 	protected static int serverLogScrollBack = 10;
 	protected static int uiLogLevel = Defaults.release ? Log.INFO : Log.DEBUG;
@@ -32,7 +32,7 @@ public class Defaults {
 	protected static String settingsName = "SwiFTP";
 	//protected static String username = "user";
 	//protected static String password = "";
-	protected static int portNumber = 2121; 
+	protected static int portNumber = 2121;
 //	protected static int ipRetrievalAttempts = 5;
 	public static final int tcpConnectionBacklog = 5;
 	public static final String chrootDir = "/";
@@ -45,22 +45,22 @@ public class Defaults {
 	// FTP control sessions should start out in ASCII, according to the RFC.
 	// However, many clients don't turn on UTF-8 even though they support it,
 	// so we just turn it on by default.
-	public static final String SESSION_ENCODING = "UTF-8"; 
-	
+	public static final String SESSION_ENCODING = "UTF-8";
+
 	// This is a flag that should be true for public builds and false for dev builds
 	public static final boolean release = true;
-	
+
 	// Try to fix the transfer stall bug, reopen the destination file periodically
 	//public static final boolean do_reopen_hack = false;
 	//public static final int bytes_between_reopen = 4000000;
-	
+
 	// Try to fix the transfer stall bug, flush the file periodically
 	//public static final boolean do_flush_hack = false;
 	//public static final int bytes_between_flush = 500000;
-	
+
 	public static final boolean do_mediascanner_notify = true;
-	
-	
+
+
 //	public static int getIpRetrievalAttempts() {
 //		return ipRetrievalAttempts;
 //	}
@@ -98,7 +98,7 @@ public class Defaults {
 	}
 
 	protected static int settingsMode = Context.MODE_WORLD_WRITEABLE;
-	
+
 	public static int getUiLogLevel() {
 		return uiLogLevel;
 	}
@@ -128,7 +128,7 @@ public class Defaults {
 	}
 
 	public static void setSessionMonitorScrollBack(
-			int sessionMonitorScrollBack) 
+			int sessionMonitorScrollBack)
 	{
 		Defaults.sessionMonitorScrollBack = sessionMonitorScrollBack;
 	}

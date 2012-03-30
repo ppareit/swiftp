@@ -29,6 +29,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.swiftp.gui.ServerPreferenceActivity;
+import org.swiftp.server.ProxyConnector;
+import org.swiftp.server.SessionThread;
+import org.swiftp.server.TcpListener;
 
 import android.app.Notification;
 import android.app.NotificationManager;

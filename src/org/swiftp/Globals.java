@@ -21,7 +21,12 @@ package org.swiftp;
 
 import java.io.File;
 
+import org.swiftp.server.ProxyConnector;
+
 import android.content.Context;
+
+// TODO: this must all be removed
+//       if you need a setting, get it from the settings
 
 public class Globals {
 	private static Context context;
@@ -29,7 +34,7 @@ public class Globals {
 	private static File chrootDir = null;
 	private static ProxyConnector proxyConnector = null;
 	private static String username = null;
-	
+
 	public static ProxyConnector getProxyConnector() {
 		if(proxyConnector != null) {
 			if(!proxyConnector.isAlive()) {
@@ -66,7 +71,7 @@ public class Globals {
 	}
 
 	public static void setContext(Context context) {
-		if(context != null) { 
+		if(context != null) {
 			Globals.context = context;
 		}
 	}
@@ -78,5 +83,5 @@ public class Globals {
 	public static void setUsername(String username) {
 		Globals.username = username;
 	}
-	
+
 }
