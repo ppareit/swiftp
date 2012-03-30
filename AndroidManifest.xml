@@ -62,7 +62,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
-    <uses-sdk android:minSdkVersion="7" >
+    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="12">
     </uses-sdk>
 
 </manifest>
