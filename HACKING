@@ -2,15 +2,13 @@ SETUP ECLIPSE
 =============
 How to use Eclipse and the Android plugin with the SwiFTP project:
 
-1) Check out the trunk according to the instructions on the "Source" page on 
-   http://www.swiftp.org
+1) Clone the project:
+        git clone git@github.com:ppareit/swiftp.git
 2) In Eclipse, import the existing project:
   - File -> Import 
   - Select General, then Existing Projects Into Workspace
-  - In "Select root directory," browse for the directory where you checked out
-    the source
+  - In "Select root directory," browse for the cloned directory
   - From there it's obvious
-
 
 RELEASE CHECKLIST
 =================
@@ -30,6 +28,5 @@ Test on
  - AndFTP
  
 Export, sign, upload
-SVN commit
 Upload apk to Google Code
 Update wiki, site front page 
