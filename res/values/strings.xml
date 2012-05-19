@@ -39,7 +39,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 <string name="portnumber_default">2121</string>
 
 <string name="chroot_label">Stay in folder</string>
-<string name="chroot_default">/sdcard</string>
+<string name="chroot_default">/</string>
 
 <string name="acceptwifi_label">Accept connection from wifi</string>
 <string name="acceptwifi_default">true</string>
