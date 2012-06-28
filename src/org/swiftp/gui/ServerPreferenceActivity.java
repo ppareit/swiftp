@@ -223,14 +223,14 @@ public class ServerPreferenceActivity extends PreferenceActivity {
         Intent serverService = new Intent(context, FTPServerService.class);
         if (!FTPServerService.isRunning()) {
             warnIfNoExternalStorage();
-            context.startService(serverService);
+            startService(serverService);
         }
     }
 
     private void stopServer() {
         Context context = getApplicationContext();
         Intent serverService = new Intent(context, FTPServerService.class);
-        context.stopService(serverService);
+        stopService(serverService);
     }
 
     @Override
