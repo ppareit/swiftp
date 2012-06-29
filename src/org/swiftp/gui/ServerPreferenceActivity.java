@@ -27,6 +27,17 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
+
+/**
+ * This is the main activity for swiftp, it enables the user to start the server service
+ * and allows the users to change the settings.
+ *
+ * @author ppareit
+ */
+/**
+ * @author ppareit
+ *
+ */
 public class ServerPreferenceActivity extends PreferenceActivity {
 
     private static String TAG = ServerPreferenceActivity.class.getSimpleName();
@@ -254,12 +265,18 @@ public class ServerPreferenceActivity extends PreferenceActivity {
         unregisterReceiver(ftpServerReceiver);
     }
 
+    /**
+     * This receiver will check FTPServer.ACTION* messages and will update the button,
+     * running_state, if the server is running and will also display at what url the
+     * server is running.
+     */
     BroadcastReceiver ftpServerReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.v(TAG, "A FTPServer action received");
             CheckBoxPreference running_state = (CheckBoxPreference) findPreference("running_state");
             if (intent.getAction().equals(FTPServerService.ACTION_STARTED)) {
+                Log.v(TAG, "FTPServer is started action received");
                 running_state.setChecked(true);
                 // Fill in the FTP server address
                 InetAddress address = FTPServerService.getWifiIp();
@@ -275,12 +292,17 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                         R.string.running_summary_started, iptext);
                 running_state.setSummary(summary);
             } else if (intent.getAction().equals(FTPServerService.ACTION_STOPPED)) {
+                Log.v(TAG, "FTPServer is stopped action received");
                 running_state.setChecked(false);
                 running_state.setSummary(R.string.running_summary_stopped);
             }
         }
     };
 
+    /**
+     * Will check if the device contains external storage (sdcard) and display a warning
+     * for the user if there is no external storage. Nothing more.
+     */
     private void warnIfNoExternalStorage() {
         String storageState = Environment.getExternalStorageState();
         if (!storageState.equals(Environment.MEDIA_MOUNTED)) {
