@@ -67,8 +67,9 @@ public class CmdRETR extends FtpCmd implements Runnable {
 				errString = "550 Text mode RETR not supported\r\n";
 				break mainblock;
 			}*/
+			FileInputStream in = null;
 			try {
-				FileInputStream in = new FileInputStream(fileToRetr);
+				in = new FileInputStream(fileToRetr);
 				byte[] buffer = new byte[Defaults.getDataChunkSize()];
 				int bytesRead;
 				if(sessionThread.startUsingDataSocket()) {
@@ -138,6 +139,12 @@ public class CmdRETR extends FtpCmd implements Runnable {
 			} catch(IOException e) {
 				errString = "425 Network error\r\n";
 				break mainblock;
+			} finally {
+			    try {
+			        if (in != null)
+			            in.close();
+                } catch (IOException swallow) {
+                }
 			}
 		}
 		sessionThread.closeDataSocket();
