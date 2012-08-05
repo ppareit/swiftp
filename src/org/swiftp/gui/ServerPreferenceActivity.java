@@ -27,7 +27,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
-
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
@@ -36,7 +35,7 @@ import android.widget.Toast;
  */
 /**
  * @author ppareit
- *
+ * 
  */
 public class ServerPreferenceActivity extends PreferenceActivity {
 
@@ -48,169 +47,124 @@ public class ServerPreferenceActivity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.preferences);
 
         Globals.setContext(getApplicationContext());
-        SharedPreferences settings = PreferenceManager
-                .getDefaultSharedPreferences(this);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         Resources resources = getResources();
 
         CheckBoxPreference running_state = (CheckBoxPreference) findPreference("running_state");
         running_state.setChecked(FTPServerService.isRunning());
-        running_state
-                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference,
-                            Object newValue) {
-                        if ((Boolean) newValue) {
-                            startServer();
-                        } else {
-                            stopServer();
-                        }
-                        return true;
-                    }
-                });
+        running_state.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if ((Boolean) newValue) {
+                    startServer();
+                } else {
+                    stopServer();
+                }
+                return true;
+            }
+        });
 
         EditTextPreference username_pref = (EditTextPreference) findPreference("username");
         username_pref.setSummary(settings.getString("username",
                 resources.getString(R.string.username_default)));
-        username_pref
-                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference,
-                            Object newValue) {
-                        String newUsername = (String) newValue;
-                        if (preference.getSummary().equals(newUsername))
-                            return false;
-                        if (!newUsername.matches("[a-zA-Z0-9]+")) {
-                            Toast.makeText(ServerPreferenceActivity.this,
-                                    R.string.username_validation_error,
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                            return false;
-                        }
-                        preference.setSummary(newUsername);
-                        stopServer();
-                        return true;
-                    }
-                });
+        username_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                String newUsername = (String) newValue;
+                if (preference.getSummary().equals(newUsername))
+                    return false;
+                if (!newUsername.matches("[a-zA-Z0-9]+")) {
+                    Toast.makeText(ServerPreferenceActivity.this,
+                            R.string.username_validation_error, Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                preference.setSummary(newUsername);
+                stopServer();
+                return true;
+            }
+        });
 
         EditTextPreference password_pref = (EditTextPreference) findPreference("password");
         password_pref.setSummary(settings.getString("password",
                 resources.getString(R.string.password_default)));
-        password_pref
-                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference,
-                            Object newValue) {
-                        String newPassword = (String) newValue;
-                        if (preference.getSummary().equals(newPassword))
-                            return false;
-                        if (!newPassword.matches("[a-zA-Z0-9]+")) {
-                            Toast.makeText(ServerPreferenceActivity.this,
-                                    R.string.password_validation_error,
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                            return false;
-                        }
-                        preference.setSummary(newPassword);
-                        stopServer();
-                        return true;
-                    }
-                });
+        password_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                String newPassword = (String) newValue;
+                if (preference.getSummary().equals(newPassword))
+                    return false;
+                if (!newPassword.matches("[a-zA-Z0-9]+")) {
+                    Toast.makeText(ServerPreferenceActivity.this,
+                            R.string.password_validation_error, Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                preference.setSummary(newPassword);
+                stopServer();
+                return true;
+            }
+        });
 
         EditTextPreference portnum_pref = (EditTextPreference) findPreference("portNum");
         portnum_pref.setSummary(settings.getString("portNum",
                 resources.getString(R.string.portnumber_default)));
-        portnum_pref
-                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference,
-                            Object newValue) {
-                        String newPortnumString = (String) newValue;
-                        if (preference.getSummary().equals(newPortnumString))
-                            return false;
-                        int portnum = 0;
-                        try {
-                            portnum = Integer.parseInt(newPortnumString);
-                        } catch (Exception e) {}
-                        if (portnum <= 0 || 65535 < portnum) {
-                            Toast.makeText(ServerPreferenceActivity.this,
-                                    R.string.port_validation_error,
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                            return false;
-                        }
-                        preference.setSummary(newPortnumString);
-                        stopServer();
-                        return true;
-                    }
-                });
+        portnum_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                String newPortnumString = (String) newValue;
+                if (preference.getSummary().equals(newPortnumString))
+                    return false;
+                int portnum = 0;
+                try {
+                    portnum = Integer.parseInt(newPortnumString);
+                } catch (Exception e) {
+                }
+                if (portnum <= 0 || 65535 < portnum) {
+                    Toast.makeText(ServerPreferenceActivity.this,
+                            R.string.port_validation_error, Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                preference.setSummary(newPortnumString);
+                stopServer();
+                return true;
+            }
+        });
 
         EditTextPreference chroot_pref = (EditTextPreference) findPreference("chrootDir");
         chroot_pref.setSummary(settings.getString("chrootDir",
                 resources.getString(R.string.chroot_default)));
-        chroot_pref
-                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference,
-                            Object newValue) {
-                        String newChroot = (String) newValue;
-                        if (preference.getSummary().equals(newChroot))
-                            return false;
-                        // now test the new chroot directory
-                        File chrootTest = new File(newChroot);
-                        if (!chrootTest.isDirectory() || !chrootTest.canRead())
-                            return false;
-                        preference.setSummary(newChroot);
-                        stopServer();
-                        return true;
-                    }
-                });
-
-        final CheckBoxPreference acceptwifi_pref = (CheckBoxPreference) findPreference("allowWifi");
-        final CheckBoxPreference acceptproxy_pref = (CheckBoxPreference) findPreference("allowNet");
-
-        acceptwifi_pref
-                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference,
-                            Object newValue) {
-                        if ((Boolean)newValue == false)
-                            acceptproxy_pref.setChecked(true);
-                        stopServer();
-                        return true;
-                    }
-                });
-        acceptproxy_pref
-                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference,
-                            Object newValue) {
-                        if ((Boolean)newValue == false)
-                            acceptwifi_pref.setChecked(true);
-                        stopServer();
-                        return true;
-                    }
-                });
+        chroot_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                String newChroot = (String) newValue;
+                if (preference.getSummary().equals(newChroot))
+                    return false;
+                // now test the new chroot directory
+                File chrootTest = new File(newChroot);
+                if (!chrootTest.isDirectory() || !chrootTest.canRead())
+                    return false;
+                preference.setSummary(newChroot);
+                stopServer();
+                return true;
+            }
+        });
 
         final CheckBoxPreference wakelock_pref = (CheckBoxPreference) findPreference("stayAwake");
-        wakelock_pref
-                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference,
-                            Object newValue) {
-                        stopServer();
-                        return true;
-                    }
-                });
+        wakelock_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                stopServer();
+                return true;
+            }
+        });
 
         Preference help = findPreference("help");
         help.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 new AlertDialog.Builder(ServerPreferenceActivity.this)
-                .setTitle(R.string.help_dlg_title)
-                .setMessage(R.string.help_dlg_message)
-                .setPositiveButton(getText(R.string.ok), null)
-                .show();
+                        .setTitle(R.string.help_dlg_title)
+                        .setMessage(R.string.help_dlg_message)
+                        .setPositiveButton(getText(R.string.ok), null).show();
                 return true;
             }
         });
@@ -220,10 +174,9 @@ public class ServerPreferenceActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 new AlertDialog.Builder(ServerPreferenceActivity.this)
-                .setTitle(R.string.about_dlg_title)
-                .setMessage(R.string.about_dlg_message)
-                .setPositiveButton(getText(R.string.ok), null)
-                .show();
+                        .setTitle(R.string.about_dlg_title)
+                        .setMessage(R.string.about_dlg_message)
+                        .setPositiveButton(getText(R.string.ok), null).show();
                 return true;
             }
         });
@@ -288,8 +241,8 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                 String iptext = "ftp://" + address.getHostAddress() + ":"
                         + FTPServerService.getPort() + "/";
                 Resources resources = getResources();
-                String summary = resources.getString(
-                        R.string.running_summary_started, iptext);
+                String summary = resources.getString(R.string.running_summary_started,
+                        iptext);
                 running_state.setSummary(summary);
             } else if (intent.getAction().equals(FTPServerService.ACTION_STOPPED)) {
                 Log.v(TAG, "FTPServer is stopped action received");

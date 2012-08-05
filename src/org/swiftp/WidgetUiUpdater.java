@@ -81,14 +81,16 @@ public class WidgetUiUpdater {
      * Start listening for UI Updates, to know, when updating the Widgets
      */
     protected static void registerAtUiUpdater() {
-        UiUpdater.registerClient(handler);
+        // TODO: fix this part of the code
+        // UiUpdater.registerClient(handler);
     }
 
     /**
      * Stop listening for UI Updates.
      */
     protected static void unregisterAtUiUpdater() {
-        UiUpdater.unregisterClient(handler);
+        // TODO: fix this part of the code
+        // UiUpdater.unregisterClient(handler);
     }
 
     /**

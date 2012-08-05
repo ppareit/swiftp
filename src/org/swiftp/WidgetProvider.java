@@ -74,7 +74,8 @@ public class WidgetProvider extends AppWidgetProvider {
             } else {
                 context.stopService(intentFTP);
             }
-            UiUpdater.updateClients();
+            // TODO: Use intent to update UI
+            // UiUpdater.updateClients();
         }
         super.onReceive(context, intent);
     }

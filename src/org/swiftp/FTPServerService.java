@@ -185,7 +185,6 @@ public class FTPServerService extends Service implements Runnable {
 
         sendBroadcast(new Intent(ACTION_STOPPED));
 
-        UiUpdater.updateClients();
         if (wifiLock != null) {
             wifiLock.release();
             wifiLock = null;
@@ -283,8 +282,6 @@ public class FTPServerService extends Service implements Runnable {
         int consecutiveProxyStartFailures = 0;
         long proxyStartMillis = 0;
 
-        UiUpdater.updateClients();
-
         myLog.l(Log.DEBUG, "Server thread running");
 
         // set our members according to user preferences
@@ -313,10 +310,7 @@ public class FTPServerService extends Service implements Runnable {
         myLog.l(Log.INFO, "SwiFTP server ready");
         setupNotification();
 
-        // We should update the UI now that we have a socket open, so the UI
-        // can present the URL
-        UiUpdater.updateClients();
-
+        // A socket is open now, so the FTP server is started, notify rest of world
         sendBroadcast(new Intent(ACTION_STARTED));
 
         while (!shouldExit) {
@@ -550,10 +544,6 @@ public class FTPServerService extends Service implements Runnable {
         // updateClients();
     }
 
-    public static void updateClients() {
-        UiUpdater.updateClients();
-    }
-
     public static void writeMonitor(boolean incoming, String s) {
     }
 
@@ -580,8 +570,8 @@ public class FTPServerService extends Service implements Runnable {
     }
 
     /**
-     * The FTPServerService must know about all running session threads so they
-     * can be terminated on exit. Called when a new session is created.
+     * The FTPServerService must know about all running session threads so they can be
+     * terminated on exit. Called when a new session is created.
      */
     public void registerSessionThread(SessionThread newSession) {
         // Before adding the new session thread, clean up any finished session
