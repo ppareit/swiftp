@@ -36,10 +36,6 @@
                 android:key="allowWifi"
                 android:title="@string/acceptwifi_label" />
             <CheckBoxPreference
-                android:defaultValue="@string/acceptproxy_default"
-                android:key="allowNet"
-                android:title="@string/acceptproxy_label" />
-            <CheckBoxPreference
                 android:defaultValue="@string/wakelock_default"
                 android:key="stayAwake"
                 android:title="@string/wakelock_label" />
