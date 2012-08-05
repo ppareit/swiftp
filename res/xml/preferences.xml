@@ -17,7 +17,12 @@
         <EditTextPreference
             android:defaultValue="@string/password_default"
             android:key="password"
-            android:title="@string/password_label" />
+            android:title="@string/password_label"
+            android:inputType="textPassword" />
+        <CheckBoxPreference
+            android:key="show_password"
+            android:title="@string/show_password_label"
+            android:defaultValue="@string/show_password_default" />
         
         <PreferenceScreen
             xmlns:android="http://schemas.android.com/apk/res/android"

@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
@@ -37,9 +38,12 @@ import android.widget.Toast;
  * @author ppareit
  * 
  */
-public class ServerPreferenceActivity extends PreferenceActivity {
+public class ServerPreferenceActivity extends PreferenceActivity implements
+        OnSharedPreferenceChangeListener {
 
     private static String TAG = ServerPreferenceActivity.class.getSimpleName();
+
+    EditTextPreference mPassWordPref;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +51,8 @@ public class ServerPreferenceActivity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.preferences);
 
         Globals.setContext(getApplicationContext());
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(this);
         Resources resources = getResources();
 
         CheckBoxPreference running_state = (CheckBoxPreference) findPreference("running_state");
@@ -84,21 +89,20 @@ public class ServerPreferenceActivity extends PreferenceActivity {
             }
         });
 
-        EditTextPreference password_pref = (EditTextPreference) findPreference("password");
-        password_pref.setSummary(settings.getString("password",
-                resources.getString(R.string.password_default)));
-        password_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+        mPassWordPref = (EditTextPreference) findPreference("password");
+        String password = resources.getString(R.string.password_default);
+        password = settings.getString("password", password);
+        mPassWordPref.setSummary(transformPassword(password));
+        mPassWordPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 String newPassword = (String) newValue;
-                if (preference.getSummary().equals(newPassword))
-                    return false;
                 if (!newPassword.matches("[a-zA-Z0-9]+")) {
                     Toast.makeText(ServerPreferenceActivity.this,
                             R.string.password_validation_error, Toast.LENGTH_LONG).show();
                     return false;
                 }
-                preference.setSummary(newPassword);
+                preference.setSummary(transformPassword(newPassword));
                 stopServer();
                 return true;
             }
@@ -182,6 +186,16 @@ public class ServerPreferenceActivity extends PreferenceActivity {
         });
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
+        if (key.equals("show_password")) {
+            Resources res = Globals.getContext().getResources();
+            String password = res.getString(R.string.password_default);
+            password = sp.getString("password", password);
+            mPassWordPref.setSummary(transformPassword(password));
+        }
+    }
+
     private void startServer() {
         Context context = getApplicationContext();
         Intent serverService = new Intent(context, FTPServerService.class);
@@ -202,6 +216,10 @@ public class ServerPreferenceActivity extends PreferenceActivity {
         Log.v(TAG, "onResume");
         super.onResume();
 
+        // make this class listen for preference changes
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+
         Log.v(TAG, "Registering the FTP server actions");
         IntentFilter filter = new IntentFilter();
         filter.addAction(FTPServerService.ACTION_STARTED);
@@ -216,6 +234,11 @@ public class ServerPreferenceActivity extends PreferenceActivity {
 
         Log.v(TAG, "Unregistering the FTPServer actions");
         unregisterReceiver(ftpServerReceiver);
+
+        // unregister the listener
+        getPreferenceScreen().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
+
     }
 
     /**
@@ -264,6 +287,23 @@ public class ServerPreferenceActivity extends PreferenceActivity {
                     Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
+        }
+    }
+
+    static private String transformPassword(String password) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(Globals
+                .getContext());
+        Resources res = Globals.getContext().getResources();
+        boolean showPassword = res.getString(R.string.show_password_default).equals(
+                "true") ? true : false;
+        showPassword = sp.getBoolean("show_password", showPassword);
+        if (showPassword == true)
+            return password;
+        else {
+            StringBuilder sb = new StringBuilder(password.length());
+            for (int i = 0; i < password.length(); ++i)
+                sb.append('*');
+            return sb.toString();
         }
     }
 

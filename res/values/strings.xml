@@ -30,6 +30,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="username_default">ftp</string>
     <string name="password_label">Password</string>
     <string name="password_default">ftp</string>
+    <string name="show_password_label">
+        Display password
+    </string>
+    <string name="show_password_default">
+        false
+    </string>
     <string name="advancedsettings_label">Advanced Settings...</string>
     <string name="portnumber_label">Port Number</string>
     <string name="portnumber_default">2121</string>
