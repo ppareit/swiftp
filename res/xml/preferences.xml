@@ -32,10 +32,6 @@
                 android:title="@string/chroot_label" />
 
             <CheckBoxPreference
-                android:defaultValue="@string/acceptwifi_default"
-                android:key="allowWifi"
-                android:title="@string/acceptwifi_label" />
-            <CheckBoxPreference
                 android:defaultValue="@string/wakelock_default"
                 android:key="stayAwake"
                 android:title="@string/wakelock_label" />
