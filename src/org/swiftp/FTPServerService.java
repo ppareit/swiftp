@@ -52,6 +52,7 @@ public class FTPServerService extends Service implements Runnable {
     // Service will broadcast (LocalBroadcast) when server start/stop
     static public final String ACTION_STARTED = "org.swiftp.FTPServerService.STARTED";
     static public final String ACTION_STOPPED = "org.swiftp.FTPServerService.STOPPED";
+    static public final String ACTION_FAILEDTOSTART = "org.swiftp.FTPServerService.FAILEDTOSTART";
 
     protected static Thread serverThread = null;
     protected boolean shouldExit = false;
@@ -183,8 +184,6 @@ public class FTPServerService extends Service implements Runnable {
         } catch (IOException e) {
         }
 
-        sendBroadcast(new Intent(ACTION_STOPPED));
-
         if (wifiLock != null) {
             wifiLock.release();
             wifiLock = null;
@@ -288,6 +287,13 @@ public class FTPServerService extends Service implements Runnable {
         if (!loadSettings()) {
             // loadSettings returns false if settings are not sane
             cleanupAndStopService();
+            sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
+            return;
+        }
+
+        if (isWifiEnabled() == false) {
+            cleanupAndStopService();
+            sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
             return;
         }
 
@@ -406,9 +412,8 @@ public class FTPServerService extends Service implements Runnable {
         shouldExit = false; // we handled the exit flag, so reset it to
                             // acknowledge
         myLog.l(Log.DEBUG, "Exiting cleanly, returning from run()");
-        clearNotification();
-        releaseWakeLock();
-        releaseWifiLock();
+
+        cleanupAndStopService();
     }
 
     private void terminateAllSessions() {
@@ -425,12 +430,11 @@ public class FTPServerService extends Service implements Runnable {
 
     public void cleanupAndStopService() {
         // Call the Android Service shutdown function
-        Context context = getApplicationContext();
-        Intent intent = new Intent(context, FTPServerService.class);
-        context.stopService(intent);
+        stopSelf();
         releaseWifiLock();
         releaseWakeLock();
         clearNotification();
+        sendBroadcast(new Intent(ACTION_STOPPED));
     }
 
     private void takeWakeLock() {

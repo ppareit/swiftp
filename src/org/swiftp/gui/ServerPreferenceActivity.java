@@ -50,11 +50,6 @@ import android.widget.Toast;
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
- *
- * @author ppareit
- */
-/**
- * @author ppareit
  * 
  */
 public class ServerPreferenceActivity extends PreferenceActivity implements
@@ -243,6 +238,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         IntentFilter filter = new IntentFilter();
         filter.addAction(FTPServerService.ACTION_STARTED);
         filter.addAction(FTPServerService.ACTION_STOPPED);
+        filter.addAction(FTPServerService.ACTION_FAILEDTOSTART);
         registerReceiver(ftpServerReceiver, filter);
     }
 
@@ -268,10 +264,9 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
     BroadcastReceiver ftpServerReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.v(TAG, "A FTPServer action received");
+            Log.v(TAG, "FTPServerService action received: " + intent.getAction());
             CheckBoxPreference running_state = (CheckBoxPreference) findPreference("running_state");
             if (intent.getAction().equals(FTPServerService.ACTION_STARTED)) {
-                Log.v(TAG, "FTPServer is started action received");
                 running_state.setChecked(true);
                 // Fill in the FTP server address
                 InetAddress address = FTPServerService.getWifiIp();
@@ -287,9 +282,11 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                         iptext);
                 running_state.setSummary(summary);
             } else if (intent.getAction().equals(FTPServerService.ACTION_STOPPED)) {
-                Log.v(TAG, "FTPServer is stopped action received");
                 running_state.setChecked(false);
                 running_state.setSummary(R.string.running_summary_stopped);
+            } else if (intent.getAction().equals(FTPServerService.ACTION_FAILEDTOSTART)) {
+                running_state.setChecked(false);
+                running_state.setSummary(R.string.running_summary_failed);
             }
         }
     };
