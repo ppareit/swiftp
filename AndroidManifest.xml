@@ -35,7 +35,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:targetSdkVersion="12" />
 
     <application
-        android:icon="@drawable/logo"
+        android:icon="@drawable/icon"
         android:label="@string/swiftp_name" >
         <activity android:name="org.swiftp.gui.ServerPreferenceActivity" >
             <intent-filter>
