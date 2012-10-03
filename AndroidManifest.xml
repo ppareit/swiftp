@@ -19,7 +19,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="be.ppareit.swiftp"
+    package="be.ppareit.swiftp_free"
     android:versionCode="21"
     android:versionName="2.2" >
 
@@ -37,7 +37,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <application
         android:icon="@drawable/icon"
         android:label="@string/swiftp_name" >
-        <activity android:name="be.ppareit.swiftp.gui.ServerPreferenceActivity" >
+        <activity android:name="be.ppareit.swiftp_free.gui.ServerPreferenceActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
