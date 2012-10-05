@@ -69,7 +69,21 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         Resources resources = getResources();
 
         CheckBoxPreference running_state = (CheckBoxPreference) findPreference("running_state");
-        running_state.setChecked(FTPServerService.isRunning());
+        if (FTPServerService.isRunning() == true) {
+            running_state.setChecked(true);
+            // Fill in the FTP server address
+            InetAddress address = FTPServerService.getWifiIp();
+            if (address == null) {
+                Log.v(TAG, "Unable to retreive wifi ip address");
+                running_state.setSummary(R.string.cant_get_url);
+                return;
+            }
+            String iptext = "ftp://" + address.getHostAddress() + ":"
+                    + FTPServerService.getPort() + "/";
+            String summary = resources
+                    .getString(R.string.running_summary_started, iptext);
+            running_state.setSummary(summary);
+        }
         running_state.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
