@@ -50,10 +50,10 @@ public class FTPServerService extends Service implements Runnable {
 
     // Service will broadcast (LocalBroadcast) when server start/stop
     static private final String PACKAGE = FTPServerService.class.getPackage().getName();
-    static public final String ACTION_STARTED = PACKAGE + "FTPServerService.STARTED";
-    static public final String ACTION_STOPPED = PACKAGE + "FTPServerService.STOPPED";
+    static public final String ACTION_STARTED = PACKAGE + ".FTPServerService.STARTED";
+    static public final String ACTION_STOPPED = PACKAGE + ".FTPServerService.STOPPED";
     static public final String ACTION_FAILEDTOSTART = PACKAGE
-            + "FTPServerService.FAILEDTOSTART";
+            + ".FTPServerService.FAILEDTOSTART";
 
     protected static Thread serverThread = null;
     protected boolean shouldExit = false;
