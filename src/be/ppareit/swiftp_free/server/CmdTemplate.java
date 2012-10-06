@@ -15,23 +15,24 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package be.ppareit.swiftp_free.server;
 
 import android.util.Log;
 
 public class CmdTemplate extends FtpCmd implements Runnable {
-	public static final String message = "TEMPLATE!!";
 
-	public CmdTemplate(SessionThread sessionThread, String input) {
-		super(sessionThread, CmdTemplate.class.toString());
-	}
+    public static final String message = "TEMPLATE!!";
 
-	@Override
+    public CmdTemplate(SessionThread sessionThread, String input) {
+        super(sessionThread, CmdTemplate.class.toString());
+    }
+
+    @Override
     public void run() {
-		sessionThread.writeString(message);
-		myLog.l(Log.INFO, "Template log message");
-	}
+        sessionThread.writeString(message);
+        myLog.l(Log.INFO, "Template log message");
+    }
 
 }

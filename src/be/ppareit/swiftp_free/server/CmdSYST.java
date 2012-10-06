@@ -15,26 +15,26 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package be.ppareit.swiftp_free.server;
 
 import android.util.Log;
 
 public class CmdSYST extends FtpCmd implements Runnable {
-	// This is considered a safe response to the SYST command, see
-	// http://cr.yp.to/ftp/syst.html
-	public static final String response = "215 UNIX Type: L8\r\n";
 
-	public CmdSYST(SessionThread sessionThread, String input) {
-		super(sessionThread, CmdSYST.class.toString());
-	}
+    // This is considered a safe response to the SYST command, see
+    // http://cr.yp.to/ftp/syst.html
+    public static final String response = "215 UNIX Type: L8\r\n";
 
+    public CmdSYST(SessionThread sessionThread, String input) {
+        super(sessionThread, CmdSYST.class.toString());
+    }
 
-	@Override
+    @Override
     public void run() {
-		myLog.l(Log.DEBUG, "SYST executing");
-		sessionThread.writeString(response);
-		myLog.l(Log.DEBUG, "SYST finished");
-	}
+        myLog.l(Log.DEBUG, "SYST executing");
+        sessionThread.writeString(response);
+        myLog.l(Log.DEBUG, "SYST finished");
+    }
 }

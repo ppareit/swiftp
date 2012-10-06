@@ -15,21 +15,20 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package be.ppareit.swiftp_free.server;
 
-
 public class CmdSTOR extends CmdAbstractStore implements Runnable {
-	protected String input;
+    protected String input;
 
-	public CmdSTOR(SessionThread sessionThread, String input) {
-		super(sessionThread, CmdSTOR.class.toString());
-		this.input = input;
-	}
+    public CmdSTOR(SessionThread sessionThread, String input) {
+        super(sessionThread, CmdSTOR.class.toString());
+        this.input = input;
+    }
 
-	@Override
+    @Override
     public void run() {
-		doStorOrAppe(getParameter(input), false);
-	}
+        doStorOrAppe(getParameter(input), false);
+    }
 }
