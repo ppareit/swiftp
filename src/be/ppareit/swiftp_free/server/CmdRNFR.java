@@ -24,16 +24,18 @@ import java.io.File;
 import android.util.Log;
 
 public class CmdRNFR extends FtpCmd implements Runnable {
+    private static final String TAG = CmdRNFR.class.getSimpleName();
 
     protected String input;
 
     public CmdRNFR(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdRNFR.class.toString());
+        super(sessionThread);
         this.input = input;
     }
 
     @Override
     public void run() {
+        Log.d(TAG, "Executing RNFR");
         String param = getParameter(input);
         String errString = null;
         File file = null;
@@ -49,7 +51,7 @@ public class CmdRNFR extends FtpCmd implements Runnable {
         }
         if (errString != null) {
             sessionThread.writeString(errString);
-            myLog.l(Log.INFO, "RNFR failed: " + errString.trim());
+            Log.d(TAG, "RNFR failed: " + errString.trim());
             sessionThread.setRenameFrom(null);
         } else {
             sessionThread.writeString("350 Filename noted, now send RNTO\r\n");

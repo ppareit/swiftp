@@ -24,13 +24,11 @@ import java.lang.reflect.Constructor;
 
 import android.util.Log;
 import be.ppareit.swiftp_free.Globals;
-import be.ppareit.swiftp_free.MyLog;
 
 public abstract class FtpCmd implements Runnable {
+    private static final String TAG = FtpCmd.class.getSimpleName();
 
     protected SessionThread sessionThread;
-    protected MyLog myLog;
-    protected static MyLog staticLog = new MyLog(FtpCmd.class.toString());
 
     protected static CmdMap[] cmdClasses = { new CmdMap("SYST", CmdSYST.class),
             new CmdMap("USER", CmdUSER.class), new CmdMap("PASS", CmdPASS.class),
@@ -50,9 +48,8 @@ public abstract class FtpCmd implements Runnable {
             new CmdMap("XRMD", CmdRMD.class) // synonym
     };
 
-    public FtpCmd(SessionThread sessionThread, String logName) {
+    public FtpCmd(SessionThread sessionThread) {
         this.sessionThread = sessionThread;
-        myLog = new MyLog(logName);
     }
 
     abstract public void run();
@@ -63,18 +60,18 @@ public abstract class FtpCmd implements Runnable {
         if (strings == null) {
             // There was some egregious sort of parsing error
             String errString = "502 Command parse error\r\n";
-            staticLog.l(Log.INFO, errString);
+            Log.d(TAG, errString);
             session.writeString(errString);
             return;
         }
         if (strings.length < 1) {
-            staticLog.l(Log.INFO, "No strings parsed");
+            Log.d(TAG, "No strings parsed");
             session.writeString(unrecognizedCmdMsg);
             return;
         }
         String verb = strings[0];
         if (verb.length() < 1) {
-            staticLog.l(Log.INFO, "Invalid command verb");
+            Log.i(TAG, "Invalid command verb");
             session.writeString(unrecognizedCmdMsg);
             return;
         }
@@ -93,22 +90,21 @@ public abstract class FtpCmd implements Runnable {
                     constructor = cmdClasses[i].getCommand().getConstructor(
                             new Class[] { SessionThread.class, String.class });
                 } catch (NoSuchMethodException e) {
-                    staticLog.l(Log.ERROR, "FtpCmd subclass lacks expected "
-                            + "constructor ");
+                    Log.e(TAG, "FtpCmd subclass lacks expected " + "constructor ");
                     return;
                 }
                 try {
                     cmdInstance = constructor.newInstance(new Object[] { session,
                             inputString });
                 } catch (Exception e) {
-                    staticLog.l(Log.ERROR, "Instance creation error on FtpCmd");
+                    Log.e(TAG, "Instance creation error on FtpCmd");
                     return;
                 }
             }
         }
         if (cmdInstance == null) {
             // If we couldn't find a matching command,
-            staticLog.l(Log.DEBUG, "Ignoring unrecognized FTP verb: " + verb);
+            Log.d(TAG, "Ignoring unrecognized FTP verb: " + verb);
             session.writeString(unrecognizedCmdMsg);
             return;
         } else if (session.isAuthenticated()
@@ -145,7 +141,7 @@ public abstract class FtpCmd implements Runnable {
         retString = retString.replaceAll("\\s+$", "");
 
         if (!silent) {
-            staticLog.l(Log.DEBUG, "Parsed argument: " + retString);
+            Log.d(TAG, "Parsed argument: " + retString);
         }
         return retString;
     }
@@ -176,15 +172,15 @@ public abstract class FtpCmd implements Runnable {
         try {
             String canonicalPath = file.getCanonicalPath();
             if (!canonicalPath.startsWith(chroot.toString())) {
-                myLog.l(Log.INFO, "Path violated folder restriction, denying");
-                myLog.l(Log.DEBUG, "path: " + canonicalPath);
-                myLog.l(Log.DEBUG, "chroot: " + chroot.toString());
+                Log.i(TAG, "Path violated folder restriction, denying");
+                Log.d(TAG, "path: " + canonicalPath);
+                Log.d(TAG, "chroot: " + chroot.toString());
                 return true; // the path must begin with the chroot path
             }
             return false;
         } catch (Exception e) {
-            myLog.l(Log.INFO, "Path canonicalization problem: " + e.toString());
-            myLog.l(Log.INFO, "When checking file: " + file.getAbsolutePath());
+            Log.i(TAG, "Path canonicalization problem: " + e.toString());
+            Log.i(TAG, "When checking file: " + file.getAbsolutePath());
             return true; // for security, assume violation
         }
     }

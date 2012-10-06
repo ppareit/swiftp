@@ -27,7 +27,7 @@ public class CmdFEAT extends FtpCmd implements Runnable {
     public static final String message = "TEMPLATE!!";
 
     public CmdFEAT(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdFEAT.class.toString());
+        super(sessionThread);
     }
 
     @Override

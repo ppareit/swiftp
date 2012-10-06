@@ -24,24 +24,25 @@ import java.io.File;
 import android.util.Log;
 
 public class CmdRNTO extends FtpCmd implements Runnable {
+    private static final String TAG = CmdRNTO.class.getSimpleName();
 
     protected String input;
 
     public CmdRNTO(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdRNTO.class.toString());
+        super(sessionThread);
         this.input = input;
     }
 
     @Override
     public void run() {
+        Log.d(TAG, "RNTO executing\r\n");
         String param = getParameter(input);
         String errString = null;
         File toFile = null;
-        myLog.l(Log.DEBUG, "RNTO executing\r\n");
         mainblock: {
-            myLog.l(Log.INFO, "param: " + param);
+            Log.i(TAG, "param: " + param);
             toFile = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
-            myLog.l(Log.INFO, "RNTO parsed: " + toFile.getPath());
+            Log.i(TAG, "RNTO parsed: " + toFile.getPath());
             if (violatesChroot(toFile)) {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;
@@ -58,11 +59,11 @@ public class CmdRNTO extends FtpCmd implements Runnable {
         }
         if (errString != null) {
             sessionThread.writeString(errString);
-            myLog.l(Log.INFO, "RNFR failed: " + errString.trim());
+            Log.i(TAG, "RNFR failed: " + errString.trim());
         } else {
             sessionThread.writeString("250 rename successful\r\n");
         }
         sessionThread.setRenameFrom(null);
-        myLog.l(Log.DEBUG, "RNTO finished");
+        Log.d(TAG, "RNTO finished");
     }
 }

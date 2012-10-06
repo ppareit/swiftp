@@ -22,18 +22,19 @@ package be.ppareit.swiftp_free.server;
 import android.util.Log;
 
 public class CmdTYPE extends FtpCmd implements Runnable {
+    private static final String TAG = CmdTYPE.class.getSimpleName();
 
     String input;
 
     public CmdTYPE(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdTYPE.class.toString());
+        super(sessionThread);
         this.input = input;
     }
 
     @Override
     public void run() {
         String output;
-        myLog.l(Log.DEBUG, "TYPE executing");
+        Log.d(TAG, "TYPE executing");
         String param = getParameter(input);
         if (param.equals("I") || param.equals("L 8")) {
             output = "200 Binary type set\r\n";
@@ -45,7 +46,7 @@ public class CmdTYPE extends FtpCmd implements Runnable {
             output = "503 Malformed TYPE command\r\n";
         }
         sessionThread.writeString(output);
-        myLog.l(Log.DEBUG, "TYPE complete");
+        Log.d(TAG, "TYPE complete");
     }
 
 }

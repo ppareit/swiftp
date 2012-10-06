@@ -22,17 +22,18 @@ package be.ppareit.swiftp_free.server;
 import android.util.Log;
 
 public class CmdTemplate extends FtpCmd implements Runnable {
+    private static final String TAG = CmdTemplate.class.getSimpleName();
 
     public static final String message = "TEMPLATE!!";
 
     public CmdTemplate(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdTemplate.class.toString());
+        super(sessionThread);
     }
 
     @Override
     public void run() {
         sessionThread.writeString(message);
-        myLog.l(Log.INFO, "Template log message");
+        Log.i(TAG, "Template log message");
     }
 
 }

@@ -29,7 +29,7 @@ public class CmdCDUP extends FtpCmd implements Runnable {
     protected String input;
 
     public CmdCDUP(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdCDUP.class.toString());
+        super(sessionThread);
     }
 
     @Override

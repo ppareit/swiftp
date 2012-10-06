@@ -29,13 +29,13 @@ public class CmdMKD extends FtpCmd implements Runnable {
     String input;
 
     public CmdMKD(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdMKD.class.toString());
+        super(sessionThread);
         this.input = input;
     }
 
     @Override
     public void run() {
-        myLog.l(Log.DEBUG, "MKD executing");
+        Log.d(TAG, "MKD executing");
         String param = getParameter(input);
         File toCreate;
         String errString = null;

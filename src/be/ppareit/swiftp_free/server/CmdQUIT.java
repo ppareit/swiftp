@@ -22,14 +22,15 @@ package be.ppareit.swiftp_free.server;
 import android.util.Log;
 
 public class CmdQUIT extends FtpCmd implements Runnable {
+    private static final String TAG = CmdQUIT.class.getSimpleName();
 
     public CmdQUIT(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdQUIT.class.toString());
+        super(sessionThread);
     }
 
     @Override
     public void run() {
-        myLog.l(Log.DEBUG, "QUITting");
+        Log.d(TAG, "QUIT executing");
         sessionThread.writeString("221 Goodbye\r\n");
         sessionThread.closeSocket();
     }

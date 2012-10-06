@@ -35,14 +35,13 @@ import android.util.Log;
 import be.ppareit.swiftp_free.Defaults;
 import be.ppareit.swiftp_free.FTPServerService;
 import be.ppareit.swiftp_free.Globals;
-import be.ppareit.swiftp_free.MyLog;
 import be.ppareit.swiftp_free.Util;
 
 public class SessionThread extends Thread {
+    private static final String TAG = SessionThread.class.getSimpleName();
 
     protected boolean shouldExit = false;
     protected Socket cmdSocket;
-    protected MyLog myLog = new MyLog(getClass().getName());
     protected ByteBuffer buffer = ByteBuffer.allocate(Defaults.getInputBufferSize());
     protected boolean pasvMode = false;
     protected boolean binaryMode = false;
@@ -88,10 +87,10 @@ public class SessionThread extends Thread {
     public boolean sendViaDataSocket(String string) {
         try {
             byte[] bytes = string.getBytes(encoding);
-            myLog.d("Using data connection encoding: " + encoding);
+            Log.d(TAG, "Using data connection encoding: " + encoding);
             return sendViaDataSocket(bytes, bytes.length);
         } catch (UnsupportedEncodingException e) {
-            myLog.l(Log.ERROR, "Unsupported encoding for data socket send");
+            Log.e(TAG, "Unsupported encoding for data socket send");
             return false;
         }
     }
@@ -110,7 +109,7 @@ public class SessionThread extends Thread {
     public boolean sendViaDataSocket(byte[] bytes, int start, int len) {
 
         if (dataOutputStream == null) {
-            myLog.l(Log.INFO, "Can't send via null dataOutputStream");
+            Log.i(TAG, "Can't send via null dataOutputStream");
             return false;
         }
         if (len == 0) {
@@ -119,8 +118,8 @@ public class SessionThread extends Thread {
         try {
             dataOutputStream.write(bytes, start, len);
         } catch (IOException e) {
-            myLog.l(Log.INFO, "Couldn't write output stream for data socket");
-            myLog.l(Log.INFO, e.toString());
+            Log.i(TAG, "Couldn't write output stream for data socket");
+            Log.i(TAG, e.toString());
             return false;
         }
         dataSocketFactory.reportTraffic(len);
@@ -142,11 +141,11 @@ public class SessionThread extends Thread {
         int bytesRead;
 
         if (dataSocket == null) {
-            myLog.l(Log.INFO, "Can't receive from null dataSocket");
+            Log.i(TAG, "Can't receive from null dataSocket");
             return -2;
         }
         if (!dataSocket.isConnected()) {
-            myLog.l(Log.INFO, "Can't receive from unconnected socket");
+            Log.i(TAG, "Can't receive from unconnected socket");
             return -2;
         }
         InputStream in;
@@ -162,7 +161,7 @@ public class SessionThread extends Thread {
                 return -1;
             }
         } catch (IOException e) {
-            myLog.l(Log.INFO, "Error reading data socket");
+            Log.i(TAG, "Error reading data socket");
             return 0;
         }
         dataSocketFactory.reportTraffic(bytesRead);
@@ -211,25 +210,25 @@ public class SessionThread extends Thread {
         try {
             dataSocket = dataSocketFactory.onTransfer();
             if (dataSocket == null) {
-                myLog.l(Log.INFO, "dataSocketFactory.onTransfer() returned null");
+                Log.i(TAG, "dataSocketFactory.onTransfer() returned null");
                 return false;
             }
             dataOutputStream = dataSocket.getOutputStream();
             return true;
         } catch (IOException e) {
-            myLog.l(Log.INFO, "IOException getting OutputStream for data socket");
+            Log.i(TAG, "IOException getting OutputStream for data socket");
             dataSocket = null;
             return false;
         }
     }
 
     public void quit() {
-        myLog.d("SessionThread told to quit");
+        Log.d(TAG, "SessionThread told to quit");
         closeSocket();
     }
 
     public void closeDataSocket() {
-        myLog.l(Log.DEBUG, "Closing data socket");
+        Log.d(TAG, "Closing data socket");
         if (dataOutputStream != null) {
             try {
                 dataOutputStream.close();
@@ -254,7 +253,7 @@ public class SessionThread extends Thread {
 
     @Override
     public void run() {
-        myLog.l(Log.INFO, "SessionThread started");
+        Log.i(TAG, "SessionThread started");
 
         if (sendWelcomeBanner) {
             writeString("220 SwiFTP " + Util.getVersion() + " ready\r\n");
@@ -268,15 +267,15 @@ public class SessionThread extends Thread {
                 line = in.readLine(); // will accept \r\n or \n for terminator
                 if (line != null) {
                     FTPServerService.writeMonitor(true, line);
-                    myLog.l(Log.DEBUG, "Received line from client: " + line);
+                    Log.d(TAG, "Received line from client: " + line);
                     FtpCmd.dispatchCommand(this, line);
                 } else {
-                    myLog.i("readLine gave null, quitting");
+                    Log.i(TAG, "readLine gave null, quitting");
                     break;
                 }
             }
         } catch (IOException e) {
-            myLog.l(Log.INFO, "Connection was dropped");
+            Log.i(TAG, "Connection was dropped");
         }
         closeSocket();
     }
@@ -313,7 +312,7 @@ public class SessionThread extends Thread {
             out.flush();
             dataSocketFactory.reportTraffic(bytes.length);
         } catch (IOException e) {
-            myLog.l(Log.INFO, "Exception writing socket");
+            Log.i(TAG, "Exception writing socket");
             closeSocket();
             return;
         }
@@ -325,7 +324,7 @@ public class SessionThread extends Thread {
         try {
             strBytes = str.getBytes(encoding);
         } catch (UnsupportedEncodingException e) {
-            myLog.e("Unsupported encoding: " + encoding);
+            Log.e(TAG, "Unsupported encoding: " + encoding);
             strBytes = str.getBytes();
         }
         writeBytes(strBytes);
@@ -376,7 +375,7 @@ public class SessionThread extends Thread {
 
     public void authAttempt(boolean authenticated) {
         if (authenticated) {
-            myLog.l(Log.INFO, "Authentication complete");
+            Log.i(TAG, "Authentication complete");
             this.authenticated = true;
         } else {
             // There was a failed auth attempt. If the connection came
@@ -387,10 +386,10 @@ public class SessionThread extends Thread {
                 quit();
             } else {
                 authFails++;
-                myLog.i("Auth failed: " + authFails + "/" + MAX_AUTH_FAILS);
+                Log.i(TAG, "Auth failed: " + authFails + "/" + MAX_AUTH_FAILS);
             }
             if (authFails > MAX_AUTH_FAILS) {
-                myLog.i("Too many auth fails, quitting session");
+                Log.i(TAG, "Too many auth fails, quitting session");
                 quit();
             }
         }
@@ -405,7 +404,7 @@ public class SessionThread extends Thread {
         try {
             this.workingDir = workingDir.getCanonicalFile().getAbsoluteFile();
         } catch (IOException e) {
-            myLog.l(Log.INFO, "SessionThread canonical error");
+            Log.i(TAG, "SessionThread canonical error");
         }
     }
 

@@ -28,17 +28,18 @@ import android.util.Log;
 import be.ppareit.swiftp_free.Defaults;
 
 public class CmdRETR extends FtpCmd implements Runnable {
+    private static final String TAG = CmdRETR.class.getSimpleName();
 
     protected String input;
 
     public CmdRETR(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdRETR.class.toString());
+        super(sessionThread);
         this.input = input;
     }
 
     @Override
     public void run() {
-        myLog.l(Log.DEBUG, "RETR executing");
+        Log.d(TAG, "RETR executing");
         String param = getParameter(input);
         File fileToRetr;
         String errString = null;
@@ -49,16 +50,15 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;
             } else if (fileToRetr.isDirectory()) {
-                myLog.l(Log.DEBUG, "Ignoring RETR for directory");
+                Log.d(TAG, "Ignoring RETR for directory");
                 errString = "550 Can't RETR a directory\r\n";
                 break mainblock;
             } else if (!fileToRetr.exists()) {
-                myLog.l(Log.INFO,
-                        "Can't RETR nonexistent file: " + fileToRetr.getAbsolutePath());
+                Log.d(TAG, "Can't RETR nonexistent file: " + fileToRetr.getAbsolutePath());
                 errString = "550 File does not exist\r\n";
                 break mainblock;
             } else if (!fileToRetr.canRead()) {
-                myLog.l(Log.INFO, "Failed RETR permission (canRead() is false)");
+                Log.i(TAG, "Failed RETR permission (canRead() is false)");
                 errString = "550 No read permissions\r\n";
                 break mainblock;
             } /*
@@ -72,26 +72,26 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 byte[] buffer = new byte[Defaults.getDataChunkSize()];
                 int bytesRead;
                 if (sessionThread.startUsingDataSocket()) {
-                    myLog.l(Log.DEBUG, "RETR opened data socket");
+                    Log.d(TAG, "RETR opened data socket");
                 } else {
                     errString = "425 Error opening socket\r\n";
-                    myLog.l(Log.INFO, "Error in initDataSocket()");
+                    Log.i(TAG, "Error in initDataSocket()");
                     break mainblock;
                 }
                 sessionThread.writeString("150 Sending file\r\n");
                 if (sessionThread.isBinaryMode()) {
-                    myLog.l(Log.DEBUG, "Transferring in binary mode");
+                    Log.d(TAG, "Transferring in binary mode");
                     while ((bytesRead = in.read(buffer)) != -1) {
                         // myLog.l(Log.DEBUG,
                         // String.format("CmdRETR sending %d bytes", bytesRead));
                         if (sessionThread.sendViaDataSocket(buffer, bytesRead) == false) {
                             errString = "426 Data socket error\r\n";
-                            myLog.l(Log.INFO, "Data socket error");
+                            Log.i(TAG, "Data socket error");
                             break mainblock;
                         }
                     }
                 } else { // We're in ASCII mode
-                    myLog.l(Log.DEBUG, "Transferring in ASCII mode");
+                    Log.d(TAG, "Transferring in ASCII mode");
                     // We have to convert all solitary \n to \r\n
                     boolean lastBufEndedWithCR = false;
                     while ((bytesRead = in.read(buffer)) != -1) {
@@ -150,6 +150,6 @@ public class CmdRETR extends FtpCmd implements Runnable {
         } else {
             sessionThread.writeString("226 Transmission finished\r\n");
         }
-        myLog.l(Log.DEBUG, "RETR done");
+        Log.d(TAG, "RETR done");
     }
 }

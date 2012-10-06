@@ -24,32 +24,32 @@ import java.net.InetAddress;
 import android.util.Log;
 
 public class CmdPASV extends FtpCmd implements Runnable {
+    private static final String TAG = CmdPASS.class.getSimpleName();
 
     public CmdPASV(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdPASV.class.toString());
+        super(sessionThread);
     }
 
     @Override
     public void run() {
         String cantOpen = "502 Couldn't open a port\r\n";
-        myLog.l(Log.DEBUG, "PASV running");
+        Log.d(TAG, "PASV running");
         int port;
         if ((port = sessionThread.onPasv()) == 0) {
             // There was a problem opening a port
-            myLog.l(Log.ERROR, "Couldn't open a port for PASV");
+            Log.e(TAG, "Couldn't open a port for PASV");
             sessionThread.writeString(cantOpen);
             return;
         }
         InetAddress addr = sessionThread.getDataSocketPasvIp();
-
         if (addr == null) {
-            myLog.l(Log.ERROR, "PASV IP string invalid");
+            Log.e(TAG, "PASV IP string invalid");
             sessionThread.writeString(cantOpen);
             return;
         }
-        myLog.d("PASV sending IP: " + addr.getHostAddress());
+        Log.d(TAG, "PASV sending IP: " + addr.getHostAddress());
         if (port < 1) {
-            myLog.l(Log.ERROR, "PASV port number invalid");
+            Log.e(TAG, "PASV port number invalid");
             sessionThread.writeString(cantOpen);
             return;
         }
@@ -57,7 +57,6 @@ public class CmdPASV extends FtpCmd implements Runnable {
         // Output our IP address in the format xxx,xxx,xxx,xxx
         response.append(addr.getHostAddress().replace('.', ','));
         response.append(",");
-
         // Output our port in the format p1,p2 where port=p1*256+p2
         response.append(port / 256);
         response.append(",");
@@ -65,6 +64,6 @@ public class CmdPASV extends FtpCmd implements Runnable {
         response.append(").\r\n");
         String responseString = response.toString();
         sessionThread.writeString(responseString);
-        myLog.l(Log.DEBUG, "PASV completed, sent: " + responseString);
+        Log.d(TAG, "PASV completed, sent: " + responseString);
     }
 }

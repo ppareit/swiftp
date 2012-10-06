@@ -29,6 +29,8 @@ import be.ppareit.swiftp_free.Defaults;
 import be.ppareit.swiftp_free.FTPServerService;
 
 public class NormalDataSocketFactory extends DataSocketFactory {
+    private static final String TAG = NormalDataSocketFactory.class.getSimpleName();
+
     /**
      * This class implements normal, traditional opening and closing of data sockets used
      * for transmitting directory listings and file contents. PORT and PASV work according
@@ -62,7 +64,7 @@ public class NormalDataSocketFactory extends DataSocketFactory {
         server = null;
         remoteAddr = null;
         remotePort = 0;
-        myLog.l(Log.DEBUG, "NormalDataSocketFactory state cleared");
+        Log.d(TAG, "NormalDataSocketFactory state cleared");
     }
 
     @Override
@@ -71,10 +73,10 @@ public class NormalDataSocketFactory extends DataSocketFactory {
         try {
             // Listen on any port (port parameter 0)
             server = new ServerSocket(0, Defaults.tcpConnectionBacklog);
-            myLog.l(Log.DEBUG, "Data socket pasv() listen successful");
+            Log.d(TAG, "Data socket pasv() listen successful");
             return server.getLocalPort();
         } catch (IOException e) {
-            myLog.l(Log.ERROR, "Data socket creation error");
+            Log.e(TAG, "Data socket creation error");
             clearState();
             return 0;
         }
@@ -93,7 +95,7 @@ public class NormalDataSocketFactory extends DataSocketFactory {
         if (server == null) {
             // We're in PORT mode (not PASV)
             if (remoteAddr == null || remotePort == 0) {
-                myLog.l(Log.INFO, "PORT mode but not initialized correctly");
+                Log.i(TAG, "PORT mode but not initialized correctly");
                 clearState();
                 return null;
             }
@@ -101,9 +103,8 @@ public class NormalDataSocketFactory extends DataSocketFactory {
             try {
                 socket = new Socket(remoteAddr, remotePort);
             } catch (IOException e) {
-                myLog.l(Log.INFO,
-                        "Couldn't open PORT data socket to: " + remoteAddr.toString()
-                                + ":" + remotePort);
+                Log.i(TAG, "Couldn't open PORT data socket to: " + remoteAddr.toString()
+                        + ":" + remotePort);
                 clearState();
                 return null;
             }
@@ -112,7 +113,7 @@ public class NormalDataSocketFactory extends DataSocketFactory {
             try {
                 socket.setSoTimeout(Defaults.SO_TIMEOUT_MS);
             } catch (Exception e) {
-                myLog.l(Log.ERROR, "Couldn't set SO_TIMEOUT");
+                Log.e(TAG, "Couldn't set SO_TIMEOUT");
                 clearState();
                 return null;
             }
@@ -123,9 +124,9 @@ public class NormalDataSocketFactory extends DataSocketFactory {
             Socket socket = null;
             try {
                 socket = server.accept();
-                myLog.l(Log.DEBUG, "onTransfer pasv accept successful");
+                Log.d(TAG, "onTransfer pasv accept successful");
             } catch (Exception e) {
-                myLog.l(Log.INFO, "Exception accepting PASV socket");
+                Log.i(TAG, "Exception accepting PASV socket");
                 socket = null;
             }
             clearState();
@@ -149,7 +150,6 @@ public class NormalDataSocketFactory extends DataSocketFactory {
 
     @Override
     public InetAddress getPasvIp() {
-        // String retVal = server.getInetAddress().getHostAddress();
         return FTPServerService.getWifiIp();
     }
 

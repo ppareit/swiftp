@@ -30,7 +30,7 @@ public class CmdDELE extends FtpCmd implements Runnable {
     protected String input;
 
     public CmdDELE(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdDELE.class.toString());
+        super(sessionThread);
         this.input = input;
     }
 

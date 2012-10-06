@@ -39,7 +39,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
     public static final String message = "TEMPLATE!!";
 
     public CmdAbstractStore(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdAbstractStore.class.toString());
+        super(sessionThread);
     }
 
     public void doStorOrAppe(String param, boolean append) {
@@ -174,7 +174,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
                         Log.d(TAG, "Stack trace: ");
                         StackTraceElement[] traceElems = e.getStackTrace();
                         for (StackTraceElement elem : traceElems) {
-                            myLog.d(elem.toString());
+                            Log.d(TAG, elem.toString());
                         }
                         break storing;
                     }

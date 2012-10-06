@@ -26,6 +26,7 @@ import android.util.Log;
 import be.ppareit.swiftp_free.Globals;
 
 public class CmdPASS extends FtpCmd implements Runnable {
+    private static final String TAG = CmdPASS.class.getSimpleName();
 
     String input;
 
@@ -33,16 +34,15 @@ public class CmdPASS extends FtpCmd implements Runnable {
         // We can just discard the password for now. We're just
         // following the expected dialogue, we're going to allow
         // access in any case.
-        super(sessionThread, CmdPASS.class.toString());
+        super(sessionThread);
         this.input = input;
     }
 
     @Override
     public void run() {
+        Log.d(TAG, "Executing PASS");
         // User must have already executed a USER command to
         // populate the Account object's username
-        myLog.l(Log.DEBUG, "Executing PASS");
-
         String attemptPassword = getParameter(input, true); // silent
         String attemptUsername = sessionThread.account.getUsername();
         if (attemptUsername == null) {
@@ -53,7 +53,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
         if (ctx == null) {
             // This will probably never happen, since the global
             // context is configured by the Service
-            myLog.l(Log.ERROR, "No global context in PASS\r\n");
+            Log.e(TAG, "No global context in PASS\r\n");
         }
         String password;
         String username;
@@ -61,11 +61,11 @@ public class CmdPASS extends FtpCmd implements Runnable {
         username = settings.getString("username", null);
         password = settings.getString("password", null);
         if (username == null || password == null) {
-            myLog.l(Log.ERROR, "Username or password misconfigured");
+            Log.e(TAG, "Username or password misconfigured");
             sessionThread.writeString("500 Internal error during authentication");
         } else if (username.equals(attemptUsername) && password.equals(attemptPassword)) {
             sessionThread.writeString("230 Access granted\r\n");
-            myLog.l(Log.INFO, "User " + username + " password verified");
+            Log.i(TAG, "User " + username + " password verified");
             sessionThread.authAttempt(true);
         } else {
             try {
@@ -74,7 +74,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
             }
-            myLog.l(Log.INFO, "Failed authentication");
+            Log.i(TAG, "Failed authentication");
             sessionThread.writeString("530 Login incorrect.\r\n");
             sessionThread.authAttempt(false);
         }

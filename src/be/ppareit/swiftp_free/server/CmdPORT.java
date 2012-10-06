@@ -25,17 +25,18 @@ import java.net.UnknownHostException;
 import android.util.Log;
 
 public class CmdPORT extends FtpCmd implements Runnable {
+    private static final String TAG = CmdPORT.class.getSimpleName();
 
     String input;
 
     public CmdPORT(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdPORT.class.toString());
+        super(sessionThread);
         this.input = input;
     }
 
     @Override
     public void run() {
-        myLog.l(Log.DEBUG, "PORT running");
+        Log.d(TAG, "PORT executing");
         String errString = null;
         mainBlock: {
             String param = getParameter(input);
@@ -84,10 +85,10 @@ public class CmdPORT extends FtpCmd implements Runnable {
         }
         if (errString == null) {
             sessionThread.writeString("200 PORT OK\r\n");
-            myLog.l(Log.DEBUG, "PORT completed");
         } else {
-            myLog.l(Log.INFO, "PORT error: " + errString);
+            Log.i(TAG, "PORT error: " + errString);
             sessionThread.writeString(errString);
         }
+        Log.d(TAG, "PORT completed");
     }
 }

@@ -24,17 +24,18 @@ import java.io.File;
 import android.util.Log;
 
 public class CmdRMD extends FtpCmd implements Runnable {
+    private static final String TAG = CmdRMD.class.getSimpleName();
 
     protected String input;
 
     public CmdRMD(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdRMD.class.toString());
+        super(sessionThread);
         this.input = input;
     }
 
     @Override
     public void run() {
-        myLog.l(Log.INFO, "RMD executing");
+        Log.d(TAG, "RMD executing");
         String param = getParameter(input);
         File toRemove;
         String errString = null;
@@ -63,11 +64,11 @@ public class CmdRMD extends FtpCmd implements Runnable {
         }
         if (errString != null) {
             sessionThread.writeString(errString);
-            myLog.l(Log.INFO, "RMD failed: " + errString.trim());
+            Log.i(TAG, "RMD failed: " + errString.trim());
         } else {
             sessionThread.writeString("250 Removed directory\r\n");
         }
-        myLog.l(Log.DEBUG, "RMD finished");
+        Log.d(TAG, "RMD finished");
     }
 
     /**
@@ -87,10 +88,10 @@ public class CmdRMD extends FtpCmd implements Runnable {
             for (File entry : toDelete.listFiles()) {
                 success &= recursiveDelete(entry);
             }
-            myLog.l(Log.DEBUG, "Recursively deleted: " + toDelete);
+            Log.d(TAG, "Recursively deleted: " + toDelete);
             return success && toDelete.delete();
         } else {
-            myLog.l(Log.DEBUG, "RMD deleting file: " + toDelete);
+            Log.d(TAG, "RMD deleting file: " + toDelete);
             return toDelete.delete();
         }
     }

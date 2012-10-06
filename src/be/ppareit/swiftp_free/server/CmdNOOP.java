@@ -15,22 +15,21 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package be.ppareit.swiftp_free.server;
 
-
 public class CmdNOOP extends FtpCmd implements Runnable {
-	public static final String message = "TEMPLATE!!";
+    public static final String message = "TEMPLATE!!";
 
-	public CmdNOOP(SessionThread sessionThread, String input) {
-		super(sessionThread, CmdNOOP.class.toString());
-	}
+    public CmdNOOP(SessionThread sessionThread, String input) {
+        super(sessionThread);
+    }
 
-	@Override
+    @Override
     public void run() {
-		sessionThread.writeString("200 NOOP ok\r\n");
-		//myLog.l(Log.INFO, "Executing NOOP, done");
-	}
+        sessionThread.writeString("200 NOOP ok\r\n");
+        // myLog.l(Log.INFO, "Executing NOOP, done");
+    }
 
 }

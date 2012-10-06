@@ -35,7 +35,7 @@ public abstract class CmdAbstractListing extends FtpCmd {
                                                       // abstract class?
 
     public CmdAbstractListing(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdAbstractListing.class.toString());
+        super(sessionThread);
     }
 
     abstract String makeLsString(File file);

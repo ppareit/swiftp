@@ -24,13 +24,12 @@ import java.net.Socket;
 
 import android.util.Log;
 import be.ppareit.swiftp_free.FTPServerService;
-import be.ppareit.swiftp_free.MyLog;
 
 public class TcpListener extends Thread {
+    private static final String TAG = TcpListener.class.getSimpleName();
 
     ServerSocket listenSocket;
     FTPServerService ftpServerService;
-    MyLog myLog = new MyLog(getClass().getName());
 
     public TcpListener(ServerSocket listenSocket, FTPServerService ftpServerService) {
         this.listenSocket = listenSocket;
@@ -42,7 +41,7 @@ public class TcpListener extends Thread {
             listenSocket.close(); // if the TcpListener thread is blocked on accept,
                                   // closing the socket will raise an exception
         } catch (Exception e) {
-            myLog.l(Log.DEBUG, "Exception closing TcpListener listenSocket");
+            Log.d(TAG, "Exception closing TcpListener listenSocket");
         }
     }
 
@@ -50,16 +49,15 @@ public class TcpListener extends Thread {
     public void run() {
         try {
             while (true) {
-
                 Socket clientSocket = listenSocket.accept();
-                myLog.l(Log.INFO, "New connection, spawned thread");
+                Log.i(TAG, "New connection, spawned thread");
                 SessionThread newSession = new SessionThread(clientSocket,
                         new NormalDataSocketFactory(), SessionThread.Source.LOCAL);
                 newSession.start();
                 ftpServerService.registerSessionThread(newSession);
             }
         } catch (Exception e) {
-            myLog.l(Log.DEBUG, "Exception in TcpListener");
+            Log.d(TAG, "Exception in TcpListener");
         }
     }
 }

@@ -25,15 +25,15 @@ import android.util.Log;
 import be.ppareit.swiftp_free.Globals;
 
 public class CmdPWD extends FtpCmd implements Runnable {
+    private static final String TAG = CmdPWD.class.getSimpleName();
 
     public CmdPWD(SessionThread sessionThread, String input) {
-        super(sessionThread, CmdPWD.class.toString());
+        super(sessionThread);
     }
 
     @Override
     public void run() {
-        myLog.l(Log.DEBUG, "PWD executing");
-
+        Log.d(TAG, "PWD executing");
         // We assume that the chroot restriction has been applied, and that
         // therefore the current directory is located somewhere within the
         // chroot directory. Therefore, we can just slice of the chroot
@@ -51,10 +51,10 @@ public class CmdPWD extends FtpCmd implements Runnable {
             sessionThread.writeString("257 \"" + currentDir + "\"\r\n");
         } catch (IOException e) {
             // This shouldn't happen unless our input validation has failed
-            myLog.l(Log.ERROR, "PWD canonicalize");
+            Log.e(TAG, "PWD canonicalize");
             sessionThread.closeSocket(); // should cause thread termination
         }
-        myLog.l(Log.DEBUG, "PWD complete");
+        Log.d(TAG, "PWD complete");
     }
 
 }
