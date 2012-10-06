@@ -47,6 +47,7 @@ import be.ppareit.swiftp_free.server.SessionThread;
 import be.ppareit.swiftp_free.server.TcpListener;
 
 public class FTPServerService extends Service implements Runnable {
+    private static final String TAG = FTPServerService.class.getSimpleName();
 
     // Service will broadcast (LocalBroadcast) when server start/stop
     static private final String PACKAGE = FTPServerService.class.getPackage().getName();
@@ -57,8 +58,6 @@ public class FTPServerService extends Service implements Runnable {
 
     protected static Thread serverThread = null;
     protected boolean shouldExit = false;
-    protected MyLog myLog = new MyLog(getClass().getName());
-    protected static MyLog staticLog = new MyLog(FTPServerService.class.getName());
 
     public static final int BACKLOG = 21;
     public static final int MAX_SESSIONS = 5;
@@ -105,7 +104,7 @@ public class FTPServerService extends Service implements Runnable {
 
     @Override
     public void onCreate() {
-        myLog.l(Log.DEBUG, "SwiFTP server created");
+        Log.d(TAG, "SwiFTP server created");
         // Set the application-wide context global, if not already set
         Context myContext = Globals.getContext();
         if (myContext == null) {
@@ -126,16 +125,16 @@ public class FTPServerService extends Service implements Runnable {
         // The previous server thread may still be cleaning up, wait for it
         // to finish.
         while (serverThread != null) {
-            myLog.l(Log.WARN, "Won't start, server thread exists");
+            Log.w(TAG, "Won't start, server thread exists");
             if (attempts > 0) {
                 attempts--;
                 Util.sleepIgnoreInterupt(1000);
             } else {
-                myLog.l(Log.ERROR, "Server thread already exists");
+                Log.w(TAG, "Server thread already exists");
                 return;
             }
         }
-        myLog.l(Log.DEBUG, "Creating server thread");
+        Log.d(TAG, "Creating server thread");
         serverThread = new Thread(this);
         serverThread.start();
     }
@@ -143,23 +142,23 @@ public class FTPServerService extends Service implements Runnable {
     public static boolean isRunning() {
         // return true if and only if a server Thread is running
         if (serverThread == null) {
-            staticLog.l(Log.DEBUG, "Server is not running (null serverThread)");
+            Log.d(TAG, "Server is not running (null serverThread)");
             return false;
         }
         if (!serverThread.isAlive()) {
-            staticLog.l(Log.DEBUG, "serverThread non-null but !isAlive()");
+            Log.d(TAG, "serverThread non-null but !isAlive()");
         } else {
-            staticLog.l(Log.DEBUG, "Server is alive");
+            Log.d(TAG, "Server is alive");
         }
         return true;
     }
 
     @Override
     public void onDestroy() {
-        myLog.l(Log.INFO, "onDestroy() Stopping server");
+        Log.i(TAG, "onDestroy() Stopping server");
         shouldExit = true;
         if (serverThread == null) {
-            myLog.l(Log.WARN, "Stopping with null serverThread");
+            Log.w(TAG, "Stopping with null serverThread");
             return;
         } else {
             serverThread.interrupt();
@@ -169,17 +168,17 @@ public class FTPServerService extends Service implements Runnable {
             } catch (InterruptedException e) {
             }
             if (serverThread.isAlive()) {
-                myLog.l(Log.WARN, "Server thread failed to exit");
+                Log.w(TAG, "Server thread failed to exit");
                 // it may still exit eventually if we just leave the
                 // shouldExit flag set
             } else {
-                myLog.d("serverThread join()ed ok");
+                Log.d(TAG, "serverThread join()ed ok");
                 serverThread = null;
             }
         }
         try {
             if (listenSocket != null) {
-                myLog.l(Log.INFO, "Closing listenSocket");
+                Log.i(TAG, "Closing listenSocket");
                 listenSocket.close();
             }
         } catch (IOException e) {
@@ -190,18 +189,18 @@ public class FTPServerService extends Service implements Runnable {
             wifiLock = null;
         }
         clearNotification();
-        myLog.d("FTPServerService.onDestroy() finished");
+        Log.d(TAG, "FTPServerService.onDestroy() finished");
     }
 
     private boolean loadSettings() {
-        myLog.l(Log.DEBUG, "Loading settings");
+        Log.d(TAG, "Loading settings");
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         port = Integer.valueOf(settings.getString("portNum", "2121"));
         if (port == 0) {
             // If port number from settings is invalid, use the default
             port = Defaults.portNumber;
         }
-        myLog.l(Log.DEBUG, "Using port " + port);
+        Log.d(TAG, "Using port " + port);
 
         acceptNet = settings.getBoolean("allowNet", Defaults.acceptNet);
         acceptWifi = settings.getBoolean("allowWifi", Defaults.acceptWifi);
@@ -214,12 +213,12 @@ public class FTPServerService extends Service implements Runnable {
 
         validateBlock: {
             if (username == null || password == null) {
-                myLog.l(Log.ERROR, "Username or password is invalid");
+                Log.e(TAG, "Username or password is invalid");
                 break validateBlock;
             }
             File chrootDirAsFile = new File(chrootDir);
             if (!chrootDirAsFile.isDirectory()) {
-                myLog.l(Log.ERROR, "Chroot dir is invalid");
+                Log.e(TAG, "Chroot dir is invalid");
                 break validateBlock;
             }
             Globals.setChrootDir(chrootDirAsFile);
@@ -263,7 +262,7 @@ public class FTPServerService extends Service implements Runnable {
         // Pass Notification to NotificationManager
         notificationMgr.notify(0, notification);
 
-        myLog.d("Notication setup done");
+        Log.d(TAG, "Notication setup done");
     }
 
     private void clearNotification() {
@@ -273,7 +272,7 @@ public class FTPServerService extends Service implements Runnable {
             notificationMgr = (NotificationManager) getSystemService(ns);
         }
         notificationMgr.cancelAll();
-        myLog.d("Cleared notification");
+        Log.d(TAG, "Cleared notification");
     }
 
     public void run() {
@@ -282,7 +281,7 @@ public class FTPServerService extends Service implements Runnable {
         int consecutiveProxyStartFailures = 0;
         long proxyStartMillis = 0;
 
-        myLog.l(Log.DEBUG, "Server thread running");
+        Log.d(TAG, "Server thread running");
 
         // set our members according to user preferences
         if (!loadSettings()) {
@@ -305,7 +304,7 @@ public class FTPServerService extends Service implements Runnable {
             try {
                 setupListener();
             } catch (IOException e) {
-                myLog.l(Log.WARN, "Error opening port, check your network connection.");
+                Log.w(TAG, "Error opening port, check your network connection.");
                 // serverAddress = null;
                 cleanupAndStopService();
                 return;
@@ -314,7 +313,7 @@ public class FTPServerService extends Service implements Runnable {
         }
         takeWakeLock();
 
-        myLog.l(Log.INFO, "SwiFTP server ready");
+        Log.i(TAG, "SwiFTP server ready");
         setupNotification();
 
         // A socket is open now, so the FTP server is started, notify rest of world
@@ -324,7 +323,7 @@ public class FTPServerService extends Service implements Runnable {
             if (acceptWifi) {
                 if (wifiListener != null) {
                     if (!wifiListener.isAlive()) {
-                        myLog.l(Log.DEBUG, "Joining crashed wifiListener thread");
+                        Log.d(TAG, "Joining crashed wifiListener thread");
                         try {
                             wifiListener.join();
                         } catch (InterruptedException e) {
@@ -343,7 +342,7 @@ public class FTPServerService extends Service implements Runnable {
             if (acceptNet) {
                 if (proxyConnector != null) {
                     if (!proxyConnector.isAlive()) {
-                        myLog.l(Log.DEBUG, "Joining crashed proxy connector");
+                        Log.d(TAG, "Joining crashed proxy connector");
                         try {
                             proxyConnector.join();
                         } catch (InterruptedException e) {
@@ -358,13 +357,13 @@ public class FTPServerService extends Service implements Runnable {
                             // seconds of starting, it was a startup or
                             // connection
                             // failure.
-                            myLog.l(Log.DEBUG, "Incrementing proxy start failures");
+                            Log.d(TAG, "Incrementing proxy start failures");
                             consecutiveProxyStartFailures++;
                         } else {
                             // Otherwise assume the proxy started successfully
                             // and
                             // crashed later.
-                            myLog.l(Log.DEBUG, "Resetting proxy start failures");
+                            Log.d(TAG, "Resetting proxy start failures");
                             consecutiveProxyStartFailures = 0;
                         }
                     }
@@ -384,7 +383,7 @@ public class FTPServerService extends Service implements Runnable {
                         shouldStartListener = true;
                     }
                     if (shouldStartListener) {
-                        myLog.l(Log.DEBUG, "Spawning ProxyConnector");
+                        Log.d(TAG, "Spawning ProxyConnector");
                         proxyConnector = new ProxyConnector(this);
                         proxyConnector.start();
                         proxyStartMillis = nowMillis;
@@ -396,7 +395,7 @@ public class FTPServerService extends Service implements Runnable {
                 // the main socket to send an exit signal
                 Thread.sleep(WAKE_INTERVAL_MS);
             } catch (InterruptedException e) {
-                myLog.l(Log.DEBUG, "Thread interrupted");
+                Log.d(TAG, "Thread interrupted");
             }
         }
 
@@ -412,13 +411,13 @@ public class FTPServerService extends Service implements Runnable {
         }
         shouldExit = false; // we handled the exit flag, so reset it to
                             // acknowledge
-        myLog.l(Log.DEBUG, "Exiting cleanly, returning from run()");
+        Log.d(TAG, "Exiting cleanly, returning from run()");
 
         cleanupAndStopService();
     }
 
     private void terminateAllSessions() {
-        myLog.i("Terminating " + sessionThreads.size() + " session thread(s)");
+        Log.i(TAG, "Terminating " + sessionThreads.size() + " session thread(s)");
         synchronized (this) {
             for (SessionThread sessionThread : sessionThreads) {
                 if (sessionThread != null) {
@@ -441,7 +440,6 @@ public class FTPServerService extends Service implements Runnable {
     private void takeWakeLock() {
         if (wakeLock == null) {
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-
             // Many (all?) devices seem to not properly honor a
             // PARTIAL_WAKE_LOCK,
             // which should prevent CPU throttling. This has been
@@ -456,23 +454,23 @@ public class FTPServerService extends Service implements Runnable {
             }
             wakeLock.setReferenceCounted(false);
         }
-        myLog.d("Acquiring wake lock");
+        Log.d(TAG, "Acquiring wake lock");
         wakeLock.acquire();
     }
 
     private void releaseWakeLock() {
-        myLog.d("Releasing wake lock");
+        Log.d(TAG, "Releasing wake lock");
         if (wakeLock != null) {
             wakeLock.release();
             wakeLock = null;
-            myLog.d("Finished releasing wake lock");
+            Log.d(TAG, "Finished releasing wake lock");
         } else {
-            myLog.i("Couldn't release null wake lock");
+            Log.i(TAG, "Couldn't release null wake lock");
         }
     }
 
     private void takeWifiLock() {
-        myLog.d("Taking wifi lock");
+        Log.d(TAG, "Taking wifi lock");
         if (wifiLock == null) {
             WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
             wifiLock = manager.createWifiLock("SwiFTP");
@@ -482,7 +480,7 @@ public class FTPServerService extends Service implements Runnable {
     }
 
     private void releaseWifiLock() {
-        myLog.d("Releasing wifi lock");
+        Log.d(TAG, "Releasing wifi lock");
         if (wifiLock != null) {
             wifiLock.release();
             wifiLock = null;
@@ -490,7 +488,7 @@ public class FTPServerService extends Service implements Runnable {
     }
 
     public void errorShutdown() {
-        myLog.l(Log.ERROR, "Service errorShutdown() called");
+        Log.e(TAG, "Service errorShutdown() called");
         cleanupAndStopService();
     }
 
@@ -589,14 +587,14 @@ public class FTPServerService extends Service implements Runnable {
             List<SessionThread> toBeRemoved = new ArrayList<SessionThread>();
             for (SessionThread sessionThread : sessionThreads) {
                 if (!sessionThread.isAlive()) {
-                    myLog.l(Log.DEBUG, "Cleaning up finished session...");
+                    Log.d(TAG, "Cleaning up finished session...");
                     try {
                         sessionThread.join();
-                        myLog.l(Log.DEBUG, "Thread joined");
+                        Log.d(TAG, "Thread joined");
                         toBeRemoved.add(sessionThread);
                         sessionThread.closeSocket(); // make sure socket closed
                     } catch (InterruptedException e) {
-                        myLog.l(Log.DEBUG, "Interrupted while joining");
+                        Log.d(TAG, "Interrupted while joining");
                         // We will try again in the next loop iteration
                     }
                 }
@@ -608,7 +606,7 @@ public class FTPServerService extends Service implements Runnable {
             // Cleanup is complete. Now actually add the new thread to the list.
             sessionThreads.add(newSession);
         }
-        myLog.d("Registered session thread");
+        Log.d(TAG, "Registered session thread");
     }
 
     /** Get the ProxyConnector, may return null if proxying is disabled. */
