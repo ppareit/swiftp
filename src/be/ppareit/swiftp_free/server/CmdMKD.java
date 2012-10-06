@@ -24,6 +24,7 @@ import java.io.File;
 import android.util.Log;
 
 public class CmdMKD extends FtpCmd implements Runnable {
+    private static final String TAG = CmdMKD.class.getSimpleName();
 
     String input;
 
@@ -61,11 +62,11 @@ public class CmdMKD extends FtpCmd implements Runnable {
         }
         if (errString != null) {
             sessionThread.writeString(errString);
-            myLog.l(Log.INFO, "MKD error: " + errString.trim());
+            Log.i(TAG, "MKD error: " + errString.trim());
         } else {
             sessionThread.writeString("250 Directory created\r\n");
         }
-        myLog.l(Log.INFO, "MKD complete");
+        Log.i(TAG, "MKD complete");
     }
 
 }
