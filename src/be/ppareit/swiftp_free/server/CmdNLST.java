@@ -31,6 +31,7 @@ import java.io.File;
 import android.util.Log;
 
 public class CmdNLST extends CmdAbstractListing implements Runnable {
+    private static final String TAG = CmdNLST.class.getSimpleName();
 
     // The approximate number of milliseconds in 6 months
     public final static long MS_IN_SIX_MONTHS = 6 * 30 * 24 * 60 * 60 * 1000;
@@ -94,9 +95,9 @@ public class CmdNLST extends CmdAbstractListing implements Runnable {
 
         if (errString != null) {
             sessionThread.writeString(errString);
-            myLog.l(Log.DEBUG, "NLST failed with: " + errString);
+            Log.d(TAG, "NLST failed with: " + errString);
         } else {
-            myLog.l(Log.DEBUG, "NLST completed OK");
+            Log.d(TAG, "NLST completed OK");
         }
         // The success or error response over the control connection will
         // have already been handled by sendListing, so we can just quit now.
@@ -105,7 +106,7 @@ public class CmdNLST extends CmdAbstractListing implements Runnable {
     @Override
     protected String makeLsString(File file) {
         if (!file.exists()) {
-            staticLog.l(Log.INFO, "makeLsString had nonexistent file");
+            Log.i(TAG, "makeLsString had nonexistent file");
             return null;
         }
 
@@ -116,10 +117,10 @@ public class CmdNLST extends CmdAbstractListing implements Runnable {
         String lastNamePart = file.getName();
         // Many clients can't handle files containing these symbols
         if (lastNamePart.contains("*") || lastNamePart.contains("/")) {
-            staticLog.l(Log.INFO, "Filename omitted due to disallowed character");
+            Log.i(TAG, "Filename omitted due to disallowed character");
             return null;
         } else {
-            staticLog.l(Log.DEBUG, "Filename: " + lastNamePart);
+            Log.d(TAG, "Filename: " + lastNamePart);
             return lastNamePart + "\r\n";
         }
     }
