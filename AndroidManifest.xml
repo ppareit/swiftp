@@ -40,6 +40,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <activity android:name=".gui.ServerPreferenceActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -49,6 +50,14 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <service android:name=".FTPServerService" />
 
+        <receiver
+            android:name=".gui.ServerRunningNotification"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="be.ppareit.swiftp_free.FTPServerService.STARTED" />
+                <action android:name="be.ppareit.swiftp_free.FTPServerService.STOPPED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
