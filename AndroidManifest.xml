@@ -37,10 +37,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <application
         android:icon="@drawable/icon"
         android:label="@string/swiftp_name" >
-        <activity android:name="be.ppareit.swiftp_free.gui.ServerPreferenceActivity" >
+        <activity android:name=".gui.ServerPreferenceActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
