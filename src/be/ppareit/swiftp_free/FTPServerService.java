@@ -439,6 +439,7 @@ public class FTPServerService extends Service implements Runnable {
 
     private void takeWakeLock() {
         if (wakeLock == null) {
+            Log.d(TAG, "About to take wake lock");
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
             // Many (all?) devices seem to not properly honor a
             // PARTIAL_WAKE_LOCK,
@@ -448,6 +449,7 @@ public class FTPServerService extends Service implements Runnable {
             // into a
             // full wake lock.
             if (fullWake) {
+                Log.d(TAG, "Need to take full wake lock");
                 wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, WAKE_LOCK_TAG);
             } else {
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
@@ -465,7 +467,7 @@ public class FTPServerService extends Service implements Runnable {
             wakeLock = null;
             Log.d(TAG, "Finished releasing wake lock");
         } else {
-            Log.i(TAG, "Couldn't release null wake lock");
+            Log.e(TAG, "Couldn't release null wake lock");
         }
     }
 
