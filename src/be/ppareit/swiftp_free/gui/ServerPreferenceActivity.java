@@ -83,6 +83,8 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             String summary = resources
                     .getString(R.string.running_summary_started, iptext);
             running_state.setSummary(summary);
+        } else {
+            running_state.setChecked(false);
         }
         running_state.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
