@@ -266,9 +266,8 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         unregisterReceiver(ftpServerReceiver);
 
         // unregister the listener
-        getPreferenceScreen().getSharedPreferences()
-                .unregisterOnSharedPreferenceChangeListener(this);
-
+        SharedPreferences sprefs = getPreferenceScreen().getSharedPreferences();
+        sprefs.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     /**
