@@ -28,9 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -41,7 +38,6 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import be.ppareit.swiftp_free.gui.ServerPreferenceActivity;
 import be.ppareit.swiftp_free.server.ProxyConnector;
 import be.ppareit.swiftp_free.server.SessionThread;
 import be.ppareit.swiftp_free.server.TcpListener;
@@ -90,7 +86,6 @@ public class FTPServerService extends Service implements Runnable {
 
     private static SharedPreferences settings = null;
 
-    NotificationManager notificationMgr = null;
     PowerManager.WakeLock wakeLock;
 
     public FTPServerService() {
@@ -188,7 +183,6 @@ public class FTPServerService extends Service implements Runnable {
             wifiLock.release();
             wifiLock = null;
         }
-        clearNotification();
         Log.d(TAG, "FTPServerService.onDestroy() finished");
     }
 
@@ -236,45 +230,6 @@ public class FTPServerService extends Service implements Runnable {
         listenSocket.bind(new InetSocketAddress(port));
     }
 
-    private void setupNotification() {
-        // http://developer.android.com/guide/topics/ui/notifiers/notifications.html
-
-        // Get NotificationManager reference
-        String ns = Context.NOTIFICATION_SERVICE;
-        notificationMgr = (NotificationManager) getSystemService(ns);
-
-        // Instantiate a Notification
-        int icon = R.drawable.notification;
-        CharSequence tickerText = getString(R.string.notif_server_starting);
-        long when = System.currentTimeMillis();
-        Notification notification = new Notification(icon, tickerText, when);
-
-        // Define Notification's message and Intent
-        CharSequence contentTitle = getString(R.string.notif_title);
-        CharSequence contentText = getString(R.string.notif_text);
-        Intent notificationIntent = new Intent(this, ServerPreferenceActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, 0);
-        notification.setLatestEventInfo(getApplicationContext(), contentTitle,
-                contentText, contentIntent);
-        notification.flags |= Notification.FLAG_ONGOING_EVENT;
-
-        // Pass Notification to NotificationManager
-        notificationMgr.notify(0, notification);
-
-        Log.d(TAG, "Notication setup done");
-    }
-
-    private void clearNotification() {
-        if (notificationMgr == null) {
-            // Get NotificationManager reference
-            String ns = Context.NOTIFICATION_SERVICE;
-            notificationMgr = (NotificationManager) getSystemService(ns);
-        }
-        notificationMgr.cancelAll();
-        Log.d(TAG, "Cleared notification");
-    }
-
     public void run() {
         // The UI will want to check the server status to update its
         // start/stop server button
@@ -314,7 +269,6 @@ public class FTPServerService extends Service implements Runnable {
         takeWakeLock();
 
         Log.i(TAG, "SwiFTP server ready");
-        setupNotification();
 
         // A socket is open now, so the FTP server is started, notify rest of world
         sendBroadcast(new Intent(ACTION_STARTED));
@@ -433,7 +387,6 @@ public class FTPServerService extends Service implements Runnable {
         stopSelf();
         releaseWifiLock();
         releaseWakeLock();
-        clearNotification();
         sendBroadcast(new Intent(ACTION_STOPPED));
     }
 
