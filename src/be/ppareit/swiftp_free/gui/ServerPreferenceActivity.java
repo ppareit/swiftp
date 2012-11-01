@@ -30,6 +30,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.CheckBoxPreference;
@@ -39,12 +40,14 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 import be.ppareit.swiftp_free.FTPServerService;
 import be.ppareit.swiftp_free.Globals;
 import be.ppareit.swiftp_free.R;
+import be.ppareit.swiftp_free.Util;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -97,6 +100,29 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 return true;
             }
         });
+
+        PreferenceScreen prefScreen = (PreferenceScreen) findPreference("preference_screen");
+        Preference marketVersionPref = findPreference("market_version");
+        marketVersionPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                // start the market at our application
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse("market://details?id=be.ppareit.swiftp"));
+                try {
+                    // this can fail if there is no market installed
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to lauch the market.");
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        });
+        if (Util.isFreeVersion() == false) {
+            prefScreen.removePreference(marketVersionPref);
+        }
 
         EditTextPreference username_pref = (EditTextPreference) findPreference("username");
         username_pref.setSummary(settings.getString("username",

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen android:key="preference_screen" xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="running_state"
         android:summary="@string/running_summary_stopped"
         android:title="@string/running_label" />
+    <Preference
+        android:key="market_version"
+        android:summary="@string/market_version_summary"
+        android:title="@string/market_version_label" />
 
     <PreferenceCategory
         android:key="settings"

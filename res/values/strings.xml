@@ -26,6 +26,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_summary_stopped">Start FTP server</string>
     <string name="running_summary_started">FTP server running at %s</string>
     <string name="running_summary_failed">Failed to start the FTP server, no wifi?</string>
+    <string name="market_version_label">Market version</string>
+    <string name="market_version_summary">This is the FTP Server Demo version.
+        Support development by getting the FTP Server from the android market.
+		Click here to go to the market.</string>
     <string name="settings_label">Settings</string>
     <string name="username_label">Username</string>
     <string name="username_default">ftp</string>
