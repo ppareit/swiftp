@@ -20,8 +20,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="be.ppareit.swiftp_free"
-    android:versionCode="21"
-    android:versionName="2.2" >
+    android:versionCode="22"
+    android:versionName="2.3" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
