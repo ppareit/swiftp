@@ -57,39 +57,47 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="about_label">About...</string>
     <string name="help_dlg_title">FTP Server Help</string>
     <string name="help_dlg_message">\
-Thanks for using SwiFTP! Here are some brief usage instructions. More information can be \
-found at http://www.swiftp.org.\n\n\
+Thanks for using FTP Server (SwiFTP)! Here are some brief usage instructions. More
+information can be found at http://ppareit.github.com/swiftp/.\n\n\
 \
-SwiFTP allows you to run an ftp server on your android device. This means that any program \
-can access the files on your device while the ftp server is running. For example, entering \
-\'ftp://...\' in the firefox url bar will allow you to browse the files on your device from \
-a desktop pc or a laptop.\n\n\
+This program allows you to run an ftp server on your android device. This means that any
+program can access the files on your device while the ftp server is running. For example,
+entering \'ftp://...\' in the firefox url bar will allow you to browse the files on your
+device from a desktop pc or a laptop.\n\n
 \
-By default, the user name and password are both \'ftp\', you should change them. You use \
-this username and password when accessing the server.\
-\n\n\
-The global proxy is a way to connect to your device from anywhere on the net. Your \
-traffic is routed through some proxy servers in order to avoid firewall and NAT problems. \
-If you enable this feature, make sure you have a strong password, because anyone can \
-attempt to connect to your device. The global proxy feature can be enabled or disabled \
-from the setup screen.\n\n\
+By default, the user name and password are both \'ftp\', you should change them. You use
+this username and password when accessing the server.\n\n
 \
-There is a configuration option (\"keep phone awake\") that fixes a problem where \
-file transfers go slow or stop completely when the phone sleeps. If you have this \
-problem, check this box and restart SwiFTP. Your phone will stay awake as long as \
-the server is running.\
-\n\n\
+There is a configuration option (\"keep phone awake\") that fixes a problem where
+file transfers go slow or stop completely when the phone sleeps. If you have this
+problem, check this box and restart the program. Your phone will stay awake as long as
+the server is running.\n\n
+\
 For power and security reasons, it is recommended that the server be stopped after use.\n\n\
 \
-If something is not working the way you expect it to, please report it to me at www.swiftp.org.\n\n\
+If something is not working the way you expect it to, please report it to Pieter Pareit
+(pieter.pareit@gmail.com).\n\n\
 \
-Thanks for using SwiFTP, and look for more improvements soon.\n\n\</string>
+The development of this open source program is supported by buying this program through
+the google play store. You can follow the development at https://github.com/ppareit/swiftp .
+To have an idea on the features that will be implemented, see the issue tracker at
+https://github.com/ppareit/swiftp/issues .\n\n
+    </string>
     <string name="about_dlg_title">FTP Server About</string>
-    <string name="about_dlg_message">\<b>Description: </b>\
-SwiFTP allows you to run an ftp server on your android device.\n\n\<b>Programming: </b>\
-Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\<b>License: </b>\
-GNU General Public License v3.0\n\n\<b>Source Code: </b>\
-http://ppareit.github.com/swiftp/\n\n\</string>
+    <string name="about_dlg_message">
+        <b>Description: </b>
+        FTP Server (SwiFTP) allows you to run an ftp server on your android device.\n\n\
+        <b>Website:</b>
+        http://ppareit.github.com/swiftp/\n\n
+        <b>Current maintainer:</b>
+        Pieter Pareit (pieter.pareit@gmail.com)\n\n
+        <b>Programming: </b>\
+        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
+        <b>Artwork:</b>
+        Birgit Niemegeers\n\n
+        <b>License: </b>
+        GNU General Public License v3.0\n\n
+</string>
 
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retreive url</string>

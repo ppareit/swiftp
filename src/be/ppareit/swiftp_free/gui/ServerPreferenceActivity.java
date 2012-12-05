@@ -41,8 +41,10 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.Gravity;
+import android.widget.TextView;
 import android.widget.Toast;
 import be.ppareit.swiftp_free.FTPServerService;
 import be.ppareit.swiftp_free.Globals;
@@ -220,10 +222,15 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         help.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new AlertDialog.Builder(ServerPreferenceActivity.this)
+                Log.v(TAG, "On preference help clicked");
+                Context context = ServerPreferenceActivity.this;
+                AlertDialog ad = new AlertDialog.Builder(context)
                         .setTitle(R.string.help_dlg_title)
                         .setMessage(R.string.help_dlg_message)
-                        .setPositiveButton(getText(R.string.ok), null).show();
+                        .setPositiveButton(R.string.ok, null).create();
+                ad.show();
+                Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
+                        Linkify.ALL);
                 return true;
             }
         });
@@ -232,10 +239,13 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         about.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new AlertDialog.Builder(ServerPreferenceActivity.this)
+                AlertDialog ad = new AlertDialog.Builder(ServerPreferenceActivity.this)
                         .setTitle(R.string.about_dlg_title)
                         .setMessage(R.string.about_dlg_message)
-                        .setPositiveButton(getText(R.string.ok), null).show();
+                        .setPositiveButton(getText(R.string.ok), null).create();
+                ad.show();
+                Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
+                        Linkify.ALL);
                 return true;
             }
         });
