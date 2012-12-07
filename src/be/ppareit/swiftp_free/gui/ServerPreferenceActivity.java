@@ -77,7 +77,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         if (FTPServerService.isRunning() == true) {
             running_state.setChecked(true);
             // Fill in the FTP server address
-            InetAddress address = FTPServerService.getWifiIp();
+            InetAddress address = FTPServerService.getLocalInetAddress();
             if (address == null) {
                 Log.v(TAG, "Unable to retreive wifi ip address");
                 running_state.setSummary(R.string.cant_get_url);
@@ -319,9 +319,9 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             if (intent.getAction().equals(FTPServerService.ACTION_STARTED)) {
                 running_state.setChecked(true);
                 // Fill in the FTP server address
-                InetAddress address = FTPServerService.getWifiIp();
+                InetAddress address = FTPServerService.getLocalInetAddress();
                 if (address == null) {
-                    Log.v(TAG, "Unable to retreive wifi ip address");
+                    Log.v(TAG, "Unable to retreive local ip address");
                     running_state.setSummary(R.string.cant_get_url);
                     return;
                 }

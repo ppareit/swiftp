@@ -150,7 +150,7 @@ public class NormalDataSocketFactory extends DataSocketFactory {
 
     @Override
     public InetAddress getPasvIp() {
-        return FTPServerService.getWifiIp();
+        return FTPServerService.getLocalInetAddress();
     }
 
     @Override

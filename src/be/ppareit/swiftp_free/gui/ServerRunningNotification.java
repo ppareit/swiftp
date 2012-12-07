@@ -40,9 +40,9 @@ public class ServerRunningNotification extends BroadcastReceiver {
 
         // Define Notification's message and Intent
         CharSequence contentTitle = context.getString(R.string.notif_title);
-        InetAddress address = FTPServerService.getWifiIp();
+        InetAddress address = FTPServerService.getLocalInetAddress();
         if (address == null) {
-            Log.w(TAG, "Unable to retreive wifi ip address");
+            Log.w(TAG, "Unable to retreive the local ip address");
             return;
         }
         String iptext = "ftp://" + address.getHostAddress() + ":"

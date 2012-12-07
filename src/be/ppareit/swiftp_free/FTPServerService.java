@@ -23,15 +23,19 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.IBinder;
@@ -246,7 +250,7 @@ public class FTPServerService extends Service implements Runnable {
             return;
         }
 
-        if (isWifiEnabled() == false) {
+        if (isConnectedToLocalNetwork() == false) {
             cleanupAndStopService();
             sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
             return;
@@ -448,41 +452,41 @@ public class FTPServerService extends Service implements Runnable {
     }
 
     /**
-     * Gets the IP address of the wifi connection.
+     * Gets the local ip address
      * 
-     * @return The integer IP address if wifi enabled, or null if not.
+     * @return local ip adress or null if not found
      */
-    public static InetAddress getWifiIp() {
-        Context myContext = Globals.getContext();
-        if (myContext == null) {
-            throw new NullPointerException("Global context is null");
-        }
-        WifiManager wifiMgr = (WifiManager) myContext
-                .getSystemService(Context.WIFI_SERVICE);
-        if (isWifiEnabled()) {
-            int ipAsInt = wifiMgr.getConnectionInfo().getIpAddress();
-            if (ipAsInt == 0) {
-                return null;
-            } else {
-                return Util.intToInet(ipAsInt);
+    public static InetAddress getLocalInetAddress() {
+        try {
+            Enumeration<NetworkInterface> netinterfaces = NetworkInterface
+                    .getNetworkInterfaces();
+            while (netinterfaces.hasMoreElements()) {
+                NetworkInterface netinterface = netinterfaces.nextElement();
+                Enumeration<InetAddress> adresses = netinterface.getInetAddresses();
+                while (adresses.hasMoreElements()) {
+                    InetAddress address = adresses.nextElement();
+                    if (address.isLoopbackAddress() == false
+                            && address.isLinkLocalAddress() == false)
+                        return address;
+                }
             }
-        } else {
-            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    public static boolean isWifiEnabled() {
-        Context myContext = Globals.getContext();
-        if (myContext == null) {
-            throw new NullPointerException("Global context is null");
-        }
-        WifiManager wifiMgr = (WifiManager) myContext
-                .getSystemService(Context.WIFI_SERVICE);
-        if (wifiMgr.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
-            return true;
-        } else {
-            return false;
-        }
+    /**
+     * Checks to see if we are connected to a local network, for instance wifi or ethernet
+     * 
+     * @return true if connected to a local network
+     */
+    public static boolean isConnectedToLocalNetwork() {
+        Context context = Globals.getContext();
+        ConnectivityManager cm = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        return ni.isConnected() == true && ni.isRoaming() == false;
     }
 
     public static List<String> getSessionMonitorContents() {
