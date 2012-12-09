@@ -486,7 +486,10 @@ public class FTPServerService extends Service implements Runnable {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
-        return ni.isConnected() == true && ni.isRoaming() == false;
+        // @TODO: this is only defined starting in api level 13
+        final int TYPE_ETHERNET = 0x00000009;
+        return ni != null && ni.isConnected() == true
+                && (ni.getType() & (ConnectivityManager.TYPE_WIFI | TYPE_ETHERNET)) != 0;
     }
 
     public static List<String> getSessionMonitorContents() {
