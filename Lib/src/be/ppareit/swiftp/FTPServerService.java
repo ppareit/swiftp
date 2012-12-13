@@ -457,6 +457,21 @@ public class FTPServerService extends Service implements Runnable {
      * @return local ip adress or null if not found
      */
     public static InetAddress getLocalInetAddress() {
+        if (isConnectedToLocalNetwork() == false) {
+            Log.e(TAG, "getLocalInetAddress called and no connection");
+            return null;
+        }
+        // @TODO: next if block could probably be removed
+        if (isConnectedUsingWifi() == true) {
+            Context context = Globals.getContext();
+            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            int ipAddress = wm.getConnectionInfo().getIpAddress();
+            if (ipAddress == 0)
+                return null;
+            return Util.intToInet(ipAddress);
+        }
+        // This next part should be able to get the local ip address, but in some case
+        // I'm receiving the routable address
         try {
             Enumeration<NetworkInterface> netinterfaces = NetworkInterface
                     .getNetworkInterfaces();
@@ -465,6 +480,7 @@ public class FTPServerService extends Service implements Runnable {
                 Enumeration<InetAddress> adresses = netinterface.getInetAddresses();
                 while (adresses.hasMoreElements()) {
                     InetAddress address = adresses.nextElement();
+                    // this is the condition that sometimes gives problems
                     if (address.isLoopbackAddress() == false
                             && address.isLinkLocalAddress() == false)
                         return address;
@@ -490,6 +506,20 @@ public class FTPServerService extends Service implements Runnable {
         final int TYPE_ETHERNET = 0x00000009;
         return ni != null && ni.isConnected() == true
                 && (ni.getType() & (ConnectivityManager.TYPE_WIFI | TYPE_ETHERNET)) != 0;
+    }
+
+    /**
+     * Checks to see if we are connected using wifi
+     * 
+     * @return true if connected using wifi
+     */
+    public static boolean isConnectedUsingWifi() {
+        Context context = Globals.getContext();
+        ConnectivityManager cm = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        return ni != null && ni.isConnected() == true
+                && ni.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
     public static List<String> getSessionMonitorContents() {
