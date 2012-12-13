@@ -48,11 +48,9 @@ public class FTPServerService extends Service implements Runnable {
     private static final String TAG = FTPServerService.class.getSimpleName();
 
     // Service will broadcast (LocalBroadcast) when server start/stop
-    static private final String PACKAGE = FTPServerService.class.getPackage().getName();
-    static public final String ACTION_STARTED = PACKAGE + ".FTPServerService.STARTED";
-    static public final String ACTION_STOPPED = PACKAGE + ".FTPServerService.STOPPED";
-    static public final String ACTION_FAILEDTOSTART = PACKAGE
-            + ".FTPServerService.FAILEDTOSTART";
+    static public final String ACTION_STARTED = "be.ppareit.swiftp.FTPServerService.STARTED";
+    static public final String ACTION_STOPPED = "be.ppareit.swiftp.FTPServerService.STOPPED";
+    static public final String ACTION_FAILEDTOSTART = "be.ppareit.swiftp.FTPServerService.FAILEDTOSTART";
 
     protected static Thread serverThread = null;
     protected boolean shouldExit = false;
