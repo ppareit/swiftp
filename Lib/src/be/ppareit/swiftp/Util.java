@@ -19,12 +19,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp;
 
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
@@ -75,27 +71,6 @@ abstract public class Util {
             return null;
         }
         return ipToString(addr, ".");
-    }
-
-    // This exists to avoid cluttering up other code with
-    // UnsupportedEncodingExceptions.
-    public static byte[] jsonToByteArray(JSONObject json) throws JSONException {
-        try {
-            return json.toString().getBytes(Defaults.STRING_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
-    }
-
-    // This exists to avoid cluttering up other code with
-    // UnsupportedEncodingExceptions.
-    public static JSONObject byteArrayToJson(byte[] bytes) throws JSONException {
-        try {
-            return new JSONObject(new String(bytes, Defaults.STRING_ENCODING));
-        } catch (UnsupportedEncodingException e) {
-            // This will never happen because we use valid encodings
-            return null;
-        }
     }
 
     public static void newFileNotify(String path) {
