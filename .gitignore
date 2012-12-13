@@ -1,4 +1,4 @@
 .classpath
-bin/*
-gen/*
+*/bin/*
+*/gen/*
 gh-pages/*
