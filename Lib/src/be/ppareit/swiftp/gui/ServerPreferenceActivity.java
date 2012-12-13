@@ -46,10 +46,10 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.TextView;
 import android.widget.Toast;
+import be.ppareit.swiftp.FTPServerApplication;
 import be.ppareit.swiftp.FTPServerService;
 import be.ppareit.swiftp.Globals;
 import be.ppareit.swiftp.R;
-import be.ppareit.swiftp.Util;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -122,7 +122,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 return false;
             }
         });
-        if (Util.isFreeVersion() == false) {
+        if (FTPServerApplication.isFreeVersion() == false) {
             prefScreen.removePreference(marketVersionPref);
         }
 

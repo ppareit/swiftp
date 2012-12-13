@@ -38,15 +38,6 @@ import android.util.Log;
 abstract public class Util {
     static String TAG = Util.class.getSimpleName();
 
-    // @TODO: this method should go into the Application object
-    public static boolean isFreeVersion() {
-        try {
-            return Globals.getContext().getPackageName().contains("free");
-        } catch (Exception swallow) {
-        }
-        return false;
-    }
-
     public static String getAndroidId() {
         ContentResolver cr = Globals.getContext().getContentResolver();
         return Settings.Secure.getString(cr, Settings.Secure.ANDROID_ID);
