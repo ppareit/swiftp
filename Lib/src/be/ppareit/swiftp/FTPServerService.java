@@ -26,7 +26,6 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -42,7 +41,6 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import be.ppareit.swiftp.server.ProxyConnector;
 import be.ppareit.swiftp.server.SessionThread;
 import be.ppareit.swiftp.server.TcpListener;
 
@@ -85,7 +83,6 @@ public class FTPServerService extends Service implements Runnable {
     protected static boolean fullWake;
 
     private TcpListener wifiListener = null;
-    private ProxyConnector proxyConnector = null;
     private final List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
 
     private static SharedPreferences settings = null;
@@ -297,57 +294,6 @@ public class FTPServerService extends Service implements Runnable {
                     wifiListener.start();
                 }
             }
-            if (acceptNet) {
-                if (proxyConnector != null) {
-                    if (!proxyConnector.isAlive()) {
-                        Log.d(TAG, "Joining crashed proxy connector");
-                        try {
-                            proxyConnector.join();
-                        } catch (InterruptedException e) {
-                        }
-                        proxyConnector = null;
-                        long nowMillis = new Date().getTime();
-                        // myLog.l(Log.DEBUG,
-                        // "Now:"+nowMillis+" start:"+proxyStartMillis);
-                        if (nowMillis - proxyStartMillis < 3000) {
-                            // We assume that if the proxy thread crashed within
-                            // 3
-                            // seconds of starting, it was a startup or
-                            // connection
-                            // failure.
-                            Log.d(TAG, "Incrementing proxy start failures");
-                            consecutiveProxyStartFailures++;
-                        } else {
-                            // Otherwise assume the proxy started successfully
-                            // and
-                            // crashed later.
-                            Log.d(TAG, "Resetting proxy start failures");
-                            consecutiveProxyStartFailures = 0;
-                        }
-                    }
-                }
-                if (proxyConnector == null) {
-                    long nowMillis = new Date().getTime();
-                    boolean shouldStartListener = false;
-                    // We want to restart the proxy listener without much delay
-                    // for the first few attempts, but add a much longer delay
-                    // if we consistently fail to connect.
-                    if (consecutiveProxyStartFailures < 3
-                            && (nowMillis - proxyStartMillis) > 5000) {
-                        // Retry every 5 seconds for the first 3 tries
-                        shouldStartListener = true;
-                    } else if (nowMillis - proxyStartMillis > 30000) {
-                        // After the first 3 tries, only retry once per 30 sec
-                        shouldStartListener = true;
-                    }
-                    if (shouldStartListener) {
-                        Log.d(TAG, "Spawning ProxyConnector");
-                        proxyConnector = new ProxyConnector(this);
-                        proxyConnector.start();
-                        proxyStartMillis = nowMillis;
-                    }
-                }
-            }
             try {
                 // todo: think about using ServerSocket, and just closing
                 // the main socket to send an exit signal
@@ -359,10 +305,6 @@ public class FTPServerService extends Service implements Runnable {
 
         terminateAllSessions();
 
-        if (proxyConnector != null) {
-            proxyConnector.quit();
-            proxyConnector = null;
-        }
         if (wifiListener != null) {
             wifiListener.quit();
             wifiListener = null;
@@ -599,11 +541,6 @@ public class FTPServerService extends Service implements Runnable {
             sessionThreads.add(newSession);
         }
         Log.d(TAG, "Registered session thread");
-    }
-
-    /** Get the ProxyConnector, may return null if proxying is disabled. */
-    public ProxyConnector getProxyConnector() {
-        return proxyConnector;
     }
 
     static public SharedPreferences getSettings() {
