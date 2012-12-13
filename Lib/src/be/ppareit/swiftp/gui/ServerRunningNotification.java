@@ -28,6 +28,7 @@ public class ServerRunningNotification extends BroadcastReceiver {
     }
 
     private void setupNotification(Context context) {
+        Log.d(TAG, "Setting up the notification");
         // Get NotificationManager reference
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager nm = (NotificationManager) context.getSystemService(ns);
@@ -49,7 +50,9 @@ public class ServerRunningNotification extends BroadcastReceiver {
                 + FTPServerService.getPort() + "/";
         CharSequence contentText = String.format(context.getString(R.string.notif_text),
                 iptext);
-        Intent notificationIntent = new Intent(context, ServerRunningNotification.class);
+        Intent notificationIntent = new Intent(context, ServerPreferenceActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
                 notificationIntent, 0);
         notification
