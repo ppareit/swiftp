@@ -28,7 +28,6 @@ import org.json.JSONObject;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
@@ -41,22 +40,6 @@ abstract public class Util {
     public static String getAndroidId() {
         ContentResolver cr = Globals.getContext().getContentResolver();
         return Settings.Secure.getString(cr, Settings.Secure.ANDROID_ID);
-    }
-
-    /**
-     * Get the SwiFTP version from the manifest.
-     * 
-     * @return The version as a String.
-     */
-    public static String getVersion() {
-        String packageName = Globals.getContext().getPackageName();
-        try {
-            return Globals.getContext().getPackageManager()
-                    .getPackageInfo(packageName, 0).versionName;
-        } catch (NameNotFoundException e) {
-            Log.e(TAG, "NameNotFoundException looking up SwiFTP version");
-            return null;
-        }
     }
 
     public static byte byteOfInt(int value, int which) {

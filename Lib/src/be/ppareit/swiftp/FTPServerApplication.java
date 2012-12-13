@@ -2,6 +2,8 @@ package be.ppareit.swiftp;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 public class FTPServerApplication extends Application {
@@ -34,6 +36,23 @@ public class FTPServerApplication extends Application {
         } catch (Exception swallow) {
         }
         return false;
+    }
+
+    /**
+     * Get the version from the manifest.
+     * 
+     * @return The version as a String.
+     */
+    public static String getVersion() {
+        Context context = getAppContext();
+        String packageName = context.getPackageName();
+        try {
+            PackageManager pm = context.getPackageManager();
+            return pm.getPackageInfo(packageName, 0).versionName;
+        } catch (NameNotFoundException e) {
+            Log.e(TAG, "Unable to find the name " + packageName + " in the package");
+            return null;
+        }
     }
 
 }
