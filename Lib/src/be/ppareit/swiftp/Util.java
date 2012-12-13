@@ -26,21 +26,14 @@ import java.net.UnknownHostException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
-import android.provider.Settings;
 import android.util.Log;
 
 abstract public class Util {
     static String TAG = Util.class.getSimpleName();
-
-    public static String getAndroidId() {
-        ContentResolver cr = Globals.getContext().getContentResolver();
-        return Settings.Secure.getString(cr, Settings.Secure.ANDROID_ID);
-    }
 
     public static byte byteOfInt(int value, int which) {
         int shift = which * 8;
