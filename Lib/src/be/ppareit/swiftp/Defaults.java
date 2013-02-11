@@ -1,4 +1,5 @@
 /*
+Copyright 2011-2013 Pieter Pareit
 Copyright 2009 David Revell
 
 This file is part of SwiFTP.

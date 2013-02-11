@@ -1,4 +1,5 @@
 /*
+Copyright 2011-2013 Pieter Pareit
 Copyright 2009 David Revell
 
 This file is part of SwiFTP.
@@ -15,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 package be.ppareit.swiftp;
 
