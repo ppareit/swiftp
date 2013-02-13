@@ -51,7 +51,8 @@ public class FTPServerApplication extends Application {
      */
     public static boolean isFreeVersion() {
         try {
-            return Globals.getContext().getPackageName().contains("free");
+            Context context = getAppContext();
+            return context.getPackageName().contains("free");
         } catch (Exception swallow) {
         }
         return false;
