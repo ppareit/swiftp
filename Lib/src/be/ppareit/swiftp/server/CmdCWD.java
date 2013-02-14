@@ -53,6 +53,7 @@ public class CmdCWD extends FtpCmd implements Runnable {
 
             try {
                 newDir = newDir.getCanonicalFile();
+                Log.i(TAG, "New directory: " + newDir);
                 if (!newDir.isDirectory()) {
                     sessionThread.writeString("550 Can't CWD to invalid directory\r\n");
                 } else if (newDir.canRead()) {

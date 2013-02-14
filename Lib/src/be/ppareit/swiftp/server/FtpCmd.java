@@ -168,10 +168,13 @@ public abstract class FtpCmd implements Runnable {
     }
 
     public boolean violatesChroot(File file) {
-        File chroot = Globals.getChrootDir();
         try {
+            // taking the canonical path as new devices have sdcard symlinked
+            // for multiuser support
+            File chroot = Globals.getChrootDir();
+            String canonicalChroot = chroot.getCanonicalPath();
             String canonicalPath = file.getCanonicalPath();
-            if (!canonicalPath.startsWith(chroot.toString())) {
+            if (!canonicalPath.startsWith(canonicalChroot)) {
                 Log.i(TAG, "Path violated folder restriction, denying");
                 Log.d(TAG, "path: " + canonicalPath);
                 Log.d(TAG, "chroot: " + chroot.toString());
