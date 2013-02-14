@@ -25,9 +25,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
-public class FTPServerApplication extends Application {
+public class FtpServerApp extends Application {
 
-    private static final String TAG = FTPServerApplication.class.getSimpleName();
+    private static final String TAG = FtpServerApp.class.getSimpleName();
 
     private static Context sContext;
 

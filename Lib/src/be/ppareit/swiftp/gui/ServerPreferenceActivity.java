@@ -46,7 +46,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.TextView;
 import android.widget.Toast;
-import be.ppareit.swiftp.FTPServerApplication;
+import be.ppareit.swiftp.FtpServerApp;
 import be.ppareit.swiftp.FTPServerService;
 import be.ppareit.swiftp.Globals;
 import be.ppareit.swiftp.R;
@@ -122,7 +122,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 return false;
             }
         });
-        if (FTPServerApplication.isFreeVersion() == false) {
+        if (FtpServerApp.isFreeVersion() == false) {
             prefScreen.removePreference(marketVersionPref);
         }
 

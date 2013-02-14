@@ -33,7 +33,7 @@ import java.nio.ByteBuffer;
 
 import android.util.Log;
 import be.ppareit.swiftp.Defaults;
-import be.ppareit.swiftp.FTPServerApplication;
+import be.ppareit.swiftp.FtpServerApp;
 import be.ppareit.swiftp.FTPServerService;
 import be.ppareit.swiftp.Globals;
 
@@ -256,7 +256,7 @@ public class SessionThread extends Thread {
         Log.i(TAG, "SessionThread started");
 
         if (sendWelcomeBanner) {
-            writeString("220 SwiFTP " + FTPServerApplication.getVersion() + " ready\r\n");
+            writeString("220 SwiFTP " + FtpServerApp.getVersion() + " ready\r\n");
         }
         // Main loop: read an incoming line and process it
         try {
