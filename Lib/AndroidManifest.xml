@@ -21,8 +21,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="be.ppareit.swiftp"
-    android:versionCode="25"
-    android:versionName="2.5.1" >
+    android:versionCode="26"
+    android:versionName="2.5.2" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -33,13 +33,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <uses-sdk
         android:minSdkVersion="7"
-        android:targetSdkVersion="12" />
+        android:targetSdkVersion="17" />
 
     <application
         android:icon="@drawable/icon"
         android:label="@string/swiftp_name"
         android:name="be.ppareit.swiftp.FtpServerApp" >
-        <activity android:name=".gui.ServerPreferenceActivity" >
+        <activity android:name="be.ppareit.swiftp.gui.ServerPreferenceActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -48,12 +48,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         </activity>
         <activity
             android:name="ConfigureActivity"
-            class=".ConfigureActivity" />
+            class="be.ppareit.swiftp.ConfigureActivity" />
 
-        <service android:name=".FTPServerService" />
+        <service android:name="be.ppareit.swiftp.FTPServerService" />
 
         <receiver
-            android:name=".gui.ServerRunningNotification"
+            android:name="be.ppareit.swiftp.gui.ServerRunningNotification"
             android:exported="false" >
             <intent-filter>
                 <action android:name="be.ppareit.swiftp.FTPServerService.STARTED" />
