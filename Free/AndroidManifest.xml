@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
+Copyright 2011-2013 Pieter Pareit
 Copyright 2009 David Revell
 
 This file is part of SwiFTP.
@@ -20,8 +21,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="be.ppareit.swiftp_free"
-    android:versionCode="25"
-    android:versionName="2.5.1" >
+    android:versionCode="26"
+    android:versionName="2.5.2" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -32,11 +33,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <uses-sdk
         android:minSdkVersion="7"
-        android:targetSdkVersion="12" />
+        android:targetSdkVersion="17" />
 
     <application
         android:icon="@drawable/icon"
-        android:label="@string/swiftp_name" >
+        android:label="@string/swiftp_name"
+        android:name="be.ppareit.swiftp.FtpServerApp" >
         <activity android:name="be.ppareit.swiftp.gui.ServerPreferenceActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
