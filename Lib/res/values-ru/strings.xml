@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2011-2013 Pieter Pareit
+Copyright 2009 David Revell
+
+This file is part of SwiFTP.
+
+SwiFTP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SwiFTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="swiftp_name">FTP Server</string>
+    <string name="running_label">Запуск</string>
+    <string name="running_summary_stopped">Включить FTP сервер</string>
+    <string name="running_summary_started">FTP сервер включен. Адрес: %s</string>
+    <string name="running_summary_failed">Невозможно включить FTP сервер. Проверьте подключение к сети (wifi или ethernet).</string>
+    <string name="market_version_label">Текущая версия</string>
+    <string name="market_version_summary">Установлена демонстрационная версия программы.
+        Вы поддержите разработку, если приобретете программу на Google Play.
+		Чтобы сделать это, нажмите здесь. </string>
+    <string name="settings_label">Настройки</string>
+    <string name="username_label">Имя пользователя</string>
+    <string name="username_default">ftp</string>
+    <string name="password_label">Пароль</string>
+    <string name="password_default">ftp</string>
+    <string name="show_password_label">
+        Отображать пароль
+    </string>
+    <string name="show_password_default">
+        false
+    </string>
+    <string name="advancedsettings_label">Расширенные настройки...</string>
+    <string name="portnumber_label">Номер порта</string>
+    <string name="portnumber_default">2121</string>
+    <string name="chroot_label">Корневая папка доступа</string>
+    <string name="chroot_default">/</string>
+    <string name="acceptwifi_label">Принимать подключения по wifi</string>
+    <string name="acceptwifi_default">true</string>
+    <string name="acceptproxy_label">Принимать подключения через сетевой прокси</string>
+    <string name="acceptproxy_default">false</string>
+    <string name="wakelock_label">Не давать уснуть (максимальная производительность ЦП)</string>
+    <string name="wakelock_default">true</string>
+    <string name="extra_label">Дополнительно</string>
+    <string name="help_label">Помощь...</string>
+    <string name="about_label">О программе...</string>
+    <string name="help_dlg_title">FTP Server Help</string>
+    <string name="help_dlg_message">\
+Благодарим за использование программы FTP Server (SwiFTP)! Ниже приведены краткие инструкции к программе.
+Более подробную информацию Вы можете найти здесь: http://ppareit.github.com/swiftp/.\n\n\
+\
+Данная программа дает возможность легко управлять FTP-сервером на вашем Android-устройстве, 
+позволяя внешним программам работать с файлами на нем, когда FTP сервер запущен.  
+Например, введя \'ftp://...\' в адресной строке Firefox, Вы сможете получить доступ к файлам на Вашем устройстве
+с настольного компьютера или ноутбука.\n\n
+\
+По умолчанию установлены одинаковые значения имени и пароля пользователя для доступа - \'ftp\', но Вы можете изменить их. Имя пользователя
+и пароль необходимо вводить при доступе из внешней программы.\n\n
+\
+Параметр настройки (\"Не давать уснуть\") позволяет решить проблему
+с замедлением или остановкой передачи файла, когда Ваше устройство переходит в режим сна. 
+Если у Вас возникла такая проблема, установите галочку и перезапустите программу. 
+Ваше устройство не уснет, пока FTP сервер активен.\n\n
+\
+Не забываайте останавливать FTP сервер после использования из соображений безопасности и экономии заряда батареи\n\n\
+\
+Если что-то не работает, просьба сообщить нам об этом письмом в адрес Pieter Pareit
+(pieter.pareit@gmail.com).\n\n\
+\
+Разработка данной программы с открытым кодом поддерживается исключительно за счет средств
+от продажи в магазине Google Play. Вы можете следить за разработкой на https://github.com/ppareit/swiftp .
+Если у Вас есть идеи, как улучшить программу, Вы можете оформить заявку в системе отслеживания по адресу
+https://github.com/ppareit/swiftp/issues .\n\n
+    </string>
+    <string name="about_dlg_title">О программе FTP Server</string>
+    <string name="about_dlg_message">
+        <b>Описание: </b>
+        FTP Server (SwiFTP) - простая и удобная программа, которая позволяет запустить ftp сервер на Вашем android-телефоне или планшетном компьютере.\n\n\
+        <b>Веб-сайт:</b>
+        http://ppareit.github.com/swiftp/\n\n
+        <b>Текущее сопровождение:</b>
+        Pieter Pareit (pieter.pareit@gmail.com)\n\n
+        <b>Программирование: </b>\
+        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
+        <b>Оформление:</b>
+        Birgit Niemegeers\n\n
+        <b>Лицензии: </b>
+        GNU General Public License v3.0\n\n
+</string>
+
+    <!-- old strings -->
+    <string name="cant_get_url">Не удается получить URL</string>
+    <string name="unknown">неизвестно</string>
+    <string name="ok">OK</string>
+    <string name="username_validation_error">Имя пользователя должно состоять из одной или более букв. Никакие другие символы не допускаются.</string>
+    <string name="password_validation_error">Пароль длолжен состоять из одного или более бкувенно-цифровых символов. Никакие другие символы не допускаются.</string>
+    <string name="port_validation_error">Номер порта должен иметь значение от 1 до 65535.</string>
+    <string name="wifi_state_receiver_label">WifiStateReceiver</string>
+    <string name="notif_server_starting">FTP сервер запускается...</string>
+    <string name="notif_title">FTP сервер включен.</string>
+    <string name="notif_text">URL для доступа %s</string>
+    <string name="pst_connecting">поключение</string>
+    <string name="pst_connected">подключено</string>
+    <string name="pst_failed">ошибка</string>
+    <string name="pst_unreachable">недоступно</string>
+    <string name="pst_disconnected">отключено</string>
+    <string name="storage_warning">Предупреждение: файловый носитель не доступен. Возможно, Вы хотели отсоединить его.</string>
+    <string name="widget_name">FTP Server Widget</string>
+
+</resources>
