@@ -103,7 +103,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="cant_get_url">Can\'t retreive url</string>
     <string name="unknown">unknown</string>
     <string name="ok">OK</string>
-    <string name="username_validation_error">The username must consist of 1 or more letters. No other characters are allowed.</string>
+    <string name="username_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>
     <string name="password_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>
     <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
     <string name="wifi_state_receiver_label">WifiStateReceiver</string>

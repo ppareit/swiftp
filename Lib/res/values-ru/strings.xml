@@ -73,7 +73,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 Если у Вас возникла такая проблема, установите галочку и перезапустите программу. 
 Ваше устройство не уснет, пока FTP сервер активен.\n\n
 \
-Не забываайте останавливать FTP сервер после использования из соображений безопасности и экономии заряда батареи\n\n\
+Не забывайте останавливать FTP сервер после использования из соображений безопасности и экономии заряда батареи\n\n\
 \
 Если что-то не работает, просьба сообщить нам об этом письмом в адрес Pieter Pareit
 (pieter.pareit@gmail.com).\n\n\
@@ -103,7 +103,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="cant_get_url">Не удается получить URL</string>
     <string name="unknown">неизвестно</string>
     <string name="ok">OK</string>
-    <string name="username_validation_error">Имя пользователя должно состоять из одной или более букв. Никакие другие символы не допускаются.</string>
+    <string name="username_validation_error">Имя пользователя должно состоять из одного или более бкувенно-цифровых символов. Никакие другие символы не допускаются.</string>
     <string name="password_validation_error">Пароль длолжен состоять из одного или более бкувенно-цифровых символов. Никакие другие символы не допускаются.</string>
     <string name="port_validation_error">Номер порта должен иметь значение от 1 до 65535.</string>
     <string name="wifi_state_receiver_label">WifiStateReceiver</string>
