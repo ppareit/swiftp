@@ -22,6 +22,7 @@ package be.ppareit.swiftp.server;
 import java.io.File;
 
 import android.util.Log;
+import be.ppareit.swiftp.Util;
 
 public class CmdRMD extends FtpCmd implements Runnable {
     private static final String TAG = CmdRMD.class.getSimpleName();
@@ -92,7 +93,9 @@ public class CmdRMD extends FtpCmd implements Runnable {
             return success && toDelete.delete();
         } else {
             Log.d(TAG, "RMD deleting file: " + toDelete);
-            return toDelete.delete();
+            boolean success = toDelete.delete();
+            Util.deletedFileNotify(toDelete.getPath());
+            return success;
         }
     }
 }
