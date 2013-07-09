@@ -24,9 +24,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 abstract public class Util {
@@ -82,10 +84,15 @@ abstract public class Util {
     }
 
     public static void deletedFileNotify(String path) {
-        // This might not work, I couldn't find an API call for this.
+        // The media mounted broadcast is very taxing on the system, but works the best.
+        // There is room for improvement, for instance, one might want to look the the
+        // specific file and check if it is for instance a music file, if so, you could
+        // then remove it from the specific music db
+        final Context context = Globals.getContext();
         if (Defaults.do_mediascanner_notify) {
             Log.d(TAG, "Notifying others about deleted file: " + path);
-            new MediaScannerNotifier(Globals.getContext(), path);
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri
+                    .parse("file://" + Environment.getExternalStorageDirectory())));
         }
     }
 
