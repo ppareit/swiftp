@@ -26,7 +26,6 @@ import java.net.UnknownHostException;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
-import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -79,7 +78,13 @@ abstract public class Util {
     public static void newFileNotify(String path) {
         if (Defaults.do_mediascanner_notify) {
             Log.d(TAG, "Notifying others about new file: " + path);
-            new MediaScannerNotifier(Globals.getContext(), path);
+            Context context = Globals.getContext();
+            MediaScannerConnection.scanFile(context, new String[]{path}, null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                        }
+                    });
         }
     }
 
@@ -93,28 +98,6 @@ abstract public class Util {
             Log.d(TAG, "Notifying others about deleted file: " + path);
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri
                     .parse("file://" + Environment.getExternalStorageDirectory())));
-        }
-    }
-
-    // A class to help notify the Music Player and other media services when
-    // a file has been uploaded. Thanks to Dave Sparks in his post to the
-    // Android Developers mailing list on 14 Feb 2009.
-    private static class MediaScannerNotifier implements MediaScannerConnectionClient {
-        private final MediaScannerConnection connection;
-        private final String path;
-
-        public MediaScannerNotifier(Context context, String path) {
-            this.path = path;
-            connection = new MediaScannerConnection(context, this);
-            connection.connect();
-        }
-
-        public void onMediaScannerConnected() {
-            connection.scanFile(path, null); // null: we don't know MIME type
-        }
-
-        public void onScanCompleted(String path, Uri uri) {
-            connection.disconnect();
         }
     }
 
