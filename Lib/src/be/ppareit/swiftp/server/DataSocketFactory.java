@@ -3,17 +3,13 @@ package be.ppareit.swiftp.server;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import be.ppareit.swiftp.MyLog;
-
+/**
+ * A DataSocketFactory hides the implementation of the opening and closing of the data
+ * sockets which are used to transmit directory listings and file contents. This is
+ * necessary because normal FTP data sockets are opened and closed very differently from
+ * the abnormal sort of data sockets we use in conjunction with our proxy system.
+ */
 abstract public class DataSocketFactory {
-
-    /**
-     * A DataSocketFactory hides the implementation of the opening and closing of the data
-     * sockets which are used to transmit directory listings and file contents. This is
-     * necessary because normal FTP data sockets are opened and closed very differently
-     * from the abnormal sort of data sockets we use in conjunction with our proxy system.
-     */
-    protected MyLog myLog = new MyLog(getClass().getName());
 
     /**
      * When SwiFTP receives a PORT command, this will be called. Subclasses should perform
