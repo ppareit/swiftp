@@ -28,7 +28,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import be.ppareit.swiftp.FTPServerService;
+import be.ppareit.swiftp.FtpServerService;
 import be.ppareit.swiftp.R;
 
 public class ServerRunningNotification extends BroadcastReceiver {
@@ -39,9 +39,9 @@ public class ServerRunningNotification extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive broadcast: " + intent.getAction());
-        if (intent.getAction().equals(FTPServerService.ACTION_STARTED)) {
+        if (intent.getAction().equals(FtpServerService.ACTION_STARTED)) {
             setupNotification(context);
-        } else if (intent.getAction().equals(FTPServerService.ACTION_STOPPED)) {
+        } else if (intent.getAction().equals(FtpServerService.ACTION_STOPPED)) {
             clearNotification(context);
         }
     }
@@ -60,13 +60,13 @@ public class ServerRunningNotification extends BroadcastReceiver {
 
         // Define Notification's message and Intent
         CharSequence contentTitle = context.getString(R.string.notif_title);
-        InetAddress address = FTPServerService.getLocalInetAddress();
+        InetAddress address = FtpServerService.getLocalInetAddress();
         if (address == null) {
             Log.w(TAG, "Unable to retreive the local ip address");
             return;
         }
         String iptext = "ftp://" + address.getHostAddress() + ":"
-                + FTPServerService.getPort() + "/";
+                + FtpServerService.getPort() + "/";
         CharSequence contentText = String.format(context.getString(R.string.notif_text),
                 iptext);
         Intent notificationIntent = new Intent(context, ServerPreferenceActivity.class);

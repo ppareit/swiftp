@@ -104,7 +104,7 @@ public class WidgetUiUpdater {
                 R.layout.widget);
 
         // set the right state, according to the FTP Server
-        if (FTPServerService.isRunning()) {
+        if (FtpServerService.isRunning()) {
             remoteViews.setViewVisibility(R.id.widget_button_on, View.VISIBLE);
             remoteViews.setViewVisibility(R.id.widget_button_off, View.GONE);
         } else {

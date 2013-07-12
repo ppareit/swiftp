@@ -39,7 +39,7 @@ public class WidgetProvider extends AppWidgetProvider {
         remoteViews.setOnClickPendingIntent(R.id.widget_button_on, actionPendingIntent);
 
         // set the right state, according to the FTP Server
-        if (FTPServerService.isRunning()) {
+        if (FtpServerService.isRunning()) {
             remoteViews.setViewVisibility(R.id.widget_button_on, View.VISIBLE);
             remoteViews.setViewVisibility(R.id.widget_button_off, View.GONE);
         } else {
@@ -67,9 +67,9 @@ public class WidgetProvider extends AppWidgetProvider {
              */
 
             // start or stop FTP Service
-            Intent intentFTP = new Intent(context, FTPServerService.class);
+            Intent intentFTP = new Intent(context, FtpServerService.class);
 
-            if (!FTPServerService.isRunning()) {
+            if (!FtpServerService.isRunning()) {
                 context.startService(intentFTP);
             } else {
                 context.stopService(intentFTP);

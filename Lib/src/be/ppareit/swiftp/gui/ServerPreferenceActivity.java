@@ -47,7 +47,7 @@ import android.view.Gravity;
 import android.widget.TextView;
 import android.widget.Toast;
 import be.ppareit.swiftp.FtpServerApp;
-import be.ppareit.swiftp.FTPServerService;
+import be.ppareit.swiftp.FtpServerService;
 import be.ppareit.swiftp.Globals;
 import be.ppareit.swiftp.R;
 
@@ -74,17 +74,17 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         Resources resources = getResources();
 
         CheckBoxPreference running_state = (CheckBoxPreference) findPreference("running_state");
-        if (FTPServerService.isRunning() == true) {
+        if (FtpServerService.isRunning() == true) {
             running_state.setChecked(true);
             // Fill in the FTP server address
-            InetAddress address = FTPServerService.getLocalInetAddress();
+            InetAddress address = FtpServerService.getLocalInetAddress();
             if (address == null) {
                 Log.v(TAG, "Unable to retreive wifi ip address");
                 running_state.setSummary(R.string.cant_get_url);
                 return;
             }
             String iptext = "ftp://" + address.getHostAddress() + ":"
-                    + FTPServerService.getPort() + "/";
+                    + FtpServerService.getPort() + "/";
             String summary = resources
                     .getString(R.string.running_summary_started, iptext);
             running_state.setSummary(summary);
@@ -263,8 +263,8 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
 
     private void startServer() {
         Context context = getApplicationContext();
-        Intent serverService = new Intent(context, FTPServerService.class);
-        if (!FTPServerService.isRunning()) {
+        Intent serverService = new Intent(context, FtpServerService.class);
+        if (!FtpServerService.isRunning()) {
             warnIfNoExternalStorage();
             startService(serverService);
         }
@@ -272,7 +272,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
 
     private void stopServer() {
         Context context = getApplicationContext();
-        Intent serverService = new Intent(context, FTPServerService.class);
+        Intent serverService = new Intent(context, FtpServerService.class);
         stopService(serverService);
     }
 
@@ -287,9 +287,9 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
 
         Log.v(TAG, "Registering the FTP server actions");
         IntentFilter filter = new IntentFilter();
-        filter.addAction(FTPServerService.ACTION_STARTED);
-        filter.addAction(FTPServerService.ACTION_STOPPED);
-        filter.addAction(FTPServerService.ACTION_FAILEDTOSTART);
+        filter.addAction(FtpServerService.ACTION_STARTED);
+        filter.addAction(FtpServerService.ACTION_STOPPED);
+        filter.addAction(FtpServerService.ACTION_FAILEDTOSTART);
         registerReceiver(ftpServerReceiver, filter);
     }
 
@@ -316,25 +316,25 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         public void onReceive(Context context, Intent intent) {
             Log.v(TAG, "FTPServerService action received: " + intent.getAction());
             CheckBoxPreference running_state = (CheckBoxPreference) findPreference("running_state");
-            if (intent.getAction().equals(FTPServerService.ACTION_STARTED)) {
+            if (intent.getAction().equals(FtpServerService.ACTION_STARTED)) {
                 running_state.setChecked(true);
                 // Fill in the FTP server address
-                InetAddress address = FTPServerService.getLocalInetAddress();
+                InetAddress address = FtpServerService.getLocalInetAddress();
                 if (address == null) {
                     Log.v(TAG, "Unable to retreive local ip address");
                     running_state.setSummary(R.string.cant_get_url);
                     return;
                 }
                 String iptext = "ftp://" + address.getHostAddress() + ":"
-                        + FTPServerService.getPort() + "/";
+                        + FtpServerService.getPort() + "/";
                 Resources resources = getResources();
                 String summary = resources.getString(R.string.running_summary_started,
                         iptext);
                 running_state.setSummary(summary);
-            } else if (intent.getAction().equals(FTPServerService.ACTION_STOPPED)) {
+            } else if (intent.getAction().equals(FtpServerService.ACTION_STOPPED)) {
                 running_state.setChecked(false);
                 running_state.setSummary(R.string.running_summary_stopped);
-            } else if (intent.getAction().equals(FTPServerService.ACTION_FAILEDTOSTART)) {
+            } else if (intent.getAction().equals(FtpServerService.ACTION_FAILEDTOSTART)) {
                 running_state.setChecked(false);
                 running_state.setSummary(R.string.running_summary_failed);
             }

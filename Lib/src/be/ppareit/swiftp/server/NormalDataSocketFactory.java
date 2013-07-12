@@ -26,7 +26,7 @@ import java.net.Socket;
 
 import android.util.Log;
 import be.ppareit.swiftp.Defaults;
-import be.ppareit.swiftp.FTPServerService;
+import be.ppareit.swiftp.FtpServerService;
 
 public class NormalDataSocketFactory extends DataSocketFactory {
     private static final String TAG = NormalDataSocketFactory.class.getSimpleName();
@@ -150,7 +150,7 @@ public class NormalDataSocketFactory extends DataSocketFactory {
 
     @Override
     public InetAddress getPasvIp() {
-        return FTPServerService.getLocalInetAddress();
+        return FtpServerService.getLocalInetAddress();
     }
 
     @Override

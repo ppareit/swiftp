@@ -50,7 +50,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:name="ConfigureActivity"
             class="be.ppareit.swiftp.ConfigureActivity" />
 
-        <service android:name="be.ppareit.swiftp.FTPServerService" />
+        <service android:name="be.ppareit.swiftp.FtpServerService" />
 
         <receiver
             android:name="be.ppareit.swiftp.gui.ServerRunningNotification"

@@ -45,8 +45,8 @@ import android.util.Log;
 import be.ppareit.swiftp.server.SessionThread;
 import be.ppareit.swiftp.server.TcpListener;
 
-public class FTPServerService extends Service implements Runnable {
-    private static final String TAG = FTPServerService.class.getSimpleName();
+public class FtpServerService extends Service implements Runnable {
+    private static final String TAG = FtpServerService.class.getSimpleName();
 
     // Service will broadcast (LocalBroadcast) when server start/stop
     static public final String ACTION_STARTED = "be.ppareit.swiftp.FTPServerService.STARTED";
@@ -88,7 +88,7 @@ public class FTPServerService extends Service implements Runnable {
 
     PowerManager.WakeLock wakeLock;
 
-    public FTPServerService() {
+    public FtpServerService() {
     }
 
     @Override
@@ -502,7 +502,7 @@ public class FTPServerService extends Service implements Runnable {
     }
 
     public static void setPort(int port) {
-        FTPServerService.port = port;
+        FtpServerService.port = port;
     }
 
     /**

@@ -34,7 +34,7 @@ import java.nio.ByteBuffer;
 import android.util.Log;
 import be.ppareit.swiftp.Defaults;
 import be.ppareit.swiftp.FtpServerApp;
-import be.ppareit.swiftp.FTPServerService;
+import be.ppareit.swiftp.FtpServerService;
 import be.ppareit.swiftp.Globals;
 
 public class SessionThread extends Thread {
@@ -266,7 +266,7 @@ public class SessionThread extends Thread {
                 String line;
                 line = in.readLine(); // will accept \r\n or \n for terminator
                 if (line != null) {
-                    FTPServerService.writeMonitor(true, line);
+                    FtpServerService.writeMonitor(true, line);
                     Log.d(TAG, "Received line from client: " + line);
                     FtpCmd.dispatchCommand(this, line);
                 } else {
@@ -319,7 +319,7 @@ public class SessionThread extends Thread {
     }
 
     public void writeString(String str) {
-        FTPServerService.writeMonitor(false, str);
+        FtpServerService.writeMonitor(false, str);
         byte[] strBytes;
         try {
             strBytes = str.getBytes(encoding);
