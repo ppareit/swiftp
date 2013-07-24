@@ -154,11 +154,6 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 String newPassword = (String) newValue;
-                if (!newPassword.matches("[a-zA-Z0-9]+")) {
-                    Toast.makeText(ServerPreferenceActivity.this,
-                            R.string.password_validation_error, Toast.LENGTH_LONG).show();
-                    return false;
-                }
                 preference.setSummary(transformPassword(newPassword));
                 stopServer();
                 return true;
