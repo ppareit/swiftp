@@ -59,7 +59,7 @@ public class CmdRNTO extends FtpCmd implements Runnable {
             // be replaced with Files.move()
             File tmpFile = null;
             try {
-                tmpFile = File.createTempFile(fromFile.getName(), null,
+                tmpFile = File.createTempFile("temp_" + fromFile.getName(), null,
                         sessionThread.getWorkingDir());
                 if (fromFile.isDirectory()) {
                     String tmpFilePath = tmpFile.getPath();
