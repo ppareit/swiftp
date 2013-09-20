@@ -29,7 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import be.ppareit.swiftp.FtpServerService;
-import be.ppareit.swiftp.R;
+import be.ppareit.swiftp_free.R;
 
 public class ServerRunningNotification extends BroadcastReceiver {
     private static final String TAG = ServerRunningNotification.class.getSimpleName();

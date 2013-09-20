@@ -49,7 +49,7 @@ import android.widget.Toast;
 import be.ppareit.swiftp.FtpServerApp;
 import be.ppareit.swiftp.FtpServerService;
 import be.ppareit.swiftp.Globals;
-import be.ppareit.swiftp.R;
+import be.ppareit.swiftp_free.R;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service

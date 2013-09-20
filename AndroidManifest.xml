@@ -47,7 +47,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             </intent-filter>
         </activity>
         <activity
-            android:name="ConfigureActivity"
+            android:name="be.ppareit.swiftp.ConfigureActivity"
             class="be.ppareit.swiftp.ConfigureActivity" />
 
         <service android:name="be.ppareit.swiftp.FtpServerService" />
