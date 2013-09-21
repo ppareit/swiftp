@@ -60,6 +60,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STOPPED" />
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name="be.ppareit.swiftp.RequestStartStopReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="be.ppareit.swiftp.ACTION_START_FTPSERVER" />
+                <action android:name="be.ppareit.swiftp.ACTION_STOP_FTPSERVER" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

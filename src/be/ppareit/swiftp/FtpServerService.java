@@ -53,6 +53,9 @@ public class FtpServerService extends Service implements Runnable {
     static public final String ACTION_STOPPED = "be.ppareit.swiftp.FTPSERVER_STOPPED";
     static public final String ACTION_FAILEDTOSTART = "be.ppareit.swiftp.FTPSERVER_FAILEDTOSTART";
 
+    static final String ACTION_START_FTPSERVER = "be.ppareit.swiftp.ACTION_START_FTPSERVER";
+    static final String ACTION_STOP_FTPSERVER = "be.ppareit.swiftp.ACTION_STOP_FTPSERVER";
+
     protected static Thread serverThread = null;
     protected boolean shouldExit = false;
 
