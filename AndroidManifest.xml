@@ -56,8 +56,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:name="be.ppareit.swiftp.gui.ServerRunningNotification"
             android:exported="false" >
             <intent-filter>
-                <action android:name="be.ppareit.swiftp.FTPServerService.STARTED" />
-                <action android:name="be.ppareit.swiftp.FTPServerService.STOPPED" />
+                <action android:name="be.ppareit.swiftp.FTPSERVER_STARTED" />
+                <action android:name="be.ppareit.swiftp.FTPSERVER_STOPPED" />
             </intent-filter>
         </receiver>
     </application>
