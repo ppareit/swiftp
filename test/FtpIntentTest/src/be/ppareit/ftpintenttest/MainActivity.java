@@ -60,7 +60,7 @@ public class MainActivity extends Activity {
             }
         });
         Button stopButton = (Button) findViewById(R.id.stop_button);
-        startButton.setOnClickListener(new View.OnClickListener() {
+        stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Swiftp: request ftp server to stop
