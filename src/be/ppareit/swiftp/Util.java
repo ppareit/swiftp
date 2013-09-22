@@ -31,7 +31,7 @@ import android.os.Environment;
 import android.util.Log;
 
 abstract public class Util {
-    static String TAG = Util.class.getSimpleName();
+    final static String TAG = Util.class.getSimpleName();
 
     public static byte byteOfInt(int value, int which) {
         int shift = which * 8;
