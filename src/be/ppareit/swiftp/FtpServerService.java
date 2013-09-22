@@ -48,12 +48,13 @@ import be.ppareit.swiftp.server.TcpListener;
 public class FtpServerService extends Service implements Runnable {
     private static final String TAG = FtpServerService.class.getSimpleName();
 
-    // Service will broadcast (LocalBroadcast) when server start/stop
+    // Service will (global) broadcast when server start/stop
     static public final String ACTION_STARTED = "be.ppareit.swiftp.FTPSERVER_STARTED";
     static public final String ACTION_STOPPED = "be.ppareit.swiftp.FTPSERVER_STOPPED";
     static public final String ACTION_FAILEDTOSTART = "be.ppareit.swiftp.FTPSERVER_FAILEDTOSTART";
 
-    static final String ACTION_START_FTPSERVER = "be.ppareit.swiftp.ACTION_START_FTPSERVER";
+    // RequestStartStopReceiver listens for these actions to start/stop this server
+	static final String ACTION_START_FTPSERVER = "be.ppareit.swiftp.ACTION_START_FTPSERVER";
     static final String ACTION_STOP_FTPSERVER = "be.ppareit.swiftp.ACTION_STOP_FTPSERVER";
 
     protected static Thread serverThread = null;
