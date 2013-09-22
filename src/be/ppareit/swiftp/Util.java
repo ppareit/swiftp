@@ -78,7 +78,7 @@ abstract public class Util {
     public static void newFileNotify(String path) {
         if (Defaults.do_mediascanner_notify) {
             Log.d(TAG, "Notifying others about new file: " + path);
-            Context context = Globals.getContext();
+            Context context = FtpServerApp.getAppContext();
             MediaScannerConnection.scanFile(context, new String[]{path}, null,
                     new MediaScannerConnection.OnScanCompletedListener() {
                         @Override
@@ -93,7 +93,7 @@ abstract public class Util {
         // There is room for improvement, for instance, one might want to look the the
         // specific file and check if it is for instance a music file, if so, you could
         // then remove it from the specific music db
-        final Context context = Globals.getContext();
+        final Context context = FtpServerApp.getAppContext();
         if (Defaults.do_mediascanner_notify) {
             Log.d(TAG, "Notifying others about deleted file: " + path);
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri

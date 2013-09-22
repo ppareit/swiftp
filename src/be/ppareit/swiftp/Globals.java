@@ -28,7 +28,6 @@ import android.content.Context;
 //       if you need a setting, get it from the settings
 
 public class Globals {
-    private static Context context;
     private static String lastError;
     private static File chrootDir = null;
     private static String username = null;
@@ -49,16 +48,6 @@ public class Globals {
 
     public static void setLastError(String lastError) {
         Globals.lastError = lastError;
-    }
-
-    public static Context getContext() {
-        return context;
-    }
-
-    public static void setContext(Context context) {
-        if (context != null) {
-            Globals.context = context;
-        }
     }
 
     public static String getUsername() {

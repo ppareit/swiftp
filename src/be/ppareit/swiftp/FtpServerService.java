@@ -103,14 +103,6 @@ public class FtpServerService extends Service implements Runnable {
     @Override
     public void onCreate() {
         Log.d(TAG, "SwiFTP server created");
-        // Set the application-wide context global, if not already set
-        Context myContext = Globals.getContext();
-        if (myContext == null) {
-            myContext = getApplicationContext();
-            if (myContext != null) {
-                Globals.setContext(myContext);
-            }
-        }
         return;
     }
 
@@ -407,7 +399,7 @@ public class FtpServerService extends Service implements Runnable {
         }
         // @TODO: next if block could probably be removed
         if (isConnectedUsingWifi() == true) {
-            Context context = Globals.getContext();
+            Context context = FtpServerApp.getAppContext();
             WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             int ipAddress = wm.getConnectionInfo().getIpAddress();
             if (ipAddress == 0)
@@ -442,7 +434,7 @@ public class FtpServerService extends Service implements Runnable {
      * @return true if connected to a local network
      */
     public static boolean isConnectedToLocalNetwork() {
-        Context context = Globals.getContext();
+        Context context = FtpServerApp.getAppContext();
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
@@ -458,7 +450,7 @@ public class FtpServerService extends Service implements Runnable {
      * @return true if connected using wifi
      */
     public static boolean isConnectedUsingWifi() {
-        Context context = Globals.getContext();
+        Context context = FtpServerApp.getAppContext();
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();

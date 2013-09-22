@@ -68,7 +68,6 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
-        Globals.setContext(getApplicationContext());
         final SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(this);
         Resources resources = getResources();
@@ -249,7 +248,8 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
         if (key.equals("show_password")) {
-            Resources res = Globals.getContext().getResources();
+			Context context = FtpServerApp.getAppContext();
+            Resources res = context.getResources();
             String password = res.getString(R.string.password_default);
             password = sp.getString("password", password);
             mPassWordPref.setSummary(transformPassword(password));
@@ -352,11 +352,12 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
     }
 
     static private String transformPassword(String password) {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(Globals
-                .getContext());
-        Resources res = Globals.getContext().getResources();
-        boolean showPassword = res.getString(R.string.show_password_default).equals(
-                "true") ? true : false;
+		Context context = FtpServerApp.getAppContext();
+        SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+        Resources res = context.getResources();
+        boolean showPassword = res.getString(R.string.show_password_default)
+				.equals("true") ? true : false;
         showPassword = sp.getBoolean("show_password", showPassword);
         if (showPassword == true)
             return password;

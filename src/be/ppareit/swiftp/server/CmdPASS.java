@@ -23,7 +23,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import be.ppareit.swiftp.Globals;
+import be.ppareit.swiftp.FtpServerApp;
 
 public class CmdPASS extends FtpCmd implements Runnable {
     private static final String TAG = CmdPASS.class.getSimpleName();
@@ -49,7 +49,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
             sessionThread.writeString("503 Must send USER first\r\n");
             return;
         }
-        Context ctx = Globals.getContext();
+        Context ctx = FtpServerApp.getAppContext();
         if (ctx == null) {
             // This will probably never happen, since the global
             // context is configured by the Service
