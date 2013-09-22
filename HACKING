@@ -12,8 +12,7 @@ How to use Eclipse and the Android plugin with the SwiFTP project:
 
 RELEASE CHECKLIST
 =================
-Set Defaults.release to true
-Update version number on servercontrolactivity
+Update version in android manifest
 Update instructions if necessary
 Uninstall fully
 
@@ -28,8 +27,6 @@ Test on
  - AndFTP
  
 Export, sign, upload
-Upload apk to Google Code
-Update wiki, site front page 
 
 CONTACT
 =======
