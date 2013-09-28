@@ -22,7 +22,7 @@ package be.ppareit.swiftp.server;
 import java.io.File;
 
 import android.util.Log;
-import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.MediaUpdater;
 
 public class CmdDELE extends FtpCmd implements Runnable {
     private static final String TAG = CmdDELE.class.getSimpleName();
@@ -53,7 +53,7 @@ public class CmdDELE extends FtpCmd implements Runnable {
             Log.i(TAG, "DELE failed: " + errString.trim());
         } else {
             sessionThread.writeString("250 File successfully deleted\r\n");
-            Util.deletedFileNotify(storeFile.getPath());
+            MediaUpdater.notifyFileDeleted(storeFile.getPath());
         }
         Log.d(TAG, "DELE finished");
     }

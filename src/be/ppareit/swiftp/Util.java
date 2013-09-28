@@ -23,11 +23,6 @@ package be.ppareit.swiftp;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import android.content.Context;
-import android.content.Intent;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 
 abstract public class Util {
@@ -73,32 +68,6 @@ abstract public class Util {
             return null;
         }
         return ipToString(addr, ".");
-    }
-
-    public static void newFileNotify(String path) {
-        if (Defaults.do_mediascanner_notify) {
-            Log.d(TAG, "Notifying others about new file: " + path);
-            Context context = FtpServerApp.getAppContext();
-            MediaScannerConnection.scanFile(context, new String[]{path}, null,
-                    new MediaScannerConnection.OnScanCompletedListener() {
-                        @Override
-                        public void onScanCompleted(String path, Uri uri) {
-                        }
-                    });
-        }
-    }
-
-    public static void deletedFileNotify(String path) {
-        // The media mounted broadcast is very taxing on the system, but works the best.
-        // There is room for improvement, for instance, one might want to look the the
-        // specific file and check if it is for instance a music file, if so, you could
-        // then remove it from the specific music db
-        final Context context = FtpServerApp.getAppContext();
-        if (Defaults.do_mediascanner_notify) {
-            Log.d(TAG, "Notifying others about deleted file: " + path);
-            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri
-                    .parse("file://" + Environment.getExternalStorageDirectory())));
-        }
     }
 
     public static String[] concatStrArrays(String[] a1, String[] a2) {

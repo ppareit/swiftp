@@ -31,7 +31,7 @@ import java.io.IOException;
 
 import android.util.Log;
 import be.ppareit.swiftp.Defaults;
-import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.MediaUpdater;
 
 abstract public class CmdAbstractStore extends FtpCmd {
     private final static String TAG = "CmdAbstractStore"; // TODO: .class.getSimpleName()
@@ -70,7 +70,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
                             break storing;
                         }
                         // Notify other apps that we just deleted a file
-                        Util.deletedFileNotify(storeFile.getPath());
+                        MediaUpdater.notifyFileDeleted(storeFile.getPath());
                     }
                 }
                 out = new FileOutputStream(storeFile, append);
@@ -205,7 +205,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
             sessionThread.writeString("226 Transmission complete\r\n");
             // Notify the music player (and possibly others) that a few file has
             // been uploaded.
-            Util.newFileNotify(storeFile.getPath());
+            MediaUpdater.notifyFileCreated(storeFile.getPath());
         }
         sessionThread.closeDataSocket();
         Log.d(TAG, "STOR finished");

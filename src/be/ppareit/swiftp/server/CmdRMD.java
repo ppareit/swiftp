@@ -22,7 +22,7 @@ package be.ppareit.swiftp.server;
 import java.io.File;
 
 import android.util.Log;
-import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.MediaUpdater;
 
 public class CmdRMD extends FtpCmd implements Runnable {
     private static final String TAG = CmdRMD.class.getSimpleName();
@@ -94,7 +94,7 @@ public class CmdRMD extends FtpCmd implements Runnable {
         } else {
             Log.d(TAG, "RMD deleting file: " + toDelete);
             boolean success = toDelete.delete();
-            Util.deletedFileNotify(toDelete.getPath());
+            MediaUpdater.notifyFileDeleted(toDelete.getPath());
             return success;
         }
     }
