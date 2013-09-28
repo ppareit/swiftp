@@ -257,18 +257,11 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
     }
 
     private void startServer() {
-        Context context = getApplicationContext();
-        Intent serverService = new Intent(context, FtpServerService.class);
-        if (!FtpServerService.isRunning()) {
-            warnIfNoExternalStorage();
-            startService(serverService);
-        }
+		sendBroadcast(new Intent(FtpServerService.ACTION_START_FTPSERVER));
     }
 
     private void stopServer() {
-        Context context = getApplicationContext();
-        Intent serverService = new Intent(context, FtpServerService.class);
-        stopService(serverService);
+		sendBroadcast(new Intent(FtpServerService.ACTION_STOP_FTPSERVER));
     }
 
     @Override
@@ -335,21 +328,6 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             }
         }
     };
-
-    /**
-     * Will check if the device contains external storage (sdcard) and display a warning
-     * for the user if there is no external storage. Nothing more.
-     */
-    private void warnIfNoExternalStorage() {
-        String storageState = Environment.getExternalStorageState();
-        if (!storageState.equals(Environment.MEDIA_MOUNTED)) {
-            Log.v(TAG, "Warning due to storage state " + storageState);
-            Toast toast = Toast.makeText(this, R.string.storage_warning,
-                    Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
-        }
-    }
 
     static private String transformPassword(String password) {
 		Context context = FtpServerApp.getAppContext();
