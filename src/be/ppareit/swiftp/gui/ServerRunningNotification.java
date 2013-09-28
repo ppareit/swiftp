@@ -52,23 +52,27 @@ public class ServerRunningNotification extends BroadcastReceiver {
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager nm = (NotificationManager) context.getSystemService(ns);
 
-        // Instantiate a Notification
-        int icon = R.drawable.notification;
-        CharSequence tickerText = context.getString(R.string.notif_server_starting);
-        long when = System.currentTimeMillis();
-        Notification notification = new Notification(icon, tickerText, when);
-
-        // Define Notification's message and Intent
-        CharSequence contentTitle = context.getString(R.string.notif_title);
+		// get ip address
         InetAddress address = FtpServerService.getLocalInetAddress();
         if (address == null) {
             Log.w(TAG, "Unable to retreive the local ip address");
             return;
         }
         String iptext = "ftp://" + address.getHostAddress() + ":"
-                + FtpServerService.getPort() + "/";
+			+ FtpServerService.getPort() + "/";
+		
+        // Instantiate a Notification
+        int icon = R.drawable.notification;
+        CharSequence tickerText = String.format(context.getString(R.string.notif_server_starting),
+				iptext);
+        long when = System.currentTimeMillis();
+        Notification notification = new Notification(icon, tickerText, when);
+
+        // Define Notification's message and Intent
+        CharSequence contentTitle = context.getString(R.string.notif_title);
         CharSequence contentText = String.format(context.getString(R.string.notif_text),
                 iptext);
+
         Intent notificationIntent = new Intent(context, ServerPreferenceActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);

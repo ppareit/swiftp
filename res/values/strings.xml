@@ -98,6 +98,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
         <b>License: </b>
         GNU General Public License v3.0\n\n
 </string>
+    <string name="notif_server_starting">Starting at %s</string>
+    <string name="notif_title">FTP Server is running</string>
+    <string name="notif_text">Server running at %s</string>
 
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retreive url</string>
@@ -107,9 +110,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="password_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>
     <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
     <string name="wifi_state_receiver_label">WifiStateReceiver</string>
-    <string name="notif_server_starting">FTP Server starting...</string>
-    <string name="notif_title">FTP Server is running</string>
-    <string name="notif_text">Server running at %s</string>
     <string name="pst_connecting">connecting</string>
     <string name="pst_connected">connected</string>
     <string name="pst_failed">failed</string>
