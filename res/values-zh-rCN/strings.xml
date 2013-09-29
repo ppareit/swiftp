@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2011-2013 Pieter Pareit
+Copyright 2009 David Revell
+
+This file is part of SwiFTP.
+
+SwiFTP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SwiFTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="swiftp_name">FTP Server</string>
+    <string name="running_label">正在运行</string>
+    <string name="running_summary_stopped">开始 FTP server</string>
+    <string name="running_summary_started">FTP server 运行于 %s 端口</string>
+    <string name="running_summary_failed">FTP server 启动失败，您尚未连接到 Wi-Fi 或以太网络？</string>
+    <string name="market_version_label">市场版本</string>
+    <string name="market_version_summary">欢迎使用 FTP Server Demo 版本。
+        您可以通过在 Google Play 中购买 FTP Server 以支持开发者。
+		点击此处跳转至 Google Play 市场。</string>
+    <string name="settings_label">设置</string>
+    <string name="username_label">用户名</string>
+    <string name="username_default">ftp</string>
+    <string name="password_label">密码</string>
+    <string name="password_default">ftp</string>
+    <string name="show_password_label">
+        显示密码
+    </string>
+    <!-- Do not translate -->
+    <string name="show_password_default">
+        false
+    </string>
+    <string name="advancedsettings_label">高级设置...</string>
+    <string name="portnumber_label">端口号</string>
+    <string name="portnumber_default">2121</string>
+    <string name="chroot_label">设为根目录</string>
+    <string name="chroot_default">/</string>
+    <string name="acceptwifi_label">接受 Wi-Fi 连接</string>
+    <string name="acceptwifi_default">true</string>
+    <string name="acceptproxy_label">接受网络代理连接</string>
+    <string name="acceptproxy_default">false</string>
+    <string name="wakelock_label">保持设备唤醒（最大 CPU 频率）</string>
+    <string name="wakelock_default">true</string>
+    <string name="extra_label">其他</string>
+    <string name="help_label">帮助...</string>
+    <string name="about_label">关于...</string>
+    <string name="help_dlg_title">FTP Server 帮助</string>
+    <string name="help_dlg_message">\
+感谢您使用 FTP Server (SwiFTP)！这里有一些简要的使用说明。更多
+使用信息您可登陆 http://ppareit.github.com/swiftp/ 查看。\n\n\
+\
+此项目允许您在 Android 设备中运行 FTP 服务器，这意味
+着当您开启 FTP 服务的时候任何程序均可访问您设备中的
+所有文件，例如在桌面端或笔记本的 Firefox 浏览器地址
+栏中输入 \"ftp://...\" 即可浏览您设备中的所有文件。\n\n
+\
+在通常情况下，用户名以及密码均为 \"ftp\"，您应该在使用
+时修改它们，并且使用此用户名以及密码访问此服务器。\n\n
+\
+在配置选项中的“保持设备唤醒”可以修复当设
+备休眠时传输速度缓慢或完全停止的问题，若
+您出现了此问题，请选中此复选框并重启程序
+后重试。您的设备将在服务运行时保持唤醒。\n\n
+\
+由于电源以及安全性方面原因，我们建议您在使用后关闭服务。\n\n\
+\
+如果没有如您预期的那样正常工作，请将其反馈
+至 Pieter Pareit(pieter.pareit@gmail.com)。\n\n\
+\
+您可以通过在 Google Play 中购买支持此程序的付费版开源项目
+的后续开发。您可以访问 https://github.com/ppareit/swiftp
+随时查看并跟进开发进度，如果您有任何建议或想法，您可以访问
+https://github.com/ppareit/swiftp/issues 提交您的建议。\n\n
+    </string>
+    <string name="about_dlg_title">关于 FTP Server</string>
+    <string name="about_dlg_message">
+        <b>简介：</b>
+        FTP Server (SwiFTP) 允许在您的 Android 设备上运行文件传输服务器。\n\n\
+        <b>站点：</b>
+        http://ppareit.github.com/swiftp/\n\n
+        <b>维护：</b>
+        Pieter Pareit (pieter.pareit@gmail.com)\n\n
+        <b>编译：</b>
+        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
+        <b>美工：</b>
+        Birgit Niemegeers\n\n
+        <b>许可：</b>
+        GNU General Public License v3.0\n\n
+</string>
+    <string name="notif_server_starting">启动于 %s 端口</string>
+    <string name="notif_title">FTP Server 正在运行</string>
+    <string name="notif_text">服务运行于 %s 端口</string>
+
+    <!-- old strings -->
+    <string name="cant_get_url">无法检索 URL</string>
+    <string name="unknown">未知</string>
+    <string name="ok">确认</string>
+    <string name="username_validation_error">用户名至少需要包括一个或更多字符，不允许为空。</string>
+    <string name="password_validation_error">密码至少需要包括一个或更多字符，不允许为空。</string>
+    <string name="port_validation_error">端口号必须在 1 至 65535 之间。</string>
+    <string name="wifi_state_receiver_label">WifiStateReceiver</string>
+    <string name="pst_connecting">正在连接</string>
+    <string name="pst_connected">已连接</string>
+    <string name="pst_failed">已失败</string>
+    <string name="pst_unreachable">无法访问</string>
+    <string name="pst_disconnected">未连接</string>
+    <string name="storage_warning">警告：当前存储暂不可用，您可能需要取消挂载。</string>
+    <string name="widget_name">FTP Server Widget</string>
+
+</resources>
