@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2011-2013 Pieter Pareit
+Copyright 2009 David Revell
+
+This file is part of SwiFTP.
+
+SwiFTP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SwiFTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="swiftp_name">FTP Server</string>
+    <string name="running_label">Verbonden</string>
+    <string name="running_summary_stopped">Start FTP server</string>
+    <string name="running_summary_started">FTP server verbonden op %s</string>
+    <string name="running_summary_failed">Fout tijdens het verbinden van de FTP server, verbonden met het netwerk?</string>
+    <string name="market_version_label">Market versie</string>
+    <string name="market_version_summary">Dit is de FTP server demo. Je kan de ontwikkeling van dit programma ondersteunen door de FTP Server te kopen op de android play store. Click hier om naar de play store te gaan.</string>
+    <string name="settings_label">Instellingen</string>
+    <string name="username_label">Gebruikersnaam</string>
+    <string name="username_default">ftp</string>
+    <string name="password_label">Paswoord</string>
+    <string name="password_default">ftp</string>
+    <string name="show_password_label">
+        Toon paswoord
+    </string>
+    <string name="show_password_default">
+        false
+    </string>
+    <string name="advancedsettings_label">Geavanceerde instellingen...</string>
+    <string name="portnumber_label">Poort nummer</string>
+    <string name="portnumber_default">2121</string>
+    <string name="chroot_label">Blijf in map</string>
+    <string name="chroot_default">/</string>
+    <string name="acceptwifi_label">Accepteer verbindingen via wifi</string>
+    <string name="acceptwifi_default">true</string>
+    <string name="acceptproxy_label">Accepteer verbindingen via proxy</string>
+    <string name="acceptproxy_default">false</string>
+    <string name="wakelock_label">Houd toestel wakker (volledige CPU snelheid)</string>
+    <string name="wakelock_default">true</string>
+    <string name="extra_label">Extra's</string>
+    <string name="help_label">Help...</string>
+    <string name="about_label">Over...</string>
+    <string name="help_dlg_title">FTP Server Help</string>
+    <string name="help_dlg_message">\
+Bedankt om FTP Server (Swiftp) te gebruiken. Meer informatie vind je op http://ppareit.github.com/swiftp/.\n\n\
+\
+Dit programma laat het toe om een FTP server te draaien op je android toestel. 
+Dit wil zeggen dat andere programma's de bestanden kunnen benaderen op je toestel zolang
+de server aan het draaien is. Bij voorbeeld, als je \'ftp://...\' intikt in de url
+balk in Firefox, dan zal dit programma alle bestanden op je toestel oplijsten.\n\n
+\
+Standaard zijn de gebruikersnaam en wachtwoord \'ftp\', er wordt aangeraden om deze te
+wijzigen. Deze gebruikersnaam is nodig op het toetel dat de FTP server benaderd\n\n
+\
+Om de batterij te sparen en uit veiligheidsoverwegingen is het aan te raden van de
+server af te leggen na gebruik.\n\n\
+\
+Als er iets niet werkt naar behoren kan je de ontwikkelaar contacteren via Pieter Pareit
+(pieter.pareit@gmail.com). Engels of Nederlands.\n\n\
+\
+De ontwikkeling van dit open source programma wordt ondersteunt door een versie te kopen
+via de google play store.. Je kan de ontwikkeling volgen via
+https://github.com/ppareit/swiftp . Problemen die opgelost worden en nieuwe mogelijkheden
+van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
+    </string>
+    <string name="about_dlg_title">Over FTP Server</string>
+    <string name="about_dlg_message">
+        <b>Beschrijving: </b>
+        FTP Server (SwiFTP) laat het toe om een ftp server te draaien op je android toestel.\n\n\
+        <b>Website:</b>
+        http://ppareit.github.com/swiftp/\n\n
+        <b>Huidige ontwikkelaar:</b>
+        Pieter Pareit (pieter.pareit@gmail.com)\n\n
+        <b>Programming: </b>\
+        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
+        <b>Artwork:</b>
+        Birgit Niemegeers\n\n
+        <b>License: </b>
+        GNU General Public License v3.0\n\n
+</string>
+    <string name="notif_server_starting">Bezig met starten op %s</string>
+    <string name="notif_title">FTP Server is verbonden</string>
+    <string name="notif_text">Server verbonden op %s</string>
+
+    <!-- old strings -->
+    <string name="cant_get_url">Can\'t retreive url</string>
+    <string name="unknown">unknown</string>
+    <string name="ok">OK</string>
+    <string name="username_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>
+    <string name="password_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>
+    <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
+    <string name="wifi_state_receiver_label">WifiStateReceiver</string>
+    <string name="pst_connecting">connecting</string>
+    <string name="pst_connected">connected</string>
+    <string name="pst_failed">failed</string>
+    <string name="pst_unreachable">unreachable</string>
+    <string name="pst_disconnected">disconnected</string>
+    <string name="storage_warning">Warning: storage is not available. You may want to unmount it.</string>
+    <string name="widget_name">FTP Server Widget</string>
+
+</resources>
