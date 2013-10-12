@@ -36,7 +36,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:targetSdkVersion="17" />
 
     <application
-        android:icon="@drawable/icon"
+        android:icon="@drawable/launcher"
         android:label="@string/swiftp_name"
         android:name="be.ppareit.swiftp.FtpServerApp" >
         <activity android:name="be.ppareit.swiftp.gui.ServerPreferenceActivity" >
