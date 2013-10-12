@@ -99,6 +99,11 @@ https://github.com/ppareit/swiftp/issues .\n\n
         GNU General Public License v3.0\n\n
 </string>
 
+    <!-- Special care for the follwoing string pleace -->
+    <string name="notif_server_starting">FTP сервер запускается...%s</string>
+    <string name="notif_title">FTP сервер включен.</string>
+    <string name="notif_text">URL для доступа %s</string>
+
     <!-- old strings -->
     <string name="cant_get_url">Не удается получить URL</string>
     <string name="unknown">неизвестно</string>
@@ -107,9 +112,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="password_validation_error">Пароль длолжен состоять из одного или более бкувенно-цифровых символов. Никакие другие символы не допускаются.</string>
     <string name="port_validation_error">Номер порта должен иметь значение от 1 до 65535.</string>
     <string name="wifi_state_receiver_label">WifiStateReceiver</string>
-    <string name="notif_server_starting">FTP сервер запускается...</string>
-    <string name="notif_title">FTP сервер включен.</string>
-    <string name="notif_text">URL для доступа %s</string>
     <string name="pst_connecting">поключение</string>
     <string name="pst_connected">подключено</string>
     <string name="pst_failed">ошибка</string>

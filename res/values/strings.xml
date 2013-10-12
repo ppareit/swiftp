@@ -38,6 +38,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="show_password_label">
         Display password
     </string>
+    <!-- Do not translate -->
     <string name="show_password_default">
         false
     </string>
