@@ -21,7 +21,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 <resources>
 
-    <string name="swiftp_name">FTP Server</string>
     <string name="running_label">正在运行</string>
     <string name="running_summary_stopped">开始 FTP server</string>
     <string name="running_summary_started">FTP server 运行于 %s 端口</string>
