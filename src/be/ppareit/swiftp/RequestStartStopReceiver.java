@@ -3,11 +3,11 @@ package be.ppareit.swiftp;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
 import android.util.Log;
-import android.os.*;
-import android.widget.*;
-import android.view.*;
-import be.ppareit.swiftp_free.*;
+import android.view.Gravity;
+import android.widget.Toast;
+import be.ppareit.swiftp_free.R;
 
 public class RequestStartStopReceiver extends BroadcastReceiver {
 
@@ -30,7 +30,7 @@ public class RequestStartStopReceiver extends BroadcastReceiver {
         }
     }
 
-	/**
+    /**
      * Will check if the device contains external storage (sdcard) and display a warning
      * for the user if there is no external storage. Nothing more.
      */
@@ -39,7 +39,7 @@ public class RequestStartStopReceiver extends BroadcastReceiver {
         if (!storageState.equals(Environment.MEDIA_MOUNTED)) {
             Log.v(TAG, "Warning due to storage state " + storageState);
             Toast toast = Toast.makeText(FtpServerApp.getAppContext(),
-				R.string.storage_warning, Toast.LENGTH_LONG);
+                    R.string.storage_warning, Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
         }
