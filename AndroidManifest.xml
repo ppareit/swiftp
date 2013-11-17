@@ -33,12 +33,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="19" />
 
     <application
         android:icon="@drawable/launcher"
         android:label="@string/swiftp_name"
-        android:name="be.ppareit.swiftp.FtpServerApp" >
+        android:name="be.ppareit.swiftp.FtpServerApp"
+        android:allowBackup="true" >
 
         <activity android:name="be.ppareit.swiftp.gui.ServerPreferenceActivity" >
             <intent-filter>
