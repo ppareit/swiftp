@@ -20,7 +20,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -33,14 +32,12 @@ import java.util.List;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import be.ppareit.swiftp.server.SessionThread;
 import be.ppareit.swiftp.server.TcpListener;
@@ -68,8 +65,6 @@ public class FtpServerService extends Service implements Runnable {
     protected ServerSocket listenSocket;
     protected static WifiLock wifiLock = null;
 
-    // protected static InetAddress serverAddress = null;
-
     protected static List<String> sessionMonitor = new ArrayList<String>();
     protected static List<String> serverLog = new ArrayList<String>();
     protected static int uiLogLevel = Defaults.getUiLogLevel();
@@ -80,15 +75,8 @@ public class FtpServerService extends Service implements Runnable {
     // to receive an exit signal and cleanly exit.
     public static final int WAKE_INTERVAL_MS = 1000; // milliseconds
 
-    protected static int port;
-    protected static boolean acceptWifi;
-    protected static boolean acceptNet;
-    protected static boolean fullWake;
-
     private TcpListener wifiListener = null;
     private final List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
-
-    private static SharedPreferences settings = null;
 
     PowerManager.WakeLock wakeLock;
 
@@ -113,8 +101,7 @@ public class FtpServerService extends Service implements Runnable {
 
         shouldExit = false;
         int attempts = 10;
-        // The previous server thread may still be cleaning up, wait for it
-        // to finish.
+        // The previous server thread may still be cleaning up, wait for it to finish.
         while (serverThread != null) {
             Log.w(TAG, "Won't start, server thread exists");
             if (attempts > 0) {
@@ -154,14 +141,12 @@ public class FtpServerService extends Service implements Runnable {
         } else {
             serverThread.interrupt();
             try {
-                serverThread.join(10000); // wait 10 sec for server thread to
-                                          // finish
+                serverThread.join(10000); // wait 10 sec for server thread to finish
             } catch (InterruptedException e) {
             }
             if (serverThread.isAlive()) {
                 Log.w(TAG, "Server thread failed to exit");
-                // it may still exit eventually if we just leave the
-                // shouldExit flag set
+                // it may still exit eventually if we just leave the shouldExit flag set
             } else {
                 Log.d(TAG, "serverThread join()ed ok");
                 serverThread = null;
@@ -182,115 +167,61 @@ public class FtpServerService extends Service implements Runnable {
         Log.d(TAG, "FTPServerService.onDestroy() finished");
     }
 
-    private boolean loadSettings() {
-        Log.d(TAG, "Loading settings");
-        settings = PreferenceManager.getDefaultSharedPreferences(this);
-        port = Integer.valueOf(settings.getString("portNum", "2121"));
-        if (port == 0) {
-            // If port number from settings is invalid, use the default
-            port = Defaults.portNumber;
-        }
-        Log.d(TAG, "Using port " + port);
-
-        acceptNet = settings.getBoolean("allowNet", Defaults.acceptNet);
-        acceptWifi = settings.getBoolean("allowWifi", Defaults.acceptWifi);
-        fullWake = settings.getBoolean("stayAwake", Defaults.stayAwake);
-
-        // The username, password, and chrootDir are just checked for sanity
-        String username = settings.getString("username", null);
-        String password = settings.getString("password", null);
-        String chrootDir = settings.getString("chrootDir", Defaults.chrootDir);
-
-        validateBlock: {
-            if (username == null || password == null) {
-                Log.e(TAG, "Username or password is invalid");
-                break validateBlock;
-            }
-            File chrootDirAsFile = new File(chrootDir);
-            if (!chrootDirAsFile.isDirectory()) {
-                Log.e(TAG, "Chroot dir is invalid");
-                break validateBlock;
-            }
-            Globals.setChrootDir(chrootDirAsFile);
-            Globals.setUsername(username);
-            return true;
-        }
-        // We reach here if the settings were not sane
-        return false;
-    }
-
     // This opens a listening socket on all interfaces.
     void setupListener() throws IOException {
         listenSocket = new ServerSocket();
         listenSocket.setReuseAddress(true);
-        listenSocket.bind(new InetSocketAddress(port));
+        listenSocket.bind(new InetSocketAddress(Settings.getPortNumber()));
     }
 
     public void run() {
-        // The UI will want to check the server status to update its
-        // start/stop server button
-        int consecutiveProxyStartFailures = 0;
-        long proxyStartMillis = 0;
-
         Log.d(TAG, "Server thread running");
 
-        // set our members according to user preferences
-        if (!loadSettings()) {
-            // loadSettings returns false if settings are not sane
-            cleanupAndStopService();
-            sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
-            return;
-        }
-
+        // fail when there is no local network
         if (isConnectedToLocalNetwork() == false) {
             cleanupAndStopService();
             sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
             return;
         }
 
-        // Initialization of wifi
-        if (acceptWifi) {
-            // If configured to accept connections via wifi, then set up the
-            // socket
-            try {
-                setupListener();
-            } catch (IOException e) {
-                Log.w(TAG, "Error opening port, check your network connection.");
-                // serverAddress = null;
-                cleanupAndStopService();
-                return;
-            }
-            takeWifiLock();
+        // Initialization of wifi, set up the socket
+        try {
+            setupListener();
+        } catch (IOException e) {
+            Log.w(TAG, "Error opening port, check your network connection.");
+            // serverAddress = null;
+            cleanupAndStopService();
+            sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
+            return;
         }
+
+        // @TODO: when using ethernet, is it needed to take wifi lock?
+        takeWifiLock();
         takeWakeLock();
 
-        Log.i(TAG, "SwiFTP server ready");
-
         // A socket is open now, so the FTP server is started, notify rest of world
+        Log.i(TAG, "Ftp Server up and running, broadcasting ACTION_STARTED");
         sendBroadcast(new Intent(ACTION_STARTED));
 
         while (!shouldExit) {
-            if (acceptWifi) {
-                if (wifiListener != null) {
-                    if (!wifiListener.isAlive()) {
-                        Log.d(TAG, "Joining crashed wifiListener thread");
-                        try {
-                            wifiListener.join();
-                        } catch (InterruptedException e) {
-                        }
-                        wifiListener = null;
+            if (wifiListener != null) {
+                if (!wifiListener.isAlive()) {
+                    Log.d(TAG, "Joining crashed wifiListener thread");
+                    try {
+                        wifiListener.join();
+                    } catch (InterruptedException e) {
                     }
-                }
-                if (wifiListener == null) {
-                    // Either our wifi listener hasn't been created yet, or has
-                    // crashed,
-                    // so spawn it
-                    wifiListener = new TcpListener(listenSocket, this);
-                    wifiListener.start();
+                    wifiListener = null;
                 }
             }
+            if (wifiListener == null) {
+                // Either our wifi listener hasn't been created yet, or has crashed,
+                // so spawn it
+                wifiListener = new TcpListener(listenSocket, this);
+                wifiListener.start();
+            }
             try {
-                // todo: think about using ServerSocket, and just closing
+                // TODO: think about using ServerSocket, and just closing
                 // the main socket to send an exit signal
                 Thread.sleep(WAKE_INTERVAL_MS);
             } catch (InterruptedException e) {
@@ -304,8 +235,7 @@ public class FtpServerService extends Service implements Runnable {
             wifiListener.quit();
             wifiListener = null;
         }
-        shouldExit = false; // we handled the exit flag, so reset it to
-                            // acknowledge
+        shouldExit = false; // we handled the exit flag, so reset it to acknowledge
         Log.d(TAG, "Exiting cleanly, returning from run()");
 
         cleanupAndStopService();
@@ -335,14 +265,10 @@ public class FtpServerService extends Service implements Runnable {
         if (wakeLock == null) {
             Log.d(TAG, "About to take wake lock");
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            // Many (all?) devices seem to not properly honor a
-            // PARTIAL_WAKE_LOCK,
-            // which should prevent CPU throttling. This has been
-            // well-complained-about on android-developers.
-            // For these devices, we have a config option to force the phone
-            // into a
-            // full wake lock.
-            if (fullWake) {
+            // Many devices seem to not properly honor a PARTIAL_WAKE_LOCK, which
+            // should prevent CPU throttling. For these devices, we have a option
+            // to force the phone into a full wake lock.
+            if (Settings.shouldTakeFullWakeLock()) {
                 Log.d(TAG, "Need to take full wake lock");
                 wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, WAKE_LOCK_TAG);
             } else {
@@ -398,7 +324,7 @@ public class FtpServerService extends Service implements Runnable {
             Log.e(TAG, "getLocalInetAddress called and no connection");
             return null;
         }
-        // @TODO: next if block could probably be removed
+        // TODO: next if block could probably be removed
         if (isConnectedUsingWifi() == true) {
             Context context = FtpServerApp.getAppContext();
             WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -493,14 +419,6 @@ public class FtpServerService extends Service implements Runnable {
     // updateClients();
     // }
 
-    public static int getPort() {
-        return port;
-    }
-
-    public static void setPort(int port) {
-        FtpServerService.port = port;
-    }
-
     /**
      * The FTPServerService must know about all running session threads so they can be
      * terminated on exit. Called when a new session is created.
@@ -538,7 +456,4 @@ public class FtpServerService extends Service implements Runnable {
         Log.d(TAG, "Registered session thread");
     }
 
-    static public SharedPreferences getSettings() {
-        return settings;
-    }
 }

@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import be.ppareit.swiftp.FtpServerService;
+import be.ppareit.swiftp.Settings;
 import be.ppareit.swiftp_free.R;
 
 public class ServerRunningNotification extends BroadcastReceiver {
@@ -52,19 +53,19 @@ public class ServerRunningNotification extends BroadcastReceiver {
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager nm = (NotificationManager) context.getSystemService(ns);
 
-		// get ip address
+        // get ip address
         InetAddress address = FtpServerService.getLocalInetAddress();
         if (address == null) {
             Log.w(TAG, "Unable to retreive the local ip address");
             return;
         }
         String iptext = "ftp://" + address.getHostAddress() + ":"
-			+ FtpServerService.getPort() + "/";
-		
+                + Settings.getPortNumber() + "/";
+
         // Instantiate a Notification
         int icon = R.drawable.notification;
-        CharSequence tickerText = String.format(context.getString(R.string.notif_server_starting),
-				iptext);
+        CharSequence tickerText = String.format(
+                context.getString(R.string.notif_server_starting), iptext);
         long when = System.currentTimeMillis();
         Notification notification = new Notification(icon, tickerText, when);
 

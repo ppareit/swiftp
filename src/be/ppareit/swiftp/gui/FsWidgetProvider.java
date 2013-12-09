@@ -87,11 +87,6 @@ public class FsWidgetProvider extends AppWidgetProvider {
             return START_NOT_STICKY;
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see android.app.Service#onBind(android.content.Intent)
-         */
         @Override
         public IBinder onBind(Intent intent) {
             return null;

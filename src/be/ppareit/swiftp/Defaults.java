@@ -31,15 +31,8 @@ public class Defaults {
 	protected static int uiLogLevel = Defaults.release ? Log.INFO : Log.DEBUG;
 	protected static int consoleLogLevel = Defaults.release ? Log.INFO : Log.DEBUG;
 	protected static String settingsName = "SwiFTP";
-	//protected static String username = "user";
-	//protected static String password = "";
-	protected static int portNumber = 2121;
-//	protected static int ipRetrievalAttempts = 5;
 	public static final int tcpConnectionBacklog = 5;
 	public static final String chrootDir = "/";
-	public static final boolean acceptWifi = true;
-	public static final boolean acceptNet = false; // don't incur bandwidth charges
-	public static final boolean stayAwake = false;
 	public static final int REMOTE_PROXY_PORT = 2222;
 	public static final String STRING_ENCODING = "UTF-8";
 	public static final int SO_TIMEOUT_MS = 30000; // socket timeout millis
@@ -69,14 +62,6 @@ public class Defaults {
 //	public static void setIpRetrievalAttempts(int ipRetrievalAttempts) {
 //		Defaults.ipRetrievalAttempts = ipRetrievalAttempts;
 //	}
-
-	public static int getPortNumber() {
-		return portNumber;
-	}
-
-	public static void setPortNumber(int portNumber) {
-		Defaults.portNumber = portNumber;
-	}
 
 	public static String getSettingsName() {
 		return settingsName;

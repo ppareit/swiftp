@@ -32,7 +32,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
@@ -43,12 +42,11 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.text.util.Linkify;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.TextView;
 import android.widget.Toast;
 import be.ppareit.swiftp.FtpServerApp;
 import be.ppareit.swiftp.FtpServerService;
-import be.ppareit.swiftp.Globals;
+import be.ppareit.swiftp.Settings;
 import be.ppareit.swiftp_free.R;
 
 /**
@@ -83,7 +81,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 return;
             }
             String iptext = "ftp://" + address.getHostAddress() + ":"
-                    + FtpServerService.getPort() + "/";
+                    + Settings.getPortNumber() + "/";
             String summary = resources
                     .getString(R.string.running_summary_started, iptext);
             running_state.setSummary(summary);
@@ -314,7 +312,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                     return;
                 }
                 String iptext = "ftp://" + address.getHostAddress() + ":"
-                        + FtpServerService.getPort() + "/";
+                        + Settings.getPortNumber() + "/";
                 Resources resources = getResources();
                 String summary = resources.getString(R.string.running_summary_started,
                         iptext);

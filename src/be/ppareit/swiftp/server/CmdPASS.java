@@ -20,10 +20,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package be.ppareit.swiftp.server;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import be.ppareit.swiftp.FtpServerApp;
+import be.ppareit.swiftp.Settings;
 
 public class CmdPASS extends FtpCmd implements Runnable {
     private static final String TAG = CmdPASS.class.getSimpleName();
@@ -55,11 +54,8 @@ public class CmdPASS extends FtpCmd implements Runnable {
             // context is configured by the Service
             Log.e(TAG, "No global context in PASS\r\n");
         }
-        String password;
-        String username;
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
-        username = settings.getString("username", null);
-        password = settings.getString("password", null);
+        String username = Settings.getUserName();
+        String password = Settings.getPassWord();
         if (username == null || password == null) {
             Log.e(TAG, "Username or password misconfigured");
             sessionThread.writeString("500 Internal error during authentication");

@@ -22,7 +22,7 @@ package be.ppareit.swiftp.server;
 import java.io.IOException;
 
 import android.util.Log;
-import be.ppareit.swiftp.Globals;
+import be.ppareit.swiftp.Settings;
 
 public class CmdPWD extends FtpCmd implements Runnable {
     private static final String TAG = CmdPWD.class.getSimpleName();
@@ -41,7 +41,7 @@ public class CmdPWD extends FtpCmd implements Runnable {
         // user-visible path (inside the chroot directory).
         try {
             String currentDir = sessionThread.getWorkingDir().getCanonicalPath();
-            currentDir = currentDir.substring(Globals.getChrootDir().getCanonicalPath()
+            currentDir = currentDir.substring(Settings.getChrootDir().getCanonicalPath()
                     .length());
             // The root directory requires special handling to restore its
             // leading slash

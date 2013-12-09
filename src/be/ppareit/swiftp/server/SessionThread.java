@@ -35,7 +35,7 @@ import android.util.Log;
 import be.ppareit.swiftp.Defaults;
 import be.ppareit.swiftp.FtpServerApp;
 import be.ppareit.swiftp.FtpServerService;
-import be.ppareit.swiftp.Globals;
+import be.ppareit.swiftp.Settings;
 
 public class SessionThread extends Thread {
     private static final String TAG = SessionThread.class.getSimpleName();
@@ -47,7 +47,7 @@ public class SessionThread extends Thread {
     protected boolean binaryMode = false;
     protected Account account = new Account();
     protected boolean authenticated = false;
-    protected File workingDir = Globals.getChrootDir();
+    protected File workingDir = Settings.getChrootDir();
     // protected ServerSocket dataServerSocket = null;
     protected Socket dataSocket = null;
     // protected FTPServerService service;
