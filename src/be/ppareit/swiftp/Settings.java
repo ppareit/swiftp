@@ -54,7 +54,9 @@ public class Settings {
 
     public static int getPortNumber() {
         final SharedPreferences sp = getSharedPreferences();
-        int port = sp.getInt("portNum", 2121);
+		// TODO: port is always an number, so store this accordenly
+		String portString = sp.getString("portNum", "2121");
+        int port = Integer.valueOf(portString);
         Log.v(TAG, "Using port: " + port);
         return port;
     }
