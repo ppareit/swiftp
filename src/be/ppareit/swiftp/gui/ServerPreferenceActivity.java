@@ -70,7 +70,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 .getDefaultSharedPreferences(this);
         Resources resources = getResources();
 
-        CheckBoxPreference running_state = (CheckBoxPreference) findPreference("running_state");
+        CheckBoxPreference running_state = findPref("running_state");
         if (FtpServerService.isRunning() == true) {
             running_state.setChecked(true);
             // Fill in the FTP server address
@@ -100,8 +100,8 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             }
         });
 
-        PreferenceScreen prefScreen = (PreferenceScreen) findPreference("preference_screen");
-        Preference marketVersionPref = findPreference("market_version");
+        PreferenceScreen prefScreen = findPref("preference_screen");
+        Preference marketVersionPref = findPref("market_version");
         marketVersionPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -123,7 +123,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             prefScreen.removePreference(marketVersionPref);
         }
 
-        EditTextPreference username_pref = (EditTextPreference) findPreference("username");
+        EditTextPreference username_pref = findPref("username");
         username_pref.setSummary(settings.getString("username",
                 resources.getString(R.string.username_default)));
         username_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -143,7 +143,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             }
         });
 
-        mPassWordPref = (EditTextPreference) findPreference("password");
+        mPassWordPref = findPref("password");
         String password = resources.getString(R.string.password_default);
         password = settings.getString("password", password);
         mPassWordPref.setSummary(transformPassword(password));
@@ -157,7 +157,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             }
         });
 
-        EditTextPreference portnum_pref = (EditTextPreference) findPreference("portNum");
+        EditTextPreference portnum_pref = findPref("portNum");
         portnum_pref.setSummary(settings.getString("portNum",
                 resources.getString(R.string.portnumber_default)));
         portnum_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -182,7 +182,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             }
         });
 
-        EditTextPreference chroot_pref = (EditTextPreference) findPreference("chrootDir");
+        EditTextPreference chroot_pref = findPref("chrootDir");
         chroot_pref.setSummary(settings.getString("chrootDir",
                 resources.getString(R.string.chroot_default)));
         chroot_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -201,7 +201,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             }
         });
 
-        final CheckBoxPreference wakelock_pref = (CheckBoxPreference) findPreference("stayAwake");
+        final CheckBoxPreference wakelock_pref = findPref("stayAwake");
         wakelock_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -210,7 +210,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             }
         });
 
-        Preference help = findPreference("help");
+        Preference help = findPref("help");
         help.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -227,7 +227,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             }
         });
 
-        Preference about = findPreference("about");
+        Preference about = findPref("about");
         about.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -343,6 +343,11 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 sb.append('*');
             return sb.toString();
         }
+    }
+
+    @SuppressWarnings({ "unchecked", "deprecation" })
+    protected <T extends Preference> T findPref(CharSequence key) {
+        return (T) this.findPreference(key);
     }
 
 }
