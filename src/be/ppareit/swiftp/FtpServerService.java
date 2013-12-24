@@ -80,19 +80,9 @@ public class FtpServerService extends Service implements Runnable {
 
     PowerManager.WakeLock wakeLock;
 
-    public FtpServerService() {
-    }
-
     @Override
     public IBinder onBind(Intent intent) {
-        // We don't implement this functionality, so ignore it
         return null;
-    }
-
-    @Override
-    public void onCreate() {
-        Log.d(TAG, "SwiFTP server created");
-        return;
     }
 
     @Override
