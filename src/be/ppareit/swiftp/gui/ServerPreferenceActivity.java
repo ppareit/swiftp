@@ -64,6 +64,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "created");
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
@@ -242,6 +243,21 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 return true;
             }
         });
+
+        Log.v(TAG, "Registering the FTP server actions");
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(FtpServerService.ACTION_STARTED);
+        filter.addAction(FtpServerService.ACTION_STOPPED);
+        filter.addAction(FtpServerService.ACTION_FAILEDTOSTART);
+        registerReceiver(mFsActionsReceiver, filter);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.v(TAG, "Unregistering the FTPServer actions");
+        unregisterReceiver(mFsActionsReceiver);
+        super.onDestroy();
     }
 
     @Override
@@ -271,22 +287,12 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         // make this class listen for preference changes
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
-
-        Log.v(TAG, "Registering the FTP server actions");
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(FtpServerService.ACTION_STARTED);
-        filter.addAction(FtpServerService.ACTION_STOPPED);
-        filter.addAction(FtpServerService.ACTION_FAILEDTOSTART);
-        registerReceiver(ftpServerReceiver, filter);
     }
 
     @Override
     protected void onPause() {
         Log.v(TAG, "onPause");
         super.onPause();
-
-        Log.v(TAG, "Unregistering the FTPServer actions");
-        unregisterReceiver(ftpServerReceiver);
 
         // unregister the listener
         SharedPreferences sprefs = getPreferenceScreen().getSharedPreferences();
@@ -298,7 +304,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
      * running_state, if the server is running and will also display at what url the
      * server is running.
      */
-    BroadcastReceiver ftpServerReceiver = new BroadcastReceiver() {
+    BroadcastReceiver mFsActionsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.v(TAG, "FTPServerService action received: " + intent.getAction());
