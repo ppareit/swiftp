@@ -101,7 +101,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
 </string>
     <string name="notif_server_starting">Starting at %s</string>
     <string name="notif_title">FTP Server is running</string>
-    <string name="notif_text">Server running at %s</string>
+    <string name="notif_text">at %s</string>
 
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retreive url</string>

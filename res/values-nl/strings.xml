@@ -93,7 +93,7 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
 </string>
     <string name="notif_server_starting">Bezig met starten op %s</string>
     <string name="notif_title">FTP Server is verbonden</string>
-    <string name="notif_text">Server verbonden op %s</string>
+    <string name="notif_text">op %s</string>
 
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retreive url</string>
