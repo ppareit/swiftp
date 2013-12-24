@@ -21,8 +21,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 <resources>
 
-    <string name="running_label">Verbonden</string>
-    <string name="running_summary_stopped">Start FTP server</string>
+    <string name="running_label">FTP Server</string>
+    <string name="running_summary_stopped">Wijzig de status van de FTP Server</string>
     <string name="running_summary_started">FTP server verbonden op %s</string>
     <string name="running_summary_failed">Fout tijdens het verbinden van de FTP server, verbonden met het netwerk?</string>
     <string name="market_version_label">Market versie</string>

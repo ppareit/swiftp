@@ -22,8 +22,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 <resources>
 
     <string name="swiftp_name">FTP Server (Demo)</string>
-    <string name="running_label">Running</string>
-    <string name="running_summary_stopped">Start FTP server</string>
+    <string name="running_label">FTP Server</string>
+    <string name="running_summary_stopped">Toggle the state of the ftp server</string>
     <string name="running_summary_started">FTP server running at %s</string>
     <string name="running_summary_failed">Failed to start the FTP server, not connected to the local network (wifi or ethernet)?</string>
     <string name="market_version_label">Market version</string>
