@@ -20,11 +20,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 <PreferenceScreen android:key="preference_screen" xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="running_state"
+    <SwitchPreference
+        android:key="running_switch"
+        android:title="@string/running_label"
         android:summary="@string/running_summary_stopped"
-        android:title="@string/running_label" />
+        android:defaultValue="false" />
     <Preference
         android:key="market_version"
         android:summary="@string/market_version_summary"

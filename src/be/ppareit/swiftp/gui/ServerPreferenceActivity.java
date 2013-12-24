@@ -40,6 +40,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.preference.TwoStatePreference;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.widget.TextView;
@@ -70,25 +71,25 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 .getDefaultSharedPreferences(this);
         Resources resources = getResources();
 
-        CheckBoxPreference running_state = findPref("running_state");
+        TwoStatePreference runningPref = findPref("running_switch");
         if (FtpServerService.isRunning() == true) {
-            running_state.setChecked(true);
+            runningPref.setChecked(true);
             // Fill in the FTP server address
             InetAddress address = FtpServerService.getLocalInetAddress();
             if (address == null) {
                 Log.v(TAG, "Unable to retreive wifi ip address");
-                running_state.setSummary(R.string.cant_get_url);
+                runningPref.setSummary(R.string.cant_get_url);
                 return;
             }
             String iptext = "ftp://" + address.getHostAddress() + ":"
                     + Settings.getPortNumber() + "/";
             String summary = resources
                     .getString(R.string.running_summary_started, iptext);
-            running_state.setSummary(summary);
+            runningPref.setSummary(summary);
         } else {
-            running_state.setChecked(false);
+            runningPref.setChecked(false);
         }
-        running_state.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+        runningPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 if ((Boolean) newValue) {
@@ -301,14 +302,14 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.v(TAG, "FTPServerService action received: " + intent.getAction());
-            CheckBoxPreference running_state = (CheckBoxPreference) findPreference("running_state");
+            TwoStatePreference runningPref = findPref("running_switch");
             if (intent.getAction().equals(FtpServerService.ACTION_STARTED)) {
-                running_state.setChecked(true);
+                runningPref.setChecked(true);
                 // Fill in the FTP server address
                 InetAddress address = FtpServerService.getLocalInetAddress();
                 if (address == null) {
                     Log.v(TAG, "Unable to retreive local ip address");
-                    running_state.setSummary(R.string.cant_get_url);
+                    runningPref.setSummary(R.string.cant_get_url);
                     return;
                 }
                 String iptext = "ftp://" + address.getHostAddress() + ":"
@@ -316,13 +317,13 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 Resources resources = getResources();
                 String summary = resources.getString(R.string.running_summary_started,
                         iptext);
-                running_state.setSummary(summary);
+                runningPref.setSummary(summary);
             } else if (intent.getAction().equals(FtpServerService.ACTION_STOPPED)) {
-                running_state.setChecked(false);
-                running_state.setSummary(R.string.running_summary_stopped);
+                runningPref.setChecked(false);
+                runningPref.setSummary(R.string.running_summary_stopped);
             } else if (intent.getAction().equals(FtpServerService.ACTION_FAILEDTOSTART)) {
-                running_state.setChecked(false);
-                running_state.setSummary(R.string.running_summary_failed);
+                runningPref.setChecked(false);
+                runningPref.setSummary(R.string.running_summary_failed);
             }
         }
     };
