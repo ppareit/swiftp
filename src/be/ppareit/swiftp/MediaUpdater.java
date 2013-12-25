@@ -66,9 +66,9 @@ public enum MediaUpdater {
                     public void run() {
                         Log.d(TAG, "Sending ACTION_MEDIA_MOUNTED broadcast");
                         final Context context = FtpServerApp.getAppContext();
-                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri
-                                .parse("file://"
-                                        + Environment.getExternalStorageDirectory())));
+                        Uri uri = Uri.parse("file://" + Environment.getExternalStorageDirectory());
+                        Intent intent = new Intent(Intent.ACTION_MEDIA_MOUNTED, uri);
+                        context.sendBroadcast(intent);
                     }
                 }, 5000);
             } else {
