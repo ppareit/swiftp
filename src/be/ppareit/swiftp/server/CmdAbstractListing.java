@@ -34,8 +34,8 @@ import java.util.Comparator;
 import android.util.Log;
 
 public abstract class CmdAbstractListing extends FtpCmd {
-    private static String TAG = "CmdAbstractListing"; // TODO: .class.getSimpleName() from
-                                                      // abstract class?
+    // TODO: .class.getSimpleName() from abstract class?
+    private static String TAG = "CmdAbstractListing";
 
     public CmdAbstractListing(SessionThread sessionThread, String input) {
         super(sessionThread);
@@ -60,7 +60,15 @@ public abstract class CmdAbstractListing extends FtpCmd {
             return "500 Couldn't list directory. Check config and mount status.\r\n";
         }
         Log.d(TAG, "Dir len " + entries.length);
-        Arrays.sort(entries, listingComparator);
+        try {
+            Arrays.sort(entries, listingComparator);
+        } catch (Exception e) {
+            // once got a FC on this, seems it is possible to have a dir that
+            // breaks the listing comparator (unable to reproduce)
+            Log.e(TAG, "Unable to sort the listing: " + e.getMessage());
+            // play for sure, and get back the entries
+            entries = dir.listFiles();
+        }
         for (File entry : entries) {
             String curLine = makeLsString(entry);
             if (curLine != null) {
@@ -70,8 +78,7 @@ public abstract class CmdAbstractListing extends FtpCmd {
         return null;
     }
 
-    // Send the directory listing over the data socket. Used by CmdLIST and
-    // CmdNLST.
+    // Send the directory listing over the data socket. Used by CmdLIST and CmdNLST.
     // Returns an error string on failure, or returns null if successful.
     protected String sendListing(String listing) {
         if (sessionThread.startUsingDataSocket()) {
