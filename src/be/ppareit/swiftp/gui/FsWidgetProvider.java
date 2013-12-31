@@ -29,7 +29,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
 import be.ppareit.swiftp.FtpServerService;
-import be.ppareit.swiftp_free.R;
+import be.ppareit.swiftp.R;
 
 /**
  * Simple widget for FTP Server.

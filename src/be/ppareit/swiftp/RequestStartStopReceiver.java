@@ -7,7 +7,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
-import be.ppareit.swiftp_free.R;
+import be.ppareit.swiftp.R;
 
 public class RequestStartStopReceiver extends BroadcastReceiver {
 
