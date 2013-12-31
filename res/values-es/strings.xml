@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2011-2013 Pieter Pareit
+Copyright 2009 David Revell
+
+This file is part of SwiFTP.
+
+SwiFTP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SwiFTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<resources>
+    <string name="running_label">Servidor FTP</string>
+    <string name="running_summary_stopped">Cambiar el estado del servidor FTP</string>
+    <string name="running_summary_started">Servidor FTP ejecutándose en %s</string>
+    <string name="running_summary_failed">Fallo al iniciar el servidor FTP. ¿Hay conexión con la red local (WiFi o Ethernet)?</string>
+    <string name="market_version_label">Versión de pago</string>
+    <string name="market_version_summary">Esta es una versión de demostración. Da tu apoyo al desarrollador obteniendo una versión de pago de la aplicación en Play Store.</string>
+    <string name="settings_label">Ajustes</string>
+    <string name="username_label">Nombre de usuario</string>
+    <string name="username_default">ftp</string>
+    <string name="password_label">Contraseña</string>
+    <string name="password_default">ftp</string>
+    <string name="show_password_label">Mostrar contraseña</string>
+    <string name="advancedsettings_label">Ajustes avanzados\u2026</string>
+    <string name="portnumber_label">Número de puerto</string>
+    <string name="portnumber_default">2121</string>
+    <string name="chroot_label">Carpeta de inicio</string>
+    <string name="acceptwifi_label">Aceptar conexión desde WiFi</string>
+    <string name="acceptproxy_label">Aceptar conexión desde proxy de red</string>
+    <string name="wakelock_label">Mantener encendido</string>
+    <string name="extra_label">Otros</string>
+    <string name="help_label">Ayuda\u2026</string>
+    <string name="about_label">Acerca de\u2026</string>
+    <string name="help_dlg_title">Ayuda de FTP Server</string>
+    <string name="help_dlg_message">\
+¡Gracias por usar FTP Server (SwiFTP)! Aquí hay algunas instrucciones de uso.
+Puedes encontrar más información en http://ppareit.github.com/swiftp/.\n\n\
+\
+Esta aplicación te permite ejecutar un servidor FTP en tu dispositivo Android. Esto permite
+que cualquier programa pueda acceder a los archivos de tu dispositivo cuando el servidor esté
+en ejecución. Por ejemplo, introduciendo \u00ABftp://\u2026\u00BB en la barra de direcciones
+de Firefox podrás navegar por los archivos y carpetas del dispositivo desde el ordenador o
+portátil.\n\n
+\
+Por defecto, el nombre de usuario y la contraseña es \u00ABftp\u00BB para ambos, pero podrás
+cambiarlo por el que prefieras. Tendrás que usar este nombre de usuario y contraseña para
+acceder al servidor FTP.\n\n
+\
+Hay una opción de configuración \u00ABMantener encendido\u00BB que soluciona el problema
+cuando la transferencia de ficheros se ralentiza o directamente se para al apagarse la pantalla.
+Si aparece este problema, marca esta opción y reinicia la aplicación. Tu dispositivo
+permanecerá encendido durante la ejecución del servidor FTP.\n\n
+\
+Por razones de seguridad y consumo, es recomendable parar el servidor FTP después de su uso.\n\n\
+\
+Si algo no funciona como se espera que lo haga, por favor informa a Pieter Pareit en
+pieter.pareit@gmail.com.\n\n\
+\
+El desarrollo de esta aplicación de código abierto está soportado por la compra de esta
+aplicación a través de Play Store. Puedes seguir su desarrollo en la dirección
+https://github.com/ppareit/swiftp .
+Para tener una idea de las características que se implementarán, mira el registro de incidencias
+en https://github.com/ppareit/swiftp/issues .\n\n
+    </string>
+    <string name="about_dlg_title">Acerca de FTP Server</string>
+    <string name="about_dlg_message">
+        <b>Descripción: </b>
+        FTP Server (SwiFTP) permite ejecutar un servidor FTP en tu dispositivo Android.\n\n\
+        <b>Sitio web:</b>
+        http://ppareit.github.com/swiftp/\n\n
+        <b>Mantenido por:</b>
+        Pieter Pareit (pieter.pareit@gmail.com)\n\n
+        <b>Programado por: </b>\
+        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
+        <b>Diseñado por:</b>
+        Birgit Niemegeers\n\n
+        <b>Licenciado bajo: </b>
+        GNU General Public License v3.0\n\n
+    </string>
+    <string name="notif_server_starting">Iniciando servidor FTP en %s</string>
+    <string name="notif_title">Servidor FTP ejecutándose</string>
+    <string name="notif_text">en %s</string>
+
+    <!-- old strings -->
+    <string name="cant_get_url">Imposible obtener url</string>
+    <string name="unknown">desconocido</string>
+    <string name="ok">Aceptar</string>
+    <string name="username_validation_error">El usuario debe tener uno o más caracteres alfanuméricos. El resto de caracteres no están permitidos.</string>
+    <string name="password_validation_error">La contraseña debe tener uno o más caracteres alfanuméricos. El resto de caracteres no están permitidos.</string>
+    <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
+    <string name="wifi_state_receiver_label">WifiStateReceiver</string>
+    <string name="pst_connecting">conectando</string>
+    <string name="pst_connected">conectado</string>
+    <string name="pst_failed">fallido</string>
+    <string name="pst_unreachable">inalcanzable</string>
+    <string name="pst_disconnected">desconectado</string>
+    <string name="storage_warning">Aviso: Almacenamiento no disponible. Puede que quieras desmontarlo.</string>
+    <string name="widget_name">Widget FTP Server</string>
+</resources>
