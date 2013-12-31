@@ -32,6 +32,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
@@ -47,8 +48,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import be.ppareit.swiftp.FtpServerApp;
 import be.ppareit.swiftp.FtpServerService;
-import be.ppareit.swiftp.Settings;
 import be.ppareit.swiftp.R;
+import be.ppareit.swiftp.Settings;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -308,7 +309,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.v(TAG, "FTPServerService action received: " + intent.getAction());
-            TwoStatePreference runningPref = findPref("running_switch");
+            final TwoStatePreference runningPref = findPref("running_switch");
             if (intent.getAction().equals(FtpServerService.ACTION_STARTED)) {
                 runningPref.setChecked(true);
                 // Fill in the FTP server address
@@ -329,10 +330,23 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 runningPref.setSummary(R.string.running_summary_stopped);
             } else if (intent.getAction().equals(FtpServerService.ACTION_FAILEDTOSTART)) {
                 runningPref.setChecked(false);
-                runningPref.setSummary(R.string.running_summary_failed);
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        runningPref.setSummary(R.string.running_summary_failed);
+                    }
+                }, 100);
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        runningPref.setSummary(R.string.running_summary_stopped);
+                    }
+                }, 5000);
             }
         }
     };
+
+    Handler mHandler = new Handler();
 
     static private String transformPassword(String password) {
 		Context context = FtpServerApp.getAppContext();
