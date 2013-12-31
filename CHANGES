@@ -1,0 +1,17 @@
+Version 2.7.1 (31/12/2013):
+  * Add Spanish translation (thanks djMesias!)
+  * Fix FC when listing can't be sorted
+Version 2.7 (26/12/2013):
+  * Move to sdk 4.4 (min supported sdk 4.0)
+  * Improve strings
+  * Fix FC when deleting file on 4.4
+  * Added a simple widget
+Version 2.6 (30/10/2013):
+  * Support for intents (scripting, other applications)
+  * New artwork
+  * Added translations
+  * Improved performance when removing files and fixes for some small issues.
+Version 2.5.4 (25/7/2013):
+  * Bug fixes (thanks Cri!)
+Version 2.5.3 (10/05/2013):
+  * Added Russian translation by Sergey Kondakov.
