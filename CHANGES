@@ -1,3 +1,5 @@
+Version 2.7.2 (4/1/2013)
+  * Fix clash between free and paid version
 Version 2.7.1 (31/12/2013):
   * Add Spanish translation (thanks djMesias!)
   * Fix FC when listing can't be sorted
