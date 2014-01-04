@@ -59,9 +59,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             </intent-filter>
         </receiver>
 
+        <!-- Don't export this receiver in free, this clashes with paid -->
         <receiver
             android:name="be.ppareit.swiftp.RequestStartStopReceiver"
-            android:exported="true" >
+            android:exported="false" >
             <intent-filter>
                 <action android:name="be.ppareit.swiftp.ACTION_START_FTPSERVER" />
                 <action android:name="be.ppareit.swiftp.ACTION_STOP_FTPSERVER" />
@@ -71,7 +72,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <receiver
             android:icon="@drawable/launcher"
             android:label="@string/swiftp_name"
-            android:name="be.ppareit.swiftp.gui.FsWidgetProvider" >
+            android:name="be.ppareit.swiftp.gui.FsWidgetProvider"
+            android:exported="false" >
             <intent-filter >
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STARTED" />
