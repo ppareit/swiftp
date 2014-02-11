@@ -17,3 +17,17 @@ Version 2.5.4 (25/7/2013):
   * Bug fixes (thanks Cri!)
 Version 2.5.3 (10/05/2013):
   * Added Russian translation by Sergey Kondakov.
+Version 2.5 (9/12/2012):
+  * Added support to transfer files using ethernet (next to wifi).
+    This needs the permission ACCESS_NETWORK_STATE to check what
+    kind of connection is used.
+Version 2.4 (1/11/2012):
+  * Fixed bugs, add link to market, remove unneeded permission: READ_PHONE_STATE.
+Version 2.3 (9/10/2012):
+  * Fixed bugs, shows ip address in notification.
+Version 2.2 (2/10/2012):
+  * Fixed bugs, hides password.
+Version 2.1 (28/06/2012):
+  * Initial release with new interface.
+Version 1.4 and before:
+  * Programming by Dave Revell.
