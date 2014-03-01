@@ -68,7 +68,6 @@ public class FtpServerService extends Service implements Runnable {
     private TcpListener wifiListener = null;
     private final List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
 
-    private static final String WAKE_LOCK_TAG = "SwiFTP";
     private PowerManager.WakeLock wakeLock;
     private WifiLock wifiLock = null;
 
@@ -114,19 +113,18 @@ public class FtpServerService extends Service implements Runnable {
         if (serverThread == null) {
             Log.w(TAG, "Stopping with null serverThread");
             return;
+        }
+        serverThread.interrupt();
+        try {
+            serverThread.join(10000); // wait 10 sec for server thread to finish
+        } catch (InterruptedException e) {
+        }
+        if (serverThread.isAlive()) {
+            Log.w(TAG, "Server thread failed to exit");
+            // it may still exit eventually if we just leave the shouldExit flag set
         } else {
-            serverThread.interrupt();
-            try {
-                serverThread.join(10000); // wait 10 sec for server thread to finish
-            } catch (InterruptedException e) {
-            }
-            if (serverThread.isAlive()) {
-                Log.w(TAG, "Server thread failed to exit");
-                // it may still exit eventually if we just leave the shouldExit flag set
-            } else {
-                Log.d(TAG, "serverThread join()ed ok");
-                serverThread = null;
-            }
+            Log.d(TAG, "serverThread join()ed ok");
+            serverThread = null;
         }
         try {
             if (listenSocket != null) {
@@ -137,8 +135,14 @@ public class FtpServerService extends Service implements Runnable {
         }
 
         if (wifiLock != null) {
+            Log.d(TAG, "onDestroy: Releasing wifi lock");
             wifiLock.release();
             wifiLock = null;
+        }
+        if (wakeLock != null) {
+            Log.d(TAG, "onDestroy: Releasing wake lock");
+            wakeLock.release();
+            wakeLock = null;
         }
         Log.d(TAG, "FTPServerService.onDestroy() finished");
     }
@@ -153,9 +157,9 @@ public class FtpServerService extends Service implements Runnable {
     public void run() {
         Log.d(TAG, "Server thread running");
 
-        // fail when there is no local network
         if (isConnectedToLocalNetwork() == false) {
-            cleanupAndStopService();
+            Log.w(TAG, "run: There is no local network, bailing out");
+            stopSelf();
             sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
             return;
         }
@@ -164,9 +168,8 @@ public class FtpServerService extends Service implements Runnable {
         try {
             setupListener();
         } catch (IOException e) {
-            Log.w(TAG, "Error opening port, check your network connection.");
-            // serverAddress = null;
-            cleanupAndStopService();
+            Log.w(TAG, "run: Unable to open port, bailing out.");
+            stopSelf();
             sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
             return;
         }
@@ -214,7 +217,8 @@ public class FtpServerService extends Service implements Runnable {
         shouldExit = false; // we handled the exit flag, so reset it to acknowledge
         Log.d(TAG, "Exiting cleanly, returning from run()");
 
-        cleanupAndStopService();
+        stopSelf();
+        sendBroadcast(new Intent(ACTION_STOPPED));
     }
 
     private void terminateAllSessions() {
@@ -229,65 +233,36 @@ public class FtpServerService extends Service implements Runnable {
         }
     }
 
-    public void cleanupAndStopService() {
-        // Call the Android Service shutdown function
-        stopSelf();
-        releaseWifiLock();
-        releaseWakeLock();
-        sendBroadcast(new Intent(ACTION_STOPPED));
-    }
-
+    /**
+     * Takes the wake lock
+     * 
+     * Many devices seem to not properly honor a PARTIAL_WAKE_LOCK, which should prevent
+     * CPU throttling. For these devices, we have a option to force the phone into a full
+     * wake lock.
+     */
     private void takeWakeLock() {
         if (wakeLock == null) {
-            Log.d(TAG, "About to take wake lock");
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            // Many devices seem to not properly honor a PARTIAL_WAKE_LOCK, which
-            // should prevent CPU throttling. For these devices, we have a option
-            // to force the phone into a full wake lock.
             if (Settings.shouldTakeFullWakeLock()) {
-                Log.d(TAG, "Need to take full wake lock");
-                wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, WAKE_LOCK_TAG);
+                Log.d(TAG, "takeWakeLock: Taking full wake lock");
+                wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, TAG);
             } else {
-                wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
+                Log.d(TAG, "maybeTakeWakeLock: Taking parial wake lock");
+                wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
             }
             wakeLock.setReferenceCounted(false);
         }
-        Log.d(TAG, "Acquiring wake lock");
         wakeLock.acquire();
     }
 
-    private void releaseWakeLock() {
-        Log.d(TAG, "Releasing wake lock");
-        if (wakeLock != null) {
-            wakeLock.release();
-            wakeLock = null;
-            Log.d(TAG, "Finished releasing wake lock");
-        } else {
-            Log.e(TAG, "Couldn't release null wake lock");
-        }
-    }
-
     private void takeWifiLock() {
-        Log.d(TAG, "Taking wifi lock");
+        Log.d(TAG, "takeWifiLock: Taking wifi lock");
         if (wifiLock == null) {
             WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-            wifiLock = manager.createWifiLock("SwiFTP");
+            wifiLock = manager.createWifiLock(TAG);
             wifiLock.setReferenceCounted(false);
         }
         wifiLock.acquire();
-    }
-
-    private void releaseWifiLock() {
-        Log.d(TAG, "Releasing wifi lock");
-        if (wifiLock != null) {
-            wifiLock.release();
-            wifiLock = null;
-        }
-    }
-
-    public void errorShutdown() {
-        Log.e(TAG, "Service errorShutdown() called");
-        cleanupAndStopService();
     }
 
     /**
