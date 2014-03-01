@@ -57,17 +57,7 @@ public class FtpServerService extends Service implements Runnable {
     protected static Thread serverThread = null;
     protected boolean shouldExit = false;
 
-    public static final int BACKLOG = 21;
-    public static final int MAX_SESSIONS = 5;
-    public static final String WAKE_LOCK_TAG = "SwiFTP";
-
-    // protected ServerSocketChannel wifiSocket;
     protected ServerSocket listenSocket;
-    protected static WifiLock wifiLock = null;
-
-    protected static List<String> sessionMonitor = new ArrayList<String>();
-    protected static List<String> serverLog = new ArrayList<String>();
-    protected static int uiLogLevel = Defaults.getUiLogLevel();
 
     // The server thread will check this often to look for incoming
     // connections. We are forced to use non-blocking accept() and polling
@@ -78,17 +68,12 @@ public class FtpServerService extends Service implements Runnable {
     private TcpListener wifiListener = null;
     private final List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
 
-    PowerManager.WakeLock wakeLock;
+    private static final String WAKE_LOCK_TAG = "SwiFTP";
+    private PowerManager.WakeLock wakeLock;
+    private WifiLock wifiLock = null;
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    public void onStart(Intent intent, int startId) {
-        super.onStart(intent, startId);
-
+    public int onStartCommand(Intent intent, int flags, int startId) {
         shouldExit = false;
         int attempts = 10;
         // The previous server thread may still be cleaning up, wait for it to finish.
@@ -99,12 +84,13 @@ public class FtpServerService extends Service implements Runnable {
                 Util.sleepIgnoreInterupt(1000);
             } else {
                 Log.w(TAG, "Server thread already exists");
-                return;
+                return START_STICKY;
             }
         }
         Log.d(TAG, "Creating server thread");
         serverThread = new Thread(this);
         serverThread.start();
+        return START_STICKY;
     }
 
     public static boolean isRunning() {
@@ -375,39 +361,14 @@ public class FtpServerService extends Service implements Runnable {
                 && ni.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
-    public static List<String> getSessionMonitorContents() {
-        return new ArrayList<String>(sessionMonitor);
-    }
-
-    public static List<String> getServerLogContents() {
-        return new ArrayList<String>(serverLog);
-    }
-
-    public static void log(int msgLevel, String s) {
-        serverLog.add(s);
-        int maxSize = Defaults.getServerLogScrollBack();
-        while (serverLog.size() > maxSize) {
-            serverLog.remove(0);
-        }
-        // updateClients();
-    }
-
+    /**
+     * All messages server<->client are also send to this call
+     * 
+     * @param incoming
+     * @param s
+     */
     public static void writeMonitor(boolean incoming, String s) {
     }
-
-    // public static void writeMonitor(boolean incoming, String s) {
-    // if(incoming) {
-    // s = "> " + s;
-    // } else {
-    // s = "< " + s;
-    // }
-    // sessionMonitor.add(s.trim());
-    // int maxSize = Defaults.getSessionMonitorScrollBack();
-    // while(sessionMonitor.size() > maxSize) {
-    // sessionMonitor.remove(0);
-    // }
-    // updateClients();
-    // }
 
     /**
      * The FTPServerService must know about all running session threads so they can be
@@ -446,4 +407,8 @@ public class FtpServerService extends Service implements Runnable {
         Log.d(TAG, "Registered session thread");
     }
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 }
