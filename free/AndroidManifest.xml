@@ -21,9 +21,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="be.ppareit.swiftp_free"
-    android:versionCode="20702"
-    android:versionName="2.7.2" >
+    android:versionCode="20790"
+    android:versionName="2.7.90" >
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -52,6 +53,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <receiver
             android:name="be.ppareit.swiftp.gui.ServerRunningNotification"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="be.ppareit.swiftp.FTPSERVER_STARTED" />
+                <action android:name="be.ppareit.swiftp.FTPSERVER_STOPPED" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="be.ppareit.swiftp.NsdService" />
+        <receiver
+            android:name="be.ppareit.swiftp.NsdService$StartStopReceiver"
             android:exported="false" >
             <intent-filter>
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STARTED" />

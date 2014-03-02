@@ -60,6 +60,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             </intent-filter>
         </receiver>
 
+        <service android:name="be.ppareit.swiftp.NsdService" />
+        <receiver
+            android:name="be.ppareit.swiftp.NsdService$StartStopReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="be.ppareit.swiftp.FTPSERVER_STARTED" />
+                <action android:name="be.ppareit.swiftp.FTPSERVER_STOPPED" />
+            </intent-filter>
+        </receiver>
+
         <!-- Don't export this receiver in free, this clashes with paid -->
         <receiver
             android:name="be.ppareit.swiftp.RequestStartStopReceiver"
