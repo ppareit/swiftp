@@ -108,6 +108,7 @@ public class NsdService extends Service {
         }
         mNsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
         mNsdManager.unregisterService(mRegistrationListener);
+        mNsdManager = null;
     }
     @Override
     public IBinder onBind(Intent intent) {
