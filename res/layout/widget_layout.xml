@@ -4,7 +4,6 @@
     android:id="@+id/widget_button"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
+    android:background="?android:selectableItemBackground"
     android:src="@drawable/widget_off" >
-    <!-- android:background="?android:selectableItemBackground" TODO, use this when min API 11 -->
 </ImageButton>
