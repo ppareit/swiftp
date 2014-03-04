@@ -186,8 +186,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         });
 
         EditTextPreference chroot_pref = findPref("chrootDir");
-        chroot_pref.setSummary(settings.getString("chrootDir",
-                resources.getString(R.string.chroot_default)));
+        chroot_pref.setSummary(Settings.getChrootDir().getAbsolutePath());
         chroot_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {

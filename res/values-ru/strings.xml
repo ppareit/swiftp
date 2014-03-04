@@ -44,7 +44,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="portnumber_label">Номер порта</string>
     <string name="portnumber_default">2121</string>
     <string name="chroot_label">Корневая папка доступа</string>
-    <string name="chroot_default">/</string>
     <string name="acceptwifi_label">Принимать подключения по wifi</string>
     <string name="acceptwifi_default">true</string>
     <string name="acceptproxy_label">Принимать подключения через сетевой прокси</string>

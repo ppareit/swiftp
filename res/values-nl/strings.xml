@@ -42,7 +42,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="portnumber_label">Poort nummer</string>
     <string name="portnumber_default">2121</string>
     <string name="chroot_label">Blijf in map</string>
-    <string name="chroot_default">/</string>
     <string name="acceptwifi_label">Accepteer verbindingen via wifi</string>
     <string name="acceptwifi_default">true</string>
     <string name="acceptproxy_label">Accepteer verbindingen via proxy</string>

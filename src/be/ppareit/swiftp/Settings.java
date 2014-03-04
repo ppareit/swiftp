@@ -24,6 +24,7 @@ import java.io.File;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -43,10 +44,17 @@ public class Settings {
 
     public static File getChrootDir() {
         final SharedPreferences sp = getSharedPreferences();
-        String dirName = sp.getString("chrootDir", "/");
+        String dirName = sp.getString("chrootDir", "");
         File chrootDir = new File(dirName);
+        if (dirName.equals("")) {
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                chrootDir = Environment.getExternalStorageDirectory();
+            } else {
+                chrootDir = new File("/");
+            }
+        }
         if (!chrootDir.isDirectory()) {
-            Log.e(TAG, "Chroot dir is invalid");
+            Log.e(TAG, "getChrootDir: not a directory");
             return null;
         }
         return chrootDir;

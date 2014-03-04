@@ -45,7 +45,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="portnumber_label">端口号</string>
     <string name="portnumber_default">2121</string>
     <string name="chroot_label">设为根目录</string>
-    <string name="chroot_default">/</string>
     <string name="acceptwifi_label">接受 Wi-Fi 连接</string>
     <string name="acceptwifi_default">true</string>
     <string name="acceptproxy_label">接受网络代理连接</string>
