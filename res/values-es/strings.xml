@@ -27,13 +27,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="market_version_summary">Esta es una versión de demostración. Da tu apoyo al desarrollador obteniendo una versión de pago de la aplicación en Play Store.</string>
     <string name="settings_label">Ajustes</string>
     <string name="username_label">Nombre de usuario</string>
-    <string name="username_default">ftp</string>
     <string name="password_label">Contraseña</string>
-    <string name="password_default">ftp</string>
     <string name="show_password_label">Mostrar contraseña</string>
     <string name="advancedsettings_label">Ajustes avanzados\u2026</string>
     <string name="portnumber_label">Número de puerto</string>
-    <string name="portnumber_default">2121</string>
     <string name="chroot_label">Carpeta de inicio</string>
     <string name="acceptwifi_label">Aceptar conexión desde WiFi</string>
     <string name="acceptproxy_label">Aceptar conexión desde proxy de red</string>

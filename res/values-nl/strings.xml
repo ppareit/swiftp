@@ -18,9 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <resources>
-
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">Wijzig de status van de FTP Server</string>
     <string name="running_summary_started">verbonden op %s</string>
@@ -29,25 +27,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="market_version_summary">Dit is de FTP server demo. Je kan de ontwikkeling van dit programma ondersteunen door de FTP Server te kopen op de android play store. Click hier om naar de play store te gaan.</string>
     <string name="settings_label">Instellingen</string>
     <string name="username_label">Gebruikersnaam</string>
-    <string name="username_default">ftp</string>
     <string name="password_label">Paswoord</string>
-    <string name="password_default">ftp</string>
-    <string name="show_password_label">
-        Toon paswoord
-    </string>
-    <string name="show_password_default">
-        false
-    </string>
+    <string name="show_password_label">Toon paswoord</string>
     <string name="advancedsettings_label">Geavanceerde instellingen...</string>
     <string name="portnumber_label">Poort nummer</string>
-    <string name="portnumber_default">2121</string>
     <string name="chroot_label">Blijf in map</string>
     <string name="acceptwifi_label">Accepteer verbindingen via wifi</string>
-    <string name="acceptwifi_default">true</string>
-    <string name="acceptproxy_label">Accepteer verbindingen via proxy</string>
-    <string name="acceptproxy_default">false</string>
     <string name="wakelock_label">Houd toestel wakker (volledige CPU snelheid)</string>
-    <string name="wakelock_default">true</string>
     <string name="extra_label">Extra\'s</string>
     <string name="help_label">Help...</string>
     <string name="about_label">Over...</string>

@@ -31,25 +31,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 		Чтобы сделать это, нажмите здесь. </string>
     <string name="settings_label">Настройки</string>
     <string name="username_label">Имя пользователя</string>
-    <string name="username_default">ftp</string>
     <string name="password_label">Пароль</string>
-    <string name="password_default">ftp</string>
-    <string name="show_password_label">
-        Отображать пароль
-    </string>
-    <string name="show_password_default">
-        false
-    </string>
+    <string name="show_password_label">Отображать пароль</string>
     <string name="advancedsettings_label">Расширенные настройки...</string>
     <string name="portnumber_label">Номер порта</string>
-    <string name="portnumber_default">2121</string>
     <string name="chroot_label">Корневая папка доступа</string>
     <string name="acceptwifi_label">Принимать подключения по wifi</string>
-    <string name="acceptwifi_default">true</string>
-    <string name="acceptproxy_label">Принимать подключения через сетевой прокси</string>
-    <string name="acceptproxy_default">false</string>
     <string name="wakelock_label">Не давать уснуть (максимальная производительность ЦП)</string>
-    <string name="wakelock_default">true</string>
     <string name="extra_label">Дополнительно</string>
     <string name="help_label">Помощь...</string>
     <string name="about_label">О программе...</string>

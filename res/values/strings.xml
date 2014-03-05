@@ -27,33 +27,19 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_summary_started">running at %s</string>
     <string name="running_summary_failed">Failed to start the FTP server, not connected to the local network (wifi or ethernet)?</string>
     <string name="market_version_label">Market version</string>
-    <string name="market_version_summary">This is the FTP Server Demo version.
+    <string name="market_version_summary">
+        This is the FTP Server Demo version.
         Support development by getting the FTP Server from the android market.
-		Click here to go to the market.</string>
+        Click here to go to the market.</string>
     <string name="settings_label">Settings</string>
     <string name="username_label">Username</string>
-    <string name="username_default">ftp</string>
     <string name="password_label">Password</string>
-    <string name="password_default">ftp</string>
-    <string name="show_password_label">
-        Display password
-    </string>
-    <!-- Do not translate -->
-    <string name="show_password_default">
-        false
-    </string>
+    <string name="show_password_label">Display password</string>
     <string name="advancedsettings_label">Advanced Settings...</string>
     <string name="portnumber_label">Port Number</string>
-    <string name="portnumber_default">2121</string>
     <string name="chroot_label">Stay in folder</string>
-    <!-- Don't translate "chroot_default" -->
-    <string name="chroot_default"></string>
     <string name="acceptwifi_label">Accept connection from wifi</string>
-    <string name="acceptwifi_default">true</string>
-    <string name="acceptproxy_label">Accept connection from net proxy</string>
-    <string name="acceptproxy_default">false</string>
     <string name="wakelock_label">Keep device awake (full CPU speed)</string>
-    <string name="wakelock_default">true</string>
     <string name="extra_label">Extra</string>
     <string name="help_label">Help...</string>
     <string name="about_label">About...</string>
@@ -99,7 +85,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
         Birgit Niemegeers\n\n
         <b>License: </b>
         GNU General Public License v3.0\n\n
-</string>
+    </string>
     <string name="notif_server_starting">Starting at %s</string>
     <string name="notif_title">FTP Server is running</string>
     <string name="notif_text">at %s</string>

@@ -31,26 +31,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 		點擊此處跳轉至 Google Play 市場。</string>
     <string name="settings_label">設定</string>
     <string name="username_label">用戶名</string>
-    <string name="username_default">ftp</string>
     <string name="password_label">密碼</string>
-    <string name="password_default">ftp</string>
-    <string name="show_password_label">
-        顯示密碼
-    </string>
-    <!-- Do not translate -->
-    <string name="show_password_default">
-        false
-    </string>
+    <string name="show_password_label">顯示密碼</string>
     <string name="advancedsettings_label">高級設定...</string>
     <string name="portnumber_label">端口號</string>
-    <string name="portnumber_default">2121</string>
     <string name="chroot_label">設為根目錄</string>
     <string name="acceptwifi_label">接受 Wi-Fi 連結</string>
-    <string name="acceptwifi_default">true</string>
-    <string name="acceptproxy_label">接受網路代理連結</string>
-    <string name="acceptproxy_default">false</string>
     <string name="wakelock_label">保持設備喚醒（最大 CPU 頻率）</string>
-    <string name="wakelock_default">true</string>
     <string name="extra_label">其他</string>
     <string name="help_label">幫助...</string>
     <string name="about_label">關於...</string>
