@@ -76,7 +76,7 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
         <b>License: </b>
         GNU General Public License v3.0\n\n
 </string>
-    <string name="notif_server_starting">Bezig met starten op %s</string>
+    <string name="notif_server_starting">Starten op %s</string>
     <string name="notif_title">FTP Server is verbonden</string>
     <string name="notif_text">op %s</string>
 
