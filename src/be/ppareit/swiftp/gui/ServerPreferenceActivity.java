@@ -348,12 +348,11 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
     Handler mHandler = new Handler();
 
     static private String transformPassword(String password) {
-		Context context = FtpServerApp.getAppContext();
-        SharedPreferences sp = PreferenceManager
-				.getDefaultSharedPreferences(context);
+        Context context = FtpServerApp.getAppContext();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         Resources res = context.getResources();
-        boolean showPassword = res.getString(R.string.show_password_default)
-				.equals("true") ? true : false;
+        String showPasswordString = res.getString(R.string.show_password_default);
+        boolean showPassword = showPasswordString.equals("true");
         showPassword = sp.getBoolean("show_password", showPassword);
         if (showPassword == true)
             return password;
