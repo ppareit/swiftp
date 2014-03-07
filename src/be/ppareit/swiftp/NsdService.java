@@ -85,23 +85,30 @@ public class NsdService extends Service {
 
     @Override
     public void onCreate() {
+        Log.d(TAG, "onCreate: Entered");
+
         NsdServiceInfo serviceInfo = new NsdServiceInfo();
         serviceInfo.setServiceName(mServiceName);
         serviceInfo.setServiceType("_ftp._tcp");
         serviceInfo.setPort(Settings.getPortNumber());
 
         mNsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
+        Log.d(TAG, "onCreate: tick");
         mNsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD,
                 mRegistrationListener);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand: Entered");
+
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy: Entered");
+
         if (mNsdManager == null) {
             Log.e(TAG, "unregisterService: Unexpected mNsdManger to be null, bailing out");
             return;
