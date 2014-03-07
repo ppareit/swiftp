@@ -244,26 +244,40 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             }
         });
 
-        Log.v(TAG, "Registering the FTP server actions");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.d(TAG, "onResume: Register the preference change listner");
+        SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
+        sp.registerOnSharedPreferenceChangeListener(this);
+
+        Log.d(TAG, "onResume: Registering the FTP server actions");
         IntentFilter filter = new IntentFilter();
         filter.addAction(FtpServerService.ACTION_STARTED);
         filter.addAction(FtpServerService.ACTION_STOPPED);
         filter.addAction(FtpServerService.ACTION_FAILEDTOSTART);
         registerReceiver(mFsActionsReceiver, filter);
-
     }
 
     @Override
-    protected void onDestroy() {
-        Log.v(TAG, "Unregistering the FTPServer actions");
+    protected void onPause() {
+        super.onPause();
+
+        Log.v(TAG, "onPause: Unregistering the FTPServer actions");
         unregisterReceiver(mFsActionsReceiver);
-        super.onDestroy();
+
+        Log.d(TAG, "onPause: Unregistering the preference change listner");
+        SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
+        sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
         if (key.equals("show_password")) {
-			Context context = FtpServerApp.getAppContext();
+            Context context = FtpServerApp.getAppContext();
             Resources res = context.getResources();
             String password = res.getString(R.string.password_default);
             password = sp.getString("password", password);
@@ -272,31 +286,11 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
     }
 
     private void startServer() {
-		sendBroadcast(new Intent(FtpServerService.ACTION_START_FTPSERVER));
+        sendBroadcast(new Intent(FtpServerService.ACTION_START_FTPSERVER));
     }
 
     private void stopServer() {
-		sendBroadcast(new Intent(FtpServerService.ACTION_STOP_FTPSERVER));
-    }
-
-    @Override
-    protected void onResume() {
-        Log.v(TAG, "onResume");
-        super.onResume();
-
-        // make this class listen for preference changes
-        getPreferenceScreen().getSharedPreferences()
-                .registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    protected void onPause() {
-        Log.v(TAG, "onPause");
-        super.onPause();
-
-        // unregister the listener
-        SharedPreferences sprefs = getPreferenceScreen().getSharedPreferences();
-        sprefs.unregisterOnSharedPreferenceChangeListener(this);
+        sendBroadcast(new Intent(FtpServerService.ACTION_STOP_FTPSERVER));
     }
 
     /**
