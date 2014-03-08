@@ -48,8 +48,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import be.ppareit.swiftp.FsApp;
 import be.ppareit.swiftp.FsService;
-import be.ppareit.swiftp.R;
 import be.ppareit.swiftp.FsSettings;
+import be.ppareit.swiftp.R;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -309,7 +309,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
     BroadcastReceiver mFsActionsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.v(TAG, "FTPServerService action received: " + intent.getAction());
+            Log.v(TAG, "action received: " + intent.getAction());
             // action will be ACTION_STARTED or ACTION_STOPPED
             updateRunningState();
             // or it might be ACTION_FAILEDTOSTART
