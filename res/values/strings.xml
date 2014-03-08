@@ -90,6 +90,8 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notif_title">FTP Server is running</string>
     <string name="notif_text">at %s</string>
 
+    <string name="nsd_servername_postfix">FTP Server</string>
+
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retreive url</string>
     <string name="unknown">unknown</string>

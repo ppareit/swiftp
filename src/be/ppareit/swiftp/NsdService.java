@@ -24,6 +24,7 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdManager.RegistrationListener;
 import android.net.nsd.NsdServiceInfo;
@@ -35,7 +36,6 @@ import android.util.Log;
 public class NsdService extends Service {
     private static final String TAG = NsdService.class.getSimpleName();
 
-    private String mServiceName = "Android FTP Server";
     private NsdManager mNsdManager = null;
 
     public static class StartStopReceiver extends BroadcastReceiver {
@@ -64,7 +64,6 @@ public class NsdService extends Service {
         @Override
         public void onServiceRegistered(NsdServiceInfo serviceInfo) {
             Log.d(TAG, "onServiceRegistered: " + serviceInfo.getServiceName());
-            mServiceName = serviceInfo.getServiceName();
         }
 
         @Override
@@ -87,21 +86,30 @@ public class NsdService extends Service {
     public void onCreate() {
         Log.d(TAG, "onCreate: Entered");
 
+        Resources res = getResources();
+        String serviceNamePostfix = res.getString(R.string.nsd_servername_postfix);
+        String serviceName = Build.MODEL + " " + serviceNamePostfix;
+
         final NsdServiceInfo serviceInfo = new NsdServiceInfo();
-        serviceInfo.setServiceName(mServiceName);
-        serviceInfo.setServiceType("_ftp._tcp");
+        serviceInfo.setServiceName(serviceName);
+        serviceInfo.setServiceType("_ftp._tcp.");
         serviceInfo.setPort(FsSettings.getPortNumber());
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 // this call sometimes hangs, this is why I get it in a separate thread
-                Log.d(TAG, "run: Trying to get the NsdManager");
+                Log.d(TAG, "onCreate: Trying to get the NsdManager");
                 mNsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
                 if (mNsdManager != null) {
-                    Log.d(TAG, "run: Got the NsdManager");
-                    mNsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD,
-                            mRegistrationListener);
+                    Log.d(TAG, "onCreate: Got the NsdManager");
+                    try {
+                        mNsdManager.registerService(serviceInfo,
+                                NsdManager.PROTOCOL_DNS_SD, mRegistrationListener);
+                    } catch (RuntimeException e) {
+                        Log.e(TAG, "onCreate: Failed to register NsdManager");
+                        mNsdManager = null;
+                    }
                 } else {
                     Log.d(TAG, "onCreate: Failed to get the NsdManager");
                 }
