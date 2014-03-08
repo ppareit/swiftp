@@ -87,15 +87,26 @@ public class NsdService extends Service {
     public void onCreate() {
         Log.d(TAG, "onCreate: Entered");
 
-        NsdServiceInfo serviceInfo = new NsdServiceInfo();
+        final NsdServiceInfo serviceInfo = new NsdServiceInfo();
         serviceInfo.setServiceName(mServiceName);
         serviceInfo.setServiceType("_ftp._tcp");
         serviceInfo.setPort(FsSettings.getPortNumber());
 
-        mNsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
-        Log.d(TAG, "onCreate: tick");
-        mNsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD,
-                mRegistrationListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // this call sometimes hangs, this is why I get it in a separate thread
+                Log.d(TAG, "run: Trying to get the NsdManager");
+                mNsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
+                if (mNsdManager != null) {
+                    Log.d(TAG, "run: Got the NsdManager");
+                    mNsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD,
+                            mRegistrationListener);
+                } else {
+                    Log.d(TAG, "onCreate: Failed to get the NsdManager");
+                }
+            }
+        }).start();
     }
 
     @Override
