@@ -1,3 +1,6 @@
+Version 2.8.1 (8/3/2014)
+    * Bug fixes
+    * NSD stability improvements
 Version 2.8 (7/3/2014)
     * Default directory is now the sdcard (only works on new installs)
     + Implement DNS_SD (adds service discovery for ftp)
