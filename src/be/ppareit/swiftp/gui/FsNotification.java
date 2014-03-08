@@ -32,8 +32,8 @@ import be.ppareit.swiftp.FtpServerService;
 import be.ppareit.swiftp.Settings;
 import be.ppareit.swiftp.R;
 
-public class ServerRunningNotification extends BroadcastReceiver {
-    private static final String TAG = ServerRunningNotification.class.getSimpleName();
+public class FsNotification extends BroadcastReceiver {
+    private static final String TAG = FsNotification.class.getSimpleName();
 
     private final int NOTIFICATIONID = 7890;
 
@@ -74,7 +74,7 @@ public class ServerRunningNotification extends BroadcastReceiver {
         CharSequence contentText = String.format(context.getString(R.string.notif_text),
                 iptext);
 
-        Intent notificationIntent = new Intent(context, ServerPreferenceActivity.class);
+        Intent notificationIntent = new Intent(context, FsPreferenceActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,

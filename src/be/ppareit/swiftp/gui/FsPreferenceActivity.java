@@ -56,12 +56,13 @@ import be.ppareit.swiftp.Settings;
  * and allows the users to change the settings.
  * 
  */
-public class ServerPreferenceActivity extends PreferenceActivity implements
+public class FsPreferenceActivity extends PreferenceActivity implements
         OnSharedPreferenceChangeListener {
 
-    private static String TAG = ServerPreferenceActivity.class.getSimpleName();
+    private static String TAG = FsPreferenceActivity.class.getSimpleName();
 
-    EditTextPreference mPassWordPref;
+    private EditTextPreference mPassWordPref;
+    private Handler mHandler = new Handler();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,28 +70,11 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
-        final SharedPreferences settings = PreferenceManager
-                .getDefaultSharedPreferences(this);
+        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         Resources resources = getResources();
 
         TwoStatePreference runningPref = findPref("running_switch");
-        if (FtpServerService.isRunning() == true) {
-            runningPref.setChecked(true);
-            // Fill in the FTP server address
-            InetAddress address = FtpServerService.getLocalInetAddress();
-            if (address == null) {
-                Log.v(TAG, "Unable to retreive wifi ip address");
-                runningPref.setSummary(R.string.cant_get_url);
-                return;
-            }
-            String iptext = "ftp://" + address.getHostAddress() + ":"
-                    + Settings.getPortNumber() + "/";
-            String summary = resources
-                    .getString(R.string.running_summary_started, iptext);
-            runningPref.setSummary(summary);
-        } else {
-            runningPref.setChecked(false);
-        }
+        updateRunningState();
         runningPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -127,7 +111,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         }
 
         EditTextPreference username_pref = findPref("username");
-        username_pref.setSummary(settings.getString("username",
+        username_pref.setSummary(sp.getString("username",
                 resources.getString(R.string.username_default)));
         username_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
@@ -136,7 +120,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 if (preference.getSummary().equals(newUsername))
                     return false;
                 if (!newUsername.matches("[a-zA-Z0-9]+")) {
-                    Toast.makeText(ServerPreferenceActivity.this,
+                    Toast.makeText(FsPreferenceActivity.this,
                             R.string.username_validation_error, Toast.LENGTH_LONG).show();
                     return false;
                 }
@@ -148,7 +132,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
 
         mPassWordPref = findPref("password");
         String password = resources.getString(R.string.password_default);
-        password = settings.getString("password", password);
+        password = sp.getString("password", password);
         mPassWordPref.setSummary(transformPassword(password));
         mPassWordPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
@@ -161,7 +145,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         });
 
         EditTextPreference portnum_pref = findPref("portNum");
-        portnum_pref.setSummary(settings.getString("portNum",
+        portnum_pref.setSummary(sp.getString("portNum",
                 resources.getString(R.string.portnumber_default)));
         portnum_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
@@ -175,7 +159,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
                 } catch (Exception e) {
                 }
                 if (portnum <= 0 || 65535 < portnum) {
-                    Toast.makeText(ServerPreferenceActivity.this,
+                    Toast.makeText(FsPreferenceActivity.this,
                             R.string.port_validation_error, Toast.LENGTH_LONG).show();
                     return false;
                 }
@@ -217,7 +201,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Log.v(TAG, "On preference help clicked");
-                Context context = ServerPreferenceActivity.this;
+                Context context = FsPreferenceActivity.this;
                 AlertDialog ad = new AlertDialog.Builder(context)
                         .setTitle(R.string.help_dlg_title)
                         .setMessage(R.string.help_dlg_message)
@@ -233,7 +217,7 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         about.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                AlertDialog ad = new AlertDialog.Builder(ServerPreferenceActivity.this)
+                AlertDialog ad = new AlertDialog.Builder(FsPreferenceActivity.this)
                         .setTitle(R.string.about_dlg_title)
                         .setMessage(R.string.about_dlg_message)
                         .setPositiveButton(getText(R.string.ok), null).create();
@@ -249,6 +233,8 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+
+        updateRunningState();
 
         Log.d(TAG, "onResume: Register the preference change listner");
         SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
@@ -293,6 +279,28 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         sendBroadcast(new Intent(FtpServerService.ACTION_STOP_FTPSERVER));
     }
 
+    private void updateRunningState() {
+        Resources res = getResources();
+        TwoStatePreference runningPref = findPref("running_switch");
+        if (FtpServerService.isRunning() == true) {
+            runningPref.setChecked(true);
+            // Fill in the FTP server address
+            InetAddress address = FtpServerService.getLocalInetAddress();
+            if (address == null) {
+                Log.v(TAG, "Unable to retreive wifi ip address");
+                runningPref.setSummary(R.string.cant_get_url);
+                return;
+            }
+            String iptext = "ftp://" + address.getHostAddress() + ":"
+                    + Settings.getPortNumber() + "/";
+            String summary = res.getString(R.string.running_summary_started, iptext);
+            runningPref.setSummary(summary);
+        } else {
+            runningPref.setChecked(false);
+            runningPref.setSummary(R.string.running_summary_stopped);
+        }
+    }
+
     /**
      * This receiver will check FTPServer.ACTION* messages and will update the button,
      * running_state, if the server is running and will also display at what url the
@@ -302,26 +310,11 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.v(TAG, "FTPServerService action received: " + intent.getAction());
+            // action will be ACTION_STARTED or ACTION_STOPPED
+            updateRunningState();
+            // or it might be ACTION_FAILEDTOSTART
             final TwoStatePreference runningPref = findPref("running_switch");
-            if (intent.getAction().equals(FtpServerService.ACTION_STARTED)) {
-                runningPref.setChecked(true);
-                // Fill in the FTP server address
-                InetAddress address = FtpServerService.getLocalInetAddress();
-                if (address == null) {
-                    Log.v(TAG, "Unable to retreive local ip address");
-                    runningPref.setSummary(R.string.cant_get_url);
-                    return;
-                }
-                String iptext = "ftp://" + address.getHostAddress() + ":"
-                        + Settings.getPortNumber() + "/";
-                Resources resources = getResources();
-                String summary = resources.getString(R.string.running_summary_started,
-                        iptext);
-                runningPref.setSummary(summary);
-            } else if (intent.getAction().equals(FtpServerService.ACTION_STOPPED)) {
-                runningPref.setChecked(false);
-                runningPref.setSummary(R.string.running_summary_stopped);
-            } else if (intent.getAction().equals(FtpServerService.ACTION_FAILEDTOSTART)) {
+            if (intent.getAction().equals(FtpServerService.ACTION_FAILEDTOSTART)) {
                 runningPref.setChecked(false);
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -338,8 +331,6 @@ public class ServerPreferenceActivity extends PreferenceActivity implements
             }
         }
     };
-
-    Handler mHandler = new Handler();
 
     static private String transformPassword(String password) {
         Context context = FtpServerApp.getAppContext();
