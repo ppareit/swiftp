@@ -23,7 +23,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 
 import android.util.Log;
-import be.ppareit.swiftp.Settings;
+import be.ppareit.swiftp.FsSettings;
 
 public abstract class FtpCmd implements Runnable {
     private static final String TAG = FtpCmd.class.getSimpleName();
@@ -158,7 +158,7 @@ public abstract class FtpCmd implements Runnable {
         try {
             if (param.charAt(0) == '/') {
                 // The STOR contained an absolute path
-                File chroot = Settings.getChrootDir();
+                File chroot = FsSettings.getChrootDir();
                 return new File(chroot, param);
             }
         } catch (Exception e) {
@@ -172,7 +172,7 @@ public abstract class FtpCmd implements Runnable {
         try {
             // taking the canonical path as new devices have sdcard symlinked
             // for multiuser support
-            File chroot = Settings.getChrootDir();
+            File chroot = FsSettings.getChrootDir();
             String canonicalChroot = chroot.getCanonicalPath();
             String canonicalPath = file.getCanonicalPath();
             if (!canonicalPath.startsWith(canonicalChroot)) {

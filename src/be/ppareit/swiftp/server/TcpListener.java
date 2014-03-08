@@ -23,15 +23,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import android.util.Log;
-import be.ppareit.swiftp.FtpServerService;
+import be.ppareit.swiftp.FsService;
 
 public class TcpListener extends Thread {
     private static final String TAG = TcpListener.class.getSimpleName();
 
     ServerSocket listenSocket;
-    FtpServerService ftpServerService;
+    FsService ftpServerService;
 
-    public TcpListener(ServerSocket listenSocket, FtpServerService ftpServerService) {
+    public TcpListener(ServerSocket listenSocket, FsService ftpServerService) {
         this.listenSocket = listenSocket;
         this.ftpServerService = ftpServerService;
     }

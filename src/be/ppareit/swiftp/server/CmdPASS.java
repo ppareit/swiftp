@@ -21,8 +21,8 @@ package be.ppareit.swiftp.server;
 
 import android.content.Context;
 import android.util.Log;
-import be.ppareit.swiftp.FtpServerApp;
-import be.ppareit.swiftp.Settings;
+import be.ppareit.swiftp.FsApp;
+import be.ppareit.swiftp.FsSettings;
 
 public class CmdPASS extends FtpCmd implements Runnable {
     private static final String TAG = CmdPASS.class.getSimpleName();
@@ -48,14 +48,14 @@ public class CmdPASS extends FtpCmd implements Runnable {
             sessionThread.writeString("503 Must send USER first\r\n");
             return;
         }
-        Context ctx = FtpServerApp.getAppContext();
+        Context ctx = FsApp.getAppContext();
         if (ctx == null) {
             // This will probably never happen, since the global
             // context is configured by the Service
             Log.e(TAG, "No global context in PASS\r\n");
         }
-        String username = Settings.getUserName();
-        String password = Settings.getPassWord();
+        String username = FsSettings.getUserName();
+        String password = FsSettings.getPassWord();
         if (username == null || password == null) {
             Log.e(TAG, "Username or password misconfigured");
             sessionThread.writeString("500 Internal error during authentication");

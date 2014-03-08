@@ -28,9 +28,9 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-public class Settings {
+public class FsSettings {
 
-    private final static String TAG = Settings.class.getSimpleName();
+    private final static String TAG = FsSettings.class.getSimpleName();
 
     public static String getUserName() {
         final SharedPreferences sp = getSharedPreferences();
@@ -78,7 +78,7 @@ public class Settings {
      * @return the SharedPreferences for this application
      */
     private static SharedPreferences getSharedPreferences() {
-        final Context context = FtpServerApp.getAppContext();
+        final Context context = FsApp.getAppContext();
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -94,7 +94,7 @@ public class Settings {
     }
 
     public static void setInputBufferSize(int inputBufferSize) {
-        Settings.inputBufferSize = inputBufferSize;
+        FsSettings.inputBufferSize = inputBufferSize;
     }
 
     public static boolean isAllowOverwrite() {
@@ -102,7 +102,7 @@ public class Settings {
     }
 
     public static void setAllowOverwrite(boolean allowOverwrite) {
-        Settings.allowOverwrite = allowOverwrite;
+        FsSettings.allowOverwrite = allowOverwrite;
     }
 
     public static int getDataChunkSize() {
@@ -110,7 +110,7 @@ public class Settings {
     }
 
     public static void setDataChunkSize(int dataChunkSize) {
-        Settings.dataChunkSize = dataChunkSize;
+        FsSettings.dataChunkSize = dataChunkSize;
     }
 
     public static int getSessionMonitorScrollBack() {
@@ -118,7 +118,7 @@ public class Settings {
     }
 
     public static void setSessionMonitorScrollBack(int sessionMonitorScrollBack) {
-        Settings.sessionMonitorScrollBack = sessionMonitorScrollBack;
+        FsSettings.sessionMonitorScrollBack = sessionMonitorScrollBack;
     }
 
     public static int getServerLogScrollBack() {
@@ -126,7 +126,7 @@ public class Settings {
     }
 
     public static void setLogScrollBack(int serverLogScrollBack) {
-        Settings.serverLogScrollBack = serverLogScrollBack;
+        FsSettings.serverLogScrollBack = serverLogScrollBack;
     }
 
 }

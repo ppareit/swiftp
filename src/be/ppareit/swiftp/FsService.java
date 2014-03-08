@@ -45,8 +45,8 @@ import android.util.Log;
 import be.ppareit.swiftp.server.SessionThread;
 import be.ppareit.swiftp.server.TcpListener;
 
-public class FtpServerService extends Service implements Runnable {
-    private static final String TAG = FtpServerService.class.getSimpleName();
+public class FsService extends Service implements Runnable {
+    private static final String TAG = FsService.class.getSimpleName();
 
     // Service will (global) broadcast when server start/stop
     static public final String ACTION_STARTED = "be.ppareit.swiftp.FTPSERVER_STARTED";
@@ -154,7 +154,7 @@ public class FtpServerService extends Service implements Runnable {
     void setupListener() throws IOException {
         listenSocket = new ServerSocket();
         listenSocket.setReuseAddress(true);
-        listenSocket.bind(new InetSocketAddress(Settings.getPortNumber()));
+        listenSocket.bind(new InetSocketAddress(FsSettings.getPortNumber()));
     }
 
     public void run() {
@@ -246,7 +246,7 @@ public class FtpServerService extends Service implements Runnable {
     private void takeWakeLock() {
         if (wakeLock == null) {
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            if (Settings.shouldTakeFullWakeLock()) {
+            if (FsSettings.shouldTakeFullWakeLock()) {
                 Log.d(TAG, "takeWakeLock: Taking full wake lock");
                 wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, TAG);
             } else {
@@ -280,7 +280,7 @@ public class FtpServerService extends Service implements Runnable {
         }
         // TODO: next if block could probably be removed
         if (isConnectedUsingWifi() == true) {
-            Context context = FtpServerApp.getAppContext();
+            Context context = FsApp.getAppContext();
             WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             int ipAddress = wm.getConnectionInfo().getIpAddress();
             if (ipAddress == 0)
@@ -315,7 +315,7 @@ public class FtpServerService extends Service implements Runnable {
      * @return true if connected to a local network
      */
     public static boolean isConnectedToLocalNetwork() {
-        Context context = FtpServerApp.getAppContext();
+        Context context = FsApp.getAppContext();
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
@@ -331,7 +331,7 @@ public class FtpServerService extends Service implements Runnable {
      * @return true if connected using wifi
      */
     public static boolean isConnectedUsingWifi() {
-        Context context = FtpServerApp.getAppContext();
+        Context context = FsApp.getAppContext();
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();

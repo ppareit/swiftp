@@ -46,10 +46,10 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
-import be.ppareit.swiftp.FtpServerApp;
-import be.ppareit.swiftp.FtpServerService;
+import be.ppareit.swiftp.FsApp;
+import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.R;
-import be.ppareit.swiftp.Settings;
+import be.ppareit.swiftp.FsSettings;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -106,7 +106,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
                 return false;
             }
         });
-        if (FtpServerApp.isFreeVersion() == false) {
+        if (FsApp.isFreeVersion() == false) {
             prefScreen.removePreference(marketVersionPref);
         }
 
@@ -170,7 +170,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
         });
 
         EditTextPreference chroot_pref = findPref("chrootDir");
-        chroot_pref.setSummary(Settings.getChrootDir().getAbsolutePath());
+        chroot_pref.setSummary(FsSettings.getChrootDir().getAbsolutePath());
         chroot_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -242,9 +242,9 @@ public class FsPreferenceActivity extends PreferenceActivity implements
 
         Log.d(TAG, "onResume: Registering the FTP server actions");
         IntentFilter filter = new IntentFilter();
-        filter.addAction(FtpServerService.ACTION_STARTED);
-        filter.addAction(FtpServerService.ACTION_STOPPED);
-        filter.addAction(FtpServerService.ACTION_FAILEDTOSTART);
+        filter.addAction(FsService.ACTION_STARTED);
+        filter.addAction(FsService.ACTION_STOPPED);
+        filter.addAction(FsService.ACTION_FAILEDTOSTART);
         registerReceiver(mFsActionsReceiver, filter);
     }
 
@@ -263,7 +263,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
         if (key.equals("show_password")) {
-            Context context = FtpServerApp.getAppContext();
+            Context context = FsApp.getAppContext();
             Resources res = context.getResources();
             String password = res.getString(R.string.password_default);
             password = sp.getString("password", password);
@@ -272,27 +272,27 @@ public class FsPreferenceActivity extends PreferenceActivity implements
     }
 
     private void startServer() {
-        sendBroadcast(new Intent(FtpServerService.ACTION_START_FTPSERVER));
+        sendBroadcast(new Intent(FsService.ACTION_START_FTPSERVER));
     }
 
     private void stopServer() {
-        sendBroadcast(new Intent(FtpServerService.ACTION_STOP_FTPSERVER));
+        sendBroadcast(new Intent(FsService.ACTION_STOP_FTPSERVER));
     }
 
     private void updateRunningState() {
         Resources res = getResources();
         TwoStatePreference runningPref = findPref("running_switch");
-        if (FtpServerService.isRunning() == true) {
+        if (FsService.isRunning() == true) {
             runningPref.setChecked(true);
             // Fill in the FTP server address
-            InetAddress address = FtpServerService.getLocalInetAddress();
+            InetAddress address = FsService.getLocalInetAddress();
             if (address == null) {
                 Log.v(TAG, "Unable to retreive wifi ip address");
                 runningPref.setSummary(R.string.cant_get_url);
                 return;
             }
             String iptext = "ftp://" + address.getHostAddress() + ":"
-                    + Settings.getPortNumber() + "/";
+                    + FsSettings.getPortNumber() + "/";
             String summary = res.getString(R.string.running_summary_started, iptext);
             runningPref.setSummary(summary);
         } else {
@@ -314,7 +314,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             updateRunningState();
             // or it might be ACTION_FAILEDTOSTART
             final TwoStatePreference runningPref = findPref("running_switch");
-            if (intent.getAction().equals(FtpServerService.ACTION_FAILEDTOSTART)) {
+            if (intent.getAction().equals(FsService.ACTION_FAILEDTOSTART)) {
                 runningPref.setChecked(false);
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -333,7 +333,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
     };
 
     static private String transformPassword(String password) {
-        Context context = FtpServerApp.getAppContext();
+        Context context = FsApp.getAppContext();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         Resources res = context.getResources();
         String showPasswordString = res.getString(R.string.show_password_default);

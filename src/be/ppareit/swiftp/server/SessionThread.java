@@ -33,9 +33,9 @@ import java.nio.ByteBuffer;
 
 import android.util.Log;
 import be.ppareit.swiftp.Defaults;
-import be.ppareit.swiftp.FtpServerApp;
-import be.ppareit.swiftp.FtpServerService;
-import be.ppareit.swiftp.Settings;
+import be.ppareit.swiftp.FsApp;
+import be.ppareit.swiftp.FsService;
+import be.ppareit.swiftp.FsSettings;
 
 public class SessionThread extends Thread {
     private static final String TAG = SessionThread.class.getSimpleName();
@@ -47,7 +47,7 @@ public class SessionThread extends Thread {
     protected boolean binaryMode = false;
     protected Account account = new Account();
     protected boolean authenticated = false;
-    protected File workingDir = Settings.getChrootDir();
+    protected File workingDir = FsSettings.getChrootDir();
     // protected ServerSocket dataServerSocket = null;
     protected Socket dataSocket = null;
     // protected FTPServerService service;
@@ -256,7 +256,7 @@ public class SessionThread extends Thread {
         Log.i(TAG, "SessionThread started");
 
         if (sendWelcomeBanner) {
-            writeString("220 SwiFTP " + FtpServerApp.getVersion() + " ready\r\n");
+            writeString("220 SwiFTP " + FsApp.getVersion() + " ready\r\n");
         }
         // Main loop: read an incoming line and process it
         try {
@@ -266,7 +266,7 @@ public class SessionThread extends Thread {
                 String line;
                 line = in.readLine(); // will accept \r\n or \n for terminator
                 if (line != null) {
-                    FtpServerService.writeMonitor(true, line);
+                    FsService.writeMonitor(true, line);
                     Log.d(TAG, "Received line from client: " + line);
                     FtpCmd.dispatchCommand(this, line);
                 } else {
@@ -319,7 +319,7 @@ public class SessionThread extends Thread {
     }
 
     public void writeString(String str) {
-        FtpServerService.writeMonitor(false, str);
+        FsService.writeMonitor(false, str);
         byte[] strBytes;
         try {
             strBytes = str.getBytes(encoding);

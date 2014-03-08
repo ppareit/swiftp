@@ -39,7 +39,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <application
         android:icon="@drawable/launcher"
         android:label="@string/swiftp_name"
-        android:name="be.ppareit.swiftp.FtpServerApp"
+        android:name="be.ppareit.swiftp.FsApp"
         android:allowBackup="true" >
 
         <activity android:name="be.ppareit.swiftp.gui.FsPreferenceActivity" >
@@ -49,7 +49,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             </intent-filter>
         </activity>
 
-        <service android:name="be.ppareit.swiftp.FtpServerService" />
+        <service android:name="be.ppareit.swiftp.FsService" />
 
         <receiver
             android:name="be.ppareit.swiftp.gui.FsNotification"

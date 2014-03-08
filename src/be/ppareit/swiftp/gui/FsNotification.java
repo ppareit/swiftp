@@ -28,8 +28,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import be.ppareit.swiftp.FtpServerService;
-import be.ppareit.swiftp.Settings;
+import be.ppareit.swiftp.FsService;
+import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 
 public class FsNotification extends BroadcastReceiver {
@@ -40,9 +40,9 @@ public class FsNotification extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive broadcast: " + intent.getAction());
-        if (intent.getAction().equals(FtpServerService.ACTION_STARTED)) {
+        if (intent.getAction().equals(FsService.ACTION_STARTED)) {
             setupNotification(context);
-        } else if (intent.getAction().equals(FtpServerService.ACTION_STOPPED)) {
+        } else if (intent.getAction().equals(FsService.ACTION_STOPPED)) {
             clearNotification(context);
         }
     }
@@ -54,13 +54,13 @@ public class FsNotification extends BroadcastReceiver {
         NotificationManager nm = (NotificationManager) context.getSystemService(ns);
 
         // get ip address
-        InetAddress address = FtpServerService.getLocalInetAddress();
+        InetAddress address = FsService.getLocalInetAddress();
         if (address == null) {
             Log.w(TAG, "Unable to retreive the local ip address");
             return;
         }
         String iptext = "ftp://" + address.getHostAddress() + ":"
-                + Settings.getPortNumber() + "/";
+                + FsSettings.getPortNumber() + "/";
 
         // Instantiate a Notification
         int icon = R.drawable.notification;

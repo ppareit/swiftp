@@ -48,10 +48,10 @@ public class NsdService extends Service {
                 Log.w(TAG, "onReceive: NSD functionallity, bailing out");
                 return;
             }
-            if (intent.getAction().equals(FtpServerService.ACTION_STARTED)) {
+            if (intent.getAction().equals(FsService.ACTION_STARTED)) {
                 Intent service = new Intent(context, NsdService.class);
                 context.startService(service);
-            } else if (intent.getAction().equals(FtpServerService.ACTION_STOPPED)) {
+            } else if (intent.getAction().equals(FsService.ACTION_STOPPED)) {
                 Intent service = new Intent(context, NsdService.class);
                 context.stopService(service);
             }
@@ -90,7 +90,7 @@ public class NsdService extends Service {
         NsdServiceInfo serviceInfo = new NsdServiceInfo();
         serviceInfo.setServiceName(mServiceName);
         serviceInfo.setServiceType("_ftp._tcp");
-        serviceInfo.setPort(Settings.getPortNumber());
+        serviceInfo.setPort(FsSettings.getPortNumber());
 
         mNsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
         Log.d(TAG, "onCreate: tick");

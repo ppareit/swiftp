@@ -28,7 +28,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
-import be.ppareit.swiftp.FtpServerService;
+import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.R;
 
 /**
@@ -45,8 +45,8 @@ public class FsWidgetProvider extends AppWidgetProvider {
         Log.v(TAG, "Received broadcast: " + intent.getAction());
         // watch for the broadcasts by the ftp server and update the widget if needed
         final String action = intent.getAction();
-        if (action.equals(FtpServerService.ACTION_STARTED)
-                || action.equals(FtpServerService.ACTION_STOPPED)) {
+        if (action.equals(FsService.ACTION_STARTED)
+                || action.equals(FsService.ACTION_STOPPED)) {
             Intent updateIntent = new Intent(context, UpdateService.class);
             context.startService(updateIntent);
         }
@@ -68,15 +68,15 @@ public class FsWidgetProvider extends AppWidgetProvider {
         public int onStartCommand(Intent intent, int flags, int startId) {
             Log.d(TAG, "UpdateService start command");
             // We need to create the correct pending intent for when the widget is clicked
-            final String action = FtpServerService.isRunning() ? FtpServerService.ACTION_STOP_FTPSERVER
-                    : FtpServerService.ACTION_START_FTPSERVER;
+            final String action = FsService.isRunning() ? FsService.ACTION_STOP_FTPSERVER
+                    : FsService.ACTION_START_FTPSERVER;
             Intent startIntent = new Intent(action);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0,
                     startIntent, 0);
             RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_layout);
             views.setOnClickPendingIntent(R.id.widget_button, pendingIntent);
             // we need to put the correct image on the widget
-            final int drawable = FtpServerService.isRunning() ? R.drawable.widget_on
+            final int drawable = FsService.isRunning() ? R.drawable.widget_on
                     : R.drawable.widget_off;
             views.setImageViewResource(R.id.widget_button, drawable);
             // new info is on widget, update it
