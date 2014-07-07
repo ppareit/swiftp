@@ -132,8 +132,12 @@ public class NsdService extends Service {
             Log.e(TAG, "unregisterService: Unexpected mNsdManger to be null, bailing out");
             return;
         }
-        mNsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
-        mNsdManager.unregisterService(mRegistrationListener);
+        try {
+            mNsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
+            mNsdManager.unregisterService(mRegistrationListener);
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to unregister NSD service, error: " + e.getMessage());
+        }
         mNsdManager = null;
     }
     @Override
