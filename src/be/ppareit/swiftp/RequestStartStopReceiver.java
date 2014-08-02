@@ -7,7 +7,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
-import be.ppareit.swiftp.R;
 
 public class RequestStartStopReceiver extends BroadcastReceiver {
 
@@ -18,15 +17,19 @@ public class RequestStartStopReceiver extends BroadcastReceiver {
         Log.v(TAG, "Received: " + intent.getAction());
 
         // TODO: analog code as in ServerPreferenceActivity.start/stopServer(), refactor
-        if (intent.getAction().equals(FsService.ACTION_START_FTPSERVER)) {
-            Intent serverService = new Intent(context, FsService.class);
-            if (!FsService.isRunning()) {
-                warnIfNoExternalStorage();
-                context.startService(serverService);
+        try {
+            if (intent.getAction().equals(FsService.ACTION_START_FTPSERVER)) {
+                Intent serverService = new Intent(context, FsService.class);
+                if (!FsService.isRunning()) {
+                    warnIfNoExternalStorage();
+                    context.startService(serverService);
+                }
+            } else if (intent.getAction().equals(FsService.ACTION_STOP_FTPSERVER)) {
+                Intent serverService = new Intent(context, FsService.class);
+                context.stopService(serverService);
             }
-        } else if (intent.getAction().equals(FsService.ACTION_STOP_FTPSERVER)) {
-            Intent serverService = new Intent(context, FsService.class);
-            context.stopService(serverService);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to start/stop on intent " + e.getMessage());
         }
     }
 
