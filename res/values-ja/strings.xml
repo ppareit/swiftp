@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2011-2013 Pieter Pareit
+Copyright 2009 David Revell
+
+This file is part of SwiFTP.
+
+SwiFTP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SwiFTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="swiftp_name">FTP サーバ</string>
+    <string name="running_label">FTP サーバ</string>
+    <string name="running_summary_stopped">ftp サーバの状態を切替</string>
+    <string name="running_summary_started">開始しました %s</string>
+    <string name="running_summary_failed">FTP サーバが開始できません。ローカルネットワークに接続されていますか (wifi または ethernet)?</string>
+    <string name="market_version_label">製品版</string>
+    <string name="market_version_summary">
+        この FTP サーバはデモ版です。
+        GooglePlay から FTP サーバを入手するとサポートが受けられます。
+        ここをクリックすると GooglePlay に移動します。</string>
+    <string name="settings_label">設定</string>
+    <string name="username_label">ユーザ名</string>
+    <string name="password_label">パスワード</string>
+    <string name="show_password_label">パスワードを表示する</string>
+    <string name="advancedsettings_label">拡張設定...</string>
+    <string name="portnumber_label">ポート番号</string>
+    <string name="chroot_label">ルートとして公開するフォルダ</string>
+    <string name="acceptwifi_label">wifi の接続を許可する</string>
+    <string name="wakelock_label">端末を起動したままにする (最高 CPU スピード)</string>
+    <string name="extra_label">その他</string>
+    <string name="help_label">ヘルプ...</string>
+    <string name="about_label">FTP サーバについて...</string>
+    <string name="help_dlg_title">FTP サーバ・ヘルプ</string>
+    <string name="help_dlg_message">\
+FTP サーバ (SwiFTP) のご利用ありがとうございます! 簡単な使用方法を説明します。
+さらに詳細は http://ppareit.github.com/swiftp/ を参照してください。\n\n\
+\
+このプログラムはアンドロイド端末で実行する ftp サーバです。
+これにより、ftp サーバの実行中は様々なプログラムからあなたの端末上のファイルにアクセスすることができます。
+例えば、デスクトップ PC やラップトップで、firefox の url バーに、\'ftp://...\' と入力すると、あなたの端末にあるファイルを表示することができます。\n\n
+\
+デフォルトではユーザ名とパスワードは共に \'ftp\' です。これはすぐに変更してください。このユーザ名とパスワードを使用してサーバにアクセスします。\n\n
+\
+端末がスリープした時に、ファイル転送が遅くなったり、停止する問題の対応のために \"端末を起動したままにする\" というオプション設定があります。
+この問題が発生した時には、このボックスをチェックして、プログラムを再起動してください。端末はサーバの実行中は起動したままになります。\n\n
+\
+パフォーマンスやセキュリティの理由から、使用後はサーバを停止することを推奨します。\n\n\
+\
+もし期待した通りに動作しない場合は、Pieter Pareit (pieter.pareit@gmail.com) に報告してください。\n\n\
+\
+google play ストアでこのプログラムを購入して頂くことで、このオープンソースプログラムの開発は支援されます。
+開発状況は https://github.com/ppareit/swiftp を参照してください。
+実装機能に関するアイデア等は、イシュートラッカー https://github.com/ppareit/swiftp/issues を参照してください。\n\n
+    </string>
+    <string name="about_dlg_title">FTP サーバについて</string>
+    <string name="about_dlg_message">
+        <b>説明: </b>
+        FTP サーバ (SwiFTP) は、アンドロイド端末で実行する ftp サーバです。\n\n\
+        <b>Webサイト:</b>
+        http://ppareit.github.com/swiftp/\n\n
+        <b>現在のメンテナンス者:</b>
+        Pieter Pareit (pieter.pareit@gmail.com)\n\n
+        <b>プログラミング: </b>\
+        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
+        <b>図版:</b>
+        Birgit Niemegeers\n\n
+        <b>ライセンス: </b>
+        GNU General Public License v3.0\n\n
+    </string>
+    <string name="notif_server_starting">開始しています %s</string>
+    <string name="notif_title">FTP サーバは実行中です</string>
+    <string name="notif_text">%s</string>
+
+    <string name="nsd_servername_postfix">FTP サーバ</string>
+
+    <!-- old strings -->
+    <string name="cant_get_url">url を解析できません</string>
+    <string name="unknown">不明</string>
+    <string name="ok">OK</string>
+    <string name="username_validation_error">パスワードは1文字以上の英数字で入力してください。他の文字は使用できません。</string>
+    <string name="password_validation_error">パスワードは1文字以上の英数字で入力してください。他の文字は使用できません。</string>
+    <string name="port_validation_error">ポート番号は 1 ～ 65535 の範囲で入力してください。</string>
+    <string name="wifi_state_receiver_label">Wifiステートレシーバ</string>
+    <string name="pst_connecting">接続しています</string>
+    <string name="pst_connected">接続しました</string>
+    <string name="pst_failed">失敗しました</string>
+    <string name="pst_unreachable">到達不能</string>
+    <string name="pst_disconnected">切断されました</string>
+    <string name="storage_warning">警告: ストレージが使用できません。アンマウントする必要があるかもしれません。</string>
+    <string name="widget_name">FTP サーバ・ウィジット</string>
+
+</resources>
