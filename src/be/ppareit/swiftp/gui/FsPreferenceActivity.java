@@ -170,6 +170,8 @@ public class FsPreferenceActivity extends PreferenceActivity implements
         });
 
         EditTextPreference chroot_pref = findPref("chrootDir");
+        // TODO: chrootDir should be given by FsSetting and it should test
+        // integrity
         chroot_pref.setSummary(FsSettings.getChrootDir().getAbsolutePath());
         chroot_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
