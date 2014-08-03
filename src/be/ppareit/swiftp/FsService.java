@@ -21,6 +21,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package be.ppareit.swiftp;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -315,12 +316,24 @@ public class FsService extends Service implements Runnable {
      * @return true if connected to a local network
      */
     public static boolean isConnectedToLocalNetwork() {
+        boolean connected = false;
         Context context = FsApp.getAppContext();
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
-        return ni != null && ni.isConnected() == true
+        connected = ni != null && ni.isConnected() == true
                 && (ni.getType() & (ConnectivityManager.TYPE_WIFI | ConnectivityManager.TYPE_ETHERNET)) != 0;
+        if (connected == false) {
+            Log.d(TAG, "Device not connected to a network, see if it is an AP");
+            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            try {
+                Method method = wm.getClass().getDeclaredMethod("isWifiApEnabled");
+                connected = (Boolean) method.invoke(wm);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return connected;
     }
 
     /**
