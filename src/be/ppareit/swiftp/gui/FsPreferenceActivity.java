@@ -100,7 +100,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
                     // this can fail if there is no market installed
                     startActivity(intent);
                 } catch (Exception e) {
-                    Log.e(TAG, "Failed to lauch the market.");
+                    Log.e(TAG, "Failed to launch the market.");
                     e.printStackTrace();
                 }
                 return false;
