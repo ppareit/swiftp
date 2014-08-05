@@ -31,9 +31,10 @@ public class CmdFEAT extends FtpCmd implements Runnable {
     @Override
     public void run() {
         Log.d(TAG, "run: Giving FEAT");
-        sessionThread.writeString("211-Features supported\r\n");
+        sessionThread.writeString("211-Features supported by FTP Server\r\n");
         sessionThread.writeString("UTF8\r\n");
         sessionThread.writeString("MDTM\r\n");
+        sessionThread.writeString("MFMT\r\n");
         sessionThread.writeString("211 End\r\n");
         Log.d(TAG, "run: Gave FEAT");
     }
