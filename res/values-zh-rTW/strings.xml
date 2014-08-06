@@ -20,7 +20,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
-
+    <string name="swiftp_name">FTP Server</string>
     <string name="running_label">正在運行</string>
     <string name="running_summary_stopped">開始 FTP server</string>
     <string name="running_summary_started">FTP server 運行於 %s 端口</string>
@@ -84,6 +84,9 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
         <b>許可：</b>
         GNU General Public License v3.0\n\n
 </string>
+
+        <string name="nsd_servername_postfix">FTP Server</string>
+
     <string name="notif_server_starting">啟動於 %s 端口</string>
     <string name="notif_title">FTP Server 正在運行</string>
     <string name="notif_text">服務運行於 %s 端口</string>

@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
+    <string name="swiftp_name">FTP Server</string>
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">Wijzig de status van de FTP Server</string>
     <string name="running_summary_started">verbonden op %s</string>
@@ -79,6 +80,8 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notif_server_starting">Starten op %s</string>
     <string name="notif_title">FTP Server is verbonden</string>
     <string name="notif_text">op %s</string>
+
+    <string name="nsd_servername_postfix">FTP Server</string>
 
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retreive url</string>

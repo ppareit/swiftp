@@ -20,7 +20,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
-
     <string name="swiftp_name">FTP サーバ</string>
     <string name="running_label">FTP サーバ</string>
     <string name="running_summary_stopped">ftp サーバの状態を切替</string>

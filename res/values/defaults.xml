@@ -19,11 +19,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
     <!-- Don't translate the default resources -->
-    <string name="chroot_default"></string>
-    <string name="username_default">ftp</string>
-    <string name="password_default">ftp</string>
-    <string name="show_password_default">false</string>
-    <string name="portnumber_default">2121</string>
-    <string name="acceptwifi_default">true</string>
-    <string name="wakelock_default">true</string>
+    <string name="chroot_default" translatable="false"></string>
+    <string name="username_default" translatable="false">ftp</string>
+    <string name="password_default" translatable="false">ftp</string>
+    <string name="show_password_default" translatable="false">false</string>
+    <string name="portnumber_default" translatable="false">2121</string>
+    <string name="acceptwifi_default" translatable="false">true</string>
+    <string name="wakelock_default" translatable="false">true</string>
 </resources>

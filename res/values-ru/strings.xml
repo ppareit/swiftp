@@ -20,7 +20,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
-
+    <string name="swiftp_name">FTP Server</string>
     <string name="running_label">Запуск</string>
     <string name="running_summary_stopped">Включить FTP сервер</string>
     <string name="running_summary_started">FTP сервер включен. Адрес: %s</string>
@@ -84,6 +84,8 @@ https://github.com/ppareit/swiftp/issues .\n\n
         <b>Лицензии: </b>
         GNU General Public License v3.0\n\n
 </string>
+
+    <string name="nsd_servername_postfix">FTP Server</string>
 
     <!-- Special care for the follwoing string pleace -->
     <string name="notif_server_starting">FTP сервер запускается...%s</string>

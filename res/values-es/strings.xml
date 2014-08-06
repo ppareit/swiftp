@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
+    <string name="swiftp_name">FTP Server</string>
     <string name="running_label">Servidor FTP</string>
     <string name="running_summary_stopped">Cambiar el estado del servidor FTP</string>
     <string name="running_summary_started">ejecutándose en %s</string>
@@ -33,7 +34,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="portnumber_label">Número de puerto</string>
     <string name="chroot_label">Carpeta de inicio</string>
     <string name="acceptwifi_label">Aceptar conexión desde WiFi</string>
-    <string name="acceptproxy_label">Aceptar conexión desde proxy de red</string>
     <string name="wakelock_label">Mantener encendido</string>
     <string name="extra_label">Otros</string>
     <string name="help_label">Ayuda\u2026</string>
@@ -87,6 +87,8 @@ en https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notif_server_starting">Iniciando servidor FTP en %s</string>
     <string name="notif_title">Servidor FTP ejecutándose</string>
     <string name="notif_text">en %s</string>
+
+    <string name="nsd_servername_postfix">FTP Server</string>
 
     <!-- old strings -->
     <string name="cant_get_url">Imposible obtener url</string>
