@@ -1,3 +1,8 @@
+Version 2.9 (6/8/2014)
+    + Connection while tethering
+    + MFMT command extension
+    + Japanese translation (Thanks Naofumi!)
+    * Bug fixes
 Version 2.8.1 (8/3/2014)
     * Bug fixes
     * NSD stability improvements
