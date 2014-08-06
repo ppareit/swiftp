@@ -1,6 +1,6 @@
 Version 2.9 (6/8/2014)
     + Connection while tethering
-    + MFMT command extension
+    + MFMT command extension (modify modify time)
     + Japanese translation (Thanks Naofumi!)
     * Bug fixes
 Version 2.8.1 (8/3/2014)
