@@ -49,6 +49,7 @@ public abstract class FtpCmd implements Runnable {
             new CmdMap("MDTM", CmdMDTM.class), //
             new CmdMap("MFMT", CmdMFMT.class), //
             new CmdMap("REST", CmdREST.class), //
+            new CmdMap("SITE", CmdSITE.class), //
     };
 
     public FtpCmd(SessionThread sessionThread) {
