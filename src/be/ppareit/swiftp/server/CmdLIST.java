@@ -37,7 +37,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
     static private final String TAG = CmdLIST.class.getSimpleName();
 
     // The approximate number of milliseconds in 6 months
-    public final static long MS_IN_SIX_MONTHS = 6 * 30 * 24 * 60 * 60 * 1000;
+    public final static long MS_IN_SIX_MONTHS = 6L * 30L * 24L * 60L * 60L * 1000L;
     private final String input;
 
     public CmdLIST(SessionThread sessionThread, String input) {
@@ -148,7 +148,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
         long mTime = file.lastModified();
         SimpleDateFormat format;
         // Temporarily commented out.. trying to fix Win7 display bug
-        if (System.currentTimeMillis() - mTime > MS_IN_SIX_MONTHS) {
+        if ((System.currentTimeMillis() - mTime) < MS_IN_SIX_MONTHS) {
             // The mtime is less than 6 months ago
             format = new SimpleDateFormat(" MMM dd HH:mm ", Locale.US);
         } else {

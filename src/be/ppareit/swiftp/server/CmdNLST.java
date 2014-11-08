@@ -34,7 +34,7 @@ public class CmdNLST extends CmdAbstractListing implements Runnable {
     private static final String TAG = CmdNLST.class.getSimpleName();
 
     // The approximate number of milliseconds in 6 months
-    public final static long MS_IN_SIX_MONTHS = 6 * 30 * 24 * 60 * 60 * 1000;
+    public final static long MS_IN_SIX_MONTHS = 6L * 30L * 24L * 60L * 60L * 1000L;
     private final String input;
 
     public CmdNLST(SessionThread sessionThread, String input) {
