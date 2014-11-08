@@ -5,10 +5,21 @@ How to use Eclipse and the Android plugin with the SwiFTP project:
 1) Clone the project:
         git clone git@github.com:ppareit/swiftp.git
 2) In Eclipse, import the existing project:
-  - File -> Import 
-  - Select General, then Existing Projects Into Workspace
+  - File -> Import
+  - Select Android, then Existing Android Code Into Workspace
   - In "Select root directory," browse for the cloned directory
   - From there it's obvious
+
+MAKING CHANGES
+==============
+The code is released under the GPLv3, you might want to read
+http://www.gnu.org/licenses/gpl-faq.html
+
+The artwork is copyrighted. It can only be used with consent of
+me (Pieter Pareit).
+
+It is requested that if you make changes to the code, that you
+notify me. Pull requests via github or patches to my email.
 
 RELEASE CHECKLIST
 =================
