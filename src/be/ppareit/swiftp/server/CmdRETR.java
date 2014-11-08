@@ -81,6 +81,9 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 sessionThread.writeString("150 Sending file\r\n");
                 if (sessionThread.isBinaryMode()) {
                     Log.d(TAG, "Transferring in binary mode");
+                    if (sessionThread.offset >= 0) {
+                        in.skip(sessionThread.offset);
+                    }
                     while ((bytesRead = in.read(buffer)) != -1) {
                         // myLog.l(Log.DEBUG,
                         // String.format("CmdRETR sending %d bytes", bytesRead));
@@ -92,6 +95,9 @@ public class CmdRETR extends FtpCmd implements Runnable {
                     }
                 } else { // We're in ASCII mode
                     Log.d(TAG, "Transferring in ASCII mode");
+                    if (sessionThread.offset >= 0) {
+                        in.skip(sessionThread.offset);
+                    }
                     // We have to convert all solitary \n to \r\n
                     boolean lastBufEndedWithCR = false;
                     while ((bytesRead = in.read(buffer)) != -1) {

@@ -48,6 +48,7 @@ public abstract class FtpCmd implements Runnable {
             new CmdMap("XRMD", CmdRMD.class), // synonym
             new CmdMap("MDTM", CmdMDTM.class), //
             new CmdMap("MFMT", CmdMFMT.class), //
+            new CmdMap("REST", CmdREST.class), //
     };
 
     public FtpCmd(SessionThread sessionThread) {
@@ -115,6 +116,10 @@ public abstract class FtpCmd implements Runnable {
                 || cmdInstance.getClass().equals(CmdUSER.class)) {
             // Unauthenticated users can run only USER, PASS and QUIT
             cmdInstance.run();
+            // when this was a REST, next command will be a RETR, otherwise reset offset
+            if (!cmdInstance.getClass().equals(CmdREST.class)) {
+                session.offset = -1;
+            }
         } else {
             session.writeString("530 Login first with USER and PASS\r\n");
         }

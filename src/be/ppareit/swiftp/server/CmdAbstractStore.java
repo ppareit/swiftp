@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
 
 import android.util.Log;
 import be.ppareit.swiftp.Defaults;
@@ -47,7 +49,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
         File storeFile = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
 
         String errString = null;
-        FileOutputStream out = null;
+        OutputStream out = null;
         // DedicatedWriter dedicatedWriter = null;
         // int origPriority = Thread.currentThread().getPriority();
         // myLog.l(Log.DEBUG, "STOR original priority: " + origPriority);
@@ -61,7 +63,10 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 errString = "451 Can't overwrite a directory\r\n";
                 break storing;
             }
-
+            if ((sessionThread.offset >= 0) && (append)) {
+                errString = "555 Append can not be used after a REST command\r\n";
+                break storing;
+            }
             try {
                 if (storeFile.exists()) {
                     if (!append) {
@@ -73,7 +78,26 @@ abstract public class CmdAbstractStore extends FtpCmd {
                         MediaUpdater.notifyFileDeleted(storeFile.getPath());
                     }
                 }
-                out = new FileOutputStream(storeFile, append);
+                if (sessionThread.offset <= 0) {
+                    out = new FileOutputStream(storeFile, append);
+                } else if (sessionThread.offset == storeFile.length()) {
+                    out = new FileOutputStream(storeFile, true);
+                } else {
+                    final RandomAccessFile raf = new RandomAccessFile(storeFile, "rw");
+                    raf.seek(sessionThread.offset);
+                    out = new OutputStream() {
+                        @Override
+                        public void write(int oneByte) throws IOException {
+                            raf.write(oneByte);
+                        }
+
+                        @Override
+                        public void close() throws IOException {
+                            raf.close();
+                        }
+                    };
+                }
+
             } catch (FileNotFoundException e) {
                 try {
                     errString = "451 Couldn't open file \"" + param + "\" aka \""
@@ -81,6 +105,9 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 } catch (IOException io_e) {
                     errString = "451 Couldn't open file, nested exception\r\n";
                 }
+                break storing;
+            } catch (IOException e) {
+                errString = "451 Unable to seek in file to append\r\n";
                 break storing;
             }
             if (!sessionThread.startUsingDataSocket()) {

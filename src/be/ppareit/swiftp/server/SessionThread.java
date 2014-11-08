@@ -59,6 +59,7 @@ public class SessionThread extends Thread {
     private boolean sendWelcomeBanner;
     protected String encoding = Defaults.SESSION_ENCODING;
     protected Source source;
+    protected long offset = -1;		// where to start append when using REST
     int authFails = 0;
 
     public enum Source {
