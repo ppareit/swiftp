@@ -24,7 +24,7 @@ import java.net.InetAddress;
 import android.util.Log;
 
 public class CmdPASV extends FtpCmd implements Runnable {
-    private static final String TAG = CmdPASS.class.getSimpleName();
+    private static final String TAG = CmdPASV.class.getSimpleName();
 
     public CmdPASV(SessionThread sessionThread, String input) {
         super(sessionThread);
