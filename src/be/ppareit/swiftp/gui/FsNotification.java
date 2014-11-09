@@ -67,7 +67,6 @@ public class FsNotification extends BroadcastReceiver {
         CharSequence tickerText = String.format(
                 context.getString(R.string.notif_server_starting), iptext);
         long when = System.currentTimeMillis();
-        Notification notification = new Notification(icon, tickerText, when);
 
         // Define Notification's message and Intent
         CharSequence contentTitle = context.getString(R.string.notif_title);
@@ -79,9 +78,23 @@ public class FsNotification extends BroadcastReceiver {
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
                 notificationIntent, 0);
-        notification
-                .setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-        notification.flags |= Notification.FLAG_ONGOING_EVENT;
+
+        int stopIcon = android.R.drawable.ic_menu_close_clear_cancel;
+        CharSequence stopText = context.getString(R.string.notif_stop_text);
+        Intent stopIntent = new Intent(FsService.ACTION_STOP_FTPSERVER);
+        PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0,
+                stopIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        Notification notification = new Notification.Builder(context) //
+                .setContentTitle(contentTitle) //
+                .setContentText(contentText) //
+                .setContentIntent(contentIntent) //
+                .setSmallIcon(icon) //
+                .setTicker(tickerText) //
+                .setWhen(when) //
+                .setOngoing(true) //
+                .addAction(stopIcon, stopText, stopPendingIntent) //
+                .build();
 
         // Pass Notification to NotificationManager
         nm.notify(NOTIFICATIONID, notification);
