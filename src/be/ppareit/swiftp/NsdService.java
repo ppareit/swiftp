@@ -36,6 +36,8 @@ import android.util.Log;
 public class NsdService extends Service {
     private static final String TAG = NsdService.class.getSimpleName();
 
+    private static final String FTP_SERVICE_TYPE= "_ftp._tcp.";
+
     private NsdManager mNsdManager = null;
 
     public static class StartStopReceiver extends BroadcastReceiver {
@@ -59,7 +61,7 @@ public class NsdService extends Service {
 
     }
 
-    private RegistrationListener mRegistrationListener = new RegistrationListener() {
+    private static RegistrationListener mRegistrationListener = new RegistrationListener() {
 
         @Override
         public void onServiceRegistered(NsdServiceInfo serviceInfo) {
@@ -73,12 +75,12 @@ public class NsdService extends Service {
 
         @Override
         public void onRegistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
-            Log.d(TAG, "onRegistrationFailed: errorCode=" + errorCode);
+            Log.e(TAG, "onRegistrationFailed: errorCode=" + errorCode);
         }
 
         @Override
         public void onUnregistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
-            Log.d(TAG, "onUnregistrationFailed: errorCode=" + errorCode);
+            Log.e(TAG, "onUnregistrationFailed: errorCode=" + errorCode);
         }
     };
 
@@ -92,7 +94,7 @@ public class NsdService extends Service {
 
         final NsdServiceInfo serviceInfo = new NsdServiceInfo();
         serviceInfo.setServiceName(serviceName);
-        serviceInfo.setServiceType("_ftp._tcp.");
+        serviceInfo.setServiceType(FTP_SERVICE_TYPE);
         serviceInfo.setPort(FsSettings.getPortNumber());
 
         new Thread(new Runnable() {
@@ -104,9 +106,12 @@ public class NsdService extends Service {
                 if (mNsdManager != null) {
                     Log.d(TAG, "onCreate: Got the NsdManager");
                     try {
+                        // all kinds of problems with the NsdManager, give it
+                        // some extra time before I make next call
+                        Thread.sleep(500);
                         mNsdManager.registerService(serviceInfo,
                                 NsdManager.PROTOCOL_DNS_SD, mRegistrationListener);
-                    } catch (RuntimeException e) {
+                    } catch (Exception e) {
                         Log.e(TAG, "onCreate: Failed to register NsdManager");
                         mNsdManager = null;
                     }
@@ -133,7 +138,6 @@ public class NsdService extends Service {
             return;
         }
         try {
-            mNsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
             mNsdManager.unregisterService(mRegistrationListener);
         } catch (Exception e) {
             Log.e(TAG, "Unable to unregister NSD service, error: " + e.getMessage());
