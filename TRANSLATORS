@@ -2,7 +2,10 @@ Sergey Kondakov <s.a.kondakov@gmail.com>
 Tianhao Wu <wth88888888@gmail.com>
 Lorenzo M <djmesias@yahoo.es>
 Naofumi Fukue <naofum@gmail.com>
+Valerio Bozzolan <valerio.bozzolan@gmail.com>
 
+*** For version 2.10:
+notif_stop_server
 *** For version 2.8.2:
 nsd_servername_postfix
 *** For version 2.7.1:
