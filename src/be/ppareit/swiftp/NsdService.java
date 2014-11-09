@@ -40,6 +40,9 @@ public class NsdService extends Service {
 
     private NsdManager mNsdManager = null;
 
+    // keep runaway threads in check
+    private volatile boolean running = false;
+
     public static class StartStopReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -88,6 +91,8 @@ public class NsdService extends Service {
     public void onCreate() {
         Log.d(TAG, "onCreate: Entered");
 
+        running = true;
+
         Resources res = getResources();
         String serviceNamePostfix = res.getString(R.string.nsd_servername_postfix);
         String serviceName = Build.MODEL + " " + serviceNamePostfix;
@@ -109,6 +114,11 @@ public class NsdService extends Service {
                         // all kinds of problems with the NsdManager, give it
                         // some extra time before I make next call
                         Thread.sleep(500);
+                        if (running == false) {
+                            Log.e(TAG, "NsdManager is no longer needed, bailing out");
+                            mNsdManager = null;
+                            return;
+                        }
                         mNsdManager.registerService(serviceInfo,
                                 NsdManager.PROTOCOL_DNS_SD, mRegistrationListener);
                     } catch (Exception e) {
@@ -132,6 +142,8 @@ public class NsdService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: Entered");
+
+        running = false;
 
         if (mNsdManager == null) {
             Log.e(TAG, "unregisterService: Unexpected mNsdManger to be null, bailing out");
