@@ -111,10 +111,11 @@ public abstract class FtpCmd implements Runnable {
             Log.d(TAG, "Ignoring unrecognized FTP verb: " + verb);
             session.writeString(unrecognizedCmdMsg);
             return;
-        } else if (session.isAuthenticated()
+        }
+        if (session.isAuthenticated()
                 || cmdInstance.getClass().equals(CmdUSER.class)
                 || cmdInstance.getClass().equals(CmdPASS.class)
-                || cmdInstance.getClass().equals(CmdUSER.class)) {
+                || cmdInstance.getClass().equals(CmdQUIT.class)) {
             // Unauthenticated users can run only USER, PASS and QUIT
             cmdInstance.run();
             // when this was a REST, next command will be a RETR, otherwise reset offset
@@ -122,7 +123,7 @@ public abstract class FtpCmd implements Runnable {
                 session.offset = -1;
             }
         } else {
-            session.writeString("530 Login first with USER and PASS\r\n");
+            session.writeString("530 Login first with USER and PASS, or QUIT\r\n");
         }
     }
 
