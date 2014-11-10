@@ -33,20 +33,38 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <PreferenceCategory
         android:key="settings"
         android:title="@string/settings_label" >
-        <EditTextPreference
-            android:defaultValue="@string/username_default"
-            android:key="username"
-            android:title="@string/username_label" />
-        <EditTextPreference
-            android:defaultValue="@string/password_default"
-            android:key="password"
-            android:title="@string/password_label"
-            android:inputType="textPassword" />
-        <CheckBoxPreference
-            android:key="show_password"
-            android:title="@string/show_password_label"
-            android:defaultValue="@string/show_password_default" />
-        
+
+        <PreferenceScreen
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="@string/loginsettings_label" >
+           <PreferenceCategory
+               android:key="settings"
+               android:title="@string/user_label" >
+                <EditTextPreference
+                    android:defaultValue="@string/username_default"
+                    android:key="username"
+                    android:title="@string/username_label" />
+                <EditTextPreference
+                    android:defaultValue="@string/password_default"
+                    android:key="password"
+                    android:title="@string/password_label"
+                    android:inputType="textPassword" />
+                <CheckBoxPreference
+                    android:key="show_password"
+                    android:title="@string/show_password_label"
+                    android:defaultValue="@string/show_password_default" />
+           </PreferenceCategory>
+           <PreferenceCategory
+               android:key="settings"
+               android:title="@string/anonymous_label" >
+                <CheckBoxPreference
+                    android:key="allow_anonymous"
+                    android:title="@string/allow_anonymous_label"
+                    android:summary="@string/anonymous_summary"
+                    android:defaultValue="@string/allow_anonymous_default" />
+            </PreferenceCategory>
+        </PreferenceScreen>
+
         <PreferenceScreen
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:title="@string/advancedsettings_label" >
@@ -64,9 +82,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:key="stayAwake"
                 android:title="@string/wakelock_label" />
         </PreferenceScreen>
-        
     </PreferenceCategory>
-    
+
     <PreferenceCategory
         android:key="extra_category"
         android:title="@string/extra_label" >

@@ -47,14 +47,10 @@ public class SessionThread extends Thread {
     protected boolean pasvMode = false;
     protected boolean binaryMode = false;
     protected Account account = new Account();
-    protected boolean authenticated = false;
+    protected boolean userAuthenticated = false;
     protected File workingDir = FsSettings.getChrootDir();
-    // protected ServerSocket dataServerSocket = null;
     protected Socket dataSocket = null;
-    // protected FTPServerService service;
     protected File renameFrom = null;
-    // protected InetAddress outDataDest = null;
-    // protected int outDataPort = 20; // 20 is the default ftp-data port
     protected LocalDataSocket localDataSocket;
     OutputStream dataOutputStream = null;
     private boolean sendWelcomeBanner;
@@ -341,14 +337,40 @@ public class SessionThread extends Thread {
         this.binaryMode = binaryMode;
     }
 
+    /**
+     * @return true if we should allow FTP opperations
+     */
     public boolean isAuthenticated() {
-        return authenticated;
+        if (userAuthenticated == true || FsSettings.allowAnoymous() == true) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return true only when we are anonymously logged in
+     */
+    public boolean isAnonymouslyLoggedIn() {
+        if (userAuthenticated == true) {
+            return false;
+        }
+        if (FsSettings.allowAnoymous() == true) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return true if a valid user has logged in
+     */
+    public boolean isUserLoggedIn() {
+        return userAuthenticated;
     }
 
     public void authAttempt(boolean authenticated) {
         if (authenticated) {
             Log.i(TAG, "Authentication complete");
-            this.authenticated = true;
+            userAuthenticated = true;
         } else {
             authFails++;
             Log.i(TAG, "Auth failed: " + authFails + "/" + MAX_AUTH_FAILS);

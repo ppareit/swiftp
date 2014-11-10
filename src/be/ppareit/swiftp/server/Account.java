@@ -20,15 +20,14 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package be.ppareit.swiftp.server;
 
 public class Account {
-	protected String username = null;
+    private String mUserName = null;
 
-	public String getUsername() {
-		return username;
-	}
+    public String getUsername() {
+        return mUserName;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
+    public void setUsername(String username) {
+        mUserName = username;
+    }
 
 }

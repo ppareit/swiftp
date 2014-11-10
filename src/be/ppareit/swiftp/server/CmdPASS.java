@@ -21,6 +21,7 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 import be.ppareit.swiftp.FsSettings;
+import be.ppareit.swiftp.Util;
 
 public class CmdPASS extends FtpCmd implements Runnable {
     private static final String TAG = CmdPASS.class.getSimpleName();
@@ -55,14 +56,12 @@ public class CmdPASS extends FtpCmd implements Runnable {
             sessionThread.writeString("230 Access granted\r\n");
             Log.i(TAG, "User " + username + " password verified");
             sessionThread.authAttempt(true);
+        } else if (attemptUsername.equals("anonymous") && FsSettings.allowAnoymous()) {
+            sessionThread.writeString("230 Guest login ok, read only access.\r\n");
+            Log.i(TAG, "Guest logged in with email: " + attemptPassword);
         } else {
-            try {
-                // If the login failed, sleep for one second to foil
-                // brute force attacks
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
             Log.i(TAG, "Failed authentication");
+            Util.sleepIgnoreInterupt(1000); // sleep to foil brute force attack
             sessionThread.writeString("530 Login incorrect.\r\n");
             sessionThread.authAttempt(false);
         }

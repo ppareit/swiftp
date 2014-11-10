@@ -32,10 +32,15 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         Support development by getting the FTP Server from the android market.
         Click here to go to the market.</string>
     <string name="settings_label">Settings</string>
+    <string name="user_label">User</string>
+    <string name="loginsettings_label">Login settings...</string>
     <string name="username_label">Username</string>
     <string name="password_label">Password</string>
     <string name="show_password_label">Display password</string>
-    <string name="advancedsettings_label">Advanced Settings...</string>
+    <string name="anonymous_label">Anonymous</string>
+    <string name="allow_anonymous_label">Allow anonymous login</string>
+    <string name="anonymous_summary">Anonymous logins are only allowed read access</string>
+    <string name="advancedsettings_label">Advanced settings...</string>
     <string name="portnumber_label">Port Number</string>
     <string name="chroot_label">Stay in folder</string>
     <string name="acceptwifi_label">Accept connection from wifi</string>

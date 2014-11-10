@@ -6,6 +6,11 @@ Valerio Bozzolan <valerio.bozzolan@gmail.com>
 
 *** For version 2.10:
 notif_stop_server
+loginsettings_label
+anonymous_label
+allow_anonymous_label
+anonymous_summary
+
 *** For version 2.8.2:
 nsd_servername_postfix
 *** For version 2.7.1:

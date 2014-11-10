@@ -52,10 +52,17 @@ public abstract class FtpCmd implements Runnable {
             new CmdMap("SITE", CmdSITE.class), //
     };
 
+    private static Class[] allowedCmdsWhileAnonymous = { CmdUSER.class, CmdPASS.class, //
+            CmdCWD.class, CmdLIST.class, CmdMDTM.class, CmdNLST.class, CmdPASV.class, //
+            CmdPWD.class, CmdQUIT.class, CmdRETR.class, CmdSIZE.class, CmdTYPE.class, //
+            CmdCDUP.class, CmdNOOP.class, CmdSYST.class, CmdPORT.class, //
+    };
+
     public FtpCmd(SessionThread sessionThread) {
         this.sessionThread = sessionThread;
     }
 
+    @Override
     abstract public void run();
 
     protected static void dispatchCommand(SessionThread session, String inputString) {
@@ -112,16 +119,26 @@ public abstract class FtpCmd implements Runnable {
             session.writeString(unrecognizedCmdMsg);
             return;
         }
-        if (session.isAuthenticated()
-                || cmdInstance.getClass().equals(CmdUSER.class)
+
+        if (session.isUserLoggedIn()) {
+            cmdInstance.run();
+        } else if (session.isAnonymouslyLoggedIn() == true) {
+            boolean validCmd = false;
+            for (Class<?> cl : allowedCmdsWhileAnonymous) {
+                if (cmdInstance.getClass().equals(cl)) {
+                    validCmd = true;
+                    break;
+                }
+            }
+            if (validCmd == true) {
+                cmdInstance.run();
+            } else {
+                session.writeString("530 Guest user is not allowed to use that command\r\n");
+            }
+        } else if (cmdInstance.getClass().equals(CmdUSER.class)
                 || cmdInstance.getClass().equals(CmdPASS.class)
                 || cmdInstance.getClass().equals(CmdQUIT.class)) {
-            // Unauthenticated users can run only USER, PASS and QUIT
             cmdInstance.run();
-            // when this was a REST, next command will be a RETR, otherwise reset offset
-            if (!cmdInstance.getClass().equals(CmdREST.class)) {
-                session.offset = -1;
-            }
         } else {
             session.writeString("530 Login first with USER and PASS, or QUIT\r\n");
         }
@@ -131,7 +148,7 @@ public abstract class FtpCmd implements Runnable {
      * An FTP parameter is that part of the input string that occurs after the first
      * space, including any subsequent spaces. Also, we want to chop off the trailing
      * '\r\n', if present.
-     * 
+     *
      * Some parameters shouldn't be logged or output (e.g. passwords), so the caller can
      * use silent==true in that case.
      */

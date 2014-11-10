@@ -42,6 +42,11 @@ public class FsSettings {
         return sp.getString("password", "ftp");
     }
 
+    public static boolean allowAnoymous() {
+        final SharedPreferences sp = getSharedPreferences();
+        return sp.getBoolean("allow_anonymous", false);
+    }
+
     public static File getChrootDir() {
         final SharedPreferences sp = getSharedPreferences();
         String dirName = sp.getString("chrootDir", "");
