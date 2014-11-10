@@ -19,9 +19,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
-import android.content.Context;
 import android.util.Log;
-import be.ppareit.swiftp.FsApp;
 import be.ppareit.swiftp.FsSettings;
 
 public class CmdPASS extends FtpCmd implements Runnable {
@@ -47,12 +45,6 @@ public class CmdPASS extends FtpCmd implements Runnable {
         if (attemptUsername == null) {
             sessionThread.writeString("503 Must send USER first\r\n");
             return;
-        }
-        Context ctx = FsApp.getAppContext();
-        if (ctx == null) {
-            // This will probably never happen, since the global
-            // context is configured by the Service
-            Log.e(TAG, "No global context in PASS\r\n");
         }
         String username = FsSettings.getUserName();
         String password = FsSettings.getPassWord();
