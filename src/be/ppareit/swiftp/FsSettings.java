@@ -62,8 +62,8 @@ public class FsSettings {
 
     public static int getPortNumber() {
         final SharedPreferences sp = getSharedPreferences();
-		// TODO: port is always an number, so store this accordenly
-		String portString = sp.getString("portNum", "2121");
+        // TODO: port is always an number, so store this accordenly
+        String portString = sp.getString("portNum", "2121");
         int port = Integer.valueOf(portString);
         Log.v(TAG, "Using port: " + port);
         return port;
