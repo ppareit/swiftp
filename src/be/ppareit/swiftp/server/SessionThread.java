@@ -36,6 +36,7 @@ import be.ppareit.swiftp.Defaults;
 import be.ppareit.swiftp.FsApp;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
+import be.ppareit.swiftp.server.LocalDataSocket;
 
 public class SessionThread extends Thread {
     private static final String TAG = SessionThread.class.getSimpleName();
@@ -54,34 +55,24 @@ public class SessionThread extends Thread {
     protected File renameFrom = null;
     // protected InetAddress outDataDest = null;
     // protected int outDataPort = 20; // 20 is the default ftp-data port
-    protected DataSocketFactory dataSocketFactory;
+    protected LocalDataSocket localDataSocket;
     OutputStream dataOutputStream = null;
     private boolean sendWelcomeBanner;
     protected String encoding = Defaults.SESSION_ENCODING;
-    protected Source source;
-    protected long offset = -1;		// where to start append when using REST
+    protected long offset = -1; // where to start append when using REST
     int authFails = 0;
-
-    public enum Source {
-        LOCAL, PROXY
-    }; // where did this connection come from?
 
     public static int MAX_AUTH_FAILS = 3;
 
-    /**
-     * Used when we get a PORT command to open up an outgoing socket.
-     * 
-     * @return
-     */
-    // public void setPortSocket(InetAddress dest, int port) {
-    // myLog.l(Log.DEBUG, "Setting PORT dest to " +
-    // dest.getHostAddress() + " port " + port);
-    // outDataDest = dest;
-    // outDataPort = port;
-    // }
+    public SessionThread(Socket socket, LocalDataSocket dataSocket) {
+        this.cmdSocket = socket;
+        this.localDataSocket = dataSocket;
+        this.sendWelcomeBanner = true;
+    }
+
     /**
      * Sends a string over the already-established data socket
-     * 
+     *
      * @param string
      * @return Whether the send completed successfully
      */
@@ -102,7 +93,7 @@ public class SessionThread extends Thread {
 
     /**
      * Sends a byte array over the already-established data socket
-     * 
+     *
      * @param bytes
      * @param len
      * @return
@@ -123,7 +114,7 @@ public class SessionThread extends Thread {
             Log.i(TAG, e.toString());
             return false;
         }
-        dataSocketFactory.reportTraffic(len);
+        localDataSocket.reportTraffic(len);
         return true;
     }
 
@@ -131,7 +122,7 @@ public class SessionThread extends Thread {
      * Received some bytes from the data socket, which is assumed to already be connected.
      * The bytes are placed in the given array, and the number of bytes successfully read
      * is returned.
-     * 
+     *
      * @param bytes
      *            Where to place the input bytes
      * @return >0 if successful which is the number of bytes read, -1 if no bytes remain
@@ -165,26 +156,26 @@ public class SessionThread extends Thread {
             Log.i(TAG, "Error reading data socket");
             return 0;
         }
-        dataSocketFactory.reportTraffic(bytesRead);
+        localDataSocket.reportTraffic(bytesRead);
         return bytesRead;
     }
 
     /**
      * Called when we receive a PASV command.
-     * 
+     *
      * @return Whether the necessary initialization was successful.
      */
     public int onPasv() {
-        return dataSocketFactory.onPasv();
+        return localDataSocket.onPasv();
     }
 
     /**
      * Called when we receive a PORT command.
-     * 
+     *
      * @return Whether the necessary initialization was successful.
      */
     public boolean onPort(InetAddress dest, int port) {
-        return dataSocketFactory.onPort(dest, port);
+        return localDataSocket.onPort(dest, port);
     }
 
     public InetAddress getDataSocketPasvIp() {
@@ -192,24 +183,17 @@ public class SessionThread extends Thread {
         // of the data connection that the client should connect to. For this purpose
         // we always use the same IP address that the command socket is using.
         return cmdSocket.getLocalAddress();
-
-        // The old code, not totally correct.
-        // return dataSocketFactory.getPasvIp();
     }
-
-    // public int getDataSocketPort() {
-    // return dataSocketFactory.getPortNumber();
-    // }
 
     /**
      * Will be called by (e.g.) CmdSTOR, CmdRETR, CmdLIST, etc. when they are about to
      * start actually doing IO over the data socket.
-     * 
+     *
      * @return
      */
     public boolean startUsingDataSocket() {
         try {
-            dataSocket = dataSocketFactory.onTransfer();
+            dataSocket = localDataSocket.onTransfer();
             if (dataSocket == null) {
                 Log.i(TAG, "dataSocketFactory.onTransfer() returned null");
                 return false;
@@ -249,8 +233,6 @@ public class SessionThread extends Thread {
     protected InetAddress getLocalAddress() {
         return cmdSocket.getLocalAddress();
     }
-
-    static int numNulls = 0;
 
     @Override
     public void run() {
@@ -311,7 +293,7 @@ public class SessionThread extends Thread {
                     cmdSocket.getOutputStream(), Defaults.dataChunkSize);
             out.write(bytes);
             out.flush();
-            dataSocketFactory.reportTraffic(bytes.length);
+            localDataSocket.reportTraffic(bytes.length);
         } catch (IOException e) {
             Log.i(TAG, "Exception writing socket");
             closeSocket();
@@ -347,17 +329,6 @@ public class SessionThread extends Thread {
         return pasvMode;
     }
 
-    public SessionThread(Socket socket, DataSocketFactory dataSocketFactory, Source source) {
-        this.cmdSocket = socket;
-        this.source = source;
-        this.dataSocketFactory = dataSocketFactory;
-        if (source == Source.LOCAL) {
-            this.sendWelcomeBanner = true;
-        } else {
-            this.sendWelcomeBanner = false;
-        }
-    }
-
     static public ByteBuffer stringToBB(String s) {
         return ByteBuffer.wrap(s.getBytes());
     }
@@ -379,22 +350,13 @@ public class SessionThread extends Thread {
             Log.i(TAG, "Authentication complete");
             this.authenticated = true;
         } else {
-            // There was a failed auth attempt. If the connection came
-            // via the proxy, then drop it now. The client can't try again
-            // successfully because it doesn't know its real username. What
-            // it knows is prefix_username.
-            if (source == Source.PROXY) {
-                quit();
-            } else {
-                authFails++;
-                Log.i(TAG, "Auth failed: " + authFails + "/" + MAX_AUTH_FAILS);
-            }
+            authFails++;
+            Log.i(TAG, "Auth failed: " + authFails + "/" + MAX_AUTH_FAILS);
             if (authFails > MAX_AUTH_FAILS) {
                 Log.i(TAG, "Too many auth fails, quitting session");
                 quit();
             }
         }
-
     }
 
     public File getWorkingDir() {
@@ -409,12 +371,6 @@ public class SessionThread extends Thread {
         }
     }
 
-    /*
-     * public FTPServerService getService() { return service; }
-     * 
-     * public void setService(FTPServerService service) { this.service = service; }
-     */
-
     public Socket getDataSocket() {
         return dataSocket;
     }
@@ -422,10 +378,6 @@ public class SessionThread extends Thread {
     public void setDataSocket(Socket dataSocket) {
         this.dataSocket = dataSocket;
     }
-
-    // public ServerSocket getServerSocket() {
-    // return dataServerSocket;
-    // }
 
     public File getRenameFrom() {
         return renameFrom;

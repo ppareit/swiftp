@@ -28,16 +28,8 @@ import android.util.Log;
 import be.ppareit.swiftp.Defaults;
 import be.ppareit.swiftp.FsService;
 
-public class NormalDataSocketFactory extends DataSocketFactory {
-    private static final String TAG = NormalDataSocketFactory.class.getSimpleName();
-
-    /**
-     * This class implements normal, traditional opening and closing of data sockets used
-     * for transmitting directory listings and file contents. PORT and PASV work according
-     * to the FTP specs. This is in contrast to a ProxyDataSocketFactory, which performs
-     * contortions to allow data sockets to be proxied through a server out in the cloud.
-     * 
-     */
+public class LocalDataSocket {
+    private static final String TAG = LocalDataSocket.class.getSimpleName();
 
     // Listener socket used for PASV mode
     ServerSocket server = null;
@@ -46,7 +38,7 @@ public class NormalDataSocketFactory extends DataSocketFactory {
     int remotePort;
     boolean isPasvMode = true;
 
-    public NormalDataSocketFactory() {
+    public LocalDataSocket() {
         clearState();
     }
 
@@ -64,10 +56,9 @@ public class NormalDataSocketFactory extends DataSocketFactory {
         server = null;
         remoteAddr = null;
         remotePort = 0;
-        Log.d(TAG, "NormalDataSocketFactory state cleared");
+        Log.d(TAG, "State cleared");
     }
 
-    @Override
     public int onPasv() {
         clearState();
         try {
@@ -82,7 +73,6 @@ public class NormalDataSocketFactory extends DataSocketFactory {
         }
     }
 
-    @Override
     public boolean onPort(InetAddress remoteAddr, int remotePort) {
         clearState();
         this.remoteAddr = remoteAddr;
@@ -90,7 +80,6 @@ public class NormalDataSocketFactory extends DataSocketFactory {
         return true;
     }
 
-    @Override
     public Socket onTransfer() {
         if (server == null) {
             // We're in PORT mode (not PASV)
@@ -137,7 +126,7 @@ public class NormalDataSocketFactory extends DataSocketFactory {
     /**
      * Return the port number that the remote client should be informed of (in the body of
      * the PASV response).
-     * 
+     *
      * @return The port number, or -1 if error.
      */
     public int getPortNumber() {
@@ -148,12 +137,10 @@ public class NormalDataSocketFactory extends DataSocketFactory {
         }
     }
 
-    @Override
     public InetAddress getPasvIp() {
         return FsService.getLocalInetAddress();
     }
 
-    @Override
     public void reportTraffic(long bytes) {
         // ignore, we don't care about how much traffic goes over wifi.
     }
