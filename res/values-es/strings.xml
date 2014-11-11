@@ -23,70 +23,75 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">Servidor FTP</string>
     <string name="running_summary_stopped">Cambiar el estado del servidor FTP</string>
     <string name="running_summary_started">ejecutándose en %s</string>
-    <string name="running_summary_failed">Fallo al iniciar el servidor FTP. ¿Hay conexión con la red local (WiFi o Ethernet)?</string>
+    <string name="running_summary_failed">Fallo al iniciar el servidor FTP. ¿Hay conexión con la red local (Wi\u2011Fi o Ethernet)?</string>
     <string name="market_version_label">Versión de pago</string>
-    <string name="market_version_summary">Esta es una versión de demostración. Da tu apoyo al desarrollador obteniendo una versión de pago de la aplicación en Play Store.</string>
+    <string name="market_version_summary">Esta es una versión de demostración. Da tu apoyo al desarrollador obteniendo una versión de pago de la aplicación. Toca aquí para ir a Play Store.</string>
     <string name="settings_label">Ajustes</string>
+    <string name="user_label">Usuario</string>
+    <string name="loginsettings_label">Ajustes de acceso\u2026</string>
     <string name="username_label">Nombre de usuario</string>
     <string name="password_label">Contraseña</string>
     <string name="show_password_label">Mostrar contraseña</string>
+    <string name="anonymous_label">Acceso anónimo</string>
+    <string name="allow_anonymous_label">Permitir acceso anónimo</string>
+    <string name="anonymous_summary">El acceso anónimo solo tiene permisos de lectura</string>
     <string name="advancedsettings_label">Ajustes avanzados\u2026</string>
     <string name="portnumber_label">Número de puerto</string>
     <string name="chroot_label">Carpeta de inicio</string>
-    <string name="acceptwifi_label">Aceptar conexión desde WiFi</string>
+    <string name="acceptwifi_label">Aceptar conexión desde Wi\u2011Fi</string>
     <string name="wakelock_label">Mantener encendido</string>
     <string name="extra_label">Otros</string>
     <string name="help_label">Ayuda\u2026</string>
     <string name="about_label">Acerca de\u2026</string>
     <string name="help_dlg_title">Ayuda de FTP Server</string>
-    <string name="help_dlg_message">\
+    <string name="help_dlg_message">
 ¡Gracias por usar FTP Server (SwiFTP)! Aquí hay algunas instrucciones de uso.
-Puedes encontrar más información en http://ppareit.github.com/swiftp/.\n\n\
-\
+Puedes encontrar más información en http://ppareit.github.com/swiftp/.\n\n
+
 Esta aplicación te permite ejecutar un servidor FTP en tu dispositivo Android. Esto permite
 que cualquier programa pueda acceder a los archivos de tu dispositivo cuando el servidor esté
 en ejecución. Por ejemplo, introduciendo \u00ABftp://\u2026\u00BB en la barra de direcciones
-de Firefox podrás navegar por los archivos y carpetas del dispositivo desde el ordenador o
+del navegador tendrás acceso a los archivos y carpetas del dispositivo desde el ordenador o
 portátil.\n\n
-\
+
 Por defecto, el nombre de usuario y la contraseña es \u00ABftp\u00BB para ambos, pero podrás
 cambiarlo por el que prefieras. Tendrás que usar este nombre de usuario y contraseña para
 acceder al servidor FTP.\n\n
-\
+
 Hay una opción de configuración \u00ABMantener encendido\u00BB que soluciona el problema
 cuando la transferencia de ficheros se ralentiza o directamente se para al apagarse la pantalla.
 Si aparece este problema, marca esta opción y reinicia la aplicación. Tu dispositivo
 permanecerá encendido durante la ejecución del servidor FTP.\n\n
-\
-Por razones de seguridad y consumo, es recomendable parar el servidor FTP después de su uso.\n\n\
-\
+
+Por razones de seguridad y consumo, es recomendable detener el servidor FTP después de su uso.\n\n
+
 Si algo no funciona como se espera que lo haga, por favor informa a Pieter Pareit en
-pieter.pareit@gmail.com.\n\n\
-\
+pieter.pareit@gmail.com.\n\n
+
 El desarrollo de esta aplicación de código abierto está soportado por la compra de esta
 aplicación a través de Play Store. Puedes seguir su desarrollo en la dirección
-https://github.com/ppareit/swiftp .
-Para tener una idea de las características que se implementarán, mira el registro de incidencias
-en https://github.com/ppareit/swiftp/issues .\n\n
+https://github.com/ppareit/swiftp . Para tener una idea de las características que se
+implementarán, mira el registro de incidencias en https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="about_dlg_title">Acerca de FTP Server</string>
     <string name="about_dlg_message">
-        <b>Descripción: </b>
-        FTP Server (SwiFTP) permite ejecutar un servidor FTP en tu dispositivo Android.\n\n\
+        <b>Descripción:</b>
+        FTP Server (SwiFTP) permite ejecutar un servidor FTP en tu dispositivo Android.\n\n
         <b>Sitio web:</b>
         http://ppareit.github.com/swiftp/\n\n
         <b>Mantenido por:</b>
         Pieter Pareit (pieter.pareit@gmail.com)\n\n
-        <b>Programado por: </b>\
-        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
+        <b>Programado por:</b>
+        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n
         <b>Diseñado por:</b>
         Birgit Niemegeers\n\n
-        <b>Licenciado bajo: </b>
+        <b>Licenciado bajo:</b>
         GNU General Public License v3.0\n\n
     </string>
     <string name="notif_server_starting">Iniciando servidor FTP en %s</string>
     <string name="notif_title">Servidor FTP ejecutándose</string>
     <string name="notif_text">en %s</string>
+    <string name="notif_stop_text">Detener servidor</string>
 
     <string name="nsd_servername_postfix">FTP Server</string>
 
