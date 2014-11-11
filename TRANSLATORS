@@ -6,6 +6,7 @@ Valerio Bozzolan <valerio.bozzolan@gmail.com>
 
 *** For version 2.10:
 notif_stop_server
+user_label
 loginsettings_label
 anonymous_label
 allow_anonymous_label

@@ -18,7 +18,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
+
 <resources>
+
     <string name="swiftp_name">FTP Server</string>
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">Wijzig de status van de FTP Server</string>
@@ -27,9 +29,14 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="market_version_label">Market versie</string>
     <string name="market_version_summary">Dit is de FTP server demo. Je kan de ontwikkeling van dit programma ondersteunen door de FTP Server te kopen op de android play store. Click hier om naar de play store te gaan.</string>
     <string name="settings_label">Instellingen</string>
+    <string name="user_label">Gebruiker</string>
+    <string name="loginsettings_label">Aanmeld instellingen...</string>
     <string name="username_label">Gebruikersnaam</string>
     <string name="password_label">Paswoord</string>
     <string name="show_password_label">Toon paswoord</string>
+    <string name="anonymous_label">Anoniem</string>
+    <string name="allow_anonymous_label">Anoniem aanloggen toestaan</string>
+    <string name="anonymous_summary">Anonieme gebruikers mogen enkel bestanden lezen</string>
     <string name="advancedsettings_label">Geavanceerde instellingen...</string>
     <string name="portnumber_label">Poort nummer</string>
     <string name="chroot_label">Blijf in map</string>
@@ -80,6 +87,7 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notif_server_starting">Starten op %s</string>
     <string name="notif_title">FTP Server is verbonden</string>
     <string name="notif_text">op %s</string>
+    <string name="notif_stop_text">Stop server</string>
 
     <string name="nsd_servername_postfix">FTP Server</string>
 
