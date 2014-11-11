@@ -29,9 +29,6 @@ public class CmdPASS extends FtpCmd implements Runnable {
     String input;
 
     public CmdPASS(SessionThread sessionThread, String input) {
-        // We can just discard the password for now. We're just
-        // following the expected dialogue, we're going to allow
-        // access in any case.
         super(sessionThread);
         this.input = input;
     }
@@ -39,9 +36,8 @@ public class CmdPASS extends FtpCmd implements Runnable {
     @Override
     public void run() {
         Log.d(TAG, "Executing PASS");
-        // User must have already executed a USER command to
-        // populate the Account object's username
         String attemptPassword = getParameter(input, true); // silent
+        // Always first USER command, then PASS command
         String attemptUsername = sessionThread.account.getUsername();
         if (attemptUsername == null) {
             sessionThread.writeString("503 Must send USER first\r\n");
