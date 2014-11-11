@@ -49,8 +49,8 @@ public class NsdService extends Service {
             Log.d(TAG, "onReceive broadcast: " + intent.getAction());
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                Log.w(TAG, "onReceive: Running pre-JB, version to old for");
-                Log.w(TAG, "onReceive: NSD functionality, bailing out");
+                Log.w(TAG, "onReceive: Running pre-JB, version to old for "
+                        + "NSD functionality, bailing out");
                 return;
             }
             if (intent.getAction().equals(FsService.ACTION_STARTED)) {
