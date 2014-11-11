@@ -64,7 +64,7 @@ public class NsdService extends Service {
 
     }
 
-    private static RegistrationListener mRegistrationListener = new RegistrationListener() {
+    private RegistrationListener mRegistrationListener = new RegistrationListener() {
 
         @Override
         public void onServiceRegistered(NsdServiceInfo serviceInfo) {

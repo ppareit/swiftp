@@ -21,12 +21,16 @@ package be.ppareit.swiftp.gui;
 
 import java.net.InetAddress;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.util.Log;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
@@ -85,22 +89,29 @@ public class FsNotification extends BroadcastReceiver {
         PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0,
                 stopIntent, PendingIntent.FLAG_ONE_SHOT);
 
-        Notification notification = new Notification.Builder(context) //
+        Notification.Builder nb = new Notification.Builder(context) //
                 .setContentTitle(contentTitle) //
                 .setContentText(contentText) //
                 .setContentIntent(contentIntent) //
                 .setSmallIcon(icon) //
                 .setTicker(tickerText) //
                 .setWhen(when) //
-                .setOngoing(true) //
-                .addAction(stopIcon, stopText, stopPendingIntent) //
-                .build();
+                .setOngoing(true);
+
+        Notification notification = null;
+        if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
+            nb.addAction(stopIcon, stopText, stopPendingIntent);
+            notification = nb.build();
+        } else {
+            notification = nb.getNotification();
+        }
 
         // Pass Notification to NotificationManager
         nm.notify(NOTIFICATIONID, notification);
 
         Log.d(TAG, "Notication setup done");
     }
+
 
     private void clearNotification(Context context) {
         Log.d(TAG, "Clearing the notifications");
