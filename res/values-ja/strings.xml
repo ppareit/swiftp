@@ -31,9 +31,14 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         GooglePlay から FTP サーバを入手するとサポートが受けられます。
         ここをクリックすると GooglePlay に移動します。</string>
     <string name="settings_label">設定</string>
+    <string name="user_label">ユーザ</string>
+    <string name="loginsettings_label">ログイン設定...</string>
     <string name="username_label">ユーザ名</string>
     <string name="password_label">パスワード</string>
     <string name="show_password_label">パスワードを表示する</string>
+    <string name="anonymous_label">匿名</string>
+    <string name="allow_anonymous_label">匿名ログインを許可する</string>
+    <string name="anonymous_summary">匿名ログインは読み取りアクセスのみ許可されます</string>
     <string name="advancedsettings_label">拡張設定...</string>
     <string name="portnumber_label">ポート番号</string>
     <string name="chroot_label">ルートとして公開するフォルダ</string>
@@ -82,6 +87,7 @@ google play ストアでこのプログラムを購入して頂くことで、�
     <string name="notif_server_starting">開始しています %s</string>
     <string name="notif_title">FTP サーバは実行中です</string>
     <string name="notif_text">%s</string>
+    <string name="notif_stop_text">サーバを停止します</string>
 
     <string name="nsd_servername_postfix">FTP サーバ</string>
 
