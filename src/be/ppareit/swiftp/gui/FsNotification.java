@@ -20,7 +20,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package be.ppareit.swiftp.gui;
 
 import java.net.InetAddress;
-
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -51,6 +51,7 @@ public class FsNotification extends BroadcastReceiver {
         }
     }
 
+    @SuppressLint("NewApi")
     private void setupNotification(Context context) {
         Log.d(TAG, "Setting up the notification");
         // Get NotificationManager reference

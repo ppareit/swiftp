@@ -1,3 +1,11 @@
+Version 2.10 (15/11/2014)
+    + Add REST command (implemented by MadMaverick9)
+    + Add action to notification to stop server
+    + Lots of translations improvements (Thanks DJ Mesias, Naofumi and Velerio)
+    + Artwork improvements (promotion material by Birgit)
+    + Fixes and improvements in FEAT and SITE
+    * Move to sdk 5.0 (min supported sdk 4.0)
+    * Bug fixes
 Version 2.9 (6/8/2014)
     + Connection while tethering
     + MFMT command extension (modify modify time)
