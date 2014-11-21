@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2011-2013 Pieter Pareit
+Copyright 2009 David Revell
+
+This file is part of SwiFTP.
+
+SwiFTP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SwiFTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="swiftp_name">FTP Server</string>
+    <string name="running_label">FTP Server</string>
+    <string name="running_summary_stopped">Status des FTP-Servers umschalten</string>
+    <string name="running_summary_started">Gestartet auf %s</string>
+    <string name="running_summary_failed">Der FTP-Server konnte nicht gestartet werden, nicht mit dem lokalen Netzwerk (WiFi oder Ethernet) verbunden?</string>
+    <string name="market_version_label">Versionshinweis</string>
+    <string name="market_version_summary">
+        Das ist die FTP Server Demo-Version.
+        Unterstütze die Entwicklung durch den Kauf von FTP Server im Andoid Markt.
+        Hier klicken um zum Markt zu gelangen.</string>
+    <string name="settings_label">Einstellungen</string>
+    <string name="user_label">Benutzer</string>
+    <string name="loginsettings_label">Anmeldedaten...</string>
+    <string name="username_label">Benutzer</string>
+    <string name="password_label">Passwort</string>
+    <string name="show_password_label">Passwort anzeigen</string>
+    <string name="anonymous_label">Anonym</string>
+    <string name="allow_anonymous_label">Anonyme Anmeldungen erlauben</string>
+    <string name="anonymous_summary">Anonyme Anmeldungen haben nur Leseberechtigung</string>
+    <string name="advancedsettings_label">Erweiterte Einstellungen...</string>
+    <string name="portnumber_label">Port</string>
+    <string name="chroot_label">Auf Verzeichnis beschränken</string>
+    <string name="acceptwifi_label">WiFi-Verbindungen erlauben</string>
+    <string name="wakelock_label">Gerät wach halten (volle CPU-Geschwindigkeit)</string>
+    <string name="extra_label">Extras</string>
+    <string name="help_label">Hilfe...</string>
+    <string name="about_label">Über...</string>
+    <string name="help_dlg_title">FTP Server Hilfe</string>
+    <string name="help_dlg_message">\
+Danke für die Nutzung von FTP Server (SwiFTP)! Hier sind einige kurze Benutzerhinweise. Weitere
+Informationen sind unter http://ppareit.github.com/swiftp verfügbar.\n\n\
+\
+Dieses Programm ermöglicht es dir einen FTP-Server auf deinem Androidgerät laufen zu lassen. Dies bedeutet, daß jedes
+Programm auf die Dateien auf deinem Gerät zugreifen kann während der Server läuft. Zum Beispiel ermöglicht dir die
+Eingabe von \'ftp://...\' in der Firefox Adresszeile die Dateien deines Gerätes auf einem PC oder Laptop anzuzeigen.\n\n
+\
+Standardmäßig sind Benutzer und Passwort beide auf \'ftp\' voreingestellt und sollten geändert werden. Diese werden
+zum Zugriff auf den Server benötigt.\n\n
+\
+Es gibt eine Konfigurationseinstellung (\"Gerät wach halten\"), welche Probleme mit langsamen oder stoppenden Dateitransfers
+behebt sobald das Telefon in Standby geht. Sollte das Problem auftreten diese Option aktivieren und das Programm neustarten.
+Das Telefon wird nun wach bleiben solange der Server läuft.\n\n
+\
+Aus Stromverbrauchs- und Sicherheitsgründen wird empfohlen den Server nach der Benutzung wieder zu beenden.\n\n\
+\
+Sollte etwas nicht wie erwartet funktionieren bitte an Pieter Pareit (pieter.pareit@gmail.com) melden.\n\n\
+\
+Die weitere Entwicklung dieses Open Source Programmes kann durch den Kauf im Google Play Store unterstützt werden.
+Alle Entwicklungsaktivitäten können unter https://github.com/ppareit/swiftp verfolgt werden.
+Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/ppareit/swiftp/issues einsehbar.\n\n
+    </string>
+    <string name="about_dlg_title">FTP Server Info</string>
+    <string name="about_dlg_message">
+        <b>Beschreibung: </b>
+        FTP Server (SwiFTP) ermöglicht es dir einen FTP-Server auf deinem Androidgerät laufen zu lassen.\n\n\
+        <b>Webseite:</b>
+        http://ppareit.github.com/swiftp\n\n
+        <b>Aktueller Betreuer:</b>
+        Pieter Pareit (pieter.pareit@gmail.com)\n\n
+        <b>Programmierung: </b>\
+        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
+        <b>Grafik:</b>
+        Birgit Niemegeers\n\n
+        <b>Lizenz: </b>
+        GNU General Public License v3.0\n\n
+    </string>
+    <string name="notif_server_starting">Starte auf %s</string>
+    <string name="notif_title">FTP Server gestartet</string>
+    <string name="notif_text">auf %s</string>
+    <string name="notif_stop_text">Stoppe Server</string>
+
+    <string name="nsd_servername_postfix">FTP Server</string>
+
+    <!-- old strings -->
+    <string name="cant_get_url">URL konnte nicht abgerufen werden</string>
+    <string name="unknown">unbekannt</string>
+    <string name="ok">OK</string>
+    <string name="username_validation_error">Der Benutzer muss aus 1 oder mehr alphanumerischen Zeichen bestehen, andere Zeichen sind nicht erlaubt!</string>
+    <string name="password_validation_error">Das Passwort muss aus 1 oder mehr alphanumerischen Zeichen bestehen, andere Zeichen sind nicht erlaubt!</string>
+    <string name="port_validation_error">Die Portnummer muss im Bereich von 1 bis 65535 liegen!</string>
+    <string name="wifi_state_receiver_label">Wifi-Status-Empfänger</string>
+    <string name="pst_connecting">verbinde</string>
+    <string name="pst_connected">verbunden</string>
+    <string name="pst_failed">fehlgeschlagen</string>
+    <string name="pst_unreachable">unerreichbar</string>
+    <string name="pst_disconnected">getrennt</string>
+    <string name="storage_warning">Warnung: das Speichermedium ist nicht verfügbar!</string>
+    <string name="widget_name">FTP Server Widget</string>
+
+</resources>
