@@ -1,7 +1,7 @@
 Version 2.10 (15/11/2014)
     + Add REST command (implemented by MadMaverick9)
     + Add action to notification to stop server
-    + Lots of translations improvements (Thanks DJ Mesias, Naofumi and Velerio)
+    + Lots of translations improvements (Thanks DJ Mesias, Naofumi and Valerio)
     + Artwork improvements (promotion material by Birgit)
     + Fixes and improvements in FEAT and SITE
     * Move to sdk 5.0 (min supported sdk 4.0)

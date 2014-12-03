@@ -24,7 +24,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="swiftp_name">FTP Server</string>
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">Wijzig de status van de FTP Server</string>
-    <string name="running_summary_started">verbonden op %s</string>
+    <string name="running_summary_started">op %s</string>
     <string name="running_summary_failed">Fout tijdens het verbinden van de FTP server, verbonden met het netwerk?</string>
     <string name="market_version_label">Market versie</string>
     <string name="market_version_summary">Dit is de FTP server demo. Je kan de ontwikkeling van dit programma ondersteunen door de FTP Server te kopen op de android play store. Click hier om naar de play store te gaan.</string>

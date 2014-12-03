@@ -22,7 +22,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="swiftp_name">FTP Server</string>
     <string name="running_label">Servidor FTP</string>
     <string name="running_summary_stopped">Cambiar el estado del servidor FTP</string>
-    <string name="running_summary_started">ejecutándose en %s</string>
+    <string name="running_summary_started">en %s</string>
     <string name="running_summary_failed">Fallo al iniciar el servidor FTP. ¿Hay conexión con la red local (Wi\u2011Fi o Ethernet)?</string>
     <string name="market_version_label">Versión de pago</string>
     <string name="market_version_summary">Esta es una versión de demostración. Da tu apoyo al desarrollador obteniendo una versión de pago de la aplicación. Toca aquí para ir a Play Store.</string>

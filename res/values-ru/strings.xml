@@ -23,7 +23,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="swiftp_name">FTP Server</string>
     <string name="running_label">Запуск</string>
     <string name="running_summary_stopped">Включить FTP сервер</string>
-    <string name="running_summary_started">FTP сервер включен. Адрес: %s</string>
+    <string name="running_summary_started">Адрес: %s</string>
     <string name="running_summary_failed">Невозможно включить FTP сервер. Проверьте подключение к сети (wifi или ethernet).</string>
     <string name="market_version_label">Текущая версия</string>
     <string name="market_version_summary">Установлена демонстрационная версия программы.

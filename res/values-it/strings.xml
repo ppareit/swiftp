@@ -24,7 +24,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="swiftp_name">Server FTP</string>
     <string name="running_label">Server FTP</string>
     <string name="running_summary_stopped">Alterna lo stato del server FTP</string>
-    <string name="running_summary_started">in esecuzione su %s</string>
+    <string name="running_summary_started">su %s</string>
     <string name="running_summary_failed">Errore nel lancio del server FTP. Sei sicuro di essere connesso ad una rete locale (WiFi o Ethernet)?</string>
     <string name="market_version_label">Versione Market</string>
     <string name="market_version_summary">
