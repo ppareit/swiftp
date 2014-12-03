@@ -44,6 +44,7 @@ import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
 import android.text.util.Linkify;
 import android.util.Log;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import be.ppareit.swiftp.FsApp;
@@ -54,7 +55,7 @@ import be.ppareit.swiftp.R;
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
- * 
+ *
  */
 public class FsPreferenceActivity extends PreferenceActivity implements
         OnSharedPreferenceChangeListener {
@@ -87,6 +88,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             }
         });
 
+
         PreferenceScreen prefScreen = findPref("preference_screen");
         Preference marketVersionPref = findPref("market_version");
         marketVersionPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -110,10 +112,10 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             prefScreen.removePreference(marketVersionPref);
         }
 
-        EditTextPreference username_pref = findPref("username");
-        username_pref.setSummary(sp.getString("username",
-                resources.getString(R.string.username_default)));
-        username_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+        updateLoginInfo();
+
+        EditTextPreference usernamePref = findPref("username");
+        usernamePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 String newUsername = (String) newValue;
@@ -124,21 +126,15 @@ public class FsPreferenceActivity extends PreferenceActivity implements
                             R.string.username_validation_error, Toast.LENGTH_LONG).show();
                     return false;
                 }
-                preference.setSummary(newUsername);
                 stopServer();
                 return true;
             }
         });
 
         mPassWordPref = findPref("password");
-        String password = resources.getString(R.string.password_default);
-        password = sp.getString("password", password);
-        mPassWordPref.setSummary(transformPassword(password));
         mPassWordPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String newPassword = (String) newValue;
-                preference.setSummary(transformPassword(newPassword));
                 stopServer();
                 return true;
             }
@@ -264,13 +260,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-        if (key.equals("show_password")) {
-            Context context = FsApp.getAppContext();
-            Resources res = context.getResources();
-            String password = res.getString(R.string.password_default);
-            password = sp.getString("password", password);
-            mPassWordPref.setSummary(transformPassword(password));
-        }
+        updateLoginInfo();
     }
 
     private void startServer() {
@@ -279,6 +269,23 @@ public class FsPreferenceActivity extends PreferenceActivity implements
 
     private void stopServer() {
         sendBroadcast(new Intent(FsService.ACTION_STOP_FTPSERVER));
+    }
+
+    private void updateLoginInfo() {
+
+        String username = FsSettings.getUserName();
+        String password = FsSettings.getPassWord();
+
+        Log.v(TAG, "Updating login summary");
+        PreferenceScreen loginPreference = findPref("login");
+        loginPreference.setSummary(username + " : " + transformPassword(password));
+        ((BaseAdapter) loginPreference.getRootAdapter()).notifyDataSetChanged();
+
+        EditTextPreference usernamePref = findPref("username");
+        usernamePref.setSummary(username);
+
+        EditTextPreference passWordPref = findPref("password");
+        passWordPref.setSummary(transformPassword(password));
     }
 
     private void updateRunningState() {
