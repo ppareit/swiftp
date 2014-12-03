@@ -88,7 +88,6 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             }
         });
 
-
         PreferenceScreen prefScreen = findPref("preference_screen");
         Preference marketVersionPref = findPref("market_version");
         marketVersionPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {

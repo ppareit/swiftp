@@ -1,3 +1,7 @@
+Version 2.10.1 (2/12/2014)
+    + Added German translation by Thomas Löwe
+    * Improved some translations
+    * Improved displaying of login info
 Version 2.10 (15/11/2014)
     + Add REST command (implemented by MadMaverick9)
     + Add action to notification to stop server
