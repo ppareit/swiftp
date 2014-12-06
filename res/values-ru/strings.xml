@@ -30,10 +30,15 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         Вы поддержите разработку, если приобретете программу на Google Play.
 		Чтобы сделать это, нажмите здесь. </string>
     <string name="settings_label">Настройки</string>
+    <string name="user_label">ПОЛЬЗОВАТЕЛЬ</string>
+    <string name="loginsettings_label">Настройки подключения...</string>
     <string name="username_label">Имя пользователя</string>
     <string name="password_label">Пароль</string>
     <string name="show_password_label">Отображать пароль</string>
-    <string name="advancedsettings_label">Расширенные настройки...</string>
+     <string name="anonymous_label">АНОНИМНОЕ ПОДКЛЮЧЕНИЕ</string>
+    <string name="allow_anonymous_label">Разрешить анонимное подключение</string>
+    <string name="anonymous_summary">При анонимном подключении доступ резрешен только на чтение</string>
+   <string name="advancedsettings_label">Расширенные настройки...</string>
     <string name="portnumber_label">Номер порта</string>
     <string name="chroot_label">Корневая папка доступа</string>
     <string name="acceptwifi_label">Принимать подключения по wifi</string>
@@ -85,12 +90,13 @@ https://github.com/ppareit/swiftp/issues .\n\n
         GNU General Public License v3.0\n\n
 </string>
 
-    <string name="nsd_servername_postfix">FTP Server</string>
-
     <!-- Special care for the follwoing string pleace -->
     <string name="notif_server_starting">FTP сервер запускается...%s</string>
     <string name="notif_title">FTP сервер включен.</string>
     <string name="notif_text">URL для доступа %s</string>
+    <string name="notif_stop_text">Остановить сервер</string>
+
+    <string name="nsd_servername_postfix">FTP сервер</string>
 
     <!-- old strings -->
     <string name="cant_get_url">Не удается получить URL</string>
