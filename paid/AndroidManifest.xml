@@ -35,9 +35,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="21" />
 
     <application
+        android:theme="@style/AppTheme"
         android:icon="@drawable/launcher"
         android:label="@string/swiftp_name"
         android:name="be.ppareit.swiftp.FsApp"
