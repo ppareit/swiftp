@@ -38,6 +38,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:targetSdkVersion="21" />
 
     <application
+        android:theme="@style/AppTheme"
         android:icon="@drawable/launcher"
         android:label="@string/swiftp_name"
         android:name="be.ppareit.swiftp.FsApp"
