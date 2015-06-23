@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2011-2013 Pieter Pareit
+Copyright 2009 David Revell
+
+This file is part of SwiFTP.
+
+SwiFTP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SwiFTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="swiftp_name">ФТП сервер</string>
+    <string name="running_label">ФТП сервер</string>
+    <string name="running_summary_stopped">Мењај стање фтп сервера</string>
+    <string name="running_summary_started">на %s</string>
+    <string name="running_summary_failed">Неуспех покретања ФТП сервера, да ли сте повезани на локалну мрежу (бежично или жично)?</string>
+    <string name="market_version_label">Издање за продавницу</string>
+    <string name="market_version_summary">
+        Ово је демо издање ФТП сервера.
+        Подржите развој тако што ћете купити ФТП сервер са Андроид продавнице.
+        Кликните овде да одете у продавницу.</string>
+    <string name="settings_label">Поставке</string>
+    <string name="user_label">Корисник</string>
+    <string name="loginsettings_label">Поставке пријаве...</string>
+    <string name="username_label">Корисничко име</string>
+    <string name="password_label">Лозинка</string>
+    <string name="show_password_label">Прикажи лозинку</string>
+    <string name="anonymous_label">Анонимно</string>
+    <string name="allow_anonymous_label">Дозволи анонимне пријаве</string>
+    <string name="anonymous_summary">Анонимне пријаве имају само дозволу читања</string>
+    <string name="advancedsettings_label">Напредне поставке...</string>
+    <string name="portnumber_label">Број порта</string>
+    <string name="chroot_label">Остани у фасцикли</string>
+    <string name="acceptwifi_label">Прихвати везу са бежичног</string>
+    <string name="wakelock_label">Држи уређај будним (пуна брзина ЦПУ-а)</string>
+    <string name="extra_label">Додатно</string>
+    <string name="help_label">Помоћ...</string>
+    <string name="about_label">О програму...</string>
+    <string name="help_dlg_title">Помоћ за ФТП сервер</string>
+    <string name="help_dlg_message">\
+Хвала што користите ФТП сервер (SwiFTP)! Ево кратких упутстава. Више
+информација можете да нађете на http://ppareit.github.com/swiftp/.\n\n\
+\
+Овај програм вам омогућује да покренете фтп сервер на вашем Андроид уређају. Ово значи да
+било који програм може да приступи фајловима на вашем уређају док је фтп сервер покренут. 
+На пример, унос „ftp://...“ у Фајерфоксу ће вам омогућити да прегледате фајлове на вашем
+уређају са рачунара или лаптопа.\n\n
+\
+Подразумевано, корисничко име и лозинка су „ftp“, требате да их промените. Користићете ово
+корисничко име и лозинку приликом приступа на сервер.\n\n
+\
+Постоји опција „Држи уређај будним“ која поправља проблем где преноси фајлова теку споро
+или се зауставе у потпуности када телефон оде у стање спавања. Ако вам се дешава овај
+проблем, укључите ову опцију и поново покрените програм. Ваш телефон ће остати будан док
+је сервер покренут.\n\n
+\
+Због очувања енергије и безбедности, препоручиво је да сервер зауставите након употребе.\n\n\
+\
+Ако нешто не ради како очекујете, молим вас да то пријавите Питеру Пареиту (Pieter Pareit, 
+pieter.pareit@gmail.com).\n\n\
+\
+Подржите развој овог програма отвореног кôда тако што ћете га купити преко Гуглове Плеј
+продавнице. Развој можете да пратите на  https://github.com/ppareit/swiftp .
+За увид у функционалности које ће бити имплементиране, погледајте пратилац пријава на
+https://github.com/ppareit/swiftp/issues .\n\n
+    </string>
+    <string name="about_dlg_title">О ФТП серверу</string>
+    <string name="about_dlg_message">
+        <b>Опис: </b>
+        ФТП сервер (SwiFTP) вам омогућује да покренете фтп сервер на вашем Андроид уређају.\n\n\
+        <b>Вебсајт:</b>
+        http://ppareit.github.com/swiftp/\n\n
+        <b>Тренутни одржавалац:</b>
+        Pieter Pareit (pieter.pareit@gmail.com)\n\n
+        <b>Програмери: </b>\
+        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
+        <b>Илустрације:</b>
+        Birgit Niemegeers\n\n
+        <b>Лиценца: </b>
+        ГНУова Општа јавна лиценца в3.0\n\n
+    </string>
+    <string name="notif_server_starting">Покрећем на %s</string>
+    <string name="notif_title">ФТП сервер је покренут</string>
+    <string name="notif_text">на %s</string>
+    <string name="notif_stop_text">Заустави сервер</string>
+
+    <string name="nsd_servername_postfix">ФТП сервер</string>
+
+    <!-- old strings -->
+    <string name="cant_get_url">Не могу да добавим УРЛ</string>
+    <string name="unknown">непознато</string>
+    <string name="ok">У реду</string>
+    <string name="username_validation_error">Корисничко име мора да садржи 1 или више алфанумеричких знакова. Остали знакови нису допуштени.</string>
+    <string name="password_validation_error">Лозинка мора да садржи 1 или више алфанумеричких знакова. Остали знакови нису допуштени.</string>
+    <string name="port_validation_error">Број порта мора да буде у распону од 1 до 65535.</string>
+    <string name="wifi_state_receiver_label">WifiStateReceiver</string>
+    <string name="pst_connecting">повезивање</string>
+    <string name="pst_connected">повезан</string>
+    <string name="pst_failed">неуспех</string>
+    <string name="pst_unreachable">недоступан</string>
+    <string name="pst_disconnected">неповезан</string>
+    <string name="storage_warning">Упозорење: складиште није доступно. Можда желите да га демонтирате.</string>
+    <string name="widget_name">Виџет ФТП сервера</string>
+
+</resources>
