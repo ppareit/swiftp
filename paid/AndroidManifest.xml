@@ -35,7 +35,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="22" />
 
     <application
         android:icon="@drawable/launcher"
