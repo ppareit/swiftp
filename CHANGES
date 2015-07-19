@@ -1,3 +1,6 @@
+Version 2.10.2 (2015/07/19)
+    + Serbian translation by Mladen Pejaković
+    * Fixed server not starting when usb tethering
 Version 2.10.1 (2/12/2014)
     + Added German translation by Thomas Löwe
     * Improved some translations

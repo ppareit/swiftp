@@ -10,6 +10,9 @@ Mladen Pejaković <pejakm@autistici.org>
 
 Changes in translations
 =======================
+For version 2.10.2
+    + swiftp_name_demo
+
 For version 2.10:
 	+ notif_stop_server
 	+ user_label
@@ -31,6 +34,10 @@ For version 2.7:
 Help with translating
 =====================
 The changes are marked with a + (addition), - (removal) or * (change).
-The default file is in SwiFTP/res/values/strings.xml. If you would for instance translated to dutch, you would need to create a new file SwiFTP/res/values-nl/strings.xml , that file should contain the same contents as the default file, but the strings must be translated in dutch. The language codes are available at http://www.loc.gov/standards/iso639-2/php/code_list.php .
+The default file is in SwiFTP/res/values/strings.xml. If you would for instance
+translated to dutch, you would need to create a new file SwiFTP/res/values-nl/strings.xml
+that file should contain the same contents as the default file, but the strings must be
+translated in dutch. The language codes are available at
+http://www.loc.gov/standards/iso639-2/php/code_list.php .
 Translations are preferable done on github.
 
