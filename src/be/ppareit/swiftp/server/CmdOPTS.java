@@ -61,6 +61,45 @@ public class CmdOPTS extends FtpCmd implements Runnable {
                     Log.i(TAG, "Ignoring OPTS UTF8 for something besides ON");
                 }
                 break mainBlock;
+            }else if(optName.equals("MLST")){
+                Log.d(TAG, "Got OPTS MLST: " + optVal);
+                String[] opts = optVal.split(";");
+                boolean hasType = false, hasSize = false, hasModify = false, hasPerm = false;
+                for (int i = 0; i < opts.length; i++) {
+                    if(opts[i].equalsIgnoreCase("Type")){
+                        hasType = true;
+                    } else if(opts[i].equalsIgnoreCase("Size")) {
+                        hasSize = true;
+                    } else if(opts[i].equalsIgnoreCase("Modify")) {
+                        hasModify = true;
+                    } else if(opts[i].equalsIgnoreCase("Perm")) {
+                        hasPerm = true;
+                    }
+                }
+                
+                int optCount = 0;
+                StringBuilder types = new StringBuilder();
+                if(hasType){
+                    opts[optCount++] = "Type";
+                    types.append("Type;");
+                }
+                if(hasSize){
+                    opts[optCount++] = "Size";
+                    types.append("Size;");
+                }
+                if(hasModify){
+                    opts[optCount++] = "Modify";
+                    types.append("Modify;");
+                }
+                if(hasPerm){
+                    opts[optCount++] = "Perm";
+                    types.append("Perm;");
+                }
+                String[] newOpts = new String[optCount];
+                System.arraycopy(opts, 0, newOpts, 0, optCount);
+                
+                sessionThread.setFormatTypes(newOpts);
+                sessionThread.writeString("200 MLST OPTS " + types.toString() + "\r\n");
             } else {
                 Log.d(TAG, "Unrecognized OPTS option: " + optName);
                 errString = "502 Unrecognized option\r\n";
