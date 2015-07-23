@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import android.util.Log;
 
@@ -54,6 +55,7 @@ public class CmdMFMT extends FtpCmd implements Runnable {
         // Format of time-val: YYYYMMDDHHMMSS.ss, see rfc3659, p6
         // BUG: The milliseconds part get's ignored
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddhhmmss", Locale.US);
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         Date timeVal;
         try {
