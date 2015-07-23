@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import be.ppareit.swiftp.Util;
 import android.util.Log;
 
 /**
@@ -59,7 +60,7 @@ public class CmdMFMT extends FtpCmd implements Runnable {
 
         Date timeVal;
         try {
-            timeVal = df.parse(params[0]);
+            timeVal = Util.parseDate(params[0]);
         } catch (ParseException e) {
             sessionThread.writeString("501 unable to parse parameter time-val\r\n");
             Log.d(TAG, "run: MFMT failed, unable to parse parameter time-val");
