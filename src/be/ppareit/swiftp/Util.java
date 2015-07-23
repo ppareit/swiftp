@@ -22,12 +22,24 @@ package be.ppareit.swiftp;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import android.util.Log;
 
 abstract public class Util {
     final static String TAG = Util.class.getSimpleName();
 
+    final static SimpleDateFormat df;
+    
+    static{
+        df = new SimpleDateFormat("yyyyMMddhhmmss", Locale.US);
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+    
     public static byte byteOfInt(int value, int which) {
         int shift = which * 8;
         return (byte) (value >> shift);
@@ -82,5 +94,13 @@ abstract public class Util {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
         }
+    }
+    
+    public static String getFtpDate(long time){
+        return df.format(new Date(time));
+    }
+    
+    public static Date parseDate(String time) throws ParseException{
+        return df.parse(time);
     }
 }
