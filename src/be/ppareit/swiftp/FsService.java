@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package be.ppareit.swiftp;
 
@@ -26,7 +26,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -55,7 +57,7 @@ public class FsService extends Service implements Runnable {
     static public final String ACTION_FAILEDTOSTART = "be.ppareit.swiftp.FTPSERVER_FAILEDTOSTART";
 
     // RequestStartStopReceiver listens for these actions to start/stop this server
-	static public final String ACTION_START_FTPSERVER = "be.ppareit.swiftp.ACTION_START_FTPSERVER";
+    static public final String ACTION_START_FTPSERVER = "be.ppareit.swiftp.ACTION_START_FTPSERVER";
     static public final String ACTION_STOP_FTPSERVER = "be.ppareit.swiftp.ACTION_STOP_FTPSERVER";
 
     protected static Thread serverThread = null;
@@ -158,6 +160,7 @@ public class FsService extends Service implements Runnable {
         listenSocket.bind(new InetSocketAddress(FsSettings.getPortNumber()));
     }
 
+    @Override
     public void run() {
         Log.d(TAG, "Server thread running");
 
@@ -239,7 +242,7 @@ public class FsService extends Service implements Runnable {
 
     /**
      * Takes the wake lock
-     * 
+     *
      * Many devices seem to not properly honor a PARTIAL_WAKE_LOCK, which should prevent
      * CPU throttling. For these devices, we have a option to force the phone into a full
      * wake lock.
@@ -271,7 +274,7 @@ public class FsService extends Service implements Runnable {
 
     /**
      * Gets the local ip address
-     * 
+     *
      * @return local ip adress or null if not found
      */
     public static InetAddress getLocalInetAddress() {
@@ -312,7 +315,7 @@ public class FsService extends Service implements Runnable {
 
     /**
      * Checks to see if we are connected to a local network, for instance wifi or ethernet
-     * 
+     *
      * @return true if connected to a local network
      */
     public static boolean isConnectedToLocalNetwork() {
@@ -321,10 +324,11 @@ public class FsService extends Service implements Runnable {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
-        connected = ni != null && ni.isConnected() == true
+        connected = ni != null
+                && ni.isConnected() == true
                 && (ni.getType() & (ConnectivityManager.TYPE_WIFI | ConnectivityManager.TYPE_ETHERNET)) != 0;
         if (connected == false) {
-            Log.d(TAG, "Device not connected to a network, see if it is an AP");
+            Log.d(TAG, "isConnectedToLocalNetwork: see if it is an WIFI AP");
             WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             try {
                 Method method = wm.getClass().getDeclaredMethod("isWifiApEnabled");
@@ -333,12 +337,25 @@ public class FsService extends Service implements Runnable {
                 e.printStackTrace();
             }
         }
+        if (connected == false) {
+            Log.d(TAG, "isConnectedToLocalNetwork: see if it is an USB AP");
+            try {
+                for (NetworkInterface netInterface : Collections.list(NetworkInterface
+                        .getNetworkInterfaces())) {
+                    if (netInterface.getDisplayName().startsWith("rndis") == true) {
+                        connected = true;
+                    }
+                }
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+        }
         return connected;
     }
 
     /**
      * Checks to see if we are connected using wifi
-     * 
+     *
      * @return true if connected using wifi
      */
     public static boolean isConnectedUsingWifi() {
@@ -352,7 +369,7 @@ public class FsService extends Service implements Runnable {
 
     /**
      * All messages server<->client are also send to this call
-     * 
+     *
      * @param incoming
      * @param s
      */

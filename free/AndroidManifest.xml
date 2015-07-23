@@ -21,8 +21,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="be.ppareit.swiftp_free"
-    android:versionCode="21001"
-    android:versionName="2.10.1" >
+    android:versionCode="21002"
+    android:versionName="2.10.2" >
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -35,11 +35,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="21" />
+        android:targetSdkVersion="22" />
 
     <application
         android:icon="@drawable/launcher"
-        android:label="@string/swiftp_name"
+        android:label="@string/swiftp_name_demo"
         android:name="be.ppareit.swiftp.FsApp"
         android:allowBackup="true" >
 
