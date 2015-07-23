@@ -23,6 +23,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import android.util.Log;
 
@@ -48,6 +49,7 @@ public class CmdMDTM extends FtpCmd implements Runnable {
         if (file.exists()) {
             long lastModified = file.lastModified();
             SimpleDateFormat df = new SimpleDateFormat("yyyyMMddhhmmss", Locale.US);
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
             String response = "213 " + df.format(new Date(lastModified)) + "\r\n";
             sessionThread.writeString(response);
         } else {
