@@ -36,7 +36,7 @@ abstract public class Util {
     final static SimpleDateFormat df;
     
     static{
-        df = new SimpleDateFormat("yyyyMMddhhmmss", Locale.US);
+        df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
     
