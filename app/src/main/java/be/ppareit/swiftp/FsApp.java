@@ -54,7 +54,7 @@ public class FsApp extends Application {
         try {
             Context context = getAppContext();
             return context.getPackageName().contains("free");
-        } catch (Exception swallow) {
+        } catch (Exception ignored) {
         }
         return false;
     }

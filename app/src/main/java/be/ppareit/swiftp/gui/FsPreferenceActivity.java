@@ -76,36 +76,30 @@ public class FsPreferenceActivity extends PreferenceActivity implements
 
         TwoStatePreference runningPref = findPref("running_switch");
         updateRunningState();
-        runningPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if ((Boolean) newValue) {
-                    startServer();
-                } else {
-                    stopServer();
-                }
-                return true;
+        runningPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            if ((Boolean) newValue) {
+                startServer();
+            } else {
+                stopServer();
             }
+            return true;
         });
 
         PreferenceScreen prefScreen = findPref("preference_screen");
         Preference marketVersionPref = findPref("market_version");
-        marketVersionPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                // start the market at our application
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setData(Uri.parse("market://details?id=be.ppareit.swiftp"));
-                try {
-                    // this can fail if there is no market installed
-                    startActivity(intent);
-                } catch (Exception e) {
-                    Log.e(TAG, "Failed to launch the market.");
-                    e.printStackTrace();
-                }
-                return false;
+        marketVersionPref.setOnPreferenceClickListener(preference -> {
+            // start the market at our application
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("market://details?id=be.ppareit.swiftp"));
+            try {
+                // this can fail if there is no market installed
+                startActivity(intent);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to launch the market.");
+                e.printStackTrace();
             }
+            return false;
         });
         if (FsApp.isFreeVersion() == false) {
             prefScreen.removePreference(marketVersionPref);
@@ -114,115 +108,94 @@ public class FsPreferenceActivity extends PreferenceActivity implements
         updateLoginInfo();
 
         EditTextPreference usernamePref = findPref("username");
-        usernamePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String newUsername = (String) newValue;
-                if (preference.getSummary().equals(newUsername))
-                    return false;
-                if (!newUsername.matches("[a-zA-Z0-9]+")) {
-                    Toast.makeText(FsPreferenceActivity.this,
-                            R.string.username_validation_error, Toast.LENGTH_LONG).show();
-                    return false;
-                }
-                stopServer();
-                return true;
+        usernamePref.setOnPreferenceChangeListener((preference, newValue) -> {
+            String newUsername = (String) newValue;
+            if (preference.getSummary().equals(newUsername))
+                return false;
+            if (!newUsername.matches("[a-zA-Z0-9]+")) {
+                Toast.makeText(FsPreferenceActivity.this,
+                        R.string.username_validation_error, Toast.LENGTH_LONG).show();
+                return false;
             }
+            stopServer();
+            return true;
         });
 
         mPassWordPref = findPref("password");
-        mPassWordPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                stopServer();
-                return true;
-            }
+        mPassWordPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            stopServer();
+            return true;
         });
 
         EditTextPreference portnum_pref = findPref("portNum");
         portnum_pref.setSummary(sp.getString("portNum",
                 resources.getString(R.string.portnumber_default)));
-        portnum_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String newPortnumString = (String) newValue;
-                if (preference.getSummary().equals(newPortnumString))
-                    return false;
-                int portnum = 0;
-                try {
-                    portnum = Integer.parseInt(newPortnumString);
-                } catch (Exception e) {
-                }
-                if (portnum <= 0 || 65535 < portnum) {
-                    Toast.makeText(FsPreferenceActivity.this,
-                            R.string.port_validation_error, Toast.LENGTH_LONG).show();
-                    return false;
-                }
-                preference.setSummary(newPortnumString);
-                stopServer();
-                return true;
+        portnum_pref.setOnPreferenceChangeListener((preference, newValue) -> {
+            String newPortnumString = (String) newValue;
+            if (preference.getSummary().equals(newPortnumString))
+                return false;
+            int portnum = 0;
+            try {
+                portnum = Integer.parseInt(newPortnumString);
+            } catch (Exception e) {
             }
+            if (portnum <= 0 || 65535 < portnum) {
+                Toast.makeText(FsPreferenceActivity.this,
+                        R.string.port_validation_error, Toast.LENGTH_LONG).show();
+                return false;
+            }
+            preference.setSummary(newPortnumString);
+            stopServer();
+            return true;
         });
 
         EditTextPreference chroot_pref = findPref("chrootDir");
         // TODO: chrootDir should be given by FsSetting and it should test
         // integrity
         chroot_pref.setSummary(FsSettings.getChrootDir().getAbsolutePath());
-        chroot_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String newChroot = (String) newValue;
-                if (preference.getSummary().equals(newChroot))
-                    return false;
-                // now test the new chroot directory
-                File chrootTest = new File(newChroot);
-                if (!chrootTest.isDirectory() || !chrootTest.canRead())
-                    return false;
-                preference.setSummary(newChroot);
-                stopServer();
-                return true;
-            }
+        chroot_pref.setOnPreferenceChangeListener((preference, newValue) -> {
+            String newChroot = (String) newValue;
+            if (preference.getSummary().equals(newChroot))
+                return false;
+            // now test the new chroot directory
+            File chrootTest = new File(newChroot);
+            if (!chrootTest.isDirectory() || !chrootTest.canRead())
+                return false;
+            preference.setSummary(newChroot);
+            stopServer();
+            return true;
         });
 
         final CheckBoxPreference wakelock_pref = findPref("stayAwake");
-        wakelock_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                stopServer();
-                return true;
-            }
+        wakelock_pref.setOnPreferenceChangeListener((preference, newValue) -> {
+            stopServer();
+            return true;
         });
 
         Preference help = findPref("help");
-        help.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Log.v(TAG, "On preference help clicked");
-                Context context = FsPreferenceActivity.this;
-                AlertDialog ad = new AlertDialog.Builder(context)
-                        .setTitle(R.string.help_dlg_title)
-                        .setMessage(R.string.help_dlg_message)
-                        .setPositiveButton(R.string.ok, null).create();
-                ad.show();
-                Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
-                        Linkify.ALL);
-                return true;
-            }
+        help.setOnPreferenceClickListener(preference -> {
+            Log.v(TAG, "On preference help clicked");
+            Context context = FsPreferenceActivity.this;
+            AlertDialog ad = new AlertDialog.Builder(context)
+                    .setTitle(R.string.help_dlg_title)
+                    .setMessage(R.string.help_dlg_message)
+                    .setPositiveButton(R.string.ok, null).create();
+            ad.show();
+            Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
+                    Linkify.ALL);
+            return true;
         });
 
         Preference about = findPref("about");
-        about.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                AlertDialog ad = new AlertDialog.Builder(FsPreferenceActivity.this)
-                        .setTitle(R.string.about_dlg_title)
-                        .setMessage(R.string.about_dlg_message)
-                        .setPositiveButton(getText(R.string.ok), null).create();
-                ad.show();
-                Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
-                        Linkify.ALL);
-                return true;
-            }
+        about.setOnPreferenceClickListener(preference -> {
+            AlertDialog ad = new AlertDialog.Builder(FsPreferenceActivity.this)
+                    .setTitle(R.string.about_dlg_title)
+                    .setMessage(R.string.about_dlg_message)
+                    .setPositiveButton(getText(R.string.ok), null).create();
+            ad.show();
+            Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
+                    Linkify.ALL);
+            return true;
         });
 
     }
@@ -324,18 +297,8 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             final TwoStatePreference runningPref = findPref("running_switch");
             if (intent.getAction().equals(FsService.ACTION_FAILEDTOSTART)) {
                 runningPref.setChecked(false);
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        runningPref.setSummary(R.string.running_summary_failed);
-                    }
-                }, 100);
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        runningPref.setSummary(R.string.running_summary_stopped);
-                    }
-                }, 5000);
+                mHandler.postDelayed(() -> runningPref.setSummary(R.string.running_summary_failed), 100);
+                mHandler.postDelayed(() -> runningPref.setSummary(R.string.running_summary_stopped), 5000);
             }
         }
     };

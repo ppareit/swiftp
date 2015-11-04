@@ -136,7 +136,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
 
         // The next field is a 13-byte right-justified space-padded file size
         long fileSize = file.length();
-        String sizeString = new Long(fileSize).toString();
+        String sizeString = Long.toString(fileSize);
         int padSpaces = 13 - sizeString.length();
         while (padSpaces-- > 0) {
             response.append(' ');

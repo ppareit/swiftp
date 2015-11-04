@@ -102,32 +102,29 @@ public class NsdService extends Service {
         serviceInfo.setServiceType(FTP_SERVICE_TYPE);
         serviceInfo.setPort(FsSettings.getPortNumber());
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // this call sometimes hangs, this is why I get it in a separate thread
-                Log.d(TAG, "onCreate: Trying to get the NsdManager");
-                mNsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
-                if (mNsdManager != null) {
-                    Log.d(TAG, "onCreate: Got the NsdManager");
-                    try {
-                        // all kinds of problems with the NsdManager, give it
-                        // some extra time before I make next call
-                        Thread.sleep(500);
-                        if (running == false) {
-                            Log.e(TAG, "NsdManager is no longer needed, bailing out");
-                            mNsdManager = null;
-                            return;
-                        }
-                        mNsdManager.registerService(serviceInfo,
-                                NsdManager.PROTOCOL_DNS_SD, mRegistrationListener);
-                    } catch (Exception e) {
-                        Log.e(TAG, "onCreate: Failed to register NsdManager");
+        new Thread(() -> {
+            // this call sometimes hangs, this is why I get it in a separate thread
+            Log.d(TAG, "onCreate: Trying to get the NsdManager");
+            mNsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
+            if (mNsdManager != null) {
+                Log.d(TAG, "onCreate: Got the NsdManager");
+                try {
+                    // all kinds of problems with the NsdManager, give it
+                    // some extra time before I make next call
+                    Thread.sleep(500);
+                    if (running == false) {
+                        Log.e(TAG, "NsdManager is no longer needed, bailing out");
                         mNsdManager = null;
+                        return;
                     }
-                } else {
-                    Log.d(TAG, "onCreate: Failed to get the NsdManager");
+                    mNsdManager.registerService(serviceInfo,
+                            NsdManager.PROTOCOL_DNS_SD, mRegistrationListener);
+                } catch (Exception e) {
+                    Log.e(TAG, "onCreate: Failed to register NsdManager");
+                    mNsdManager = null;
                 }
+            } else {
+                Log.d(TAG, "onCreate: Failed to get the NsdManager");
             }
         }).start();
     }

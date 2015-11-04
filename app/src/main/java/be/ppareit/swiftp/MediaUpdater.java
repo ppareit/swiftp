@@ -25,7 +25,7 @@ public enum MediaUpdater {
 
     private final static String TAG = MediaUpdater.class.getSimpleName();
 
-    // the systembroadcast to remount the media is only done after a little while (5s)
+    // the system broadcast to remount the media is only done after a little while (5s)
     private static Timer sTimer = new Timer();
 
     private static class ScanCompletedListener implements
