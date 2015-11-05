@@ -150,8 +150,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
         });
 
         EditTextPreference chroot_pref = findPref("chrootDir");
-        // TODO: chrootDir should be given by FsSetting and it should test
-        // integrity
+        // TODO: chrootDir should be given by FsSetting and it should test integrity
         chroot_pref.setSummary(FsSettings.getChrootDir().getAbsolutePath());
         chroot_pref.setOnPreferenceChangeListener((preference, newValue) -> {
             String newChroot = (String) newValue;
@@ -268,7 +267,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             // Fill in the FTP server address
             InetAddress address = FsService.getLocalInetAddress();
             if (address == null) {
-                Log.v(TAG, "Unable to retreive wifi ip address");
+                Log.v(TAG, "Unable to retrieve wifi ip address");
                 runningPref.setSummary(R.string.cant_get_url);
                 return;
             }
