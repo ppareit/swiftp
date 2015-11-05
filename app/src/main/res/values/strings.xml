@@ -114,5 +114,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="pst_disconnected">disconnected</string>
     <string name="storage_warning">Warning: storage is not available. You may want to unmount it.</string>
     <string name="widget_name">FTP Server Widget</string>
+    <string name="notif_settings_text">Settings</string>
 
 </resources>

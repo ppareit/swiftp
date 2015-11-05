@@ -10,8 +10,12 @@ Mladen Pejaković <pejakm@autistici.org>
 
 Changes in translations
 =======================
+
+For version 2.11
+	+ notif_settings_text
+
 For version 2.10.2
-    + swiftp_name_demo
+	+ swiftp_name_demo
 
 For version 2.10:
 	+ notif_stop_server
