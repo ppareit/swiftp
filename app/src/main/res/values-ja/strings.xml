@@ -20,7 +20,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
+
     <string name="swiftp_name">FTP サーバ</string>
+    <string name="swiftp_name_demo">FTP サーバ (デモ)</string>
     <string name="running_label">FTP サーバ</string>
     <string name="running_summary_stopped">ftp サーバの状態を切替</string>
     <string name="running_summary_started">開始しました %s</string>
@@ -106,5 +108,6 @@ google play ストアでこのプログラムを購入して頂くことで、�
     <string name="pst_disconnected">切断されました</string>
     <string name="storage_warning">警告: ストレージが使用できません。アンマウントする必要があるかもしれません。</string>
     <string name="widget_name">FTP サーバ・ウィジット</string>
+    <string name="notif_settings_text">設定</string>
 
 </resources>
