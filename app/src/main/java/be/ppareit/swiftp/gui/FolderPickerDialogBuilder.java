@@ -90,7 +90,11 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
         }
 
         mAdapter.clear();
-        String[] dirs = mRoot.list((dir, filename) -> new File(dir, filename).isDirectory());
+        String[] dirs = mRoot.list(
+                (dir, filename) -> {
+                    File file = new File(dir, filename);
+                    return (file.isDirectory() && !file.isHidden());
+                });
         mAdapter.add("..");
         mAdapter.addAll(dirs);
     }
