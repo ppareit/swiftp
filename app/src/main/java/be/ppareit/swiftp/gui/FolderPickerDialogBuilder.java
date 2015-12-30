@@ -28,9 +28,7 @@ import android.widget.ListView;
 import net.vrallev.android.cat.Cat;
 
 import java.io.File;
-import java.io.FilePermission;
 import java.io.IOException;
-import java.security.AccessController;
 
 /**
  * Builder class for a folder picker dialog.
@@ -38,7 +36,6 @@ import java.security.AccessController;
 public class FolderPickerDialogBuilder extends AlertDialog.Builder {
 
     private ArrayAdapter<String> mAdapter;
-    private ListView mList;
     private AlertDialog mAlert;
 
     private File mRoot;
@@ -51,9 +48,9 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
 
         update();
 
-        mList = new ListView(getContext());
-        mList.setAdapter(mAdapter);
-        mList.setOnItemClickListener(
+        ListView list = new ListView(getContext());
+        list.setAdapter(mAdapter);
+        list.setOnItemClickListener(
                 (parent, view, position, id) -> {
                     String dir = (String) parent.getItemAtPosition(position);
                     mRoot = new File(mRoot, dir);
@@ -61,7 +58,7 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
                 }
         );
 
-        setView(mList);
+        setView(list);
     }
 
     @Override
@@ -71,7 +68,7 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
         return mAlert;
     }
 
-    void update() {
+    private void update() {
         try {
             mRoot = new File(mRoot.getCanonicalPath());
         } catch (IOException e) {
@@ -104,7 +101,7 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
         mAdapter.addAll(dirs);
     }
 
-    AlertDialog.Builder setSelectedButton(int textId, OnSelectedListener listener) {
+    public AlertDialog.Builder setSelectedButton(int textId, OnSelectedListener listener) {
         return setPositiveButton(textId,
                 (dialog, which) -> listener.onSelected(mRoot.getAbsolutePath()));
     }
