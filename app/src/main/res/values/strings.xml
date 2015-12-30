@@ -99,6 +99,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="nsd_servername_postfix">FTP Server</string>
 
+    <string name="select">Select</string>
+    <string name="cancel">Cancel</string>
+
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retrieve url</string>
     <string name="unknown">unknown</string>

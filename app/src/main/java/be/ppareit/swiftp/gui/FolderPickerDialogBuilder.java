@@ -95,8 +95,8 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
         mAdapter.addAll(dirs);
     }
 
-    AlertDialog.Builder setSelectedButton(CharSequence text, OnSelectedListener listener) {
-        return setPositiveButton(text,
+    AlertDialog.Builder setSelectedButton(int textId, OnSelectedListener listener) {
+        return setPositiveButton(textId,
                 (dialog, which) -> listener.onSelected(mRoot.getAbsolutePath()));
     }
 

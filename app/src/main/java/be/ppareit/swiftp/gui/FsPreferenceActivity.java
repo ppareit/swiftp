@@ -156,7 +156,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
         chroot_pref.setSummary(FsSettings.getChrootDirAsString());
         chroot_pref.setOnPreferenceClickListener(preference -> {
             AlertDialog folderPicker = new FolderPickerDialogBuilder(this, FsSettings.getChrootDir())
-                    .setSelectedButton("Select", path -> {
+                    .setSelectedButton(R.string.select, path -> {
                         if (preference.getSummary().equals(path))
                             return;
                         if (!FsSettings.setChrootDir(path))
@@ -164,7 +164,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
                         preference.setSummary(path);
                         stopServer();
                     })
-                    .setNegativeButton("Cancel", null)
+                    .setNegativeButton(R.string.cancel, null)
                     .create();
             folderPicker.show();
             return true;
