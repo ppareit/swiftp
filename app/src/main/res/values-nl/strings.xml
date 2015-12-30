@@ -83,13 +83,16 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
         Birgit Niemegeers\n\n
         <b>License: </b>
         GNU General Public License v3.0\n\n
-</string>
+    </string>
     <string name="notif_server_starting">Starten op %s</string>
     <string name="notif_title">FTP Server is verbonden</string>
     <string name="notif_text">op %s</string>
     <string name="notif_stop_text">Stop server</string>
 
     <string name="nsd_servername_postfix">FTP Server</string>
+
+    <string name="select">Selecteren</string>
+    <string name="cancel">Annuleren</string>
 
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retreive url</string>
