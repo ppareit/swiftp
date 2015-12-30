@@ -39,7 +39,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <activity
             android:name="be.ppareit.swiftp.gui.FsPreferenceActivity"
-            android:theme="@android:style/Theme.Holo.DialogWhenLarge">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
