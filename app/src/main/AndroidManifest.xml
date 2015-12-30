@@ -37,7 +37,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:name="be.ppareit.swiftp.FsApp"
         android:allowBackup="true" >
 
-        <activity android:name="be.ppareit.swiftp.gui.FsPreferenceActivity" >
+        <activity
+            android:name="be.ppareit.swiftp.gui.FsPreferenceActivity"
+            android:theme="@android:style/Theme.Holo.DialogWhenLarge">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -64,7 +66,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STOPPED" />
             </intent-filter>
         </receiver>
-
         <!-- Don't export this receiver in free, this clashes with paid -->
         <receiver
             android:name="be.ppareit.swiftp.RequestStartStopReceiver"

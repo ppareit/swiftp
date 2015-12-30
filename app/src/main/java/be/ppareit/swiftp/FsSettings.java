@@ -65,6 +65,20 @@ public class FsSettings {
         return chrootDir;
     }
 
+    public static String getChrootDirAsString() {
+        File dirFile = getChrootDir();
+        return dirFile != null ? dirFile.getAbsolutePath() : "";
+    }
+
+    public static boolean setChrootDir(String dir) {
+        File chrootTest = new File(dir);
+        if (!chrootTest.isDirectory() || !chrootTest.canRead())
+                return false;
+        final SharedPreferences sp = getSharedPreferences();
+        sp.edit().putString("chrootDir", dir).apply();
+        return true;
+    }
+
     public static int getPortNumber() {
         final SharedPreferences sp = getSharedPreferences();
         // TODO: port is always an number, so store this accordenly

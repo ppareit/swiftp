@@ -4,17 +4,17 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * <p>
  * Contributors:
- *     Pieter Pareit - initial API and implementation
+ * Pieter Pareit - initial API and implementation
  ******************************************************************************/
 
 package be.ppareit.swiftp.gui;
@@ -25,6 +25,7 @@ import java.net.InetAddress;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -47,6 +48,9 @@ import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import net.vrallev.android.cat.Cat;
+
 import be.ppareit.swiftp.FsApp;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
@@ -55,7 +59,6 @@ import be.ppareit.swiftp.R;
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
- *
  */
 public class FsPreferenceActivity extends PreferenceActivity implements
         OnSharedPreferenceChangeListener {
@@ -149,19 +152,21 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             return true;
         });
 
-        EditTextPreference chroot_pref = findPref("chrootDir");
-        // TODO: chrootDir should be given by FsSetting and it should test integrity
-        chroot_pref.setSummary(FsSettings.getChrootDir().getAbsolutePath());
-        chroot_pref.setOnPreferenceChangeListener((preference, newValue) -> {
-            String newChroot = (String) newValue;
-            if (preference.getSummary().equals(newChroot))
-                return false;
-            // now test the new chroot directory
-            File chrootTest = new File(newChroot);
-            if (!chrootTest.isDirectory() || !chrootTest.canRead())
-                return false;
-            preference.setSummary(newChroot);
-            stopServer();
+        Preference chroot_pref = findPref("chrootDir");
+        chroot_pref.setSummary(FsSettings.getChrootDirAsString());
+        chroot_pref.setOnPreferenceClickListener(preference -> {
+            AlertDialog folderPicker = new FolderPickerDialogBuilder(this, FsSettings.getChrootDir())
+                    .setSelectedButton("Select", path -> {
+                        if (preference.getSummary().equals(path))
+                            return;
+                        if (!FsSettings.setChrootDir(path))
+                            return;
+                        preference.setSummary(path);
+                        stopServer();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .create();
+            folderPicker.show();
             return true;
         });
 
@@ -178,7 +183,8 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             AlertDialog ad = new AlertDialog.Builder(context)
                     .setTitle(R.string.help_dlg_title)
                     .setMessage(R.string.help_dlg_message)
-                    .setPositiveButton(R.string.ok, null).create();
+                    .setPositiveButton(R.string.ok, null)
+                    .create();
             ad.show();
             Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
                     Linkify.ALL);
@@ -190,7 +196,8 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             AlertDialog ad = new AlertDialog.Builder(FsPreferenceActivity.this)
                     .setTitle(R.string.about_dlg_title)
                     .setMessage(R.string.about_dlg_message)
-                    .setPositiveButton(getText(R.string.ok), null).create();
+                    .setPositiveButton(getText(R.string.ok), null)
+                    .create();
             ad.show();
             Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
                     Linkify.ALL);
@@ -319,7 +326,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
         }
     }
 
-    @SuppressWarnings({ "unchecked", "deprecation" })
+    @SuppressWarnings({"unchecked", "deprecation"})
     protected <T extends Preference> T findPref(CharSequence key) {
         return (T) this.findPreference(key);
     }
