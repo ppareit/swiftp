@@ -95,6 +95,11 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
                     File file = new File(dir, filename);
                     return (file.isDirectory() && !file.isHidden());
                 });
+        if (dirs == null) {
+            Cat.w("Unable to receive dirs list, no Access rights?");
+            Cat.d("Unable to fix, continue with empty list");
+            dirs = new String[]{};
+        }
         mAdapter.add("..");
         mAdapter.addAll(dirs);
     }
