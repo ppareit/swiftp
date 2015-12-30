@@ -102,6 +102,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="select">Select</string>
     <string name="cancel">Cancel</string>
 
+    <string name="feedback">Send feedback</string>
+    <string name="about">About</string>
+
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retrieve url</string>
     <string name="unknown">unknown</string>

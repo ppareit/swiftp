@@ -22,9 +22,11 @@ Changes in translations
 =======================
 
 For version 2.11
+	+ notif_settings_text
 	+ select
 	+ cancel
-	+ notif_settings_text
+	+ feedback
+	+ about
 
 For version 2.10.2
 	+ swiftp_name_demo

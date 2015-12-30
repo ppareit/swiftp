@@ -19,37 +19,35 @@
 
 package be.ppareit.swiftp.gui;
 
-import java.io.File;
-import java.net.InetAddress;
-
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
 import android.text.util.Linkify;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import net.vrallev.android.cat.Cat;
+import java.net.InetAddress;
 
 import be.ppareit.swiftp.FsApp;
 import be.ppareit.swiftp.FsService;
@@ -72,6 +70,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "created");
         super.onCreate(savedInstanceState);
+
         addPreferencesFromResource(R.xml.preferences);
 
         final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
@@ -207,6 +206,42 @@ public class FsPreferenceActivity extends PreferenceActivity implements
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.action_feedback) {
+            String to = "pieter.pareit@gmail.com";
+            String subject = "FTP Server feedback";
+            String message = "Device: " + Build.MODEL + "\nAndroid version: "
+                    + Build.VERSION.RELEASE + "\nFeedback: \n";
+
+            Intent email = new Intent(Intent.ACTION_SEND);
+            email.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
+            email.putExtra(Intent.EXTRA_SUBJECT, subject);
+            email.putExtra(Intent.EXTRA_TEXT, message);
+            email.setType("message/rfc822");
+
+            startActivity(email);
+        } else if (item.getItemId() == R.id.action_about) {
+            AlertDialog ad = new AlertDialog.Builder(this)
+                    .setTitle(R.string.about_dlg_title)
+                    .setMessage(R.string.about_dlg_message)
+                    .setPositiveButton(getText(android.R.string.ok), null)
+                    .create();
+            ad.show();
+            Linkify.addLinks((TextView) ad.findViewById(android.R.id.message), Linkify.ALL);
+        }
+
+        return true;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -269,7 +304,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
     private void updateRunningState() {
         Resources res = getResources();
         TwoStatePreference runningPref = findPref("running_switch");
-        if (FsService.isRunning() == true) {
+        if (FsService.isRunning()) {
             runningPref.setChecked(true);
             // Fill in the FTP server address
             InetAddress address = FsService.getLocalInetAddress();
@@ -316,7 +351,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
         String showPasswordString = res.getString(R.string.show_password_default);
         boolean showPassword = showPasswordString.equals("true");
         showPassword = sp.getBoolean("show_password", showPassword);
-        if (showPassword == true)
+        if (showPassword)
             return password;
         else {
             StringBuilder sb = new StringBuilder(password.length());
