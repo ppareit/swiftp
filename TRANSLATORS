@@ -1,3 +1,13 @@
+First of all, thank you very much!
+
+
+This is not that big of a project, so once the initial translation has been done, don't
+expect a lot of work. I add your name and email to the list of translators, this file
+is world readable, if you don't want this, clearly state this in all communication with
+me. I might contact you when I'm close to a new release that contains a lot of
+translation changes. But don't count on it, so if you notice a new release or notice a
+translation error, don't hesitate to send me a pull request.
+
 Translators
 ===========
 Sergey Kondakov <s.a.kondakov@gmail.com>
@@ -45,5 +55,9 @@ translated to dutch, you would need to create a new file SwiFTP/res/values-nl/st
 that file should contain the same contents as the default file, but the strings must be
 translated in dutch. The language codes are available at
 http://www.loc.gov/standards/iso639-2/php/code_list.php .
-Translations are preferable done on github.
+Translations are preferable done on github. You fork the code, make the changes
+and send me a pull request. I believe github has tools to make small file changes
+in the browser and then send pull request, you might need to read up on this.
+
+
 
