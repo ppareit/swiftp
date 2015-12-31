@@ -332,14 +332,20 @@ public class FsPreferenceActivity extends PreferenceActivity implements
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.v(TAG, "action received: " + intent.getAction());
+            // remove all pending callbacks
+            mHandler.removeCallbacksAndMessages(null);
             // action will be ACTION_STARTED or ACTION_STOPPED
             updateRunningState();
             // or it might be ACTION_FAILEDTOSTART
             final TwoStatePreference runningPref = findPref("running_switch");
             if (intent.getAction().equals(FsService.ACTION_FAILEDTOSTART)) {
                 runningPref.setChecked(false);
-                mHandler.postDelayed(() -> runningPref.setSummary(R.string.running_summary_failed), 100);
-                mHandler.postDelayed(() -> runningPref.setSummary(R.string.running_summary_stopped), 5000);
+                mHandler.postDelayed(
+                        () -> runningPref.setSummary(R.string.running_summary_failed),
+                        100);
+                mHandler.postDelayed(
+                        () -> runningPref.setSummary(R.string.running_summary_stopped),
+                        5000);
             }
         }
     };
