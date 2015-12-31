@@ -18,7 +18,9 @@ You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<PreferenceScreen android:key="preference_screen" xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen
+    android:key="preference_screen"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <SwitchPreference
         android:key="running_switch"
@@ -67,6 +69,14 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             </PreferenceCategory>
         </PreferenceScreen>
 
+        <be.ppareit.android.DynamicMultiSelectListPreference
+            android:key="autoconnect_preference"
+            android:title="@string/autoconnect_label"
+            android:summary="@string/autoconnect_summary"
+            android:entries="@array/empty_array"
+            android:entryValues="@array/empty_array"
+            android:defaultValue="@array/empty_array" />
+
         <PreferenceScreen
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:title="@string/advancedsettings_label" >
@@ -83,6 +93,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:key="stayAwake"
                 android:title="@string/wakelock_label" />
         </PreferenceScreen>
+
     </PreferenceCategory>
 
     <PreferenceCategory

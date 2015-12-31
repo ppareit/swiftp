@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright 2011-2013 Pieter Pareit
 Copyright 2009 David Revell
 
@@ -20,7 +19,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="be.ppareit.swiftp" >
+    package="be.ppareit.swiftp">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -29,13 +28,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
     <application
-        android:icon="@mipmap/launcher"
-        android:label="@string/swiftp_name"
         android:name="be.ppareit.swiftp.FsApp"
-        android:allowBackup="true" >
+        android:allowBackup="true"
+        android:icon="@mipmap/launcher"
+        android:label="@string/swiftp_name">
 
         <activity
             android:name="be.ppareit.swiftp.gui.FsPreferenceActivity"
@@ -50,7 +49,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <receiver
             android:name="be.ppareit.swiftp.gui.FsNotification"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STARTED" />
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STOPPED" />
@@ -60,7 +59,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <service android:name="be.ppareit.swiftp.NsdService" />
         <receiver
             android:name="be.ppareit.swiftp.NsdService$StartStopReceiver"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STARTED" />
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STOPPED" />
@@ -69,19 +68,26 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <!-- Don't export this receiver in free, this clashes with paid -->
         <receiver
             android:name="be.ppareit.swiftp.RequestStartStopReceiver"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="be.ppareit.swiftp.ACTION_START_FTPSERVER" />
                 <action android:name="be.ppareit.swiftp.ACTION_STOP_FTPSERVER" />
             </intent-filter>
         </receiver>
 
+        <receiver android:name="be.ppareit.swiftp.WifiStateChangeReceiver">
+            <intent-filter>
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+
         <receiver
-            android:icon="@mipmap/launcher"
-            android:label="@string/swiftp_name"
             android:name="be.ppareit.swiftp.gui.FsWidgetProvider"
-            android:exported="false" >
-            <intent-filter >
+            android:exported="false"
+            android:icon="@mipmap/launcher"
+            android:label="@string/swiftp_name">
+            <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STARTED" />
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STOPPED" />
@@ -90,6 +96,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
+
         <service android:name="be.ppareit.swiftp.gui.FsWidgetProvider$UpdateService" />
 
     </application>

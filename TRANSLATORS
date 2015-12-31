@@ -27,6 +27,9 @@ For version 2.11
 	+ cancel
 	+ feedback
 	+ about
+	+ autoconnect_label
+	+ autoconnect_summary
+
 
 For version 2.10.2
 	+ swiftp_name_demo

@@ -105,6 +105,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Send feedback</string>
     <string name="about">About</string>
 
+    <string name="autoconnect_label">Autoconnect settings...</string>
+    <string name="autoconnect_summary">Select the wifi networks on which to autoconnect</string>
+
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retrieve url</string>
     <string name="unknown">unknown</string>

@@ -20,13 +20,15 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp;
 
-import java.io.File;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import java.io.File;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class FsSettings {
 
@@ -91,6 +93,11 @@ public class FsSettings {
     public static boolean shouldTakeFullWakeLock() {
         final SharedPreferences sp = getSharedPreferences();
         return sp.getBoolean("stayAwake", false);
+    }
+
+    public static Set<String> getAutoConnectList() {
+        SharedPreferences sp = getSharedPreferences();
+        return sp.getStringSet("autoconnect_preference", new TreeSet<>());
     }
 
     /**

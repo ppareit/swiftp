@@ -28,6 +28,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -47,8 +49,12 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.net.InetAddress;
+import net.vrallev.android.cat.Cat;
 
+import java.net.InetAddress;
+import java.util.List;
+
+import be.ppareit.android.DynamicMultiSelectListPreference;
 import be.ppareit.swiftp.FsApp;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
@@ -128,6 +134,27 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             stopServer();
             return true;
         });
+
+        DynamicMultiSelectListPreference autoconnectListPref = findPref("autoconnect_preference");
+        autoconnectListPref.setOnPopulateListener(
+                pref -> {
+                    Cat.d("autoconnect populate listener");
+
+                    WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+                    List<WifiConfiguration> configs = wifiManager.getConfiguredNetworks();
+                    CharSequence [] ssids = new CharSequence[configs.size()];
+                    CharSequence [] niceSsids = new CharSequence[configs.size()];
+                    for (int i = 0; i < configs.size(); ++i) {
+                        ssids[i] = configs.get(i).SSID;
+                        String ssid = configs.get(i).SSID;
+                        if (ssid.length() > 2 && ssid.startsWith("\"") && ssid.endsWith("\"")) {
+                            ssid = ssid.substring(1, ssid.length()-1);
+                        }
+                        niceSsids[i] = ssid;
+                    }
+                    pref.setEntries(niceSsids);
+                    pref.setEntryValues(ssids);
+                });
 
         EditTextPreference portnum_pref = findPref("portNum");
         portnum_pref.setSummary(sp.getString("portNum",
