@@ -20,6 +20,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp;
 
+import android.util.Log;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.ParseException;
@@ -28,18 +30,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import android.util.Log;
-
 abstract public class Util {
     final static String TAG = Util.class.getSimpleName();
 
-    final static SimpleDateFormat df;
-    
-    static{
-        df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
-    
     public static byte byteOfInt(int value, int which) {
         int shift = which * 8;
         return (byte) (value >> shift);
@@ -95,12 +88,23 @@ abstract public class Util {
         } catch (InterruptedException e) {
         }
     }
-    
-    public static String getFtpDate(long time){
+
+    /**
+     * Creates a SimpleDateFormat in the formatting used by ftp sever/client.
+     */
+    private static SimpleDateFormat createSimpleDateFormat() {
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return df;
+    }
+
+    public static String getFtpDate(long time) {
+        SimpleDateFormat df = createSimpleDateFormat();
         return df.format(new Date(time));
     }
-    
-    public static Date parseDate(String time) throws ParseException{
+
+    public static Date parseDate(String time) throws ParseException {
+        SimpleDateFormat df = createSimpleDateFormat();
         return df.parse(time);
     }
 }
