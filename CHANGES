@@ -1,3 +1,11 @@
+Version 2.11 (2016/01/01)
+    + Added a setting to automatically connect on specific wifi networks
+    + Added a feedback menu
+    + Added a folder picker to select root of file system
+    * Updated Japanese translation (thanks naofum)
+    + Added settings action to notification
+    * Updated building toolset
+    * Fixed time formating errors (thanks j3l11234 and gmembre)
 Version 2.10.2 (2015/07/19)
     + Serbian translation by Mladen Pejaković
     * Fixed server not starting when usb tethering
