@@ -97,7 +97,7 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Geef feedback</string>
     <string name="about">Over</string>
 
-    <string name="autoconnect_label">Automatiche verbinding...</string>
+    <string name="autoconnect_label">Automatische verbinding...</string>
     <string name="autoconnect_summary">Selecteer de wifi netwerken waar automatisch moet worden verbonden</string>
 
     <!-- old strings -->
