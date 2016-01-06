@@ -142,13 +142,21 @@ public class FsPreferenceActivity extends PreferenceActivity implements
 
                     WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
                     List<WifiConfiguration> configs = wifiManager.getConfiguredNetworks();
-                    CharSequence [] ssids = new CharSequence[configs.size()];
-                    CharSequence [] niceSsids = new CharSequence[configs.size()];
+                    if (configs == null) {
+                        Cat.e("Unable to receive wifi configurations, bark at user and bail");
+                        Toast.makeText(this,
+                                R.string.autoconnect_error_enable_wifi_for_access_points,
+                                Toast.LENGTH_LONG)
+                                .show();
+                        return;
+                    }
+                    CharSequence[] ssids = new CharSequence[configs.size()];
+                    CharSequence[] niceSsids = new CharSequence[configs.size()];
                     for (int i = 0; i < configs.size(); ++i) {
                         ssids[i] = configs.get(i).SSID;
                         String ssid = configs.get(i).SSID;
                         if (ssid.length() > 2 && ssid.startsWith("\"") && ssid.endsWith("\"")) {
-                            ssid = ssid.substring(1, ssid.length()-1);
+                            ssid = ssid.substring(1, ssid.length() - 1);
                         }
                         niceSsids[i] = ssid;
                     }

@@ -107,6 +107,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="autoconnect_label">Autoconnect settings...</string>
     <string name="autoconnect_summary">Select the wifi networks on which to autoconnect</string>
+    <string name="autoconnect_error_enable_wifi_for_access_points">
+        Enable wifi to get list of access points
+    </string>
 
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retrieve url</string>
