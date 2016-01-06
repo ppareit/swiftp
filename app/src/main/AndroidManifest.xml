@@ -80,7 +80,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>
         </receiver>
-
+        <service android:name="be.ppareit.swiftp.WifiStateChangeReceiver$StartServerService" />
+        <service android:name="be.ppareit.swiftp.WifiStateChangeReceiver$StopServerService" />
 
         <receiver
             android:name="be.ppareit.swiftp.gui.FsWidgetProvider"
