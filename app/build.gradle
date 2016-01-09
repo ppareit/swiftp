@@ -8,8 +8,8 @@ android {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 21100
-        versionName "2.11"
+        versionCode 21101
+        versionName "2.11.1"
     }
     buildTypes {
         release {

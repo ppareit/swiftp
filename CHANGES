@@ -1,3 +1,7 @@
+Version 2.11.1 (2016/01/09)
+    + Make widget look/work like smart icon
+    * Fix FC when no wifi connection
+    * Fix UI look material (thanks Steve)
 Version 2.11 (2016/01/01)
     + Added a setting to automatically connect on specific wifi networks
     + Added a feedback menu
