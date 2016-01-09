@@ -4,17 +4,17 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * <p>
  * Contributors:
- *     Pieter Pareit - initial API and implementation
+ * Pieter Pareit - initial API and implementation
  ******************************************************************************/
 package be.ppareit.swiftp.gui;
 
@@ -28,12 +28,17 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
+
+import net.vrallev.android.cat.Cat;
+
+import java.net.InetAddress;
+
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.R;
 
 /**
  * Simple widget for FTP Server.
- * 
+ *
  * @author ppareit
  */
 public class FsWidgetProvider extends AppWidgetProvider {
@@ -55,7 +60,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager,
-            int[] appWidgetIds) {
+                         int[] appWidgetIds) {
         Log.d(TAG, "updated called");
         // let the updating happen by a service
         Intent intent = new Intent(context, UpdateService.class);
@@ -67,18 +72,34 @@ public class FsWidgetProvider extends AppWidgetProvider {
         @Override
         public int onStartCommand(Intent intent, int flags, int startId) {
             Log.d(TAG, "UpdateService start command");
-            // We need to create the correct pending intent for when the widget is clicked
-            final String action = FsService.isRunning() ? FsService.ACTION_STOP_FTPSERVER
-                    : FsService.ACTION_START_FTPSERVER;
+            // depending on whether or not the server is running, choose correct properties
+            final String action;
+            final int drawable;
+            final String text;
+            if (FsService.isRunning()) {
+                action = FsService.ACTION_STOP_FTPSERVER;
+                drawable = R.drawable.widget_on;
+                // get ip address
+                InetAddress address = FsService.getLocalInetAddress();
+                if (address == null) {
+                    Cat.w("Unable to retrieve the local ip address");
+                    text = "ERROR";
+                } else {
+                    text = address.getHostAddress();
+                }
+            } else {
+                action = FsService.ACTION_START_FTPSERVER;
+                drawable = R.drawable.widget_off;
+                text = getString(R.string.swiftp_name);
+            }
             Intent startIntent = new Intent(action);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0,
                     startIntent, 0);
             RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_layout);
+            // setup the info on the widget
             views.setOnClickPendingIntent(R.id.widget_button, pendingIntent);
-            // we need to put the correct image on the widget
-            final int drawable = FsService.isRunning() ? R.drawable.widget_on
-                    : R.drawable.widget_off;
             views.setImageViewResource(R.id.widget_button, drawable);
+            views.setTextViewText(R.id.widget_text, text);
             // new info is on widget, update it
             AppWidgetManager manager = AppWidgetManager.getInstance(this);
             ComponentName widget = new ComponentName(this, FsWidgetProvider.class);
