@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2011-2013 Pieter Pareit
+Copyright 2011-2016 Pieter Pareit
 Copyright 2009 David Revell
 
 This file is part of SwiFTP.
@@ -21,12 +21,14 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 <resources>
     <string name="swiftp_name">FTP Server</string>
+    <string name="swiftp_name_demo">FTP Server (Demo)</string>
     <string name="running_label">Запуск</string>
     <string name="running_summary_stopped">Включить FTP сервер</string>
     <string name="running_summary_started">Адрес: %s</string>
     <string name="running_summary_failed">Невозможно включить FTP сервер. Проверьте подключение к сети (wifi или ethernet).</string>
     <string name="market_version_label">Текущая версия</string>
-    <string name="market_version_summary">Установлена демонстрационная версия программы.
+    <string name="market_version_summary">
+	    Установлена демонстрационная версия программы.
         Вы поддержите разработку, если приобретете программу на Google Play.
 		Чтобы сделать это, нажмите здесь. </string>
     <string name="settings_label">Настройки</string>
@@ -35,10 +37,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="username_label">Имя пользователя</string>
     <string name="password_label">Пароль</string>
     <string name="show_password_label">Отображать пароль</string>
-     <string name="anonymous_label">АНОНИМНОЕ ПОДКЛЮЧЕНИЕ</string>
+    <string name="anonymous_label">АНОНИМНОЕ ПОДКЛЮЧЕНИЕ</string>
     <string name="allow_anonymous_label">Разрешить анонимное подключение</string>
     <string name="anonymous_summary">При анонимном подключении доступ резрешен только на чтение</string>
-   <string name="advancedsettings_label">Расширенные настройки...</string>
+    <string name="advancedsettings_label">Расширенные настройки...</string>
     <string name="portnumber_label">Номер порта</string>
     <string name="chroot_label">Корневая папка доступа</string>
     <string name="acceptwifi_label">Принимать подключения по wifi</string>
@@ -98,6 +100,18 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="nsd_servername_postfix">FTP сервер</string>
 
+    <string name="select">Выбрать</string>
+    <string name="cancel">Отмена</string>
+
+    <string name="feedback">Сообщить о проблеме</string>
+    <string name="about">О программе</string>
+
+    <string name="autoconnect_label">Настройки автоподключения...</string>
+    <string name="autoconnect_summary">Выберите сети wifi, к которым нужно подключаться автоматически</string>
+    <string name="autoconnect_error_enable_wifi_for_access_points">
+        Для получения списка сетей включите wifi
+    </string>
+
     <!-- old strings -->
     <string name="cant_get_url">Не удается получить URL</string>
     <string name="unknown">неизвестно</string>
@@ -113,5 +127,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="pst_disconnected">отключено</string>
     <string name="storage_warning">Предупреждение: файловый носитель не доступен. Возможно, Вы хотели отсоединить его.</string>
     <string name="widget_name">FTP Server Widget</string>
+    <string name="notif_settings_text">Настройки</string>
 
 </resources>
