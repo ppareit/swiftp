@@ -51,6 +51,7 @@ import android.widget.Toast;
 
 import net.vrallev.android.cat.Cat;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -195,6 +196,18 @@ public class FsPreferenceActivity extends PreferenceActivity implements
                             return;
                         if (!FsSettings.setChrootDir(path))
                             return;
+                        // TODO: this is a hotfix, create correct resources, improve UI/UX
+                        final File root = new File(path);
+                        if (!root.canRead()) {
+                            Toast.makeText(this,
+                                    "Notice that we can't read/write in this folder.",
+                                    Toast.LENGTH_LONG).show();
+                        } else if (!root.canWrite()) {
+                            Toast.makeText(this,
+                                    "Notice that we can't write in this folder, reading will work. Writing in subfolders might work.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+
                         preference.setSummary(path);
                         stopServer();
                     })

@@ -51,9 +51,14 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
         ListView list = new ListView(getContext());
         list.setAdapter(mAdapter);
         list.setOnItemClickListener(
-                (parent, view, position, id) -> {
-                    String dir = (String) parent.getItemAtPosition(position);
-                    mRoot = new File(mRoot, dir);
+                (parentAdapterView, view, position, id) -> {
+                    String dir = (String) parentAdapterView.getItemAtPosition(position);
+                    final File parent;
+                    if (dir.equals("..") && (parent = mRoot.getParentFile()) != null) {
+                        mRoot = parent;
+                    } else {
+                        mRoot = new File(mRoot, dir);
+                    }
                     update();
                 }
         );
@@ -73,10 +78,6 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
             mRoot = new File(mRoot.getCanonicalPath());
         } catch (IOException e) {
             Cat.w("Directory root is incorrect, fixing to external storage.");
-            mRoot = Environment.getExternalStorageDirectory();
-        }
-
-        if (mRoot.getAbsolutePath().equals("/")) {
             mRoot = Environment.getExternalStorageDirectory();
         }
 
