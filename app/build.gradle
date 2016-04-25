@@ -9,8 +9,8 @@ android {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 21103
-        versionName "2.11.3"
+        versionCode 21200
+        versionName "2.12.0"
     }
     productFlavors {
         playstore_paid {
@@ -28,6 +28,9 @@ android {
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            lintOptions {
+                disable 'MissingTranslation'
+            }
         }
     }
     // Needed for retrolambda
