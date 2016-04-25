@@ -21,6 +21,12 @@ Mladen Pejaković <pejakm@autistici.org>
 Changes in translations
 =======================
 
+For version 2.12
+    * swiftp_name        (For some language those strings
+    * swiftp_name_free    are better left alone, this is
+    * swiftp_name_demo    the string that is displayed in
+                          the launcher)
+
 For version 2.11
 	+ notif_settings_text
 	+ select

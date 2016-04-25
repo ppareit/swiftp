@@ -22,6 +22,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 <resources>
 
     <string name="swiftp_name">FTP Server</string>
+    <string name="swiftp_name_free">FTP Server (Free)</string>
     <string name="swiftp_name_demo">FTP Server (Demo)</string>
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">Toggle the state of the ftp server</string>

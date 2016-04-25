@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+
     compileSdkVersion 22
     buildToolsVersion "23.0.2"
 
@@ -10,6 +11,17 @@ android {
         targetSdkVersion 22
         versionCode 21103
         versionName "2.11.3"
+    }
+    productFlavors {
+        playstore_paid {
+            applicationId "be.ppareit.swiftp"
+        }
+        playstore_demo {
+            applicationId "be.ppareit.swiftp_free"
+        }
+        fdroid_free {
+            applicationId "be.ppareit.swiftp_free"
+        }
     }
     buildTypes {
         release {
