@@ -81,6 +81,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>
         </receiver>
+
         <service android:name="be.ppareit.swiftp.WifiStateChangeReceiver$StartServerService" />
         <service android:name="be.ppareit.swiftp.WifiStateChangeReceiver$StopServerService" />
 
@@ -100,6 +101,37 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         </receiver>
 
         <service android:name="be.ppareit.swiftp.gui.FsWidgetProvider$UpdateService" />
+
+        <!-- Tasker/Locale integration -->
+        <activity
+            android:name="be.ppareit.swiftp.locale.EditActivity"
+            android:exported="true"
+            android:icon="@drawable/widget_on"
+            android:label="@string/swiftp_name"
+            android:theme="@style/AppTheme"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="adjustResize">
+            <!-- this Intent filter allows the plug-in to be discovered by the host. -->
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name="be.ppareit.swiftp.locale.FireReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
+            </intent-filter>
+        </receiver>
+        <!--<receiver
+            android:name="be.ppareit.swiftp.locale.QueryReceiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.QUERY_CONDITION" />
+            </intent-filter>
+        </receiver>-->
 
     </application>
 

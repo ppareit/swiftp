@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Set FTP Server state:" />
+
+    <RadioGroup
+        android:id="@+id/radio_server_state_group"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:divider="?android:attr/dividerHorizontal"
+        android:showDividers="middle">
+
+
+        <RadioButton
+            android:id="@+id/radio_server_running"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:checked="true"
+            android:text="Running" />
+
+        <RadioButton
+            android:id="@+id/radio_server_stopped"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:checked="false"
+            android:text="Stopped" />
+
+    </RadioGroup>
+</LinearLayout>

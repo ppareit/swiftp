@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
 
-    compileSdkVersion 22
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
 
     defaultConfig {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 14
-        targetSdkVersion 22
+        targetSdkVersion 24
         versionCode 21200
         versionName "2.12.0"
     }
@@ -44,6 +44,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'net.vrallev.android:cat:1.0.2'
     provided "org.projectlombok:lombok:1.16.6"
+    compile group:'com.twofortyfouram', name:'android-plugin-client-sdk-for-locale', version:'[4.0.2, 5.0['
 }
 
 buildscript {
@@ -56,9 +57,10 @@ buildscript {
     }
 }
 
-// Required because retrolambda is on maven central
 repositories {
-    mavenCentral()
+    mavenCentral()  // for retrolambda
+    jcenter()       // for locale
+    maven { url "https://dl.bintray.com/twofortyfouram/maven" }
 }
 
 apply plugin: 'com.android.application' //or apply plugin: 'java'
