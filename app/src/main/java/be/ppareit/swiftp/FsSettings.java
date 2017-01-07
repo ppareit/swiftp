@@ -53,7 +53,9 @@ public class FsSettings {
         final SharedPreferences sp = getSharedPreferences();
         String dirName = sp.getString("chrootDir", "");
         File chrootDir = new File(dirName);
-        if (dirName.equals("")) {
+        // when the stored dirName was not initialized, initialize to good default
+        // or when the chrootDir is garbage, initialize to good default
+        if (dirName.equals("") || !chrootDir.isDirectory()) {
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                 chrootDir = Environment.getExternalStorageDirectory();
             } else {
@@ -62,7 +64,10 @@ public class FsSettings {
         }
         if (!chrootDir.isDirectory()) {
             Log.e(TAG, "getChrootDir: not a directory");
-            return null;
+            // if this happens, we are screwed
+            // we give it the application directory
+            // but this will probably not be what the user wants
+            return FsApp.getAppContext().getFilesDir();
         }
         return chrootDir;
     }
