@@ -125,14 +125,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
         </receiver>
-        <!--<receiver
-            android:name="be.ppareit.swiftp.locale.QueryReceiver"
-            android:exported="true"
-            tools:ignore="ExportedReceiver">
-            <intent-filter>
-                <action android:name="com.twofortyfouram.locale.intent.action.QUERY_CONDITION" />
-            </intent-filter>
-        </receiver>-->
 
     </application>
 
