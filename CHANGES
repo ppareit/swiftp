@@ -1,3 +1,6 @@
+Version 2.13 (2016/01/07)
+    + Enable the ftp server to be started from Tasker/Locale
+    * Fixed bugs
 Version 2.12 (2016/04/25)
     * Internal reorganization in build flavors
 Version 2.11.3 (2016/02/5)
