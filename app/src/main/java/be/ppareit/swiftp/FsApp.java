@@ -20,9 +20,12 @@ package be.ppareit.swiftp;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
+
+import java.util.List;
 
 public class FsApp extends Application {
 
@@ -54,6 +57,19 @@ public class FsApp extends Application {
             Context context = getAppContext();
             return context.getPackageName().contains("free");
         } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    public static boolean isPaidVersionInstalled() {
+        List<ApplicationInfo> packages;
+        PackageManager pm;
+
+        pm = getAppContext().getPackageManager();
+        packages = pm.getInstalledApplications(0);
+        for (ApplicationInfo packageInfo : packages) {
+            if(packageInfo.packageName.equals("be.ppareit.swiftp"))
+                return true;
         }
         return false;
     }

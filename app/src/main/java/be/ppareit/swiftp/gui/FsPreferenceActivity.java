@@ -78,6 +78,17 @@ public class FsPreferenceActivity extends PreferenceActivity implements
         Log.d(TAG, "created");
         super.onCreate(savedInstanceState);
 
+        if (FsApp.isFreeVersion() && FsApp.isPaidVersionInstalled()) {
+            Cat.d("Running demo while paid is installed");
+            AlertDialog ad = new AlertDialog.Builder(this)
+                    .setTitle(R.string.demo_while_paid_dialog_title)
+                    .setMessage(R.string.demo_while_paid_dialog_message)
+                    .setPositiveButton(getText(android.R.string.ok),
+                            (d,w) -> {finish();})
+                    .create();
+            ad.show();
+        }
+
         addPreferencesFromResource(R.xml.preferences);
 
         final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);

@@ -112,6 +112,16 @@ https://github.com/ppareit/swiftp/issues .\n\n
         Enable wifi to get list of access points
     </string>
 
+    <string name="demo_while_paid_dialog_title">
+        Demo started while paid version is installed
+    </string>
+    <string name="demo_while_paid_dialog_message">
+        Thank you for supporting the development!\n\n
+        You are trying to start the demo version while the paid version
+        is installed. To insure optimal operation we ask you to remove
+        the demo version and only start the paid version.
+    </string>
+
     <!-- old strings -->
     <string name="cant_get_url">Can\'t retrieve url</string>
     <string name="unknown">unknown</string>

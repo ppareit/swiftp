@@ -21,6 +21,10 @@ Mladen Pejaković <pejakm@autistici.org>
 Changes in translations
 =======================
 
+For version 2.13.1
+    + demo_while_paid_dialog_title
+    + demo_while_paid_dialog_message
+
 For version 2.12
     * swiftp_name        (For some language those strings
     * swiftp_name_free    are better left alone, this is
