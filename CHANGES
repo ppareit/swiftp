@@ -1,4 +1,6 @@
-Version 2.13 (2016/01/07)
+Version 2.13.1 (2017/01/22)
+    + Add helpful message when both paid and demo are installed
+Version 2.13 (2017/01/07)
     + Enable the ftp server to be started from Tasker/Locale
     * Fixed bugs
 Version 2.12 (2016/04/25)
