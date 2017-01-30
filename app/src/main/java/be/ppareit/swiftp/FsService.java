@@ -86,7 +86,7 @@ public class FsService extends Service implements Runnable {
             Log.w(TAG, "Won't start, server thread exists");
             if (attempts > 0) {
                 attempts--;
-                Util.sleepIgnoreInterupt(1000);
+                Util.sleepIgnoreInterrupt(1000);
             } else {
                 Log.w(TAG, "Server thread already exists");
                 return START_STICKY;

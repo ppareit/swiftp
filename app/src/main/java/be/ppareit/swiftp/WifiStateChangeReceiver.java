@@ -73,7 +73,7 @@ public class WifiStateChangeReceiver extends BroadcastReceiver {
             Cat.d("We are connected to " + wifiInfo.getSSID());
             if (FsSettings.getAutoConnectList().contains(wifiInfo.getSSID())) {
                 // sleep a short while so the network has time to truly connect
-                Util.sleepIgnoreInterupt(1000);
+                Util.sleepIgnoreInterrupt(1000);
                 sendBroadcast(new Intent(FsService.ACTION_START_FTPSERVER));
             }
         }
@@ -89,7 +89,7 @@ public class WifiStateChangeReceiver extends BroadcastReceiver {
         protected void onHandleIntent(Intent intent) {
             if (!FsService.isRunning()) return;
 
-            Util.sleepIgnoreInterupt(15000);
+            Util.sleepIgnoreInterrupt(15000);
             if (!FsService.isRunning()) return;
 
             ConnectivityManager conManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);

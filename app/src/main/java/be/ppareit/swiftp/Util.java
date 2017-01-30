@@ -82,10 +82,11 @@ abstract public class Util {
         return retArr;
     }
 
-    public static void sleepIgnoreInterupt(long millis) {
+    public static void sleepIgnoreInterrupt(long millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
+            /* swallow */
         }
     }
 
