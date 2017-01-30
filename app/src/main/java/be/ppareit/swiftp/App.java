@@ -31,22 +31,19 @@ import java.util.List;
 
 public class App extends Application {
 
-    private static Context sContext;
+    private static App mInstance;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        sContext = getApplicationContext();
+        mInstance = this;
     }
 
     /**
      * @return the Context of this application
      */
     public static Context getAppContext() {
-        if (sContext == null) {
-            Cat.e("Global context not set");
-        }
-        return sContext;
+        return mInstance.getApplicationContext();
     }
 
     /**
