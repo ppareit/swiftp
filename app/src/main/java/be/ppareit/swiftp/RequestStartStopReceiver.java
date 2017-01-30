@@ -59,7 +59,7 @@ public class RequestStartStopReceiver extends BroadcastReceiver {
         String storageState = Environment.getExternalStorageState();
         if (!storageState.equals(Environment.MEDIA_MOUNTED)) {
             Log.v(TAG, "Warning due to storage state " + storageState);
-            Toast toast = Toast.makeText(FsApp.getAppContext(),
+            Toast toast = Toast.makeText(App.getAppContext(),
                     R.string.storage_warning, Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();

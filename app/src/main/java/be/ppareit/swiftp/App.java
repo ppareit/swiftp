@@ -25,11 +25,11 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
+import net.vrallev.android.cat.Cat;
+
 import java.util.List;
 
-public class FsApp extends Application {
-
-    private static final String TAG = FsApp.class.getSimpleName();
+public class App extends Application {
 
     private static Context sContext;
 
@@ -44,7 +44,7 @@ public class FsApp extends Application {
      */
     public static Context getAppContext() {
         if (sContext == null) {
-            Log.e(TAG, "Global context not set");
+            Cat.e("Global context not set");
         }
         return sContext;
     }
@@ -86,7 +86,7 @@ public class FsApp extends Application {
             PackageManager pm = context.getPackageManager();
             return pm.getPackageInfo(packageName, 0).versionName;
         } catch (NameNotFoundException e) {
-            Log.e(TAG, "Unable to find the name " + packageName + " in the package");
+            Cat.e("Unable to find the name " + packageName + " in the package");
             return null;
         }
     }

@@ -40,7 +40,7 @@ public enum MediaUpdater {
     public static void notifyFileCreated(String path) {
         if (Defaults.do_mediascanner_notify) {
             Log.d(TAG, "Notifying others about new file: " + path);
-            Context context = FsApp.getAppContext();
+            Context context = App.getAppContext();
             MediaScannerConnection.scanFile(context, new String[] { path }, null,
                     new ScanCompletedListener());
         }
@@ -65,7 +65,7 @@ public enum MediaUpdater {
                     @Override
                     public void run() {
                         Log.d(TAG, "Sending ACTION_MEDIA_MOUNTED broadcast");
-                        final Context context = FsApp.getAppContext();
+                        final Context context = App.getAppContext();
                         Uri uri = Uri.parse("file://" + Environment.getExternalStorageDirectory());
                         Intent intent = new Intent(Intent.ACTION_MEDIA_MOUNTED, uri);
                         context.sendBroadcast(intent);
@@ -73,7 +73,7 @@ public enum MediaUpdater {
                 }, 5000);
             } else {
                 // on newer devices, we hope that this works correctly:
-                Context context = FsApp.getAppContext();
+                Context context = App.getAppContext();
                 MediaScannerConnection.scanFile(context, new String[] { path }, null,
                         new ScanCompletedListener());
             }

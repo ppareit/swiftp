@@ -33,7 +33,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
     <application
-        android:name="be.ppareit.swiftp.FsApp"
+        android:name="be.ppareit.swiftp.App"
         android:allowBackup="true"
         android:icon="@mipmap/launcher"
         android:label="@string/swiftp_name">

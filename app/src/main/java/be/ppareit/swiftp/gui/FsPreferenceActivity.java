@@ -56,7 +56,7 @@ import java.net.InetAddress;
 import java.util.List;
 
 import be.ppareit.android.DynamicMultiSelectListPreference;
-import be.ppareit.swiftp.FsApp;
+import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
@@ -78,7 +78,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
         Log.d(TAG, "created");
         super.onCreate(savedInstanceState);
 
-        if (FsApp.isFreeVersion() && FsApp.isPaidVersionInstalled()) {
+        if (App.isFreeVersion() && App.isPaidVersionInstalled()) {
             Cat.d("Running demo while paid is installed");
             AlertDialog ad = new AlertDialog.Builder(this)
                     .setTitle(R.string.demo_while_paid_dialog_title)
@@ -121,7 +121,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             }
             return false;
         });
-        if (FsApp.isFreeVersion() == false) {
+        if (App.isFreeVersion() == false) {
             prefScreen.removePreference(marketVersionPref);
         }
 
@@ -410,7 +410,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
     };
 
     static private String transformPassword(String password) {
-        Context context = FsApp.getAppContext();
+        Context context = App.getAppContext();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         Resources res = context.getResources();
         String showPasswordString = res.getString(R.string.show_password_default);

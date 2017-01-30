@@ -67,7 +67,7 @@ public class FsSettings {
             // if this happens, we are screwed
             // we give it the application directory
             // but this will probably not be what the user wants
-            return FsApp.getAppContext().getFilesDir();
+            return App.getAppContext().getFilesDir();
         }
         return chrootDir;
     }
@@ -109,7 +109,7 @@ public class FsSettings {
      * @return the SharedPreferences for this application
      */
     private static SharedPreferences getSharedPreferences() {
-        final Context context = FsApp.getAppContext();
+        final Context context = App.getAppContext();
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 

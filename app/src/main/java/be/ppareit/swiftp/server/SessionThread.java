@@ -33,10 +33,9 @@ import java.nio.ByteBuffer;
 
 import android.util.Log;
 import be.ppareit.swiftp.Defaults;
-import be.ppareit.swiftp.FsApp;
+import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
-import be.ppareit.swiftp.server.LocalDataSocket;
 
 public class SessionThread extends Thread {
     private static final String TAG = SessionThread.class.getSimpleName();
@@ -235,7 +234,7 @@ public class SessionThread extends Thread {
         Log.i(TAG, "SessionThread started");
 
         if (sendWelcomeBanner) {
-            writeString("220 SwiFTP " + FsApp.getVersion() + " ready\r\n");
+            writeString("220 SwiFTP " + App.getVersion() + " ready\r\n");
         }
         // Main loop: read an incoming line and process it
         try {
