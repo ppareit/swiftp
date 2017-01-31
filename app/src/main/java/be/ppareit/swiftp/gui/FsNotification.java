@@ -39,7 +39,7 @@ import be.ppareit.swiftp.R;
 
 public class FsNotification extends BroadcastReceiver {
 
-    private final int NOTIFICATIONID = 7890;
+    private final int NOTIFICATION_ID = 7890;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -104,9 +104,9 @@ public class FsNotification extends BroadcastReceiver {
                 .setWhen(when)
                 .setOngoing(true);
 
-        Notification notification = null;
+        Notification notification;
 
-        // go from hight to low android version adding extra options
+        // go from high to low android version adding extra options
         if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
             nb.setVisibility(Notification.VISIBILITY_PUBLIC);
             nb.setCategory(Notification.CATEGORY_SERVICE);
@@ -122,7 +122,7 @@ public class FsNotification extends BroadcastReceiver {
         }
 
         // Pass Notification to NotificationManager
-        nm.notify(NOTIFICATIONID, notification);
+        nm.notify(NOTIFICATION_ID, notification);
 
         Cat.d("Notification setup done");
     }
