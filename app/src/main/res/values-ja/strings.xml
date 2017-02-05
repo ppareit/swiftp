@@ -22,6 +22,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 <resources>
 
     <string name="swiftp_name">FTP サーバ</string>
+    <string name="swiftp_name_free">FTP サーバ (フリー)</string>
     <string name="swiftp_name_demo">FTP サーバ (デモ)</string>
     <string name="running_label">FTP サーバ</string>
     <string name="running_summary_stopped">ftp サーバの状態を切替</string>
@@ -56,36 +57,28 @@ FTP サーバ (SwiFTP) のご利用ありがとうございます! 簡単な使�
 \
 このプログラムはアンドロイド端末で実行する ftp サーバです。
 これにより、ftp サーバの実行中は様々なプログラムからあなたの端末上のファイルにアクセスすることができます。
-例えば、デスクトップ PC やラップトップで、firefox の url バーに、\'ftp://...\' と入力すると、あなたの端末にあるファイルを表示することができます。\n\n
+例えば、デスクトップ PC やラップトップで、firefox の url バーに、\'ftp://...\' と入力すると、
+あなたの端末にあるファイルを表示することができます。\n\n
 \
-デフォルトではユーザ名とパスワードは共に \'ftp\' です。これはすぐに変更してください。このユーザ名とパスワードを使用してサーバにアクセスします。\n\n
+デフォルトではユーザ名とパスワードは共に \'ftp\' です。これはすぐに変更してください。
+このユーザ名とパスワードを使用してサーバにアクセスします。\n\n
 \
-端末がスリープした時に、ファイル転送が遅くなったり、停止する問題の対応のために \"端末を起動したままにする\" というオプション設定があります。
-この問題が発生した時には、このボックスをチェックして、プログラムを再起動してください。端末はサーバの実行中は起動したままになります。\n\n
+端末がスリープした時に、ファイル転送が遅くなったり、停止する問題の対応のために 
+\"端末を起動したままにする\" というオプション設定があります。
+この問題が発生した時には、このボックスをチェックして、プログラムを再起動してください。
+端末はサーバの実行中は起動したままになります。\n\n
 \
 パフォーマンスやセキュリティの理由から、使用後はサーバを停止することを推奨します。\n\n\
 \
-もし期待した通りに動作しない場合は、Pieter Pareit (pieter.pareit@gmail.com) に報告してください。\n\n\
+もし期待した通りに動作しない場合は、Pieter Pareit 
+(pieter.pareit@gmail.com) に報告してください。\n\n\
 \
 google play ストアでこのプログラムを購入して頂くことで、このオープンソースプログラムの開発は支援されます。
 開発状況は https://github.com/ppareit/swiftp を参照してください。
-実装機能に関するアイデア等は、イシュートラッカー https://github.com/ppareit/swiftp/issues を参照してください。\n\n
+実装機能に関するアイデア等は、イシュートラッカー
+https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     </string>
-    <string name="about_dlg_title">FTP サーバについて</string>
-    <string name="about_dlg_message">
-        <b>説明: </b>
-        FTP サーバ (SwiFTP) は、アンドロイド端末で実行する ftp サーバです。\n\n\
-        <b>Webサイト:</b>
-        http://ppareit.github.com/swiftp/\n\n
-        <b>現在のメンテナンス者:</b>
-        Pieter Pareit (pieter.pareit@gmail.com)\n\n
-        <b>プログラミング: </b>\
-        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
-        <b>図版:</b>
-        Birgit Niemegeers\n\n
-        <b>ライセンス: </b>
-        GNU General Public License v3.0\n\n
-    </string>
+
     <string name="notif_server_starting">開始しています %s</string>
     <string name="notif_title">FTP サーバは実行中です</string>
     <string name="notif_text">%s</string>
@@ -93,8 +86,30 @@ google play ストアでこのプログラムを購入して頂くことで、�
 
     <string name="nsd_servername_postfix">FTP サーバ</string>
 
+    <string name="select">選択</string>
+    <string name="cancel">キャンセル</string>
+
+    <string name="feedback">フィードバックを送信</string>
+    <string name="about">アプリについて</string>
+
+    <string name="autoconnect_label">自動接続設定...</string>
+    <string name="autoconnect_summary">自動接続する wifi ネットワークを選択します</string>
+    <string name="autoconnect_error_enable_wifi_for_access_points">
+        Wifi を有効にして、アクセスポイントのリストを取得します
+    </string>
+
+    <string name="demo_while_paid_dialog_title">
+        有料版がインストールされる間、デモが開始されました
+    </string>
+    <string name="demo_while_paid_dialog_message">
+        開発をサポートしていただきありがとうございます!\n\n
+        有料版がインストールされる間、デモ版を開始しようとしています。
+        最適な運用を保証するために、デモ版を削除し、
+        有料版のみを開始するようお願いします。
+    </string>
+
     <!-- old strings -->
-    <string name="cant_get_url">url を解析できません</string>
+    <string name="cant_get_url">url を取得できません</string>
     <string name="unknown">不明</string>
     <string name="ok">OK</string>
     <string name="username_validation_error">パスワードは1文字以上の英数字で入力してください。他の文字は使用できません。</string>
@@ -107,7 +122,17 @@ google play ストアでこのプログラムを購入して頂くことで、�
     <string name="pst_unreachable">到達不能</string>
     <string name="pst_disconnected">切断されました</string>
     <string name="storage_warning">警告: ストレージが使用できません。アンマウントする必要があるかもしれません。</string>
-    <string name="widget_name">FTP サーバ・ウィジット</string>
+
+
+    <!-- auto added strings by AS -->
+    <string name="widget_name">FTP サーバ・ウィジェット</string>
     <string name="notif_settings_text">設定</string>
+    <string name="app_copyright">Copyright 2012 - 2017</string>
+    <string name="about_license_title">ライセンス</string>
+    <string name="about_license_name">GNU GPL3</string>
+    <string name="about_description_title">説明</string>
+    <string name="about_description_text">FTP サーバ (SwiFTP) は、お使いの Android 端末で ftp サーバを実行することができます。</string>
+    <string name="about_libraries_title">ライブラリー</string>
+    <string name="about_contributor_title">貢献者</string>
 
 </resources>
