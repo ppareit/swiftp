@@ -22,6 +22,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 <resources>
 
     <string name="swiftp_name">ФТП сервер</string>
+    <string name="swiftp_name_free">ФТП сервер (бесплатни)</string>
+    <string name="swiftp_name_demo">ФТП сервер (демо)</string>
     <string name="running_label">ФТП сервер</string>
     <string name="running_summary_stopped">Мењај стање фтп сервера</string>
     <string name="running_summary_started">на %s</string>
@@ -76,27 +78,35 @@ pieter.pareit@gmail.com).\n\n\
 За увид у функционалности које ће бити имплементиране, погледајте пратилац пријава на
 https://github.com/ppareit/swiftp/issues .\n\n
     </string>
-    <string name="about_dlg_title">О ФТП серверу</string>
-    <string name="about_dlg_message">
-        <b>Опис: </b>
-        ФТП сервер (SwiFTP) вам омогућује да покренете фтп сервер на вашем Андроид уређају.\n\n\
-        <b>Вебсајт:</b>
-        http://ppareit.github.com/swiftp/\n\n
-        <b>Тренутни одржавалац:</b>
-        Pieter Pareit (pieter.pareit@gmail.com)\n\n
-        <b>Програмери: </b>\
-        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
-        <b>Илустрације:</b>
-        Birgit Niemegeers\n\n
-        <b>Лиценца: </b>
-        ГНУова Општа јавна лиценца в3.0\n\n
-    </string>
+
     <string name="notif_server_starting">Покрећем на %s</string>
     <string name="notif_title">ФТП сервер је покренут</string>
     <string name="notif_text">на %s</string>
     <string name="notif_stop_text">Заустави сервер</string>
 
     <string name="nsd_servername_postfix">ФТП сервер</string>
+
+    <string name="select">Изабери</string>
+    <string name="cancel">Одустани</string>
+
+    <string name="feedback">Пошаљи повратне информације</string>
+    <string name="about">О програму</string>
+
+    <string name="autoconnect_label">Поставке ауто-повезивања...</string>
+    <string name="autoconnect_summary">Изаберите бежичне мреже на којима ћете се аутоматски повезивати</string>
+    <string name="autoconnect_error_enable_wifi_for_access_points">
+        Укључите бежични да бисте добили списак приступних тачака
+    </string>
+
+    <string name="demo_while_paid_dialog_title">
+        Покренуто демо издање и поред инсталираног пуног издања
+    </string>
+    <string name="demo_while_paid_dialog_message">
+        Хвала вам што сте подржали развој!\n\n
+        Покушавате да покренете демо издање иако је плаћено издање
+        инсталирано. Да бисте обезбедили оптималне перформансе, 
+        уклоните демо издање и покрените плаћено издање.
+    </string>
 
     <!-- old strings -->
     <string name="cant_get_url">Не могу да добавим УРЛ</string>
@@ -112,6 +122,24 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="pst_unreachable">недоступан</string>
     <string name="pst_disconnected">неповезан</string>
     <string name="storage_warning">Упозорење: складиште није доступно. Можда желите да га демонтирате.</string>
+
+
+    <!-- auto added strings by AS -->
     <string name="widget_name">Виџет ФТП сервера</string>
+    <string name="notif_settings_text">Поставке</string>
+    <string name="app_copyright">Власничка права 2012 — 2017</string>
+    <string name="app_url" translatable="false">https://ppareit.github.io/swiftp/</string>
+    <string name="about_license_title">Лиценца</string>
+    <string name="about_license_name">ГНУ ГПЛ3</string>
+    <string name="about_license_url" translatable="false">https://www.gnu.org/licenses/gpl-3.0.en.html</string>
+    <string name="about_description_title">Опис</string>
+    <string name="about_description_text">ФТП сервер (SwiFTP) вам дозвољава да покренете фтп сервер на вашем Андроид уређају.</string>
+    <string name="about_libraries_title">Библиотеке</string>
+    <string name="about_contributor_title">Доприносиоци</string>
+    <string name="about_contributor_list" translatable="false">
+        Dave Revell, Alexander Friesen, tescott425, Peng Fei, MadMaverick9, j3l11234,
+        Sergey Kondakov, Tianhao Wu, Lorenzo M, Naofumi Fukue, Valerio Bozzolan, Thomas Löwe, Mladen Pejaković,
+        Birgit Niemegeers
+    </string>
 
 </resources>
