@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright 2011-2013 Pieter Pareit
 Copyright 2009 David Revell
 
@@ -47,7 +46,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             </intent-filter>
         </activity>
 
-
+        <activity
+            android:name=".gui.AboutActivity"
+            android:theme="@style/Theme.AppCompat"
+            android:parentActivityName=".gui.MainActivity"/>
 
         <service android:name="be.ppareit.swiftp.FsService" />
 
@@ -123,7 +125,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <receiver
             android:name="be.ppareit.swiftp.locale.FireReceiver"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>

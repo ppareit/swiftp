@@ -21,6 +21,20 @@ Mladen Pejaković <pejakm@autistici.org>
 Changes in translations
 =======================
 
+For version 2.14
+    + app_copyright
+    + app_url
+    + about_license_title
+    + about_license_name
+    + about_license_url
+    + about_description_title
+    + about_description_text
+    + about_libraries_title
+    + about_contributor_title
+    + about_contributor_list
+    - about_dlg_title
+    - about_dlg_message
+
 For version 2.13.1
     + demo_while_paid_dialog_title
     + demo_while_paid_dialog_message

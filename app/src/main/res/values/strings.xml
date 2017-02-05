@@ -78,21 +78,7 @@ the google play store. You can follow the development at https://github.com/ppar
 To have an idea on the features that will be implemented, see the issue tracker at
 https://github.com/ppareit/swiftp/issues .\n\n
     </string>
-    <string name="about_dlg_title">FTP Server About</string>
-    <string name="about_dlg_message">
-        <b>Description: </b>
-        FTP Server (SwiFTP) allows you to run an ftp server on your android device.\n\n\
-        <b>Website:</b>
-        http://ppareit.github.com/swiftp/\n\n
-        <b>Current maintainer:</b>
-        Pieter Pareit (pieter.pareit@gmail.com)\n\n
-        <b>Programming: </b>\
-        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
-        <b>Artwork:</b>
-        Birgit Niemegeers\n\n
-        <b>License: </b>
-        GNU General Public License v3.0\n\n
-    </string>
+
     <string name="notif_server_starting">Starting at %s</string>
     <string name="notif_title">FTP Server is running</string>
     <string name="notif_text">at %s</string>
@@ -136,7 +122,24 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="pst_unreachable">unreachable</string>
     <string name="pst_disconnected">disconnected</string>
     <string name="storage_warning">Warning: storage is not available. You may want to unmount it.</string>
+
+
+    <!-- auto added strings by AS -->
     <string name="widget_name">FTP Server Widget</string>
     <string name="notif_settings_text">Settings</string>
+    <string name="app_copyright">Copyright 2012 - 2017</string>
+    <string name="app_url" translatable="false">https://ppareit.github.io/swiftp/</string>
+    <string name="about_license_title">License</string>
+    <string name="about_license_name">GNU GPL3</string>
+    <string name="about_license_url" translatable="false">https://www.gnu.org/licenses/gpl-3.0.en.html</string>
+    <string name="about_description_title">Description</string>
+    <string name="about_description_text">FTP Server (SwiFTP) allows you to run an ftp server on your android device.</string>
+    <string name="about_libraries_title">Libraries</string>
+    <string name="about_contributor_title">Contributors</string>
+    <string name="about_contributor_list" translatable="false">
+        Dave Revell, Alexander Friesen, tescott425, Peng Fei, MadMaverick9, j3l11234,
+        Sergey Kondakov, Tianhao Wu, Lorenzo M, Naofumi Fukue, Valerio Bozzolan, Thomas Löwe, Mladen Pejaković,
+        Birgit Niemegeers
+    </string>
 
 </resources>

@@ -247,14 +247,7 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
 
         Preference about = findPref("about");
         about.setOnPreferenceClickListener(preference -> {
-            AlertDialog ad = new AlertDialog.Builder(MainActivity.this)
-                    .setTitle(R.string.about_dlg_title)
-                    .setMessage(R.string.about_dlg_message)
-                    .setPositiveButton(getText(R.string.ok), null)
-                    .create();
-            ad.show();
-            Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
-                    Linkify.ALL);
+            startActivity(new Intent(this, AboutActivity.class));
             return true;
         });
 
@@ -284,13 +277,7 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
 
             startActivity(email);
         } else if (item.getItemId() == R.id.action_about) {
-            AlertDialog ad = new AlertDialog.Builder(this)
-                    .setTitle(R.string.about_dlg_title)
-                    .setMessage(R.string.about_dlg_message)
-                    .setPositiveButton(getText(android.R.string.ok), null)
-                    .create();
-            ad.show();
-            Linkify.addLinks((TextView) ad.findViewById(android.R.id.message), Linkify.ALL);
+            startActivity(new Intent(this, AboutActivity.class));
         }
 
         return true;
