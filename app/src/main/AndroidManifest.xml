@@ -39,13 +39,15 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:label="@string/swiftp_name">
 
         <activity
-            android:name="be.ppareit.swiftp.gui.FsPreferenceActivity"
+            android:name="be.ppareit.swiftp.gui.MainActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
 
         <service android:name="be.ppareit.swiftp.FsService" />
 

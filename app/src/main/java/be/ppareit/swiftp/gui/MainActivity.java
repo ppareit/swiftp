@@ -41,7 +41,6 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -65,17 +64,14 @@ import be.ppareit.swiftp.R;
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
  */
-public class FsPreferenceActivity extends PreferenceActivity implements
-        OnSharedPreferenceChangeListener {
-
-    private static String TAG = FsPreferenceActivity.class.getSimpleName();
+public class MainActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
     private EditTextPreference mPassWordPref;
     private Handler mHandler = new Handler();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "created");
+        Cat.d("created");
         super.onCreate(savedInstanceState);
 
         if (App.isFreeVersion() && App.isPaidVersionInstalled()) {
@@ -116,7 +112,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
                 // this can fail if there is no market installed
                 startActivity(intent);
             } catch (Exception e) {
-                Log.e(TAG, "Failed to launch the market.");
+                Cat.e("Failed to launch the market.");
                 e.printStackTrace();
             }
             return false;
@@ -133,7 +129,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             if (preference.getSummary().equals(newUsername))
                 return false;
             if (!newUsername.matches("[a-zA-Z0-9]+")) {
-                Toast.makeText(FsPreferenceActivity.this,
+                Toast.makeText(MainActivity.this,
                         R.string.username_validation_error, Toast.LENGTH_LONG).show();
                 return false;
             }
@@ -189,7 +185,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             } catch (Exception e) {
             }
             if (portnum <= 0 || 65535 < portnum) {
-                Toast.makeText(FsPreferenceActivity.this,
+                Toast.makeText(MainActivity.this,
                         R.string.port_validation_error, Toast.LENGTH_LONG).show();
                 return false;
             }
@@ -236,8 +232,8 @@ public class FsPreferenceActivity extends PreferenceActivity implements
 
         Preference help = findPref("help");
         help.setOnPreferenceClickListener(preference -> {
-            Log.v(TAG, "On preference help clicked");
-            Context context = FsPreferenceActivity.this;
+            Cat.v("On preference help clicked");
+            Context context = MainActivity.this;
             AlertDialog ad = new AlertDialog.Builder(context)
                     .setTitle(R.string.help_dlg_title)
                     .setMessage(R.string.help_dlg_message)
@@ -251,7 +247,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
 
         Preference about = findPref("about");
         about.setOnPreferenceClickListener(preference -> {
-            AlertDialog ad = new AlertDialog.Builder(FsPreferenceActivity.this)
+            AlertDialog ad = new AlertDialog.Builder(MainActivity.this)
                     .setTitle(R.string.about_dlg_title)
                     .setMessage(R.string.about_dlg_message)
                     .setPositiveButton(getText(R.string.ok), null)
@@ -306,11 +302,11 @@ public class FsPreferenceActivity extends PreferenceActivity implements
 
         updateRunningState();
 
-        Log.d(TAG, "onResume: Register the preference change listner");
+        Cat.d("onResume: Register the preference change listner");
         SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
         sp.registerOnSharedPreferenceChangeListener(this);
 
-        Log.d(TAG, "onResume: Registering the FTP server actions");
+        Cat.d("onResume: Registering the FTP server actions");
         IntentFilter filter = new IntentFilter();
         filter.addAction(FsService.ACTION_STARTED);
         filter.addAction(FsService.ACTION_STOPPED);
@@ -322,10 +318,10 @@ public class FsPreferenceActivity extends PreferenceActivity implements
     protected void onPause() {
         super.onPause();
 
-        Log.v(TAG, "onPause: Unregistering the FTPServer actions");
+        Cat.v("onPause: Unregistering the FTPServer actions");
         unregisterReceiver(mFsActionsReceiver);
 
-        Log.d(TAG, "onPause: Unregistering the preference change listner");
+        Cat.d("onPause: Unregistering the preference change listner");
         SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
         sp.unregisterOnSharedPreferenceChangeListener(this);
     }
@@ -348,7 +344,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
         String username = FsSettings.getUserName();
         String password = FsSettings.getPassWord();
 
-        Log.v(TAG, "Updating login summary");
+        Cat.v("Updating login summary");
         PreferenceScreen loginPreference = findPref("login");
         loginPreference.setSummary(username + " : " + transformPassword(password));
         ((BaseAdapter) loginPreference.getRootAdapter()).notifyDataSetChanged();
@@ -368,7 +364,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
             // Fill in the FTP server address
             InetAddress address = FsService.getLocalInetAddress();
             if (address == null) {
-                Log.v(TAG, "Unable to retrieve wifi ip address");
+                Cat.v("Unable to retrieve wifi ip address");
                 runningPref.setSummary(R.string.cant_get_url);
                 return;
             }
@@ -390,7 +386,7 @@ public class FsPreferenceActivity extends PreferenceActivity implements
     BroadcastReceiver mFsActionsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.v(TAG, "action received: " + intent.getAction());
+            Cat.v("action received: " + intent.getAction());
             // remove all pending callbacks
             mHandler.removeCallbacksAndMessages(null);
             // action will be ACTION_STARTED or ACTION_STOPPED

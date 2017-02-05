@@ -79,7 +79,7 @@ public class FsNotification extends BroadcastReceiver {
         CharSequence contentTitle = context.getString(R.string.notif_title);
         CharSequence contentText = String.format(context.getString(R.string.notif_text), iptext);
 
-        Intent notificationIntent = new Intent(context, FsPreferenceActivity.class);
+        Intent notificationIntent = new Intent(context, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 
@@ -91,7 +91,7 @@ public class FsNotification extends BroadcastReceiver {
 
         int preferenceIcon = android.R.drawable.ic_menu_preferences;
         CharSequence preferenceText = context.getString(R.string.notif_settings_text);
-        Intent preferenceIntent = new Intent(context, FsPreferenceActivity.class);
+        Intent preferenceIntent = new Intent(context, MainActivity.class);
         preferenceIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent preferencePendingIntent = PendingIntent.getActivity(context, 0, preferenceIntent, 0);
 
