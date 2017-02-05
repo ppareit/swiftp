@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
@@ -56,6 +57,7 @@ import java.util.List;
 
 import be.ppareit.android.DynamicMultiSelectListPreference;
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
@@ -80,7 +82,9 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
                     .setTitle(R.string.demo_while_paid_dialog_title)
                     .setMessage(R.string.demo_while_paid_dialog_message)
                     .setPositiveButton(getText(android.R.string.ok),
-                            (d,w) -> {finish();})
+                            (d, w) -> {
+                                finish();
+                            })
                     .create();
             ad.show();
         }
@@ -266,8 +270,11 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
         if (item.getItemId() == R.id.action_feedback) {
             String to = "pieter.pareit@gmail.com";
             String subject = "FTP Server feedback";
-            String message = "Device: " + Build.MODEL + "\nAndroid version: "
-                    + Build.VERSION.RELEASE + "\nFeedback: \n";
+            String message = "Device: " + Build.MODEL + "\n" +
+                    "Android version: " + VERSION.RELEASE + "-" + VERSION.SDK_INT + "\n" +
+                    "Application: " + BuildConfig.APPLICATION_ID + " (" + BuildConfig.FLAVOR + ")\n" +
+                    "Application version: " + BuildConfig.VERSION_NAME + " - " + BuildConfig.VERSION_CODE + "\n" +
+                    "Feedback: \n_";
 
             Intent email = new Intent(Intent.ACTION_SEND);
             email.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
@@ -276,6 +283,8 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
             email.setType("message/rfc822");
 
             startActivity(email);
+
+            Toast.makeText(this, "Please use clear English!", Toast.LENGTH_LONG).show();
         } else if (item.getItemId() == R.id.action_about) {
             startActivity(new Intent(this, AboutActivity.class));
         }
