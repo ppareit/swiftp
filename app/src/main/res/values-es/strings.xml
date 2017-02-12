@@ -18,14 +18,20 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
+
 <resources>
     <string name="swiftp_name">FTP Server</string>
+    <string name="swiftp_name_free">FTP Server (Libre)</string>
+    <string name="swiftp_name_demo">FTP Server (Demo)</string>
     <string name="running_label">Servidor FTP</string>
     <string name="running_summary_stopped">Cambiar el estado del servidor FTP</string>
     <string name="running_summary_started">en %s</string>
     <string name="running_summary_failed">Fallo al iniciar el servidor FTP. ¿Hay conexión con la red local (Wi\u2011Fi o Ethernet)?</string>
     <string name="market_version_label">Versión de pago</string>
-    <string name="market_version_summary">Esta es una versión de demostración. Da tu apoyo al desarrollador obteniendo una versión de pago de la aplicación. Toca aquí para ir a Play Store.</string>
+    <string name="market_version_summary">
+        Esta es una versión de demostración.
+        Da tu apoyo al desarrollador obteniendo una versión de pago de la aplicación.
+        Toca aquí para ir a Play Store.</string>
     <string name="settings_label">Ajustes</string>
     <string name="user_label">Usuario</string>
     <string name="loginsettings_label">Ajustes de acceso\u2026</string>
@@ -39,7 +45,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="portnumber_label">Número de puerto</string>
     <string name="chroot_label">Carpeta de inicio</string>
     <string name="acceptwifi_label">Aceptar conexión desde Wi\u2011Fi</string>
-    <string name="wakelock_label">Mantener encendido</string>
+    <string name="wakelock_label">Mantener encendido (máxima velocidad de CPU)</string>
     <string name="extra_label">Otros</string>
     <string name="help_label">Ayuda\u2026</string>
     <string name="about_label">Acerca de\u2026</string>
@@ -65,29 +71,15 @@ permanecerá encendido durante la ejecución del servidor FTP.\n\n
 
 Por razones de seguridad y consumo, es recomendable detener el servidor FTP después de su uso.\n\n
 
-Si algo no funciona como se espera que lo haga, por favor informa a Pieter Pareit en
-pieter.pareit@gmail.com.\n\n
+Si algo no funciona como se espera que lo haga, por favor informa a Pieter Pareit
+(pieter.pareit@gmail.com).\n\n
 
 El desarrollo de esta aplicación de código abierto está soportado por la compra de esta
 aplicación a través de Play Store. Puedes seguir su desarrollo en la dirección
 https://github.com/ppareit/swiftp . Para tener una idea de las características que se
 implementarán, mira el registro de incidencias en https://github.com/ppareit/swiftp/issues .\n\n
     </string>
-    <string name="about_dlg_title">Acerca de FTP Server</string>
-    <string name="about_dlg_message">
-        <b>Descripción:</b>
-        FTP Server (SwiFTP) permite ejecutar un servidor FTP en tu dispositivo Android.\n\n
-        <b>Sitio web:</b>
-        http://ppareit.github.com/swiftp/\n\n
-        <b>Mantenido por:</b>
-        Pieter Pareit (pieter.pareit@gmail.com)\n\n
-        <b>Programado por:</b>
-        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n
-        <b>Diseñado por:</b>
-        Birgit Niemegeers\n\n
-        <b>Licenciado bajo:</b>
-        GNU General Public License v3.0\n\n
-    </string>
+
     <string name="notif_server_starting">Iniciando servidor FTP en %s</string>
     <string name="notif_title">Servidor FTP ejecutándose</string>
     <string name="notif_text">en %s</string>
@@ -95,6 +87,25 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
 
     <string name="nsd_servername_postfix">FTP Server</string>
 
+    <string name="select">Seleccionar</string>
+    <string name="cancel">Cancelar</string>
+
+    <string name="feedback">Enviar comentarios</string>
+    <string name="about">Acerca de</string>
+
+    <string name="autoconnect_label">Ajustes de autoconexión\u2026</string>
+    <string name="autoconnect_summary">Seleccionar las redes Wi\u2011Fi para conectarse automáticamente</string>
+    <string name="autoconnect_error_enable_wifi_for_access_points">Habilitar Wi\u2011Fi para obtener una lista de puntos de acceso</string>
+
+    <string name="demo_while_paid_dialog_title">Iniciada la demostración con la versión de pago instalada</string>
+    <string name="demo_while_paid_dialog_message">
+        Gracias por tu soporte al desarrollo.\n\n
+        Estás intentando iniciar la versión de demostración mientras
+        la versión de pago está instalada. Para un funcionamiento óptimo
+        te preguntaremos para que desinstales a versión de demostración y
+        solo ejecutes la versión de pago.
+    </string>
+    
     <!-- old strings -->
     <string name="cant_get_url">Imposible obtener url</string>
     <string name="unknown">desconocido</string>
@@ -109,5 +120,15 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="pst_unreachable">inalcanzable</string>
     <string name="pst_disconnected">desconectado</string>
     <string name="storage_warning">Aviso: Almacenamiento no disponible. Puede que quieras desmontarlo.</string>
+
+    <!-- auto added strings by AS -->
     <string name="widget_name">Widget FTP Server</string>
+    <string name="notif_settings_text">Ajustes</string>
+    <string name="app_copyright">Copyright 2012 - 2017</string>
+    <string name="about_license_title">Licencia</string>
+    <string name="about_license_name">GNU GPL3</string>
+    <string name="about_description_title">Descripción</string>
+    <string name="about_description_text">FTP Server (SwiFTP) te permite ejecutar un servidor FTP en tu dispositivo Android.</string>
+    <string name="about_libraries_title">Librerías</string>
+    <string name="about_contributor_title">Colaboradores</string>
 </resources>
