@@ -116,11 +116,11 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="cant_get_url">Не удается получить URL</string>
     <string name="unknown">неизвестно</string>
     <string name="ok">OK</string>
-    <string name="username_validation_error">Имя пользователя должно состоять из одного или более бкувенно-цифровых символов. Никакие другие символы не допускаются.</string>
+    <string name="username_validation_error">Имя пользователя должно состоять из одного или более буквенно-цифровых символов. Никакие другие символы не допускаются.</string>
     <string name="password_validation_error">Пароль длолжен состоять из одного или более бкувенно-цифровых символов. Никакие другие символы не допускаются.</string>
     <string name="port_validation_error">Номер порта должен иметь значение от 1 до 65535.</string>
     <string name="wifi_state_receiver_label">WifiStateReceiver</string>
-    <string name="pst_connecting">поключение</string>
+    <string name="pst_connecting">подключение</string>
     <string name="pst_connected">подключено</string>
     <string name="pst_failed">ошибка</string>
     <string name="pst_unreachable">недоступно</string>
