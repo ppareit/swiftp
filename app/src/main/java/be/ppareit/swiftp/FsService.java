@@ -20,18 +20,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -45,8 +33,22 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.ServerSocket;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import be.ppareit.swiftp.server.SessionThread;
 import be.ppareit.swiftp.server.TcpListener;
+import lombok.val;
 
 public class FsService extends Service implements Runnable {
     private static final String TAG = FsService.class.getSimpleName();
@@ -242,7 +244,7 @@ public class FsService extends Service implements Runnable {
 
     /**
      * Takes the wake lock
-     *
+     * <p>
      * Many devices seem to not properly honor a PARTIAL_WAKE_LOCK, which should prevent
      * CPU throttling. For these devices, we have a option to force the phone into a full
      * wake lock.
@@ -254,7 +256,7 @@ public class FsService extends Service implements Runnable {
                 Log.d(TAG, "takeWakeLock: Taking full wake lock");
                 wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, TAG);
             } else {
-                Log.d(TAG, "maybeTakeWakeLock: Taking parial wake lock");
+                Log.d(TAG, "maybeTakeWakeLock: Taking partial wake lock");
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
             }
             wakeLock.setReferenceCounted(false);
@@ -278,32 +280,17 @@ public class FsService extends Service implements Runnable {
      * @return local ip adress or null if not found
      */
     public static InetAddress getLocalInetAddress() {
-        if (isConnectedToLocalNetwork() == false) {
+        if (!isConnectedToLocalNetwork()) {
             Log.e(TAG, "getLocalInetAddress called and no connection");
             return null;
         }
-        // TODO: next if block could probably be removed
-        if (isConnectedUsingWifi() == true) {
-            Context context = App.getAppContext();
-            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            int ipAddress = wm.getConnectionInfo().getIpAddress();
-            if (ipAddress == 0)
-                return null;
-            return Util.intToInet(ipAddress);
-        }
-        // This next part should be able to get the local ip address, but in some case
-        // I'm receiving the routable address
         try {
-            Enumeration<NetworkInterface> netinterfaces = NetworkInterface
-                    .getNetworkInterfaces();
-            while (netinterfaces.hasMoreElements()) {
-                NetworkInterface netinterface = netinterfaces.nextElement();
-                Enumeration<InetAddress> adresses = netinterface.getInetAddresses();
-                while (adresses.hasMoreElements()) {
-                    InetAddress address = adresses.nextElement();
-                    // this is the condition that sometimes gives problems
-                    if (address.isLoopbackAddress() == false
-                            && address.isLinkLocalAddress() == false)
+            val networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface networkInterface : networkInterfaces) {
+                for (InetAddress address : Collections.list(networkInterface.getInetAddresses())) {
+                    if (!address.isLoopbackAddress()
+                            && !address.isLinkLocalAddress()
+                            && address instanceof Inet4Address)
                         return address;
                 }
             }
@@ -321,13 +308,12 @@ public class FsService extends Service implements Runnable {
     public static boolean isConnectedToLocalNetwork() {
         boolean connected = false;
         Context context = App.getAppContext();
-        ConnectivityManager cm = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         connected = ni != null
-                && ni.isConnected() == true
+                && ni.isConnected()
                 && (ni.getType() & (ConnectivityManager.TYPE_WIFI | ConnectivityManager.TYPE_ETHERNET)) != 0;
-        if (connected == false) {
+        if (!connected) {
             Log.d(TAG, "isConnectedToLocalNetwork: see if it is an WIFI AP");
             WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             try {
@@ -337,12 +323,12 @@ public class FsService extends Service implements Runnable {
                 e.printStackTrace();
             }
         }
-        if (connected == false) {
+        if (!connected) {
             Log.d(TAG, "isConnectedToLocalNetwork: see if it is an USB AP");
             try {
-                for (NetworkInterface netInterface : Collections.list(NetworkInterface
-                        .getNetworkInterfaces())) {
-                    if (netInterface.getDisplayName().startsWith("rndis") == true) {
+                val networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+                for (NetworkInterface netInterface : networkInterfaces) {
+                    if (netInterface.getDisplayName().startsWith("rndis")) {
                         connected = true;
                     }
                 }
@@ -353,19 +339,6 @@ public class FsService extends Service implements Runnable {
         return connected;
     }
 
-    /**
-     * Checks to see if we are connected using wifi
-     *
-     * @return true if connected using wifi
-     */
-    public static boolean isConnectedUsingWifi() {
-        Context context = App.getAppContext();
-        ConnectivityManager cm = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        return ni != null && ni.isConnected() == true
-                && ni.getType() == ConnectivityManager.TYPE_WIFI;
-    }
 
     /**
      * All messages server<->client are also send to this call
