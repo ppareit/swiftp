@@ -69,21 +69,6 @@ via de google play store.. Je kan de ontwikkeling volgen via
 https://github.com/ppareit/swiftp . Problemen die opgelost worden en nieuwe mogelijkheden
 van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     </string>
-    <string name="about_dlg_title">Over FTP Server</string>
-    <string name="about_dlg_message">
-        <b>Beschrijving: </b>
-        FTP Server (SwiFTP) laat het toe om een ftp server te draaien op je android toestel.\n\n\
-        <b>Website:</b>
-        http://ppareit.github.com/swiftp/\n\n
-        <b>Huidige ontwikkelaar:</b>
-        Pieter Pareit (pieter.pareit@gmail.com)\n\n
-        <b>Programming: </b>\
-        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
-        <b>Artwork:</b>
-        Birgit Niemegeers\n\n
-        <b>License: </b>
-        GNU General Public License v3.0\n\n
-    </string>
     <string name="notification_server_starting">Starten op %s</string>
     <string name="notification_title">FTP Server is verbonden</string>
     <string name="notification_text">op %s</string>

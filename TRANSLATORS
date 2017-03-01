@@ -21,6 +21,18 @@ Mladen Pejaković <pejakm@autistici.org>
 Changes in translations
 =======================
 
+For version 2.14.1
+    (Nothing needs to be done by the translators for this version)
+    * running_summary_failed_to_get_ip_address (used to be cant_get_url)
+    - unknown
+    - ok
+    - wifi_state_receiver_label
+    - pst_connecting
+    - pst_connected
+    - pst_failed
+    - pst_unreachable
+    - pst_disconnected
+
 For version 2.14
     + app_copyright
     + app_url

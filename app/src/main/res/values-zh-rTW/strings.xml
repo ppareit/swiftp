@@ -69,23 +69,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 隨時查看並跟進開發進度，如果您有任何建議或想法，您可以訪問
 https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     </string>
-    <string name="about_dlg_title">關於 FTP Server</string>
-    <string name="about_dlg_message">
-        <b>簡介：</b>
-        FTP Server (SwiFTP) 允許在您的 Android 設備上運行文件傳輸服務器。\n\n\
-        <b>站點：</b>
-        http://ppareit.github.com/swiftp/\n\n
-        <b>維護：</b>
-        Pieter Pareit (pieter.pareit@gmail.com)\n\n
-        <b>編譯：</b>
-        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
-        <b>美工：</b>
-        Birgit Niemegeers\n\n
-        <b>許可：</b>
-        GNU General Public License v3.0\n\n
-    </string>
 
-        <string name="nsd_servername_postfix">FTP Server</string>
+    <string name="nsd_servername_postfix">FTP Server</string>
 
     <string name="notification_server_starting">啟動於 %s 端口</string>
     <string name="notification_title">FTP Server 正在運行</string>

@@ -112,7 +112,6 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="username_validation_error">パスワードは1文字以上の英数字で入力してください。他の文字は使用できません。</string>
     <string name="password_validation_error">パスワードは1文字以上の英数字で入力してください。他の文字は使用できません。</string>
     <string name="port_validation_error">ポート番号は 1 ～ 65535 の範囲で入力してください。</string>
-    <string name="wifi_state_receiver_label">Wifiステートレシーバ</string>
     <string name="storage_warning">警告: ストレージが使用できません。アンマウントする必要があるかもしれません。</string>
 
     <string name="widget_name">FTP サーバ・ウィジェット</string>

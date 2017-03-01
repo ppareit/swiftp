@@ -76,21 +76,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 Если у Вас есть идеи, как улучшить программу, Вы можете оформить заявку в системе отслеживания по адресу
 https://github.com/ppareit/swiftp/issues .\n\n
     </string>
-    <string name="about_dlg_title">О программе FTP Server</string>
-    <string name="about_dlg_message">
-        <b>Описание: </b>
-        FTP Server (SwiFTP) - простая и удобная программа, которая позволяет запустить ftp сервер на Вашем android-телефоне или планшетном компьютере.\n\n\
-        <b>Веб-сайт:</b>
-        http://ppareit.github.com/swiftp/\n\n
-        <b>Текущее сопровождение:</b>
-        Pieter Pareit (pieter.pareit@gmail.com)\n\n
-        <b>Программирование: </b>\
-        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
-        <b>Оформление:</b>
-        Birgit Niemegeers\n\n
-        <b>Лицензии: </b>
-        GNU General Public License v3.0\n\n
-</string>
 
     <!-- Special care for the follwoing string pleace -->
     <string name="notification_server_starting">FTP сервер запускается...%s</string>

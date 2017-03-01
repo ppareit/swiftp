@@ -1,3 +1,8 @@
+Version 2.14.1 (2017/03/01)
+    * Improve about dialog
+    * Improve feedback option
+    * Updated translation for Serbian, Japanese, Spanish and Russian (thanks to multiple translators)
+    * Bug fixes
 Version 2.13.1 (2017/01/22)
     + Add helpful message when both paid and demo are installed
 Version 2.13 (2017/01/07)

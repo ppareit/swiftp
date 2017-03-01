@@ -72,21 +72,6 @@ Die weitere Entwicklung dieses Open Source Programmes kann durch den Kauf im Goo
 Alle Entwicklungsaktivitäten können unter https://github.com/ppareit/swiftp verfolgt werden.
 Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/ppareit/swiftp/issues einsehbar.\n\n
     </string>
-    <string name="about_dlg_title">FTP Server Info</string>
-    <string name="about_dlg_message">
-        <b>Beschreibung: </b>
-        FTP Server (SwiFTP) ermöglicht es dir einen FTP-Server auf deinem Androidgerät laufen zu lassen.\n\n\
-        <b>Webseite:</b>
-        http://ppareit.github.com/swiftp\n\n
-        <b>Aktueller Betreuer:</b>
-        Pieter Pareit (pieter.pareit@gmail.com)\n\n
-        <b>Programmierung: </b>\
-        Dave Revell (dave.revell@gmail.com), Pieter Pareit (pieter.pareit@gmail.com)\n\n\
-        <b>Grafik:</b>
-        Birgit Niemegeers\n\n
-        <b>Lizenz: </b>
-        GNU General Public License v3.0\n\n
-    </string>
     <string name="notification_server_starting">Starte auf %s</string>
     <string name="notification_title">FTP Server gestartet</string>
     <string name="notification_text">auf %s</string>
