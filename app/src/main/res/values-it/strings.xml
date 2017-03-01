@@ -33,17 +33,17 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         Clicca qui per visitare il market.</string>
     <string name="settings_label">Impostazioni</string>
     <string name="user_label">Utente</string>
-    <string name="loginsettings_label">Impostazioni login...</string>
+    <string name="login_settings_label">Impostazioni login...</string>
     <string name="username_label">Nome utente</string>
     <string name="password_label">Password</string>
     <string name="show_password_label">Mostra password</string>
     <string name="anonymous_label">Anonimo</string>
     <string name="allow_anonymous_label">Permetti login anonimo</string>
     <string name="anonymous_summary">Gli utenti anonimi avranno accesso in sola lettura</string>
-    <string name="advancedsettings_label">Impostazioni avanzate...</string>
-    <string name="portnumber_label">Numbero Porta</string>
+    <string name="advanced_settings_label">Impostazioni avanzate...</string>
+    <string name="port_number_label">Numbero Porta</string>
     <string name="chroot_label">Rimani nella cartella</string>
-    <string name="acceptwifi_label">Accetta connessioni via WiFi</string>
+    <string name="accept_wifi_label">Accetta connessioni via WiFi</string>
     <string name="wakelock_label">Mantieni attivo il dispositivo (piena velocità di CPU)</string>
     <string name="extra_label">Extra</string>
     <string name="help_label">Aiuto...</string>
@@ -93,26 +93,17 @@ https://github.com/ppareit/swiftp/issues .\n\n
         <b>Licenza: </b>
         GNU General Public License v3.0\n\n
     </string>
-    <string name="notif_server_starting">Esecuzione su %s</string>
-    <string name="notif_title">Server FTP in esecuzione</string>
-    <string name="notif_text">su %s</string>
-    <string name="notif_stop_text">Interrompi server</string>
+    <string name="notification_server_starting">Esecuzione su %s</string>
+    <string name="notification_title">Server FTP in esecuzione</string>
+    <string name="notification_text">su %s</string>
+    <string name="notification_stop_text">Interrompi server</string>
 
     <string name="nsd_servername_postfix">Server FTP</string>
 
-    <!-- old strings -->
-    <string name="cant_get_url">Impossibile ottenere l\'indirizzo</string>
-    <string name="unknown">sconosciuto</string>
-    <string name="ok">OK</string>
+    <string name="running_summary_failed_to_get_ip_address">Impossibile ottenere l\'indirizzo</string>
     <string name="username_validation_error">Il nome utente deve avere almeno 1 carattere alfanumerico. Non sono ammessi altri caratteri.</string>
     <string name="password_validation_error">La password deve avere almeno 1 carattere alfanumerico. Non sono ammessi altri caratteri.</string>
     <string name="port_validation_error">La porta deve essere fra 1 e 65535.</string>
-    <string name="wifi_state_receiver_label">WifiStateReceiver</string>
-    <string name="pst_connecting">connessione</string>
-    <string name="pst_connected">connesso</string>
-    <string name="pst_failed">fallito</string>
-    <string name="pst_unreachable">non disponibile</string>
-    <string name="pst_disconnected">disconnesso</string>
     <string name="storage_warning">Attenzione: la memoria di massa non è disponibile. Probabilmente dovresti smontarla.</string>
     <string name="widget_name">Widget Server FTP</string>
 

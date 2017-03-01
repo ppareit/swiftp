@@ -34,17 +34,17 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         Toca aquí para ir a Play Store.</string>
     <string name="settings_label">Ajustes</string>
     <string name="user_label">Usuario</string>
-    <string name="loginsettings_label">Ajustes de acceso\u2026</string>
+    <string name="login_settings_label">Ajustes de acceso\u2026</string>
     <string name="username_label">Nombre de usuario</string>
     <string name="password_label">Contraseña</string>
     <string name="show_password_label">Mostrar contraseña</string>
     <string name="anonymous_label">Acceso anónimo</string>
     <string name="allow_anonymous_label">Permitir acceso anónimo</string>
     <string name="anonymous_summary">El acceso anónimo solo tiene permisos de lectura</string>
-    <string name="advancedsettings_label">Ajustes avanzados\u2026</string>
-    <string name="portnumber_label">Número de puerto</string>
+    <string name="advanced_settings_label">Ajustes avanzados\u2026</string>
+    <string name="port_number_label">Número de puerto</string>
     <string name="chroot_label">Carpeta de inicio</string>
-    <string name="acceptwifi_label">Aceptar conexión desde Wi\u2011Fi</string>
+    <string name="accept_wifi_label">Aceptar conexión desde Wi\u2011Fi</string>
     <string name="wakelock_label">Mantener encendido (máxima velocidad de CPU)</string>
     <string name="extra_label">Otros</string>
     <string name="help_label">Ayuda\u2026</string>
@@ -80,10 +80,10 @@ https://github.com/ppareit/swiftp . Para tener una idea de las características 
 implementarán, mira el registro de incidencias en https://github.com/ppareit/swiftp/issues .\n\n
     </string>
 
-    <string name="notif_server_starting">Iniciando servidor FTP en %s</string>
-    <string name="notif_title">Servidor FTP ejecutándose</string>
-    <string name="notif_text">en %s</string>
-    <string name="notif_stop_text">Detener servidor</string>
+    <string name="notification_server_starting">Iniciando servidor FTP en %s</string>
+    <string name="notification_title">Servidor FTP ejecutándose</string>
+    <string name="notification_text">en %s</string>
+    <string name="notification_stop_text">Detener servidor</string>
 
     <string name="nsd_servername_postfix">FTP Server</string>
 
@@ -106,22 +106,12 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
         solo ejecutes la versión de pago.
     </string>
     
-    <!-- old strings -->
-    <string name="cant_get_url">Imposible obtener url</string>
-    <string name="unknown">desconocido</string>
-    <string name="ok">Aceptar</string>
+    <string name="running_summary_failed_to_get_ip_address">Imposible obtener url</string>
     <string name="username_validation_error">El usuario debe tener uno o más caracteres alfanuméricos. El resto de caracteres no están permitidos.</string>
     <string name="password_validation_error">La contraseña debe tener uno o más caracteres alfanuméricos. El resto de caracteres no están permitidos.</string>
     <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
-    <string name="wifi_state_receiver_label">WifiStateReceiver</string>
-    <string name="pst_connecting">conectando</string>
-    <string name="pst_connected">conectado</string>
-    <string name="pst_failed">fallido</string>
-    <string name="pst_unreachable">inalcanzable</string>
-    <string name="pst_disconnected">desconectado</string>
     <string name="storage_warning">Aviso: Almacenamiento no disponible. Puede que quieras desmontarlo.</string>
 
-    <!-- auto added strings by AS -->
     <string name="widget_name">Widget FTP Server</string>
     <string name="notif_settings_text">Ajustes</string>
     <string name="app_copyright">Copyright 2012 - 2017</string>

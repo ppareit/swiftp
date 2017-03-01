@@ -30,17 +30,17 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="market_version_summary">Dit is de FTP server demo. Je kan de ontwikkeling van dit programma ondersteunen door de FTP Server te kopen op de android play store. Click hier om naar de play store te gaan.</string>
     <string name="settings_label">Instellingen</string>
     <string name="user_label">Gebruiker</string>
-    <string name="loginsettings_label">Aanmeld instellingen...</string>
+    <string name="login_settings_label">Aanmeld instellingen...</string>
     <string name="username_label">Gebruikersnaam</string>
     <string name="password_label">Paswoord</string>
     <string name="show_password_label">Toon paswoord</string>
     <string name="anonymous_label">Anoniem</string>
     <string name="allow_anonymous_label">Anoniem aanloggen toestaan</string>
     <string name="anonymous_summary">Anonieme gebruikers mogen enkel bestanden lezen</string>
-    <string name="advancedsettings_label">Geavanceerde instellingen...</string>
-    <string name="portnumber_label">Poort nummer</string>
+    <string name="advanced_settings_label">Geavanceerde instellingen...</string>
+    <string name="port_number_label">Poort nummer</string>
     <string name="chroot_label">Blijf in map</string>
-    <string name="acceptwifi_label">Accepteer verbindingen via wifi</string>
+    <string name="accept_wifi_label">Accepteer verbindingen via wifi</string>
     <string name="wakelock_label">Houd toestel wakker (volledige CPU snelheid)</string>
     <string name="extra_label">Extra\'s</string>
     <string name="help_label">Help...</string>
@@ -84,10 +84,10 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
         <b>License: </b>
         GNU General Public License v3.0\n\n
     </string>
-    <string name="notif_server_starting">Starten op %s</string>
-    <string name="notif_title">FTP Server is verbonden</string>
-    <string name="notif_text">op %s</string>
-    <string name="notif_stop_text">Stop server</string>
+    <string name="notification_server_starting">Starten op %s</string>
+    <string name="notification_title">FTP Server is verbonden</string>
+    <string name="notification_text">op %s</string>
+    <string name="notification_stop_text">Stop server</string>
 
     <string name="nsd_servername_postfix">FTP Server</string>
 
@@ -100,19 +100,10 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="autoconnect_label">Automatische verbinding...</string>
     <string name="autoconnect_summary">Selecteer de wifi netwerken waar automatisch moet worden verbonden</string>
 
-    <!-- old strings -->
-    <string name="cant_get_url">Can\'t retreive url</string>
-    <string name="unknown">unknown</string>
-    <string name="ok">OK</string>
+    <string name="running_summary_failed_to_get_ip_address">Can\'t retreive url</string>
     <string name="username_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>
     <string name="password_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>
     <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
-    <string name="wifi_state_receiver_label">WifiStateReceiver</string>
-    <string name="pst_connecting">connecting</string>
-    <string name="pst_connected">connected</string>
-    <string name="pst_failed">failed</string>
-    <string name="pst_unreachable">unreachable</string>
-    <string name="pst_disconnected">disconnected</string>
     <string name="storage_warning">Warning: storage is not available. You may want to unmount it.</string>
     <string name="widget_name">FTP Server Widget</string>
 

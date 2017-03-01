@@ -33,10 +33,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="username_label">用戶名</string>
     <string name="password_label">密碼</string>
     <string name="show_password_label">顯示密碼</string>
-    <string name="advancedsettings_label">高級設定...</string>
-    <string name="portnumber_label">端口號</string>
+    <string name="advanced_settings_label">高級設定...</string>
+    <string name="port_number_label">端口號</string>
     <string name="chroot_label">設為根目錄</string>
-    <string name="acceptwifi_label">接受 Wi-Fi 連結</string>
+    <string name="accept_wifi_label">接受 Wi-Fi 連結</string>
     <string name="wakelock_label">保持設備喚醒（最大 CPU 頻率）</string>
     <string name="extra_label">其他</string>
     <string name="help_label">幫助...</string>
@@ -83,27 +83,18 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
         Birgit Niemegeers\n\n
         <b>許可：</b>
         GNU General Public License v3.0\n\n
-</string>
+    </string>
 
         <string name="nsd_servername_postfix">FTP Server</string>
 
-    <string name="notif_server_starting">啟動於 %s 端口</string>
-    <string name="notif_title">FTP Server 正在運行</string>
-    <string name="notif_text">服務運行於 %s 端口</string>
+    <string name="notification_server_starting">啟動於 %s 端口</string>
+    <string name="notification_title">FTP Server 正在運行</string>
+    <string name="notification_text">服務運行於 %s 端口</string>
 
-    <!-- old strings -->
-    <string name="cant_get_url">無法檢索 URL</string>
-    <string name="unknown">未知</string>
-    <string name="ok">確認</string>
+    <string name="running_summary_failed_to_get_ip_address">無法檢索 URL</string>
     <string name="username_validation_error">用戶名至少需要包括一個或更多字符，不允許為空。</string>
     <string name="password_validation_error">密碼至少需要包括一個或更多字符，不允許為空。</string>
     <string name="port_validation_error">端口號必須在 1 至 65535 之間。</string>
-    <string name="wifi_state_receiver_label">WifiStateReceiver</string>
-    <string name="pst_connecting">正在連結</string>
-    <string name="pst_connected">已連結</string>
-    <string name="pst_failed">已失敗</string>
-    <string name="pst_unreachable">無法訪問</string>
-    <string name="pst_disconnected">未連結</string>
     <string name="storage_warning">警告：當前存儲暫不可用，您可能需要取消掛載。</string>
     <string name="widget_name">FTP Server Widget</string>
 

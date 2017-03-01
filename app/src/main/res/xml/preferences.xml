@@ -39,7 +39,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <PreferenceScreen
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="login"
-            android:title="@string/loginsettings_label"
+            android:title="@string/login_settings_label"
             android:summary="" >
            <PreferenceCategory
                android:key="settings"
@@ -79,11 +79,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <PreferenceScreen
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:title="@string/advancedsettings_label" >
+            android:title="@string/advanced_settings_label" >
             <EditTextPreference
                 android:defaultValue="@string/portnumber_default"
                 android:key="portNum"
-                android:title="@string/portnumber_label" />
+                android:title="@string/port_number_label" />
             <Preference
                 android:key="chrootDir"
                 android:title="@string/chroot_label" />

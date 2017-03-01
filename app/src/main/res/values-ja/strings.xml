@@ -35,17 +35,17 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         ここをクリックすると GooglePlay に移動します。</string>
     <string name="settings_label">設定</string>
     <string name="user_label">ユーザ</string>
-    <string name="loginsettings_label">ログイン設定...</string>
+    <string name="login_settings_label">ログイン設定...</string>
     <string name="username_label">ユーザ名</string>
     <string name="password_label">パスワード</string>
     <string name="show_password_label">パスワードを表示する</string>
     <string name="anonymous_label">匿名</string>
     <string name="allow_anonymous_label">匿名ログインを許可する</string>
     <string name="anonymous_summary">匿名ログインは読み取りアクセスのみ許可されます</string>
-    <string name="advancedsettings_label">拡張設定...</string>
-    <string name="portnumber_label">ポート番号</string>
+    <string name="advanced_settings_label">拡張設定...</string>
+    <string name="port_number_label">ポート番号</string>
     <string name="chroot_label">ルートとして公開するフォルダ</string>
-    <string name="acceptwifi_label">wifi の接続を許可する</string>
+    <string name="accept_wifi_label">wifi の接続を許可する</string>
     <string name="wakelock_label">端末を起動したままにする (最高 CPU スピード)</string>
     <string name="extra_label">その他</string>
     <string name="help_label">ヘルプ...</string>
@@ -79,10 +79,10 @@ google play ストアでこのプログラムを購入して頂くことで、�
 https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     </string>
 
-    <string name="notif_server_starting">開始しています %s</string>
-    <string name="notif_title">FTP サーバは実行中です</string>
-    <string name="notif_text">%s</string>
-    <string name="notif_stop_text">サーバを停止します</string>
+    <string name="notification_server_starting">開始しています %s</string>
+    <string name="notification_title">FTP サーバは実行中です</string>
+    <string name="notification_text">%s</string>
+    <string name="notification_stop_text">サーバを停止します</string>
 
     <string name="nsd_servername_postfix">FTP サーバ</string>
 
@@ -108,23 +108,13 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
         有料版のみを開始するようお願いします。
     </string>
 
-    <!-- old strings -->
-    <string name="cant_get_url">url を取得できません</string>
-    <string name="unknown">不明</string>
-    <string name="ok">OK</string>
+    <string name="running_summary_failed_to_get_ip_address">url を取得できません</string>
     <string name="username_validation_error">パスワードは1文字以上の英数字で入力してください。他の文字は使用できません。</string>
     <string name="password_validation_error">パスワードは1文字以上の英数字で入力してください。他の文字は使用できません。</string>
     <string name="port_validation_error">ポート番号は 1 ～ 65535 の範囲で入力してください。</string>
     <string name="wifi_state_receiver_label">Wifiステートレシーバ</string>
-    <string name="pst_connecting">接続しています</string>
-    <string name="pst_connected">接続しました</string>
-    <string name="pst_failed">失敗しました</string>
-    <string name="pst_unreachable">到達不能</string>
-    <string name="pst_disconnected">切断されました</string>
     <string name="storage_warning">警告: ストレージが使用できません。アンマウントする必要があるかもしれません。</string>
 
-
-    <!-- auto added strings by AS -->
     <string name="widget_name">FTP サーバ・ウィジェット</string>
     <string name="notif_settings_text">設定</string>
     <string name="app_copyright">Copyright 2012 - 2017</string>

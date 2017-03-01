@@ -241,7 +241,7 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
             AlertDialog ad = new AlertDialog.Builder(context)
                     .setTitle(R.string.help_dlg_title)
                     .setMessage(R.string.help_dlg_message)
-                    .setPositiveButton(R.string.ok, null)
+                    .setPositiveButton(android.R.string.ok, null)
                     .create();
             ad.show();
             Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
@@ -361,7 +361,7 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
             InetAddress address = FsService.getLocalInetAddress();
             if (address == null) {
                 Cat.v("Unable to retrieve wifi ip address");
-                runningPref.setSummary(R.string.cant_get_url);
+                runningPref.setSummary(R.string.running_summary_failed_to_get_ip_address);
                 return;
             }
             String iptext = "ftp://" + address.getHostAddress() + ":"

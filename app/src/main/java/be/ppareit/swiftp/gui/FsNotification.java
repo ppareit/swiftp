@@ -72,19 +72,19 @@ public class FsNotification extends BroadcastReceiver {
 
         // Instantiate a Notification
         int icon = R.mipmap.notification;
-        CharSequence tickerText = String.format(context.getString(R.string.notif_server_starting), iptext);
+        CharSequence tickerText = String.format(context.getString(R.string.notification_server_starting), iptext);
         long when = System.currentTimeMillis();
 
         // Define Notification's message and Intent
-        CharSequence contentTitle = context.getString(R.string.notif_title);
-        CharSequence contentText = String.format(context.getString(R.string.notif_text), iptext);
+        CharSequence contentTitle = context.getString(R.string.notification_title);
+        CharSequence contentText = String.format(context.getString(R.string.notification_text), iptext);
 
         Intent notificationIntent = new Intent(context, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 
         int stopIcon = android.R.drawable.ic_menu_close_clear_cancel;
-        CharSequence stopText = context.getString(R.string.notif_stop_text);
+        CharSequence stopText = context.getString(R.string.notification_stop_text);
         Intent stopIntent = new Intent(FsService.ACTION_STOP_FTPSERVER);
         PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0,
                 stopIntent, PendingIntent.FLAG_ONE_SHOT);

@@ -33,17 +33,17 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         Hier klicken um zum Markt zu gelangen.</string>
     <string name="settings_label">Einstellungen</string>
     <string name="user_label">Benutzer</string>
-    <string name="loginsettings_label">Anmeldedaten...</string>
+    <string name="login_settings_label">Anmeldedaten...</string>
     <string name="username_label">Benutzer</string>
     <string name="password_label">Passwort</string>
     <string name="show_password_label">Passwort anzeigen</string>
     <string name="anonymous_label">Anonym</string>
     <string name="allow_anonymous_label">Anonyme Anmeldungen erlauben</string>
     <string name="anonymous_summary">Anonyme Anmeldungen haben nur Leseberechtigung</string>
-    <string name="advancedsettings_label">Erweiterte Einstellungen...</string>
-    <string name="portnumber_label">Port</string>
+    <string name="advanced_settings_label">Erweiterte Einstellungen...</string>
+    <string name="port_number_label">Port</string>
     <string name="chroot_label">Auf Verzeichnis beschränken</string>
-    <string name="acceptwifi_label">WiFi-Verbindungen erlauben</string>
+    <string name="accept_wifi_label">WiFi-Verbindungen erlauben</string>
     <string name="wakelock_label">Gerät wach halten (volle CPU-Geschwindigkeit)</string>
     <string name="extra_label">Extras</string>
     <string name="help_label">Hilfe...</string>
@@ -87,26 +87,17 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
         <b>Lizenz: </b>
         GNU General Public License v3.0\n\n
     </string>
-    <string name="notif_server_starting">Starte auf %s</string>
-    <string name="notif_title">FTP Server gestartet</string>
-    <string name="notif_text">auf %s</string>
-    <string name="notif_stop_text">Stoppe Server</string>
+    <string name="notification_server_starting">Starte auf %s</string>
+    <string name="notification_title">FTP Server gestartet</string>
+    <string name="notification_text">auf %s</string>
+    <string name="notification_stop_text">Stoppe Server</string>
 
     <string name="nsd_servername_postfix">FTP Server</string>
 
-    <!-- old strings -->
-    <string name="cant_get_url">URL konnte nicht abgerufen werden</string>
-    <string name="unknown">unbekannt</string>
-    <string name="ok">OK</string>
+    <string name="running_summary_failed_to_get_ip_address">URL konnte nicht abgerufen werden</string>
     <string name="username_validation_error">Der Benutzer muss aus 1 oder mehr alphanumerischen Zeichen bestehen, andere Zeichen sind nicht erlaubt!</string>
     <string name="password_validation_error">Das Passwort muss aus 1 oder mehr alphanumerischen Zeichen bestehen, andere Zeichen sind nicht erlaubt!</string>
     <string name="port_validation_error">Die Portnummer muss im Bereich von 1 bis 65535 liegen!</string>
-    <string name="wifi_state_receiver_label">Wifi-Status-Empfänger</string>
-    <string name="pst_connecting">verbinde</string>
-    <string name="pst_connected">verbunden</string>
-    <string name="pst_failed">fehlgeschlagen</string>
-    <string name="pst_unreachable">unerreichbar</string>
-    <string name="pst_disconnected">getrennt</string>
     <string name="storage_warning">Warnung: das Speichermedium ist nicht verfügbar!</string>
     <string name="widget_name">FTP Server Widget</string>
 

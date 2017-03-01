@@ -33,17 +33,17 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 		Чтобы сделать это, нажмите здесь. </string>
     <string name="settings_label">Настройки</string>
     <string name="user_label">ПОЛЬЗОВАТЕЛЬ</string>
-    <string name="loginsettings_label">Настройки подключения...</string>
+    <string name="login_settings_label">Настройки подключения...</string>
     <string name="username_label">Имя пользователя</string>
     <string name="password_label">Пароль</string>
     <string name="show_password_label">Отображать пароль</string>
     <string name="anonymous_label">АНОНИМНОЕ ПОДКЛЮЧЕНИЕ</string>
     <string name="allow_anonymous_label">Разрешить анонимное подключение</string>
     <string name="anonymous_summary">При анонимном подключении доступ резрешен только на чтение</string>
-    <string name="advancedsettings_label">Расширенные настройки...</string>
-    <string name="portnumber_label">Номер порта</string>
+    <string name="advanced_settings_label">Расширенные настройки...</string>
+    <string name="port_number_label">Номер порта</string>
     <string name="chroot_label">Корневая папка доступа</string>
-    <string name="acceptwifi_label">Принимать подключения по wifi</string>
+    <string name="accept_wifi_label">Принимать подключения по wifi</string>
     <string name="wakelock_label">Не давать уснуть (максимальная производительность ЦП)</string>
     <string name="extra_label">Дополнительно</string>
     <string name="help_label">Помощь...</string>
@@ -93,10 +93,10 @@ https://github.com/ppareit/swiftp/issues .\n\n
 </string>
 
     <!-- Special care for the follwoing string pleace -->
-    <string name="notif_server_starting">FTP сервер запускается...%s</string>
-    <string name="notif_title">FTP сервер включен.</string>
-    <string name="notif_text">URL для доступа %s</string>
-    <string name="notif_stop_text">Остановить сервер</string>
+    <string name="notification_server_starting">FTP сервер запускается...%s</string>
+    <string name="notification_title">FTP сервер включен.</string>
+    <string name="notification_text">URL для доступа %s</string>
+    <string name="notification_stop_text">Остановить сервер</string>
 
     <string name="nsd_servername_postfix">FTP сервер</string>
 
@@ -112,19 +112,10 @@ https://github.com/ppareit/swiftp/issues .\n\n
         Для получения списка сетей включите wifi
     </string>
 
-    <!-- old strings -->
-    <string name="cant_get_url">Не удается получить URL</string>
-    <string name="unknown">неизвестно</string>
-    <string name="ok">OK</string>
+    <string name="running_summary_failed_to_get_ip_address">Не удается получить URL</string>
     <string name="username_validation_error">Имя пользователя должно состоять из одного или более буквенно-цифровых символов. Никакие другие символы не допускаются.</string>
     <string name="password_validation_error">Пароль длолжен состоять из одного или более бкувенно-цифровых символов. Никакие другие символы не допускаются.</string>
     <string name="port_validation_error">Номер порта должен иметь значение от 1 до 65535.</string>
-    <string name="wifi_state_receiver_label">WifiStateReceiver</string>
-    <string name="pst_connecting">подключение</string>
-    <string name="pst_connected">подключено</string>
-    <string name="pst_failed">ошибка</string>
-    <string name="pst_unreachable">недоступно</string>
-    <string name="pst_disconnected">отключено</string>
     <string name="storage_warning">Предупреждение: файловый носитель не доступен. Возможно, Вы хотели отсоединить его.</string>
     <string name="widget_name">FTP Server Widget</string>
     <string name="notif_settings_text">Настройки</string>
