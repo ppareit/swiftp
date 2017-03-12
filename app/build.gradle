@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 21401
         versionName "2.14.1"
     }

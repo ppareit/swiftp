@@ -23,11 +23,10 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.util.Log;
 
 import net.vrallev.android.cat.Cat;
 
-import java.util.List;
+import lombok.val;
 
 public class App extends Application {
 
@@ -59,11 +58,9 @@ public class App extends Application {
     }
 
     public static boolean isPaidVersionInstalled() {
-        List<ApplicationInfo> packages;
-        PackageManager pm;
-
-        pm = getAppContext().getPackageManager();
-        packages = pm.getInstalledApplications(0);
+        Context context = getAppContext();
+        val pm = context.getPackageManager();
+        val packages = pm.getInstalledApplications(0);
         for (ApplicationInfo packageInfo : packages) {
             if(packageInfo.packageName.equals("be.ppareit.swiftp"))
                 return true;

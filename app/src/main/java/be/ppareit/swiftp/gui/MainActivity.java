@@ -19,6 +19,7 @@
 
 package be.ppareit.swiftp.gui;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,6 +27,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
@@ -41,6 +43,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
+import android.support.annotation.NonNull;
 import android.text.util.Linkify;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,10 +74,19 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
     private EditTextPreference mPassWordPref;
     private Handler mHandler = new Handler();
 
+    final static int PERMISSIONOS_REQUEST_CODE = 12;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Cat.d("created");
         super.onCreate(savedInstanceState);
+
+        if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ||
+                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONOS_REQUEST_CODE);
+            }
+        }
 
         if (App.isFreeVersion() && App.isPaidVersionInstalled()) {
             Cat.d("Running demo while paid is installed");
@@ -255,6 +267,25 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
             return true;
         });
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode != PERMISSIONOS_REQUEST_CODE) {
+            Cat.e("Unhandled request code");
+            return;
+        }
+        Cat.d("permissions: " + permissions.toString());
+        Cat.d("grantResults: " + grantResults.toString());
+        if (grantResults.length > 0) {
+            // Permissions not granted, close down
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Unable to proceed without the needed permissions, shuting down", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            }
+        }
     }
 
     @Override
