@@ -164,7 +164,7 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
                 pref -> {
                     Cat.d("autoconnect populate listener");
 
-                    WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                     List<WifiConfiguration> configs = wifiManager.getConfiguredNetworks();
                     if (configs == null) {
                         Cat.e("Unable to receive wifi configurations, bark at user and bail");

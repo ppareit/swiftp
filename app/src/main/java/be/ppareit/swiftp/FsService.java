@@ -267,7 +267,7 @@ public class FsService extends Service implements Runnable {
     private void takeWifiLock() {
         Log.d(TAG, "takeWifiLock: Taking wifi lock");
         if (wifiLock == null) {
-            WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            WifiManager manager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             wifiLock = manager.createWifiLock(TAG);
             wifiLock.setReferenceCounted(false);
         }
