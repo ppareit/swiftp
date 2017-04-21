@@ -64,7 +64,7 @@ public class WifiStateChangeReceiver extends BroadcastReceiver {
                 Cat.v("We are connecting to a new wifi network on a running server, ignore");
                 return;
             }
-            WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             if (wifiInfo == null) {
                 Cat.e("Null wifi info received, bailing");
