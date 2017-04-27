@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* The code that is common to LIST and NLST is implemented in the abstract
+/* The code that is common to LIST, NLST and MLSD is implemented in the abstract
  * class CmdAbstractListing, which is inherited here.
- * CmdLIST and CmdNLST just override the
+ * CmdLIST, CmdNLST and CmdMLSD just override the
  * makeLsString() function in different ways to provide the different forms
  * of output.
  */
@@ -48,11 +48,6 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
         mainblock: {
             String param = getParameter(input);
             Log.d(TAG, "MLSD parameter: " + param);
-            while (param.startsWith("-")) {
-                // Skip all dashed -args, if present
-                Log.d(TAG, "MLSD is skipping dashed arg " + param);
-                param = getParameter(param);
-            }
             File fileToList = null;
             if (param.equals("")) {
                 fileToList = sessionThread.getWorkingDir();
@@ -68,20 +63,21 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
                 }
             }
             String listing;
-            if (fileToList.isDirectory()) {
-                StringBuilder response = new StringBuilder();
-                errString = listDirectory(response, fileToList);
-                if (errString != null) {
-                    break mainblock;
-                }
-                listing = response.toString();
-            } else {
-                listing = makeLsString(fileToList);
-                if (listing == null) {
-                    errString = "501 Not a directory\r\n";
-                    break mainblock;
-                }
+            if (!fileToList.isDirectory()) {
+                errString = "501 Not a directory\r\n";
+                break mainblock;
             }
+
+            StringBuilder response = new StringBuilder();
+            // TBD
+            // https://tools.ietf.org/html/rfc3659#page-39
+            // MLSD auto need to add [type=cdir] and [type=pdir]
+            errString = listDirectory(response, fileToList);
+            if (errString != null) {
+                break mainblock;
+            }
+            listing = response.toString();
+
             errString = sendListing(listing);
             if (errString != null) {
                 break mainblock;
@@ -98,8 +94,7 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
         // have already been handled by sendListing, so we can just quit now.
     }
 
-    // Generates a line of a directory listing in the traditional /bin/ls
-    // format.
+    // Generates a line of a directory listing in the Format of MLSx
     @Override
     protected String makeLsString(File file) {      
         StringBuilder response = new StringBuilder();

@@ -25,7 +25,7 @@ import android.util.Log;
 import be.ppareit.swiftp.Util;
 
 /**
- * Implements File Modification Time
+ * Implements MLST command
  */
 public class CmdMLST extends FtpCmd implements Runnable {
     private static final String TAG = CmdMLST.class.getSimpleName();

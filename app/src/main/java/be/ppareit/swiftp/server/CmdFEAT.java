@@ -35,6 +35,9 @@ public class CmdFEAT extends FtpCmd implements Runnable {
         sessionThread.writeString(" UTF8\r\n");
         sessionThread.writeString(" MDTM\r\n");
         sessionThread.writeString(" MFMT\r\n");
+        // https://tools.ietf.org/html/rfc3659#page-50
+        // Note that there is no distinct FEAT output for MLSD.  The presence of
+        // the MLST feature indicates that both MLST and MLSD are supported.
         sessionThread.writeString(" MLST Type*;Size*;Modify*;Perm\r\n");
         sessionThread.writeString("211 End\r\n");
         Log.d(TAG, "run: Gave FEAT");

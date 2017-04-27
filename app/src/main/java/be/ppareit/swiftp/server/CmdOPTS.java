@@ -61,7 +61,7 @@ public class CmdOPTS extends FtpCmd implements Runnable {
                     Log.i(TAG, "Ignoring OPTS UTF8 for something besides ON");
                 }
                 break mainBlock;
-            }else if(optName.equals("MLST")){
+            } else if(optName.equals("MLST")) {
                 Log.d(TAG, "Got OPTS MLST: " + optVal);
                 String[] opts = optVal.split(";");
                 boolean hasType = false, hasSize = false, hasModify = false, hasPerm = false;

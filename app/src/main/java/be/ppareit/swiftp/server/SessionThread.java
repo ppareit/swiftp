@@ -418,11 +418,10 @@ public class SessionThread extends Thread {
     }
 
     public String[] getFormatTypes() {
-		return formatTypes;
-	}
+        return formatTypes;
+    }
 
-	public void setFormatTypes(String[] formatTypes) {
-		this.formatTypes = formatTypes;
-	}
-	
+    public void setFormatTypes(String[] formatTypes) {
+        this.formatTypes = formatTypes;
+    }
 }
