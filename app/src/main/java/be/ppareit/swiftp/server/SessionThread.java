@@ -55,6 +55,7 @@ public class SessionThread extends Thread {
     private boolean sendWelcomeBanner;
     protected String encoding = Defaults.SESSION_ENCODING;
     protected long offset = -1; // where to start append when using REST
+    protected String[] formatTypes = {"Size", "Modify", "Type", "Perm"}; // types option of MLST/MLSD
     int authFails = 0;
 
     public static int MAX_AUTH_FAILS = 3;
@@ -416,4 +417,11 @@ public class SessionThread extends Thread {
         this.encoding = encoding;
     }
 
+    public String[] getFormatTypes() {
+        return formatTypes;
+    }
+
+    public void setFormatTypes(String[] formatTypes) {
+        this.formatTypes = formatTypes;
+    }
 }
