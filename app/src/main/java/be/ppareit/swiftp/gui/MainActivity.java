@@ -74,7 +74,7 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
     private EditTextPreference mPassWordPref;
     private Handler mHandler = new Handler();
 
-    final static int PERMISSIONOS_REQUEST_CODE = 12;
+    final static int PERMISSIONS_REQUEST_CODE = 12;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
         if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ||
                     checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONOS_REQUEST_CODE);
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_CODE);
             }
         }
 
@@ -271,7 +271,7 @@ public class MainActivity extends PreferenceActivity implements OnSharedPreferen
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode != PERMISSIONOS_REQUEST_CODE) {
+        if (requestCode != PERMISSIONS_REQUEST_CODE) {
             Cat.e("Unhandled request code");
             return;
         }
