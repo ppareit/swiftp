@@ -58,8 +58,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="allow_anonymous_label">Autoriser les identifications anonymes</string>
     <string name="anonymous_summary">Les identifications anonymes ont un accès en lecture seulement</string>
     <string name="advanced_settings_label">Paramètres avancés...</string>
-    <string name="port_number_label">Noméro du port</string>
-    <string name="port_validation_error">Le port doit être inclu entre 1 et 65535.</string>
+    <string name="port_number_label">Numéro du port</string>
+    <string name="port_validation_error">Le port doit être inclus entre 1 et 65535.</string>
     <string name="chroot_label">Rester dans le dossier</string>
     <string name="accept_wifi_label">Accepter la connexion en wifi</string>
     <string name="wakelock_label">Garder l\'appareil activé (vitesse CPU maximale)</string>
@@ -99,7 +99,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
 
     <string name="notification_server_starting">Démarrage sur %s</string>
-    <string name="notification_title">Le Serveur FTP est en marche</string>
+    <string name="notification_title">Le serveur FTP est en marche</string>
     <string name="notification_text">sur %s</string>
     <string name="notification_stop_text">Arrêter le serveur</string>
 
@@ -123,9 +123,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="demo_while_paid_dialog_message">
         Merci de soutenir le développement!\n\n
         Vous essayez de démarrer la version démo alors que la version 
-		payante est installée. Pour une expérience optimale, veuillez
-		désinstaller la version démo et n\'utiliser que la version 
-		payante.
+	payante est installée. Pour une expérience optimale, veuillez
+	désinstaller la version démo et n\'utiliser que la version 
+	payante.
     </string>
 
     <string name="storage_warning">
