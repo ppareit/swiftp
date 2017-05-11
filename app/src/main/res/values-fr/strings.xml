@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2011-2013 Pieter Pareit
+Copyright 2009 David Revell
+
+This file is part of SwiFTP.
+
+SwiFTP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SwiFTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="swiftp_name">Serveur FTP</string>
+    <string name="swiftp_name_free">Serveur FTP (Gratuit)</string>
+    <string name="swiftp_name_demo">Serveur FTP (Démo)</string>
+    <string name="running_label">Serveur FTP</string>
+    <string name="running_summary_stopped">Changer l\'état du serveur FTP</string>
+    <string name="running_summary_started">sur %s</string>
+    <string name="running_summary_failed">
+        Impossible de démarrer le serveur FTP, êtes-vous bien connecté au réseau local (wifi ou ethernet)?
+    </string>
+    <string name="running_summary_failed_to_get_ip_address">
+        Impossible de démarrer le serveur FTP, n\'a pas pu obtenir l\'adresse ip
+    </string>
+
+    <string name="market_version_label">Version Google Play</string>
+    <string name="market_version_summary">
+        Ceci est la version démo de Serveur FTP.
+        Soutenez le développement en obtenant Serveur FTP depuis le Google Play Store.
+        Appuyez ici pour aller sur le Store.
+    </string>
+    <string name="settings_label">Paramètres</string>
+    <string name="user_label">Utilisateur</string>
+    <string name="login_settings_label">Paramètres d\'identification...</string>
+    <string name="username_label">Utilisateur</string>
+    <string name="password_label">Mot de passe</string>
+    <string name="show_password_label">Afficher le mot de passe</string>
+    <string name="username_validation_error">
+        Le nom d\'utilisateur doit être composé de 1 caractère alphanumérique ou plus.
+        Aucun autre caractère n\'est accepté.
+    </string>
+    <string name="password_validation_error">
+        Le mot de passe doit être composé de 1 caractère alphanumérique ou plus.
+        Aucun autre caractère n\'est accepté.
+    </string>
+    <string name="anonymous_label">Anonyme</string>
+    <string name="allow_anonymous_label">Autoriser les identifications anonymes</string>
+    <string name="anonymous_summary">Les identifications anonymes ont un accès en lecture seulement</string>
+    <string name="advanced_settings_label">Paramètres avancés...</string>
+    <string name="port_number_label">Noméro du port</string>
+    <string name="port_validation_error">Le port doit être inclu entre 1 et 65535.</string>
+    <string name="chroot_label">Rester dans le dossier</string>
+    <string name="accept_wifi_label">Accepter la connexion en wifi</string>
+    <string name="wakelock_label">Garder l\'appareil activé (vitesse CPU maximale)</string>
+    <string name="extra_label">Plus</string>
+    <string name="help_label">Aide...</string>
+    <string name="about_label">À propos...</string>
+    <string name="help_dlg_title">Aide Serveur FTP</string>
+    <string name="help_dlg_message">\
+Merci d\'utiliser Serveur FTP (SwiFTP)! Voici quelques brèves instructions d\'utilisation.
+Rendez-vous sur http://ppareit.github.com/swiftp/ pour plus d\'informations.\n\n\
+\
+Cette application vous permet d\'exécuter un serveur FTP sur votre appareil Android. Cela 
+signifie que n\'importe quel programme peut accèder à vos fichiers lorsque le serveur est 
+en marche. Par exemple, entrer \'ftp://...\' dans la barre d\'adresse de Firefox vous 
+permattra de naviguer dans les dossiers de votre appareil à partir d\'un ordinateur.\n\n
+\
+Par défaut, le nom d\'utilisateur et le mot de passe sont tous les deux \'ftp\', vous 
+devriez les changer. Vous utilisez ce nom d\'utilisateur et ce mot de passer pour accèder 
+au serveur.\n\n
+\
+Il y à une option (\"Garder l\'appareil activé\") dans les paramètres qui permet de 
+résoudre un problème où les transferts de fichiers sont lents ou s\'arrêtent complètement 
+lorsque le téléphone se met en veille. Si vous avez ce problème, cochez cette case et 
+redémarrez l\'application. Votre appareil restera éveillé tant que le serveur est en 
+marche.\n\n
+\
+Pour des raisons d\'économie de batterie et de sécurité, il est fortement conseillé 
+d\'arrêter le serveur après utilisation.\n\n\
+\
+Si quelque chose ne fonctionne pas comme prévu, veuillez en faire part à Pieter Pareit 
+(pieter.pareit@gmail.com).\n\n\
+\
+Soutenez le développement de cette application open source en l\'achetant depuis le Google 
+Play Store. Vous pouvez suivre son développement sur https://github.com/ppareit/swiftp . 
+Pour avoir une idée des fonctionnalités à venir, rendez-vous sur le suivi des problèmes à 
+https://github.com/ppareit/swiftp/issues .\n\n
+    </string>
+
+    <string name="notification_server_starting">Démarrage sur %s</string>
+    <string name="notification_title">Le Serveur FTP est en marche</string>
+    <string name="notification_text">sur %s</string>
+    <string name="notification_stop_text">Arrêter le serveur</string>
+
+    <string name="nsd_servername_postfix">Serveur FTP</string>
+
+    <string name="select">Sélectionner</string>
+    <string name="cancel">Annuler</string>
+
+    <string name="feedback">Envoyer un retour</string>
+    <string name="about">À propos</string>
+
+    <string name="autoconnect_label">Paramètres de connexion automatique...</string>
+    <string name="autoconnect_summary">Sélectionnez les réseaux wifi où se connecter automatiquement</string>
+    <string name="autoconnect_error_enable_wifi_for_access_points">
+        Activez le wifi pour obtenir une liste des points d\'accès
+    </string>
+
+    <string name="demo_while_paid_dialog_title">
+        Démo démarrée tandis que la version payante est installée
+    </string>
+    <string name="demo_while_paid_dialog_message">
+        Merci de soutenir le développement!\n\n
+        Vous essayez de démarrer la version démo alors que la version 
+		payante est installée. Pour une expérience optimale, veuillez
+		désinstaller la version démo et n\'utiliser que la version 
+		payante.
+    </string>
+
+    <string name="storage_warning">
+        Attention: stockage indisponible. Vous devrez peut-être le démonter.
+    </string>
+
+
+    <string name="widget_name">Widget Serveur FTP</string>
+    <string name="notif_settings_text">Paramètres</string>
+    <string name="app_copyright">Copyright 2012 - 2017</string>
+    <string name="about_license_title">Licence</string>
+    <string name="about_license_name">GNU GPL3</string>
+    <string name="about_description_title">Déscription</string>
+    <string name="about_description_text">
+        Serveur FTP (SwiFTP) vous permet d\'exécuter un serveur FTP sur votre appareil Android.
+    </string>
+    <string name="about_libraries_title">Bibliothèques</string>
+    <string name="about_contributor_title">Contributions</string>
+
+</resources>
