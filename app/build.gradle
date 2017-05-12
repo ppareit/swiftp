@@ -12,8 +12,8 @@ android {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 21402
-        versionName "2.14.2"
+        versionCode 21500
+        versionName "2.15.0"
     }
     productFlavors {
         playstore_paid {
@@ -47,9 +47,8 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'net.vrallev.android:cat:1.0.2'
     provided "org.projectlombok:lombok:1.16.6"
-    compile 'com.android.support:appcompat-v7:25.2.0'
-//    compile 'com.android.support:support-v4:25.2.0'
-    compile 'com.android.support:design:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
     compile 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.2'
 }
 

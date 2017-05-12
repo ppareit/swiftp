@@ -1,3 +1,7 @@
+Version 2.15 (2017/05/11)
+    * Bugfixes
+    + add MLSD/MLST commands (by j3l11234)
+    + add French translation (by valentind44)
 Version 2.14.2 (2017/03/12)
     * Fix permission check on android 6 and up
 Version 2.14.1 (2017/03/01)
