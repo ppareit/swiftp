@@ -110,23 +110,4 @@ abstract public class Util {
         SimpleDateFormat df = createSimpleDateFormat();
         return df.parse(time);
     }
-
-    public static void setTheme(Activity activity, String theme) {
-        switch(theme) {
-            case "0":
-                activity.setTheme(R.style.AppThemeDark);
-                break;
-            case "1":
-                activity.setTheme(R.style.AppThemeLight);
-                break;
-            case "2":
-                activity.setTheme(R.style.AppThemeLight_DarkActionBar);
-                break;
-        }
-    }
-
-    public static void setTheme(Activity activity) {
-        setTheme(activity,
-                PreferenceManager.getDefaultSharedPreferences(activity).getString("theme", "0"));
-    }
 }
