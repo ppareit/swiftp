@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.R;
+import be.ppareit.swiftp.Util;
 
 /**
  * Created by ppareit on 5/02/17.
@@ -21,7 +22,7 @@ public class AboutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        Util.setTheme(this);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.about_layout);

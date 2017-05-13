@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="empty_array" />
+    <string-array name="pref_list_themes">
+        <item>@string/dark_theme</item>
+        <item>@string/light_theme</item>
+        <item>@string/light_theme_dark_ab</item>
+    </string-array>
+    <string-array name="pref_list_themes_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>

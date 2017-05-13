@@ -154,4 +154,10 @@ https://github.com/ppareit/swiftp/issues .\n\n
         Birgit Niemegeers
     </string>
 
+    <string name="app_theme">Theme...</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="light_theme">Light Theme</string>
+    <string name="light_theme_dark_ab">Mixed Theme</string>
+    <string name="restarting_app">Restarting app...</string>
+
 </resources>

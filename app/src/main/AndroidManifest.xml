@@ -39,7 +39,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <activity
             android:name="be.ppareit.swiftp.gui.MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppThemeDark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -48,7 +48,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <activity
             android:name=".gui.AboutActivity"
-            android:theme="@style/Theme.AppCompat"
+            android:theme="@style/AppThemeDark"
             android:parentActivityName=".gui.MainActivity"/>
 
         <service android:name="be.ppareit.swiftp.FsService" />
@@ -114,7 +114,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:exported="true"
             android:icon="@drawable/widget_on"
             android:label="@string/swiftp_name"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppThemeDark"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustResize">
             <!-- this Intent filter allows the plug-in to be discovered by the host. -->
