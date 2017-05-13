@@ -105,6 +105,21 @@ public class FsSettings {
         return sp.getStringSet("autoconnect_preference", new TreeSet<>());
     }
 
+    public static int getTheme() {
+        SharedPreferences sp = getSharedPreferences();
+
+        switch(sp.getString("theme", "0")) {
+            case "0":
+                return R.style.AppThemeDark;
+            case "1":
+                return R.style.AppThemeLight;
+            case "2":
+                return R.style.AppThemeLight_DarkActionBar;
+        }
+
+        return R.style.AppThemeDark;
+    }
+
     /**
      * @return the SharedPreferences for this application
      */

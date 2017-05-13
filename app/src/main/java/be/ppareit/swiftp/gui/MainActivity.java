@@ -37,6 +37,7 @@ import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.BuildConfig;
+import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 import be.ppareit.swiftp.Util;
 
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Cat.d("created");
-        Util.setTheme(this);
+        setTheme(FsSettings.getTheme());
         super.onCreate(savedInstanceState);
 
         if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
