@@ -26,7 +26,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent" >
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
@@ -47,6 +48,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="20dp"
             android:orientation="vertical">
 
             <LinearLayout
