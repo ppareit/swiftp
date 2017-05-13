@@ -19,10 +19,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import android.util.Log;
 
 public class CmdPORT extends FtpCmd implements Runnable {
     private static final String TAG = CmdPORT.class.getSimpleName();

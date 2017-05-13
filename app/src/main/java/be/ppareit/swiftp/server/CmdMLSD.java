@@ -26,9 +26,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.io.File;
 
-import android.util.Log;
 import be.ppareit.swiftp.Util;
 
 public class CmdMLSD extends CmdAbstractListing implements Runnable {

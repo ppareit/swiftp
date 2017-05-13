@@ -19,6 +19,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,9 +33,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-import android.util.Log;
-import be.ppareit.swiftp.Defaults;
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.Defaults;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 

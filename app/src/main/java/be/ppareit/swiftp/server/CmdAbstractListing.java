@@ -27,11 +27,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
-
-import android.util.Log;
 
 public abstract class CmdAbstractListing extends FtpCmd {
     // TODO: .class.getSimpleName() from abstract class?

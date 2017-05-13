@@ -26,12 +26,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import android.util.Log;
 
 public class CmdLIST extends CmdAbstractListing implements Runnable {
     static private final String TAG = CmdLIST.class.getSimpleName();

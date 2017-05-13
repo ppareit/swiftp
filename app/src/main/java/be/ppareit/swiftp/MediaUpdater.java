@@ -1,8 +1,5 @@
 package be.ppareit.swiftp;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
@@ -11,6 +8,9 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.util.Log;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 

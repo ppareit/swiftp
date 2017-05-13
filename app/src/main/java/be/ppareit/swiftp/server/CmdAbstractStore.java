@@ -24,6 +24,8 @@ package be.ppareit.swiftp.server;
  * the common code is in this class, and inherited by CmdSTOR and CmdAPPE.
  */
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -31,7 +33,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
-import android.util.Log;
 import be.ppareit.swiftp.Defaults;
 import be.ppareit.swiftp.MediaUpdater;
 

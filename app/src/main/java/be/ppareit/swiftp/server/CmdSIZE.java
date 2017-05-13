@@ -1,9 +1,9 @@
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.IOException;
-
-import android.util.Log;
 
 public class CmdSIZE extends FtpCmd {
     private static final String TAG = CmdSIZE.class.getSimpleName();
