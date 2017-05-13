@@ -89,5 +89,10 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="port_validation_error">La porta deve essere fra 1 e 65535.</string>
     <string name="storage_warning">Attenzione: la memoria di massa non è disponibile. Probabilmente dovresti smontarla.</string>
     <string name="widget_name">Widget Server FTP</string>
+    <string name="restarting_app">Riavviare app...</string>
+    <string name="dark_theme">Tema scuro</string>
+    <string name="light_theme">Tema chiaro</string>
+    <string name="light_theme_dark_ab">Tema misto</string>
+    <string name="app_theme">Tema...</string>
 
 </resources>

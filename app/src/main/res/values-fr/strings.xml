@@ -144,5 +144,10 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="about_libraries_title">Bibliothèques</string>
     <string name="about_contributor_title">Contributions</string>
+    <string name="restarting_app">Redémarrage de l\'application...</string>
+    <string name="dark_theme">Thème sombre</string>
+    <string name="light_theme">Thème lumineux</string>
+    <string name="light_theme_dark_ab">Thème mixte</string>
+    <string name="app_theme">Thème...</string>
 
 </resources>

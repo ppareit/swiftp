@@ -123,5 +123,10 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="about_description_text">ФТП сервер (SwiFTP) вам дозвољава да покренете фтп сервер на вашем Андроид уређају.</string>
     <string name="about_libraries_title">Библиотеке</string>
     <string name="about_contributor_title">Доприносиоци</string>
+    <string name="restarting_app">Поновно покретање апликације...</string>
+    <string name="dark_theme">Мрачна тема</string>
+    <string name="light_theme">лигхт Тема</string>
+    <string name="light_theme_dark_ab">микед Тема</string>
+    <string name="app_theme">Тема...</string>
 
 </resources>
