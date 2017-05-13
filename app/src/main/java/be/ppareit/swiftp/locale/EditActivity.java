@@ -31,6 +31,7 @@ import com.twofortyfouram.locale.sdk.client.ui.activity.AbstractPluginActivity;
 import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.R;
+import be.ppareit.swiftp.Util;
 
 import static be.ppareit.swiftp.locale.SettingsBundleHelper.BUNDLE_BOOLEAN_RUNNING;
 import static be.ppareit.swiftp.locale.SettingsBundleHelper.generateBundle;
@@ -43,6 +44,7 @@ public class EditActivity extends AbstractPluginActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Util.setTheme(this);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.locale_edit_layout);

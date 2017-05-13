@@ -99,6 +99,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <PreferenceCategory
         android:key="extra_category"
         android:title="@string/extra_label" >
+        <ListPreference
+            android:key="theme"
+            android:title="@string/app_theme"
+            android:entries="@array/pref_list_themes"
+            android:entryValues="@array/pref_list_themes_values"
+            android:defaultValue="0"/>
         <Preference
             android:key="help"
             android:title="@string/help_label" />

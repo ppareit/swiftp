@@ -20,6 +20,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp;
 
+import android.app.Activity;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.net.InetAddress;
@@ -107,5 +109,24 @@ abstract public class Util {
     public static Date parseDate(String time) throws ParseException {
         SimpleDateFormat df = createSimpleDateFormat();
         return df.parse(time);
+    }
+
+    public static void setTheme(Activity activity, String theme) {
+        switch(theme) {
+            case "0":
+                activity.setTheme(R.style.AppThemeDark);
+                break;
+            case "1":
+                activity.setTheme(R.style.AppThemeLight);
+                break;
+            case "2":
+                activity.setTheme(R.style.AppThemeLight_DarkActionBar);
+                break;
+        }
+    }
+
+    public static void setTheme(Activity activity) {
+        setTheme(activity,
+                PreferenceManager.getDefaultSharedPreferences(activity).getString("theme", "0"));
     }
 }
