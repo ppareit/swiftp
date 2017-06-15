@@ -20,6 +20,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package be.ppareit.swiftp.server;
 
 import android.util.Log;
+
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
 

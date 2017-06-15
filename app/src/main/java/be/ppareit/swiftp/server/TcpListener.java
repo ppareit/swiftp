@@ -19,10 +19,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import android.util.Log;
 import be.ppareit.swiftp.FsService;
 
 public class TcpListener extends Thread {

@@ -26,9 +26,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
-import java.io.File;
-
 import android.util.Log;
+
+import java.io.File;
 
 public class CmdNLST extends CmdAbstractListing implements Runnable {
     private static final String TAG = CmdNLST.class.getSimpleName();

@@ -19,9 +19,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
-import java.net.InetAddress;
-
 import android.util.Log;
+
+import java.net.InetAddress;
 
 public class CmdPASV extends FtpCmd implements Runnable {
     private static final String TAG = CmdPASV.class.getSimpleName();

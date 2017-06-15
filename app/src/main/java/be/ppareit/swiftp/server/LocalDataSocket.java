@@ -19,12 +19,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import android.util.Log;
 import be.ppareit.swiftp.Defaults;
 import be.ppareit.swiftp.FsService;
 

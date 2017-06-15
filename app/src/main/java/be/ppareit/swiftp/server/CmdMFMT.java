@@ -19,6 +19,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,7 +29,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import be.ppareit.swiftp.Util;
-import android.util.Log;
 
 /**
  * Implements File Modification Time
