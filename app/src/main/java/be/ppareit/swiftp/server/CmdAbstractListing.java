@@ -81,7 +81,7 @@ public abstract class CmdAbstractListing extends FtpCmd {
     // Send the directory listing over the data socket. Used by CmdLIST and CmdNLST.
     // Returns an error string on failure, or returns null if successful.
     protected String sendListing(String listing) {
-        if (sessionThread.startUsingDataSocket()) {
+        if (sessionThread.openDataSocket()) {
             Log.d(TAG, "LIST/NLST done making socket");
         } else {
             sessionThread.closeDataSocket();

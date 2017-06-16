@@ -26,78 +26,73 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-import android.util.Log;
-import be.ppareit.swiftp.Defaults;
+import net.vrallev.android.cat.Cat;
+
 import be.ppareit.swiftp.App;
-import be.ppareit.swiftp.FsService;
+import be.ppareit.swiftp.Defaults;
 import be.ppareit.swiftp.FsSettings;
 
 public class SessionThread extends Thread {
-    private static final String TAG = SessionThread.class.getSimpleName();
 
-    protected boolean shouldExit = false;
-    protected Socket cmdSocket;
-    protected ByteBuffer buffer = ByteBuffer.allocate(Defaults.getInputBufferSize());
-    protected boolean pasvMode = false;
-    protected boolean binaryMode = false;
-    protected Account account = new Account();
-    protected boolean userAuthenticated = false;
-    protected File workingDir = FsSettings.getChrootDir();
-    protected Socket dataSocket = null;
-    protected File renameFrom = null;
-    protected LocalDataSocket localDataSocket;
-    OutputStream dataOutputStream = null;
+    private Socket cmdSocket;
+    private boolean pasvMode = false;
+    private boolean binaryMode = false;
+    private Account account = new Account();
+    private boolean userAuthenticated = false;
+    private File workingDir = FsSettings.getChrootDir();
+    private Socket dataSocket = null;
+    private File renameFrom = null;
+    private LocalDataSocket localDataSocket;
+    private OutputStream dataOutputStream = null;
     private boolean sendWelcomeBanner;
     protected String encoding = Defaults.SESSION_ENCODING;
-    protected long offset = -1; // where to start append when using REST
-    protected String[] formatTypes = {"Size", "Modify", "Type", "Perm"}; // types option of MLST/MLSD
-    int authFails = 0;
+    long offset = -1; // where to start append when using REST
+    private String[] formatTypes = {"Size", "Modify", "Type", "Perm"}; // types option of MLST/MLSD
+    private int authFails = 0;
 
-    public static int MAX_AUTH_FAILS = 3;
+    private final static int MAX_AUTH_FAILS = 3;
 
     public SessionThread(Socket socket, LocalDataSocket dataSocket) {
-        this.cmdSocket = socket;
-        this.localDataSocket = dataSocket;
-        this.sendWelcomeBanner = true;
+        cmdSocket = socket;
+        localDataSocket = dataSocket;
+        sendWelcomeBanner = true;
     }
 
     /**
      * Sends a string over the already-established data socket
      *
-     * @param string
+     * @param string string to send
      * @return Whether the send completed successfully
      */
     public boolean sendViaDataSocket(String string) {
         try {
             byte[] bytes = string.getBytes(encoding);
-            Log.d(TAG, "Using data connection encoding: " + encoding);
-            return sendViaDataSocket(bytes, bytes.length);
+            Cat.d("Using data connection encoding: " + encoding);
+            return sendViaDataSocket(bytes, 0, bytes.length);
         } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Unsupported encoding for data socket send");
+            Cat.e("Unsupported encoding for data socket send");
             return false;
         }
-    }
-
-    public boolean sendViaDataSocket(byte[] bytes, int len) {
-        return sendViaDataSocket(bytes, 0, len);
     }
 
     /**
      * Sends a byte array over the already-established data socket
      *
-     * @param bytes
-     * @param len
-     * @return
+     * @param bytes bytes to send
+     * @param start start offset of data
+     * @param len   number of bytes to write
+     * @return true if success
      */
     public boolean sendViaDataSocket(byte[] bytes, int start, int len) {
 
         if (dataOutputStream == null) {
-            Log.i(TAG, "Can't send via null dataOutputStream");
+            Cat.i("Can't send via null dataOutputStream");
             return false;
         }
         if (len == 0) {
@@ -106,8 +101,7 @@ public class SessionThread extends Thread {
         try {
             dataOutputStream.write(bytes, start, len);
         } catch (IOException e) {
-            Log.i(TAG, "Couldn't write output stream for data socket");
-            Log.i(TAG, e.toString());
+            Cat.e("Couldn't write output stream for data socket, error:" + e.toString());
             return false;
         }
         localDataSocket.reportTraffic(len);
@@ -116,24 +110,24 @@ public class SessionThread extends Thread {
 
     /**
      * Received some bytes from the data socket, which is assumed to already be connected.
-     * The bytes are placed in the given array, and the number of bytes successfully read
+     * The bytes are placed in the given array buf, and the number of bytes successfully read
      * is returned.
      *
-     * @param bytes
-     *            Where to place the input bytes
-     * @return >0 if successful which is the number of bytes read, -1 if no bytes remain
-     *         to be read, -2 if the data socket was not connected, 0 if there was a read
-     *         error
+     * @param buf Where to place the input bytes
+     * @return >0 if successful which is the number of bytes read
+     *         -1 if no bytes remain to be read
+     *         -2 if the data socket was not connected
+     *         0 if there was a read  error
      */
     public int receiveFromDataSocket(byte[] buf) {
         int bytesRead;
 
         if (dataSocket == null) {
-            Log.i(TAG, "Can't receive from null dataSocket");
+            Cat.i("Can't receive from null dataSocket");
             return -2;
         }
         if (!dataSocket.isConnected()) {
-            Log.i(TAG, "Can't receive from unconnected socket");
+            Cat.i("Can't receive from unconnected socket");
             return -2;
         }
         InputStream in;
@@ -144,12 +138,11 @@ public class SessionThread extends Thread {
             while ((bytesRead = in.read(buf, 0, buf.length)) == 0) {
             }
             if (bytesRead == -1) {
-                // If InputStream.read returns -1, there are no bytes
-                // remaining, so we return 0.
+                // If InputStream.read returns -1, there are no bytes remaining
                 return -1;
             }
         } catch (IOException e) {
-            Log.i(TAG, "Error reading data socket");
+            Cat.i("Error reading data socket");
             return 0;
         }
         localDataSocket.reportTraffic(bytesRead);
@@ -185,35 +178,36 @@ public class SessionThread extends Thread {
      * Will be called by (e.g.) CmdSTOR, CmdRETR, CmdLIST, etc. when they are about to
      * start actually doing IO over the data socket.
      *
-     * @return
+     * Must call closeDataSocket() when done
+     *
+     * @return true if successful
      */
-    public boolean startUsingDataSocket() {
+    public boolean openDataSocket() {
         try {
             dataSocket = localDataSocket.onTransfer();
             if (dataSocket == null) {
-                Log.i(TAG, "dataSocketFactory.onTransfer() returned null");
+                Cat.i("dataSocketFactory.onTransfer() returned null");
                 return false;
             }
             dataOutputStream = dataSocket.getOutputStream();
             return true;
         } catch (IOException e) {
-            Log.i(TAG, "IOException getting OutputStream for data socket");
+            Cat.i("IOException getting OutputStream for data socket");
             dataSocket = null;
             return false;
         }
     }
 
-    public void quit() {
-        Log.d(TAG, "SessionThread told to quit");
-        closeSocket();
-    }
-
+    /**
+     * Call when done doing IO over the data socket
+     */
     public void closeDataSocket() {
-        Log.d(TAG, "Closing data socket");
+        Cat.d("Closing data socket");
         if (dataOutputStream != null) {
             try {
                 dataOutputStream.close();
             } catch (IOException e) {
+                /* swallow */
             }
             dataOutputStream = null;
         }
@@ -221,9 +215,15 @@ public class SessionThread extends Thread {
             try {
                 dataSocket.close();
             } catch (IOException e) {
+                /* swallow */
             }
         }
         dataSocket = null;
+    }
+
+    public void quit() {
+        Cat.d("SessionThread told to quit");
+        closeSocket();
     }
 
     protected InetAddress getLocalAddress() {
@@ -232,44 +232,30 @@ public class SessionThread extends Thread {
 
     @Override
     public void run() {
-        Log.i(TAG, "SessionThread started");
-
+        Cat.i("SessionThread started");
+        // Give client a welcome
         if (sendWelcomeBanner) {
             writeString("220 SwiFTP " + App.getVersion() + " ready\r\n");
         }
         // Main loop: read an incoming line and process it
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    cmdSocket.getInputStream()), 8192); // use 8k buffer
+            final Reader reader = new InputStreamReader(cmdSocket.getInputStream());
+            final BufferedReader in = new BufferedReader(reader, 8192); // use 8k buffer
             while (true) {
                 String line;
                 line = in.readLine(); // will accept \r\n or \n for terminator
                 if (line != null) {
-                    FsService.writeMonitor(true, line);
-                    Log.d(TAG, "Received line from client: " + line);
+                    Cat.d("Received line from client: " + line);
                     FtpCmd.dispatchCommand(this, line);
                 } else {
-                    Log.i(TAG, "readLine gave null, quitting");
+                    Cat.i("readLine gave null, quitting");
                     break;
                 }
             }
         } catch (IOException e) {
-            Log.i(TAG, "Connection was dropped");
+            Cat.i("Connection was dropped");
         }
         closeSocket();
-    }
-
-    /**
-     * A static method to check the equality of two byte arrays, but only up to a given
-     * length.
-     */
-    public static boolean compareLen(byte[] array1, byte[] array2, int len) {
-        for (int i = 0; i < len; i++) {
-            if (array1[i] != array2[i]) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public void closeSocket() {
@@ -291,19 +277,18 @@ public class SessionThread extends Thread {
             out.flush();
             localDataSocket.reportTraffic(bytes.length);
         } catch (IOException e) {
-            Log.i(TAG, "Exception writing socket");
+            Cat.i("Exception writing socket");
             closeSocket();
             return;
         }
     }
 
     public void writeString(String str) {
-        FsService.writeMonitor(false, str);
         byte[] strBytes;
         try {
             strBytes = str.getBytes(encoding);
         } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Unsupported encoding: " + encoding);
+            Cat.e("Unsupported encoding: " + encoding);
             strBytes = str.getBytes();
         }
         writeBytes(strBytes);
@@ -369,13 +354,13 @@ public class SessionThread extends Thread {
 
     public void authAttempt(boolean authenticated) {
         if (authenticated) {
-            Log.i(TAG, "Authentication complete");
+            Cat.i("Authentication complete");
             userAuthenticated = true;
         } else {
             authFails++;
-            Log.i(TAG, "Auth failed: " + authFails + "/" + MAX_AUTH_FAILS);
+            Cat.i("Auth failed: " + authFails + "/" + MAX_AUTH_FAILS);
             if (authFails > MAX_AUTH_FAILS) {
-                Log.i(TAG, "Too many auth fails, quitting session");
+                Cat.i("Too many auth fails, quitting session");
                 quit();
             }
         }
@@ -389,7 +374,7 @@ public class SessionThread extends Thread {
         try {
             this.workingDir = workingDir.getCanonicalFile().getAbsoluteFile();
         } catch (IOException e) {
-            Log.i(TAG, "SessionThread canonical error");
+            Cat.i("SessionThread canonical error");
         }
     }
 

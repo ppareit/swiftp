@@ -341,15 +341,6 @@ public class FsService extends Service implements Runnable {
 
 
     /**
-     * All messages server<->client are also send to this call
-     *
-     * @param incoming
-     * @param s
-     */
-    public static void writeMonitor(boolean incoming, String s) {
-    }
-
-    /**
      * The FTPServerService must know about all running session threads so they can be
      * terminated on exit. Called when a new session is created.
      */

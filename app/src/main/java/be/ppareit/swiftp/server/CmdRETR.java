@@ -71,7 +71,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 in = new FileInputStream(fileToRetr);
                 byte[] buffer = new byte[Defaults.getDataChunkSize()];
                 int bytesRead;
-                if (sessionThread.startUsingDataSocket()) {
+                if (sessionThread.openDataSocket()) {
                     Log.d(TAG, "RETR opened data socket");
                 } else {
                     errString = "425 Error opening socket\r\n";
@@ -87,7 +87,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
                     while ((bytesRead = in.read(buffer)) != -1) {
                         // myLog.l(Log.DEBUG,
                         // String.format("CmdRETR sending %d bytes", bytesRead));
-                        if (sessionThread.sendViaDataSocket(buffer, bytesRead) == false) {
+                        if (sessionThread.sendViaDataSocket(buffer, 0, bytesRead) == false) {
                             errString = "426 Data socket error\r\n";
                             Log.i(TAG, "Data socket error");
                             break mainblock;
@@ -114,11 +114,11 @@ public class CmdRETR extends FtpCmd implements Runnable {
                                     if (!lastBufEndedWithCR) {
                                         // Send an \r only if the the previous
                                         // buffer didn't end with an \r
-                                        sessionThread.sendViaDataSocket(crnBuf, 1);
+                                        sessionThread.sendViaDataSocket(crnBuf, 0, 1);
                                     }
                                 } else if (buffer[endPos - 1] != '\r') {
                                     // The file did not have \r before \n, add it
-                                    sessionThread.sendViaDataSocket(crnBuf, 1);
+                                    sessionThread.sendViaDataSocket(crnBuf, 0, 1);
                                 } else {
                                     // The file did have \r before \n, don't change
                                 }

@@ -110,7 +110,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 errString = "451 Unable to seek in file to append\r\n";
                 break storing;
             }
-            if (!sessionThread.startUsingDataSocket()) {
+            if (!sessionThread.openDataSocket()) {
                 errString = "425 Couldn't open data socket\r\n";
                 break storing;
             }
