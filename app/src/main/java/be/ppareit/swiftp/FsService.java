@@ -34,6 +34,8 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
 
+import net.vrallev.android.cat.Cat;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.Inet4Address;
@@ -277,9 +279,10 @@ public class FsService extends Service implements Runnable {
     /**
      * Gets the local ip address
      *
-     * @return local ip adress or null if not found
+     * @return local ip address or null if not found
      */
     public static InetAddress getLocalInetAddress() {
+        InetAddress returnAddress = null;
         if (!isConnectedToLocalNetwork()) {
             Log.e(TAG, "getLocalInetAddress called and no connection");
             return null;
@@ -287,17 +290,24 @@ public class FsService extends Service implements Runnable {
         try {
             val networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface networkInterface : networkInterfaces) {
+                // only check network interfaces that give local connection
+                if (!networkInterface.getName().matches("^(eth|wlan).*"))
+                    continue;
                 for (InetAddress address : Collections.list(networkInterface.getInetAddresses())) {
                     if (!address.isLoopbackAddress()
                             && !address.isLinkLocalAddress()
-                            && address instanceof Inet4Address)
-                        return address;
+                            && address instanceof Inet4Address) {
+                        if (returnAddress != null) {
+                            Cat.w("Found more than one valid address local inet address, why???");
+                        }
+                        returnAddress = address;
+                    }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return returnAddress;
     }
 
     /**
