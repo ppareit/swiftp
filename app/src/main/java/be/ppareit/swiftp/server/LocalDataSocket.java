@@ -19,34 +19,38 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import android.util.Log;
-import be.ppareit.swiftp.Defaults;
 import be.ppareit.swiftp.FsService;
 
 public class LocalDataSocket {
     private static final String TAG = LocalDataSocket.class.getSimpleName();
 
+    private static final int SO_TIMEOUT_MS = 30000; // socket timeout millis
+    private static final int TCP_CONNECTION_BACKLOG = 5;
+
+
     // Listener socket used for PASV mode
     ServerSocket server = null;
     // Remote IP & port information used for PORT mode
-    InetAddress remoteAddr;
-    int remotePort;
-    boolean isPasvMode = true;
+    private InetAddress remoteAddr;
+    private int remotePort;
+    private boolean isPasvMode = true;
 
     public LocalDataSocket() {
         clearState();
     }
 
+    /**
+     * Clears the state of this object, as if no pasv() or port() had occurred. All
+     * sockets are closed.
+     */
     private void clearState() {
-        /**
-         * Clears the state of this object, as if no pasv() or port() had occurred. All
-         * sockets are closed.
-         */
         if (server != null) {
             try {
                 server.close();
@@ -63,7 +67,7 @@ public class LocalDataSocket {
         clearState();
         try {
             // Listen on any port (port parameter 0)
-            server = new ServerSocket(0, Defaults.tcpConnectionBacklog);
+            server = new ServerSocket(0, TCP_CONNECTION_BACKLOG);
             Log.d(TAG, "Data socket pasv() listen successful");
             return server.getLocalPort();
         } catch (IOException e) {
@@ -100,7 +104,7 @@ public class LocalDataSocket {
 
             // Kill the socket if nothing happens for X milliseconds
             try {
-                socket.setSoTimeout(Defaults.SO_TIMEOUT_MS);
+                socket.setSoTimeout(SO_TIMEOUT_MS);
             } catch (Exception e) {
                 Log.e(TAG, "Couldn't set SO_TIMEOUT");
                 clearState();

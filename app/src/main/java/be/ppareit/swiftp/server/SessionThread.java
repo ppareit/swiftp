@@ -19,6 +19,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import net.vrallev.android.cat.Cat;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,18 +34,18 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-import net.vrallev.android.cat.Cat;
-
 import be.ppareit.swiftp.App;
-import be.ppareit.swiftp.Defaults;
 import be.ppareit.swiftp.FsSettings;
 
 public class SessionThread extends Thread {
 
+    private static final int MAX_AUTH_FAILS = 3;
+    public static final int DATA_CHUNK_SIZE = 65536;  // do file I/O in 64k chunks
+
     private Socket cmdSocket;
     private boolean pasvMode = false;
     private boolean binaryMode = false;
-    private Account account = new Account();
+    private String userName = null;  // username that the client sends
     private boolean userAuthenticated = false;
     private File workingDir = FsSettings.getChrootDir();
     private Socket dataSocket = null;
@@ -51,12 +53,12 @@ public class SessionThread extends Thread {
     private LocalDataSocket localDataSocket;
     private OutputStream dataOutputStream = null;
     private boolean sendWelcomeBanner;
-    protected String encoding = Defaults.SESSION_ENCODING;
+    // FTP control sessions should start out in ASCII, according to the RFC. However, many clients
+    // don't turn on UTF-8 even though they support it, so we just turn it on by default.
+    protected String encoding = "UTF-8";
     long offset = -1; // where to start append when using REST
     private String[] formatTypes = {"Size", "Modify", "Type", "Perm"}; // types option of MLST/MLSD
     private int authFails = 0;
-
-    private final static int MAX_AUTH_FAILS = 3;
 
     public SessionThread(Socket socket, LocalDataSocket dataSocket) {
         cmdSocket = socket;
@@ -133,19 +135,13 @@ public class SessionThread extends Thread {
         InputStream in;
         try {
             in = dataSocket.getInputStream();
-            // If the read returns 0 bytes, the stream is not yet
-            // closed, but we just want to read again.
-            while ((bytesRead = in.read(buf, 0, buf.length)) == 0) {
-            }
-            if (bytesRead == -1) {
-                // If InputStream.read returns -1, there are no bytes remaining
-                return -1;
-            }
+            do {
+                bytesRead = in.read(buf, 0, buf.length);
+            } while (bytesRead == 0);
         } catch (IOException e) {
             Cat.i("Error reading data socket");
             return 0;
         }
-        localDataSocket.reportTraffic(bytesRead);
         return bytesRead;
     }
 
@@ -206,16 +202,14 @@ public class SessionThread extends Thread {
         if (dataOutputStream != null) {
             try {
                 dataOutputStream.close();
-            } catch (IOException e) {
-                /* swallow */
+            } catch (IOException ignore) {
             }
             dataOutputStream = null;
         }
         if (dataSocket != null) {
             try {
                 dataSocket.close();
-            } catch (IOException e) {
-                /* swallow */
+            } catch (IOException ignore) {
             }
         }
         dataSocket = null;
@@ -224,10 +218,6 @@ public class SessionThread extends Thread {
     public void quit() {
         Cat.d("SessionThread told to quit");
         closeSocket();
-    }
-
-    protected InetAddress getLocalAddress() {
-        return cmdSocket.getLocalAddress();
     }
 
     @Override
@@ -264,7 +254,7 @@ public class SessionThread extends Thread {
         }
         try {
             cmdSocket.close();
-        } catch (IOException e) {
+        } catch (IOException ignore) {
         }
     }
 
@@ -272,14 +262,13 @@ public class SessionThread extends Thread {
         try {
             // TODO: do we really want to do all of this on each write? Why?
             BufferedOutputStream out = new BufferedOutputStream(
-                    cmdSocket.getOutputStream(), Defaults.dataChunkSize);
+                    cmdSocket.getOutputStream(), DATA_CHUNK_SIZE);
             out.write(bytes);
             out.flush();
             localDataSocket.reportTraffic(bytes.length);
         } catch (IOException e) {
             Cat.i("Exception writing socket");
             closeSocket();
-            return;
         }
     }
 
@@ -298,14 +287,6 @@ public class SessionThread extends Thread {
         return cmdSocket;
     }
 
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
     public boolean isPasvMode() {
         return pasvMode;
     }
@@ -322,27 +303,26 @@ public class SessionThread extends Thread {
         this.binaryMode = binaryMode;
     }
 
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
     /**
      * @return true if we should allow FTP opperations
      */
     public boolean isAuthenticated() {
-        if (userAuthenticated == true || FsSettings.allowAnoymous() == true) {
-            return true;
-        }
-        return false;
+        return userAuthenticated || FsSettings.allowAnoymous();
     }
 
     /**
      * @return true only when we are anonymously logged in
      */
     public boolean isAnonymouslyLoggedIn() {
-        if (userAuthenticated == true) {
-            return false;
-        }
-        if (FsSettings.allowAnoymous() == true) {
-            return true;
-        }
-        return false;
+        return !userAuthenticated && FsSettings.allowAnoymous();
     }
 
     /**

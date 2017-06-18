@@ -38,7 +38,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
         Log.d(TAG, "Executing PASS");
         String attemptPassword = getParameter(input, true); // silent
         // Always first USER command, then PASS command
-        String attemptUsername = sessionThread.account.getUsername();
+        String attemptUsername = sessionThread.getUserName();
         if (attemptUsername == null) {
             sessionThread.writeString("503 Must send USER first\r\n");
             return;
@@ -46,7 +46,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
         String username = FsSettings.getUserName();
         String password = FsSettings.getPassWord();
         if (username == null || password == null) {
-            Log.e(TAG, "Username or password misconfigured");
+            Log.e(TAG, "Username or password misconfiguration");
             sessionThread.writeString("500 Internal error during authentication");
         } else if (username.equals(attemptUsername) && password.equals(attemptPassword)) {
             sessionThread.writeString("230 Access granted\r\n");

@@ -19,13 +19,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import android.util.Log;
-import be.ppareit.swiftp.Defaults;
 
 public class CmdRETR extends FtpCmd implements Runnable {
     private static final String TAG = CmdRETR.class.getSimpleName();
@@ -69,7 +68,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
             FileInputStream in = null;
             try {
                 in = new FileInputStream(fileToRetr);
-                byte[] buffer = new byte[Defaults.getDataChunkSize()];
+                byte[] buffer = new byte[SessionThread.DATA_CHUNK_SIZE];
                 int bytesRead;
                 if (sessionThread.openDataSocket()) {
                     Log.d(TAG, "RETR opened data socket");
