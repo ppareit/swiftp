@@ -121,9 +121,8 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="about_description_text">FTP Server (SwiFTP) te permite ejecutar un servidor FTP en tu dispositivo Android.</string>
     <string name="about_libraries_title">Librerías</string>
     <string name="about_contributor_title">Colaboradores</string>
-    <string name="restarting_app">Reiniciando la aplicación...</string>
     <string name="dark_theme">Tema oscuro</string>
     <string name="light_theme">Tema ligero</string>
-    <string name="light_theme_dark_ab">Tema mixto</string>
+    <string name="mixed_theme">Tema mixto</string>
     <string name="app_theme">Tema...</string>
 </resources>

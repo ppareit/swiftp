@@ -91,10 +91,9 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
     <string name="storage_warning">Warning: storage is not available. You may want to unmount it.</string>
     <string name="widget_name">FTP Server Widget</string>
-    <string name="restarting_app">App opnieuw opstarten...</string>
     <string name="dark_theme">Donker Thema</string>
     <string name="light_theme">Licht Thema</string>
-    <string name="light_theme_dark_ab">Gemengd thema</string>
+    <string name="mixed_theme">Gemengd thema</string>
     <string name="app_theme">Thema...</string>
 
 </resources>

@@ -218,11 +218,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
         theme.setSummary(theme.getEntry());
         theme.setOnPreferenceChangeListener((preference, newValue) -> {
             theme.setSummary(theme.getEntry());
-            Toast.makeText(getActivity(), getString(R.string.restarting_app),
-                    Toast.LENGTH_SHORT).show();
-            getActivity().finish();
-            startActivity(new Intent(getActivity(), MainActivity.class)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            getActivity().recreate();
             return true;
         });
 

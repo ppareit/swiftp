@@ -104,10 +104,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="storage_warning">Предупреждение: файловый носитель не доступен. Возможно, Вы хотели отсоединить его.</string>
     <string name="widget_name">FTP Server Widget</string>
     <string name="notif_settings_text">Настройки</string>
-    <string name="restarting_app">Перезапуск приложения...</string>
     <string name="dark_theme">Темная тема</string>
     <string name="light_theme">Светлая тема</string>
-    <string name="light_theme_dark_ab">Смешанная тема</string>
+    <string name="mixed_theme">Смешанная тема</string>
     <string name="app_theme">Тема...</string>
 
 </resources>

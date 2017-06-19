@@ -123,10 +123,9 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="about_description_text">FTP サーバ (SwiFTP) は、お使いの Android 端末で ftp サーバを実行することができます。</string>
     <string name="about_libraries_title">ライブラリー</string>
     <string name="about_contributor_title">貢献者</string>
-    <string name="restarting_app">アプリを再起動しています...</string>
     <string name="dark_theme">暗いテーマ</string>
     <string name="light_theme">ライトテーマ</string>
-    <string name="light_theme_dark_ab">混合テーマ</string>
+    <string name="mixed_theme">混合テーマ</string>
     <string name="app_theme">テーマ...</string>
 
 </resources>

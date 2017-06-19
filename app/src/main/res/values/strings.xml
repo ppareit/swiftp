@@ -157,7 +157,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="app_theme">Theme...</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="light_theme">Light Theme</string>
-    <string name="light_theme_dark_ab">Mixed Theme</string>
-    <string name="restarting_app">Restarting app...</string>
+    <string name="mixed_theme">Mixed Theme</string>
 
 </resources>
