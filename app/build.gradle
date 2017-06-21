@@ -12,8 +12,8 @@ android {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 21500
-        versionName "2.15.0"
+        versionCode 21600
+        versionName "2.16.00"
     }
     productFlavors {
         playstore_paid {

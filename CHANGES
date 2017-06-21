@@ -1,3 +1,7 @@
+Version 2.16 (2017/06/21)
+    + Added multiple theme support (by Ashutosh Gangwar)
+    * Fix server possible not visible because wrong IP displayed
+    * Smaller bug fixes
 Version 2.15 (2017/05/11)
     * Bugfixes
     + add MLSD/MLST commands (by j3l11234)
