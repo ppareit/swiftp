@@ -36,6 +36,7 @@ public class CmdOPTS extends FtpCmd implements Runnable {
     public void run() {
         String param = getParameter(input);
         String errString = null;
+        String responseString = null;
 
         mainBlock: {
             if (param == null) {
@@ -52,7 +53,7 @@ public class CmdOPTS extends FtpCmd implements Runnable {
                 // if second parameter not passed, respond with currently selected algorithm
                 if(splits.length == 1) {
                     Log.d(TAG, "No arguments for OPTS HASH, returning selected algorithm");
-                    sessionThread.writeString("200 " + sessionThread.getHashingAlgorithm() + "\r\n");
+                    responseString = "200 " + sessionThread.getHashingAlgorithm() + "\r\n";
                 } else if(splits.length == 2) {
                     String newHashingAlgorithm = splits[1].toUpperCase();
                     Log.d(TAG, "Got OPTS HASH: " + newHashingAlgorithm);
@@ -62,7 +63,7 @@ public class CmdOPTS extends FtpCmd implements Runnable {
                             newHashingAlgorithm.equals("SHA-384") ||
                             newHashingAlgorithm.equals("SHA-512")) {
                         sessionThread.setHashingAlgorithm(newHashingAlgorithm);
-                        sessionThread.writeString("200 " + newHashingAlgorithm + "\r\n");
+                        responseString = "200 " + newHashingAlgorithm + "\r\n";
                     } else {
                         errString = "501 Unknown algorithm, current selection not changed\r\n";
                     }
@@ -127,7 +128,7 @@ public class CmdOPTS extends FtpCmd implements Runnable {
                 System.arraycopy(opts, 0, newOpts, 0, optCount);
                 
                 sessionThread.setFormatTypes(newOpts);
-                sessionThread.writeString("200 MLST OPTS " + types.toString() + "\r\n");
+                responseString = "200 MLST OPTS " + types.toString() + "\r\n";
             } else {
                 Log.d(TAG, "Unrecognized OPTS option: " + optName);
                 errString = "502 Unrecognized option\r\n";
@@ -137,7 +138,7 @@ public class CmdOPTS extends FtpCmd implements Runnable {
         if (errString != null) {
             sessionThread.writeString(errString);
         } else {
-            sessionThread.writeString("200 OPTS accepted\r\n");
+            sessionThread.writeString(responseString != null ? responseString : "200 OPTS accepted\r\n");
             Log.d(TAG, "Handled OPTS ok");
         }
     }
