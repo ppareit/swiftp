@@ -59,6 +59,7 @@ public class SessionThread extends Thread {
     long offset = -1; // where to start append when using REST
     private String[] formatTypes = {"Size", "Modify", "Type", "Perm"}; // types option of MLST/MLSD
     private int authFails = 0;
+    private String hashingAlgorithm = "SHA-1";
 
     public SessionThread(Socket socket, LocalDataSocket dataSocket) {
         cmdSocket = socket;
@@ -388,5 +389,13 @@ public class SessionThread extends Thread {
 
     public void setFormatTypes(String[] formatTypes) {
         this.formatTypes = formatTypes;
+    }
+
+    public String getHashingAlgorithm() {
+        return hashingAlgorithm;
+    }
+
+    public void setHashingAlgorithm(String algorithm) {
+        this.hashingAlgorithm = algorithm;
     }
 }
