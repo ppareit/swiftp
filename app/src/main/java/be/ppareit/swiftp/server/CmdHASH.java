@@ -47,14 +47,35 @@ public class CmdHASH extends FtpCmd implements Runnable {
 
             FileInputStream in = null;
             try {
-                in = new FileInputStream(fileToHash);
                 String algorithm = sessionThread.getHashingAlgorithm();
                 MessageDigest md = MessageDigest.getInstance(algorithm);
                 byte[] buffer = new byte[SessionThread.DATA_CHUNK_SIZE];
-                int bytesRead;
+                in = new FileInputStream(fileToHash);
 
+                long offset, endPosition;
+                if(sessionThread.offset >= 0) {
+                    offset = sessionThread.offset;
+                    if(sessionThread.endPosition >= 0) {
+                        endPosition = sessionThread.endPosition;
+                    } else {
+                        endPosition = fileToHash.length() - 1; // 0-99 should read 99th byte too.
+                    }
+                } else {
+                    offset = 0L;
+                    endPosition = fileToHash.length() - 1; // 0-99 should read 99th byte too.
+                }
+
+                // This is not a range but length (Range 0-0 would still read 0th byte), so +1
+                long bytesToRead = endPosition - offset + 1;
+                int bytesRead;
+                in.skip(offset);
                 while((bytesRead = in.read(buffer)) != -1) {
+                    if(bytesRead > bytesToRead) {
+                        md.update(buffer, 0, (int) bytesToRead);
+                        break;
+                    }
                     md.update(buffer, 0, bytesRead);
+                    bytesToRead -= bytesRead;
                 }
 
                 byte[] hash = md.digest();
@@ -63,7 +84,7 @@ public class CmdHASH extends FtpCmd implements Runnable {
                     hexString.append(String.format("%02x", b));
                 }
 
-                String response = "213 " + algorithm + " 0-" + (fileToHash.length() - 1)
+                String response = "213 " + algorithm + " " + offset + "-" + endPosition
                         + " " + hexString.toString() + " " + param + "\r\n";
                 sessionThread.writeString(response);
             } catch (FileNotFoundException e) {
