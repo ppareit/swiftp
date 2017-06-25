@@ -78,15 +78,36 @@ public class CmdRETR extends FtpCmd implements Runnable {
                     break mainblock;
                 }
                 sessionThread.writeString("150 Sending file\r\n");
-                if (sessionThread.isBinaryMode()) {
+                if (sessionThread.isBinaryMode()) { // RANG is supported only in binary mode.
                     Log.d(TAG, "Transferring in binary mode");
-                    if (sessionThread.offset >= 0) {
-                        in.skip(sessionThread.offset);
+                    long offset, endPosition;
+                    if(sessionThread.offset >= 0) {
+                        offset = sessionThread.offset;
+                        if(sessionThread.endPosition >= 0) {
+                            endPosition = sessionThread.endPosition;
+                        } else {
+                            endPosition = fileToRetr.length() - 1; // Range 0-99 should read 99th byte too.
+                        }
+                    } else {
+                        offset = 0L;
+                        endPosition = fileToRetr.length() - 1; // Range 0-99 should read 99th byte too.
                     }
+
+                    // This is not a range but length (Range 0-0 would still read 0th byte), so +1
+                    long bytesToRead = endPosition - offset + 1;
+                    in.skip(offset);
                     while ((bytesRead = in.read(buffer)) != -1) {
                         // myLog.l(Log.DEBUG,
                         // String.format("CmdRETR sending %d bytes", bytesRead));
-                        if (sessionThread.sendViaDataSocket(buffer, 0, bytesRead) == false) {
+                        boolean success;
+                        if(bytesRead > bytesToRead) {
+                            success = sessionThread.sendViaDataSocket(buffer, 0, (int) bytesToRead);
+                        } else {
+                            success = sessionThread.sendViaDataSocket(buffer, 0, bytesRead);
+                            bytesToRead -= bytesRead;
+                        }
+
+                        if (!success) {
                             errString = "426 Data socket error\r\n";
                             Log.i(TAG, "Data socket error");
                             break mainblock;
