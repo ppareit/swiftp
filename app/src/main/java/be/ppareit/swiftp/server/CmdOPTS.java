@@ -36,6 +36,7 @@ public class CmdOPTS extends FtpCmd implements Runnable {
     public void run() {
         String param = getParameter(input);
         String errString = null;
+        String responseString = null;
 
         mainBlock: {
             if (param == null) {
@@ -44,12 +45,40 @@ public class CmdOPTS extends FtpCmd implements Runnable {
                 break mainBlock;
             }
             String[] splits = param.split(" ");
-            if (splits.length != 2) {
+            String optName = splits[0].toUpperCase();
+
+            // if the first parameter (optName) is HASH, second parameter (optVal) is optional
+            if(optName.equals("HASH")) {
+                Log.d(TAG, "Got OPTS HASH");
+                // if second parameter not passed, respond with currently selected algorithm
+                if(splits.length == 1) {
+                    Log.d(TAG, "No arguments for OPTS HASH, returning selected algorithm");
+                    responseString = "200 " + sessionThread.getHashingAlgorithm() + "\r\n";
+                } else if(splits.length == 2) {
+                    String newHashingAlgorithm = splits[1].toUpperCase();
+                    Log.d(TAG, "Got OPTS HASH: " + newHashingAlgorithm);
+                    if(newHashingAlgorithm.equals("MD5") ||
+                            newHashingAlgorithm.equals("SHA-1") ||
+                            newHashingAlgorithm.equals("SHA-256") ||
+                            newHashingAlgorithm.equals("SHA-384") ||
+                            newHashingAlgorithm.equals("SHA-512")) {
+                        sessionThread.setHashingAlgorithm(newHashingAlgorithm);
+                        responseString = "200 " + newHashingAlgorithm + "\r\n";
+                    } else {
+                        errString = "501 Unknown algorithm, current selection not changed\r\n";
+                    }
+                } else {
+                    errString = "550 Malformed OPTS HASH command\r\n";
+                    Log.w(TAG, "Couldn't parse options for OPTS HASH command");
+                }
+                // break out of mainblock, OPTS command is handled.
+                break mainBlock;
+            } else if (splits.length != 2) {
                 errString = "550 Malformed OPTS command\r\n";
                 Log.w(TAG, "Couldn't parse OPTS command");
                 break mainBlock;
             }
-            String optName = splits[0].toUpperCase();
+
             String optVal = splits[1].toUpperCase();
             if (optName.equals("UTF8")) {
                 // OK, whatever. Don't really know what to do here. We
@@ -99,7 +128,7 @@ public class CmdOPTS extends FtpCmd implements Runnable {
                 System.arraycopy(opts, 0, newOpts, 0, optCount);
                 
                 sessionThread.setFormatTypes(newOpts);
-                sessionThread.writeString("200 MLST OPTS " + types.toString() + "\r\n");
+                responseString = "200 MLST OPTS " + types.toString() + "\r\n";
             } else {
                 Log.d(TAG, "Unrecognized OPTS option: " + optName);
                 errString = "502 Unrecognized option\r\n";
@@ -109,7 +138,7 @@ public class CmdOPTS extends FtpCmd implements Runnable {
         if (errString != null) {
             sessionThread.writeString(errString);
         } else {
-            sessionThread.writeString("200 OPTS accepted\r\n");
+            sessionThread.writeString(responseString != null ? responseString : "200 OPTS accepted\r\n");
             Log.d(TAG, "Handled OPTS ok");
         }
     }

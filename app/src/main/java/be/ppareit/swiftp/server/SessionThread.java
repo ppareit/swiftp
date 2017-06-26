@@ -56,9 +56,11 @@ public class SessionThread extends Thread {
     // FTP control sessions should start out in ASCII, according to the RFC. However, many clients
     // don't turn on UTF-8 even though they support it, so we just turn it on by default.
     protected String encoding = "UTF-8";
-    long offset = -1; // where to start append when using REST
+    long offset = -1; // where to start append when using REST/RANG
+    long endPosition = -1; // where to stop append when using RANG
     private String[] formatTypes = {"Size", "Modify", "Type", "Perm"}; // types option of MLST/MLSD
     private int authFails = 0;
+    private String hashingAlgorithm = "SHA-1";
 
     public SessionThread(Socket socket, LocalDataSocket dataSocket) {
         cmdSocket = socket;
@@ -388,5 +390,13 @@ public class SessionThread extends Thread {
 
     public void setFormatTypes(String[] formatTypes) {
         this.formatTypes = formatTypes;
+    }
+
+    public String getHashingAlgorithm() {
+        return hashingAlgorithm;
+    }
+
+    public void setHashingAlgorithm(String algorithm) {
+        this.hashingAlgorithm = algorithm;
     }
 }

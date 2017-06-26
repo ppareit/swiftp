@@ -52,13 +52,15 @@ public abstract class FtpCmd implements Runnable {
             new CmdMap("SITE", CmdSITE.class), //
             new CmdMap("MLST", CmdMLST.class), //
             new CmdMap("MLSD", CmdMLSD.class), //
+            new CmdMap("HASH", CmdHASH.class),
+            new CmdMap("RANG", CmdRANG.class)
     };
 
     private static Class<?>[] allowedCmdsWhileAnonymous = { CmdUSER.class, CmdPASS.class, //
             CmdCWD.class, CmdLIST.class, CmdMDTM.class, CmdNLST.class, CmdPASV.class, //
             CmdPWD.class, CmdQUIT.class, CmdRETR.class, CmdSIZE.class, CmdTYPE.class, //
             CmdCDUP.class, CmdNOOP.class, CmdSYST.class, CmdPORT.class, //
-            CmdMLST.class, CmdMLSD.class //
+            CmdMLST.class, CmdMLSD.class, CmdHASH.class, CmdRANG.class //
     };
 
     public FtpCmd(SessionThread sessionThread) {
