@@ -17,11 +17,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
-import android.util.Log;
+import net.vrallev.android.cat.Cat;
 
 public class CmdREST extends FtpCmd implements Runnable {
-    private static final String TAG = CmdREST.class.getSimpleName();
-
     protected String input;
 
     public CmdREST(SessionThread sessionThread, String input) {
@@ -39,19 +37,20 @@ public class CmdREST extends FtpCmd implements Runnable {
             sessionThread.writeString("550 No valid restart position\r\n");
             return;
         }
-        Log.d(TAG, "run REST with offset " + offset);
+        if (offset < 0) {
+            sessionThread.writeString("550 Restart position must be non-negative\r\n");
+            return;
+        }
+        Cat.d("run REST with offset " + offset);
         if (sessionThread.isBinaryMode()) {
             sessionThread.offset = offset;
-            sessionThread.writeString("350 Restart position accepted (" + offset
-                    + ")\r\n");
+            sessionThread.writeString("350 Restart position accepted (" + offset + ")\r\n");
         } else {
             if (offset != 0) {
-                sessionThread.writeString("550 Restart position > 0 not accepted"
-                        + " in ASCII mode\r\n");
+                sessionThread.writeString("550 Restart position != 0 not accepted in ASCII mode\r\n");
             } else {
                 sessionThread.offset = offset;
-                sessionThread.writeString("350 Restart position accepted (" + offset
-                        + ")\r\n");
+                sessionThread.writeString("350 Restart position accepted (" + offset + ")\r\n");
             }
         }
     }

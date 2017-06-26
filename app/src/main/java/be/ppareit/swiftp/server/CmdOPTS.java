@@ -24,7 +24,6 @@ import android.util.Log;
 public class CmdOPTS extends FtpCmd implements Runnable {
     private static final String TAG = CmdOPTS.class.getSimpleName();
 
-    public static final String message = "TEMPLATE!!";
     private final String input;
 
     public CmdOPTS(SessionThread sessionThread, String input) {

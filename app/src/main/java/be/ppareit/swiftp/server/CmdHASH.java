@@ -26,7 +26,8 @@ public class CmdHASH extends FtpCmd implements Runnable {
         File fileToHash;
         String errString = null;
 
-        mainblock: {
+        mainblock:
+        {
             fileToHash = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
             if (violatesChroot(fileToHash)) {
                 errString = "550 Invalid name or chroot violation\r\n";
@@ -41,7 +42,7 @@ public class CmdHASH extends FtpCmd implements Runnable {
                 break mainblock;
             } else if (!fileToHash.canRead()) {
                 Log.i(TAG, "Failed HASH permission (canRead() is false)");
-                errString = "550 No read permissions\r\n";
+                errString = "556 No read permissions\r\n";
                 break mainblock;
             }
 
@@ -52,25 +53,22 @@ public class CmdHASH extends FtpCmd implements Runnable {
                 byte[] buffer = new byte[SessionThread.DATA_CHUNK_SIZE];
                 in = new FileInputStream(fileToHash);
 
-                long offset, endPosition;
-                if(sessionThread.offset >= 0) {
+                long offset = 0L;
+                long endPosition = fileToHash.length() - 1;
+                if (sessionThread.offset >= 0) {
                     offset = sessionThread.offset;
-                    if(sessionThread.endPosition >= 0) {
+                    if (offset <= sessionThread.endPosition
+                            && sessionThread.endPosition <= fileToHash.length() - 1) {
                         endPosition = sessionThread.endPosition;
-                    } else {
-                        endPosition = fileToHash.length() - 1; // 0-99 should read 99th byte too.
                     }
-                } else {
-                    offset = 0L;
-                    endPosition = fileToHash.length() - 1; // 0-99 should read 99th byte too.
                 }
 
                 // This is not a range but length (Range 0-0 would still read 0th byte), so +1
                 long bytesToRead = endPosition - offset + 1;
                 int bytesRead;
                 in.skip(offset);
-                while((bytesRead = in.read(buffer)) != -1) {
-                    if(bytesRead > bytesToRead) {
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    if (bytesRead > bytesToRead) {
                         md.update(buffer, 0, (int) bytesToRead);
                         break;
                     }
@@ -80,7 +78,7 @@ public class CmdHASH extends FtpCmd implements Runnable {
 
                 byte[] hash = md.digest();
                 StringBuilder hexString = new StringBuilder();
-                for(byte b : hash) {
+                for (byte b : hash) {
                     hexString.append(String.format("%02x", b));
                 }
 
@@ -100,7 +98,7 @@ public class CmdHASH extends FtpCmd implements Runnable {
                 try {
                     if (in != null)
                         in.close();
-                } catch (IOException eatIt_QUIETLY) {
+                } catch (IOException ignore) {
                 }
             }
         }

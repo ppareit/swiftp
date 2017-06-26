@@ -43,7 +43,8 @@ public class CmdRETR extends FtpCmd implements Runnable {
         File fileToRetr;
         String errString = null;
 
-        mainblock: {
+        mainblock:
+        {
             fileToRetr = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
             if (violatesChroot(fileToRetr)) {
                 errString = "550 Invalid name or chroot violation\r\n";
@@ -60,11 +61,8 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 Log.i(TAG, "Failed RETR permission (canRead() is false)");
                 errString = "550 No read permissions\r\n";
                 break mainblock;
-            } /*
-               * else if(!sessionThread.isBinaryMode()) { myLog.l(Log.INFO,
-               * "Failed RETR in text mode"); errString =
-               * "550 Text mode RETR not supported\r\n"; break mainblock; }
-               */
+            }
+
             FileInputStream in = null;
             try {
                 in = new FileInputStream(fileToRetr);
@@ -80,27 +78,21 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 sessionThread.writeString("150 Sending file\r\n");
                 if (sessionThread.isBinaryMode()) { // RANG is supported only in binary mode.
                     Log.d(TAG, "Transferring in binary mode");
-                    long offset, endPosition;
-                    if(sessionThread.offset >= 0) {
+                    long offset = 0L;
+                    long endPosition = fileToRetr.length() - 1;
+                    if (sessionThread.offset >= 0) {
                         offset = sessionThread.offset;
-                        if(sessionThread.endPosition >= 0) {
+                        if (sessionThread.endPosition >= offset) {
                             endPosition = sessionThread.endPosition;
-                        } else {
-                            endPosition = fileToRetr.length() - 1; // Range 0-99 should read 99th byte too.
                         }
-                    } else {
-                        offset = 0L;
-                        endPosition = fileToRetr.length() - 1; // Range 0-99 should read 99th byte too.
                     }
 
                     // This is not a range but length (Range 0-0 would still read 0th byte), so +1
                     long bytesToRead = endPosition - offset + 1;
                     in.skip(offset);
                     while ((bytesRead = in.read(buffer)) != -1) {
-                        // myLog.l(Log.DEBUG,
-                        // String.format("CmdRETR sending %d bytes", bytesRead));
                         boolean success;
-                        if(bytesRead > bytesToRead) {
+                        if (bytesRead > bytesToRead) {
                             success = sessionThread.sendViaDataSocket(buffer, 0, (int) bytesToRead);
                         } else {
                             success = sessionThread.sendViaDataSocket(buffer, 0, bytesRead);
@@ -122,7 +114,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
                     boolean lastBufEndedWithCR = false;
                     while ((bytesRead = in.read(buffer)) != -1) {
                         int startPos = 0, endPos = 0;
-                        byte[] crnBuf = { '\r', '\n' };
+                        byte[] crnBuf = {'\r', '\n'};
                         for (endPos = 0; endPos < bytesRead; endPos++) {
                             if (buffer[endPos] == '\n') {
                                 // Send bytes up to but not including the newline
@@ -145,10 +137,8 @@ public class CmdRETR extends FtpCmd implements Runnable {
                                 startPos = endPos;
                             }
                         }
-                        // Now endPos has finished traversing the array, send remaining
-                        // data as-is
-                        sessionThread.sendViaDataSocket(buffer, startPos, endPos
-                                - startPos);
+                        // Now endPos has finished traversing the array, send remaining data as-is
+                        sessionThread.sendViaDataSocket(buffer, startPos, endPos - startPos);
                         if (buffer[bytesRead - 1] == '\r') {
                             lastBufEndedWithCR = true;
                         } else {
@@ -166,7 +156,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 try {
                     if (in != null)
                         in.close();
-                } catch (IOException swallow) {
+                } catch (IOException ignored) {
                 }
             }
         }

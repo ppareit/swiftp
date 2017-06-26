@@ -1,9 +1,8 @@
 package be.ppareit.swiftp.server;
 
-import android.util.Log;
+import net.vrallev.android.cat.Cat;
 
 public class CmdRANG extends FtpCmd implements Runnable {
-    private static final String TAG = CmdRANG.class.getSimpleName();
 
     private String input;
 
@@ -14,16 +13,17 @@ public class CmdRANG extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
-        Log.d(TAG, "RANG executing");
+        Cat.d("RANG executing");
         String param = getParameter(input);
         String splits[] = param.split(" ");
         String errString = null;
 
-        mainblock: {
-            if(splits.length != 2) {
+        mainblock:
+        {
+            if (splits.length != 2) {
                 errString = "500 Malformed RANG command\r\n";
                 break mainblock;
-            } else if(!sessionThread.isBinaryMode()) {
+            } else if (!sessionThread.isBinaryMode()) {
                 errString = "551 Server is not in binary mode\r\n";
                 break mainblock;
             }
@@ -37,12 +37,12 @@ public class CmdRANG extends FtpCmd implements Runnable {
                 break mainblock;
             }
 
-            if(startPosition == 1 && endPosition == 0) {
+            if (startPosition == 1 && endPosition == 0) {
                 sessionThread.writeString("350 Resetting start and end positions\r\n");
                 sessionThread.offset = -1L; // reset start position
                 sessionThread.endPosition = -1L; //reset end position
                 break mainblock;
-            } else if(startPosition > endPosition) {
+            } else if (startPosition > endPosition) {
                 errString = "500 Invalid start and end position\r\n";
                 break mainblock;
             }
@@ -53,7 +53,7 @@ public class CmdRANG extends FtpCmd implements Runnable {
                     + startPosition + ". End Byte range at " + endPosition + ".\r\n");
         }
 
-        if(errString != null) {
+        if (errString != null) {
             sessionThread.writeString(errString);
         }
     }
