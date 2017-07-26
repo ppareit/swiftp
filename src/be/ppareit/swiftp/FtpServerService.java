@@ -261,7 +261,7 @@ public class FtpServerService extends Service implements Runnable {
     private void takeWifiLock() {
         Log.d(TAG, "takeWifiLock: Taking wifi lock");
         if (wifiLock == null) {
-            WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            WifiManager manager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             wifiLock = manager.createWifiLock(TAG);
             wifiLock.setReferenceCounted(false);
         }
@@ -281,7 +281,7 @@ public class FtpServerService extends Service implements Runnable {
         // TODO: next if block could probably be removed
         if (isConnectedUsingWifi() == true) {
             Context context = FtpServerApp.getAppContext();
-            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            WifiManager wm = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             int ipAddress = wm.getConnectionInfo().getIpAddress();
             if (ipAddress == 0)
                 return null;
