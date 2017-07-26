@@ -50,6 +50,8 @@ public class ServerRunningNotification extends BroadcastReceiver {
     private void setupNotification(Context context) {
         Log.d(TAG, "Setting up the notification");
         // Get NotificationManager reference
+
+        /* Method is updated
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager nm = (NotificationManager) context.getSystemService(ns);
 
@@ -79,12 +81,40 @@ public class ServerRunningNotification extends BroadcastReceiver {
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
                 notificationIntent, 0);
-        notification
-                .setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+        notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
 
         // Pass Notification to NotificationManager
         nm.notify(NOTIFICATIONID, notification);
+        */
+
+        // Method update
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager nm = (NotificationManager) context.getSystemService(ns);
+        // get ip address
+        InetAddress address = FtpServerService.getLocalInetAddress();
+        if (address == null) {
+            Log.w(TAG, "Unable to retreive the local ip address");
+            return;
+        }
+        String iptext = "ftp://" + address.getHostAddress() + ":" + Settings.getPortNumber() + "/";
+        // Instantiate a Notification
+        int icon = R.drawable.notification;
+        CharSequence tickerText = String.format(context.getString(R.string.notif_server_starting), iptext);
+        long when = System.currentTimeMillis();
+        CharSequence contentTitle = context.getString(R.string.notif_title);
+        CharSequence contentText = String.format(context.getString(R.string.notif_text), iptext);
+        Intent notificationIntent = new Intent(context, ServerPreferenceActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+        Notification.Builder builder = new Notification.Builder(context)
+                .setSmallIcon(icon)
+                .setTicker(tickerText)
+                .setWhen(when)
+                .setContentTitle(contentTitle)
+                .setContentText(contentText)
+                .setContentIntent(contentIntent);
+                nm.notify(NOTIFICATIONID, builder.build());
 
         Log.d(TAG, "Notication setup done");
     }
