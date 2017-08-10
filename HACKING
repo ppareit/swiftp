@@ -1,14 +1,29 @@
-SETUP ECLIPSE
-=============
-How to use Eclipse and the Android plugin with the SwiFTP project:
+SETUP ANDROID STUDIO
+====================
+How to use Android Studio with the SwiFTP project:
 
-1) Clone the project:
-        git clone git@github.com:ppareit/swiftp.git
-2) In Eclipse, import the existing project:
-  - File -> Import
-  - Select Android, then Existing Android Code Into Workspace
-  - In "Select root directory," browse for the cloned directory
-  - From there it's obvious
+1) Fork the project to your own account and clone:
+        git clone git@github.com:<youraccount>/swiftp.git
+2) In Android studio open the project:
+  - File -> Open
+3) Add the lombok plugin to Android Studio:
+  - File -> Settings -> Plugins -> Browse Repositories
+  - Search Lombok Plugin and install
+
+DOCUMENTATION
+=============
+We make use of the lombok val keyword. See
+     https://projectlombok.org/features/val
+We don't use this everywhere, only when writing the
+declaration would require a linewrap and when the
+context is clear and when the usage of the variable
+is close to the declaration.
+
+Retrolambda is being used to enable us to use
+the java 8 lambda construct. You should read up
+on this and then enjoy this in your own code. Java 8
+is comming to android, so this library will soon not be
+needed anymore. The code changes should be minimal.
 
 MAKING CHANGES
 ==============
