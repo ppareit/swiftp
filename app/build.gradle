@@ -1,5 +1,5 @@
 plugins {
-    id "me.tatarka.retrolambda" version "3.5.0"
+    id "me.tatarka.retrolambda" version "3.7.0"
 }
 apply plugin: 'com.android.application'
 
@@ -12,8 +12,8 @@ android {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 21600
-        versionName "2.16.00"
+        versionCode 21700
+        versionName "2.17.00"
     }
     productFlavors {
         playstore_paid {
@@ -49,7 +49,7 @@ dependencies {
     provided "org.projectlombok:lombok:1.16.6"
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
-    compile 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.2'
+    compile 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3'
 }
 
 android {

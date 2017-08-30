@@ -1,3 +1,8 @@
+Version 2.17 (2017/08/30)
+    + HASH and RANG extensions (by Ashutosh Gangwar)
+    + Greek translation (by Nikoss)
+    * Improved github site for SwiFTP (by Poussinou)
+    * Bug fixes
 Version 2.16 (2017/06/21)
     + Added multiple theme support (by Ashutosh Gangwar)
     * Fix server possible not visible because wrong IP displayed
