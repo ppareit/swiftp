@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2011-2013 Pieter Pareit
+Copyright 2009 David Revell
+
+This file is part of SwiFTP.
+
+SwiFTP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SwiFTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="swiftp_name">FTP Εξυπηρετητής</string>
+    <string name="swiftp_name_free">FTP Εξυπηρετητής (Ελεύθερος)</string>
+    <string name="swiftp_name_demo">FTP Εξυπηρετητής (Δοκιμαστική)</string>
+    <string name="running_label">FTP Εξυπηρετητής</string>
+    <string name="running_summary_stopped">Εναλλαγή της κατάστασης του εφ-τι-πι εξυπηρετητή</string>
+    <string name="running_summary_started">στις %s</string>
+    <string name="running_summary_failed">
+    Αποτυχία εκκίνησης του ΕφΤιΠι εξυπηρετητή. Μήπως δεν είναι ενεργή η σύνδεση με το τοπικό δίκτυο (γουάι-φάι ή έθερνετ) ;</string>
+    <string name="running_summary_failed_to_get_ip_address">
+    Αποτυχία εκκίνησης του ΕφΤιΠί εξυπηρετητή. Αδυναμία λήψης της IP διεύθυνσης</string>
+    <string name="market_version_label">Εμπορική έκδοση</string>
+    <string name="market_version_summary">
+    Αυτή είναι η Δοκιμαστική έκδοση του FTP Server. 
+    Υποστήριξε την ανάπτυξη της εφαρμογής, λαμβάνοντας τον FTP Server από το κατάστημα του Ανντρόιντ.
+    Άγγιξε εδώ, για να μεταβείς στο κατάστημα.
+    </string>
+    <string name="settings_label">Ρυθμίσεις</string>
+    <string name="user_label">Χρήστης</string>
+    <string name="login_settings_label">Ρυθμίσεις σύνδεσης...</string>
+    <string name="username_label">Όνομα χρήστη</string>
+    <string name="password_label">Συνθηματικό</string>
+    <string name="show_password_label">Προβολή του συνθηματικού</string>
+    <string name="username_validation_error">
+       Το συνθηματικό θα πρέπει να αποτελείται από 1 ή περισσότερους αλφαριθμητικούς χαρακτήρες.
+       Άλλου τύπου χαρακτήρες δεν επιτρέπονται .</string>
+    <string name="password_validation_error">
+       Το συνθηματικό θα πρέπει να αποτελείται από 1 ή περισσότερους αλφαριθμητικούς χαρακτήρες.
+       Δεν επιτρέπονται άλλου τύπου χαρακτήρες</string>
+    <string name="anonymous_label">Ανώνυμος</string>
+    <string name="allow_anonymous_label">Να επιτρέπονται ανώνυμες συνδέσεις</string>
+    <string name="anonymous_summary">Στις ανώνυμες συνδέσεις επιτρέπεται μόνο πρόσβαση ανάγνωσης</string>
+    <string name="advanced_settings_label">Προχωρημένες ρυθμίσεις...</string>
+    <string name="port_number_label">Αριθμός της Θύρας</string>
+    <string name="port_validation_error">Ο αριθμός της θύρας πρέπει να είναι μεταξύ του 1 και του 65535.</string>
+    <string name="chroot_label">Παραμονή στο φάκελο</string>
+    <string name="accept_wifi_label">Αποδοχή σύνδεσης από το γουάι-φάι</string>
+    <string name="wakelock_label">Διατήρηση ξύπνιας της συσκευής (πλήρης ταχύτητα του Επεξεργαστή)</string>
+    <string name="extra_label">Επιπλέον</string>
+    <string name="help_label">Βοήθεια...</string>
+    <string name="about_label">Σχετικά με...</string>
+    <string name="help_dlg_title">Βοήθεια του FTP Εξυπηρετητή</string>
+    <string name="help_dlg_message">\
+Σε ευχαριστούμε που χρησιμοποιείς τον FTP Εξυπηρετητή (SwiFTP)! 
+Εδώ, ακολουθούν κάποιες σύντομες οδηγίες χρήσης.
+Περισσότερες πληροφορίες μπορούν να βρεθούν στο
+http://ppareit.github.com/swiftp/.\n\n\
+\
+Αυτό το πρόγραμμα σου επιτρέπει να τρέχεις έναν εφτιπί εξυπηρετητή (ftp server) 
+στην Ανντρόιντ συσκευή σου.
+Που σημαίνει, πως οποιοδήποτε πρόγραμμα μπορεί να έχει πρόσβαση στα αρχεία, 
+τα οποία βρίσκονται στη συσκευή σου, όσο τρέχει ο εφτιπί εξυπηρετητής.
+Για παράδειγμα, αν εισάγεις \'ftp://...\' στη γραμμή διεύθυνσης του Φάιρφοξ, 
+θα μπορείς να πλοηγηθείς στα αρχεία και στους φακέλους της συσκευής σου,
+από έναν σταθερό υπολογιστή ή από έναν φορητό.\n\n
+\
+Κατά προεπιλογή, καί το όνομα χρήστη καί το συνθηματικό είναι \'ftp\'.
+Θα πρέπει να τα αλλάξεις.
+Χρησιμοποιείς αυτό το όνομα χρήστη και αυτό το συνθηματικό, 
+για να έχεις πρόσβαση στον εξυπηρετητή.\n\n
+\
+Υπάρχει η επιλογή ρύθμισης (\"Διατήρηση ξύπνιας της συσκευής\"), 
+η οποία διορθώνει ένα πρόβλημα, όπου η μεταφορά αρχείων καθυστερεί, 
+ή και σταματά τελείως, όταν το τηλέφωνο κοιμάται. Αν έχεις αυτό το πρόβλημα,
+τσέκαρε αυτό το κουτάκι, και ξαναξεκίνα την εφαρμογή. Το τηλέφωνό σου
+θα παραμένει ξύπνιο, όσο τρέχει ο εξυπηρετητής.\n\n
+\
+Για λόγους ενέργειας και ασφάλειας, συστήνεται να τερματίζεται η λειτουργία
+του εξυπηρετητή, μετά το πέρας της εργασίας.\n\n\
+\
+Αν κάτι δεν λειτουργεί, όπως θα περίμενες, παρακαλείσαι να το αναφέρεις στον Pieter Pareit
+(pieter.pareit@gmail.com).\n\n\
+\
+Η ανάπτυξη του παρόντος προγράμματος ανοιχτού κώδικα στηρίζεται 
+με την αγορά του προγράμματος μέσω του Google Play Store. 
+Μπορείς να παρακολουθήσεις την ανάπτυξή του στο 
+https://github.com/ppareit/swiftp .
+Για να έχει μία εντύπωση για τα χαρακτηριστικά τα οποία πρόκειται να υλοποιηθούν,
+δες τον ιχνηλάτη των θεμάτων στο 
+https://github.com/ppareit/swiftp/issues .\n\n
+    </string>
+    <string name="notification_server_starting">Εκκίνηση στις %s</string>
+    <string name="notification_title">Ο FTP Εξυπηρετητής τρέχει</string>
+    <string name="notification_text">στις %s</string>
+    <string name="notification_stop_text">Τερματισμός του εξυπηρετητή</string>
+
+    <string name="nsd_servername_postfix">FTP Εξυπηρετητής</string>
+
+    <string name="select">Επέλεξε</string>
+    <string name="cancel">Ακύρωση</string>
+
+    <string name="feedback">Αποστολή ανατροφοδότησης</string>
+    <string name="about">Σχετικά με</string>
+
+    <string name="autoconnect_label">Ρυθμίσεις αυτόματης σύνδεσης...</string>
+    <string name="autoconnect_summary">Επέλεξε τα δίκτυα γουάι-φάι, στα οποία να γίνεται αυτόματη σύνδεση</string>
+    <string name="autoconnect_error_enable_wifi_for_access_points">Ενεργοποίησε το γουάι-φάι, για να λάβεις ένα κατάστιχο με τα σημεία πρόσβασης</string>
+
+    <string name="demo_while_paid_dialog_title">Ξεκίνησε η Δοκιμαστική, ενώ είναι εγκατεστημένη η πληρωμένη έκδοση</string>
+    <string name="demo_while_paid_dialog_message">
+    Σε ευχαριστούμε για την υποστήριξή σου στην ανάπτυξη της εφαρμογής.
+    Προσπαθείς να ξεκινήσεις την δοκιμαστική  έκδοση, ενώ είναι εγκατεστημένη η πληρωμένη έκδοση. 
+    Για να εξασφαλιστεί η καλύτερη λειτουργία, παρακαλείσαι να απομακρύνεις την δοκιμαστική έκδοση, και να ξεκινήσεις μόνο την πληρωμένη έκδοση.
+    </string>
+
+    <string name="storage_warning">Προειδοποίηση: ο αποθηκευτικός χώρος δεν είναι διαθέσιμος. Ίσως να θες να τον αποπροσαρτήσεις.</string>
+
+
+    <!-- auto added strings by AS -->
+    <string name="widget_name">Γραφικό Στοιχείο του FTP Server</string>
+    <string name="notif_settings_text">Ρυθμίσεις</string>
+    <string name="app_copyright">Πνευματικά Δικαιώματα 2012 - 2017</string>
+    <string name="about_license_title">Άδεια</string>
+    <string name="about_license_name">GNU GPL3</string>
+    <string name="about_description_title">Περιγραφή</string>
+    <string name="about_description_text">Ο FTP Server (SwiFTP) σου επιτρέπει να τρέχεις έναν ΕφΤιΠί εξυπηρετητή, στην Ανντρόιντ συσκευή σου.</string>
+    <string name="about_libraries_title">Βιβλιοθήκες</string>
+    <string name="about_contributor_title">Συμμετέχοντες</string>
+
+    <string name="app_theme">Θέμα...</string>
+    <string name="dark_theme">Σκοτεινό θέμα</string>
+    <string name="light_theme">Φωτεινό Θέμα</string>
+    <string name="mixed_theme">Ανάμεικτο Θέμα</string>
+
+</resources>
+
