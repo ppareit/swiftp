@@ -67,6 +67,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="help_label">Help...</string>
     <string name="about_label">About...</string>
     <string name="help_dlg_title">FTP Server Help</string>
+    <!--string is too long to translate, when editing, split it in logical parts, see issue #105-->
     <string name="help_dlg_message">\
 Thanks for using FTP Server (SwiFTP)! Here are some brief usage instructions. More
 information can be found at http://ppareit.github.com/swiftp/.\n\n\
