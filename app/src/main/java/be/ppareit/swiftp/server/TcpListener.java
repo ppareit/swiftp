@@ -51,8 +51,7 @@ public class TcpListener extends Thread {
             while (true) {
                 Socket clientSocket = listenSocket.accept();
                 Log.i(TAG, "New connection, spawned thread");
-                SessionThread newSession = new SessionThread(clientSocket,
-                        new LocalDataSocket());
+                SessionThread newSession = new SessionThread(clientSocket, new LocalDataSocket());
                 newSession.start();
                 ftpServerService.registerSessionThread(newSession);
             }

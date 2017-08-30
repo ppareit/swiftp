@@ -45,6 +45,8 @@ public class WifiStateChangeReceiver extends BroadcastReceiver {
             Cat.d("We are connecting to a wifi network");
             Intent startServerIntent = new Intent(context, StartServerService.class);
             context.startService(startServerIntent);
+        } else if (info.isConnectedOrConnecting()) {
+            Cat.v("Still connecting, ignoring");
         } else {
             Cat.d("We are disconnected from wifi network");
             Intent stopServerIntent = new Intent(context, StopServerService.class);
