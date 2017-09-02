@@ -19,15 +19,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.gui;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
+import android.support.v4.app.NotificationCompat;
 
 import net.vrallev.android.cat.Cat;
 
@@ -54,7 +52,6 @@ public class FsNotification extends BroadcastReceiver {
         }
     }
 
-    @SuppressLint("NewApi")
     private void setupNotification(Context context) {
         Cat.d("Setting up the notification");
         // Get NotificationManager reference
@@ -95,31 +92,21 @@ public class FsNotification extends BroadcastReceiver {
         preferenceIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent preferencePendingIntent = PendingIntent.getActivity(context, 0, preferenceIntent, 0);
 
-        Notification.Builder nb = new Notification.Builder(context)
+        Notification notification = new NotificationCompat.Builder(context)
                 .setContentTitle(contentTitle)
                 .setContentText(contentText)
                 .setContentIntent(contentIntent)
                 .setSmallIcon(icon)
                 .setTicker(tickerText)
                 .setWhen(when)
-                .setOngoing(true);
-
-        Notification notification;
-
-        // go from high to low android version adding extra options
-        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-            nb.setVisibility(Notification.VISIBILITY_PUBLIC);
-            nb.setCategory(Notification.CATEGORY_SERVICE);
-            nb.setPriority(Notification.PRIORITY_MAX);
-        }
-        if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
-            nb.addAction(stopIcon, stopText, stopPendingIntent);
-            nb.addAction(preferenceIcon, preferenceText, preferencePendingIntent);
-            nb.setShowWhen(false);
-            notification = nb.build();
-        } else {
-            notification = nb.getNotification();
-        }
+                .setOngoing(true)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .addAction(stopIcon, stopText, stopPendingIntent)
+                .addAction(preferenceIcon, preferenceText, preferencePendingIntent)
+                .setShowWhen(false)
+                .build();
 
         // Pass Notification to NotificationManager
         nm.notify(NOTIFICATION_ID, notification);
