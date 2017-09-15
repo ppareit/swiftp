@@ -159,5 +159,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="dark_theme">Dark Theme</string>
     <string name="light_theme">Light Theme</string>
     <string name="mixed_theme">Mixed Theme</string>
+    <string name="unable_to_start_mail_client">Unable to start mail client to send feedback.</string>
+    <string name="use_english">Please use clear English!</string>
 
 </resources>

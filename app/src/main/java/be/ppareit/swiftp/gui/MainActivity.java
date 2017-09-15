@@ -21,6 +21,7 @@ package be.ppareit.swiftp.gui;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -39,7 +40,6 @@ import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
-import be.ppareit.swiftp.Util;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -118,15 +118,19 @@ public class MainActivity extends AppCompatActivity{
                     "Application version: " + BuildConfig.VERSION_NAME + " - " + BuildConfig.VERSION_CODE + "\n" +
                     "Feedback: \n_";
 
-            Intent email = new Intent(Intent.ACTION_SEND);
-            email.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
-            email.putExtra(Intent.EXTRA_SUBJECT, subject);
-            email.putExtra(Intent.EXTRA_TEXT, message);
-            email.setType("message/rfc822");
+            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            emailIntent.putExtra(Intent.EXTRA_TEXT, message);
+            emailIntent.setType("message/rfc822");
 
-            startActivity(email);
+            try {
+                startActivity(emailIntent);
+                Toast.makeText(this, R.string.use_english, Toast.LENGTH_LONG).show();
+            } catch (ActivityNotFoundException exception) {
+                Toast.makeText(this, R.string.unable_to_start_mail_client, Toast.LENGTH_LONG).show();
+            }
 
-            Toast.makeText(this, "Please use clear English!", Toast.LENGTH_LONG).show();
         } else if (item.getItemId() == R.id.action_about) {
             startActivity(new Intent(this, AboutActivity.class));
         }
