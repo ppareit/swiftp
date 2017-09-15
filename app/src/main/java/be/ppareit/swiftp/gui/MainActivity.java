@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity{
             // Permissions not granted, close down
             for (int result : grantResults) {
                 if (result != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Unable to proceed without the needed permissions, shuting down", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Unable to proceed without the needed permissions, shutting down", Toast.LENGTH_LONG).show();
                     finish();
                 }
             }
