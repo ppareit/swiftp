@@ -1,3 +1,8 @@
+Version 2.17.1 (2017/09/15)
+    * Using correct compatibility library for notifications (by Ashutosh Gangwar)
+    * Spelling fixes
+    * Translation fixes
+    * Bug fixes
 Version 2.17 (2017/08/30)
     + HASH and RANG extensions (by Ashutosh Gangwar)
     + Greek translation (by Nikoss)
