@@ -26,7 +26,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="swiftp_name_demo">FTP Εξυπηρετητής (Δοκιμαστική)</string>
     <string name="running_label">FTP Εξυπηρετητής</string>
     <string name="running_summary_stopped">Εναλλαγή της κατάστασης του εφ-τι-πι εξυπηρετητή</string>
-    <string name="running_summary_started">στις %s</string>
+    <string name="running_summary_started">στην %s</string>
     <string name="running_summary_failed">
     Αποτυχία εκκίνησης του ΕφΤιΠι εξυπηρετητή. Μήπως δεν είναι ενεργή η σύνδεση με το τοπικό δίκτυο (γουάι-φάι ή έθερνετ) ;</string>
     <string name="running_summary_failed_to_get_ip_address">
@@ -34,7 +34,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="market_version_label">Εμπορική έκδοση</string>
     <string name="market_version_summary">
     Αυτή είναι η Δοκιμαστική έκδοση του FTP Server. 
-    Υποστήριξε την ανάπτυξη της εφαρμογής, λαμβάνοντας τον FTP Server από το κατάστημα του Ανντρόιντ.
+    Μπορείς να υποστηρίξεις την ανάπτυξη της εφαρμογής, λαμβάνοντας τον FTP Server από το κατάστημα του Ανντρόιντ.
     Άγγιξε εδώ, για να μεταβείς στο κατάστημα.
     </string>
     <string name="settings_label">Ρυθμίσεις</string>
@@ -50,10 +50,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
        Το συνθηματικό θα πρέπει να αποτελείται από 1 ή περισσότερους αλφαριθμητικούς χαρακτήρες.
        Δεν επιτρέπονται άλλου τύπου χαρακτήρες</string>
     <string name="anonymous_label">Ανώνυμος</string>
-    <string name="allow_anonymous_label">Να επιτρέπονται ανώνυμες συνδέσεις</string>
+    <string name="allow_anonymous_label">Να επιτρέπονται οι ανώνυμες συνδέσεις</string>
     <string name="anonymous_summary">Στις ανώνυμες συνδέσεις επιτρέπεται μόνο πρόσβαση ανάγνωσης</string>
     <string name="advanced_settings_label">Προχωρημένες ρυθμίσεις...</string>
-    <string name="port_number_label">Αριθμός της Θύρας</string>
+    <string name="port_number_label">Ο Αριθμός της Θύρας</string>
     <string name="port_validation_error">Ο αριθμός της θύρας πρέπει να είναι μεταξύ του 1 και του 65535.</string>
     <string name="chroot_label">Παραμονή στο φάκελο</string>
     <string name="accept_wifi_label">Αποδοχή σύνδεσης από το γουάι-φάι</string>
@@ -66,25 +66,25 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 Σε ευχαριστούμε που χρησιμοποιείς τον FTP Εξυπηρετητή (SwiFTP)! 
 Εδώ, ακολουθούν κάποιες σύντομες οδηγίες χρήσης.
 Περισσότερες πληροφορίες μπορούν να βρεθούν στο
-http://ppareit.github.com/swiftp/.\n\n\
+http://ppareit.github.com/swiftp/ .\n\n\
 \
 Αυτό το πρόγραμμα σου επιτρέπει να τρέχεις έναν εφτιπί εξυπηρετητή (ftp server) 
 στην Ανντρόιντ συσκευή σου.
 Που σημαίνει, πως οποιοδήποτε πρόγραμμα μπορεί να έχει πρόσβαση στα αρχεία, 
 τα οποία βρίσκονται στη συσκευή σου, όσο τρέχει ο εφτιπί εξυπηρετητής.
 Για παράδειγμα, αν εισάγεις \'ftp://...\' στη γραμμή διεύθυνσης του Φάιρφοξ, 
-θα μπορείς να πλοηγηθείς στα αρχεία και στους φακέλους της συσκευής σου,
+θα μπορείς να πλοηγηθείς στα αρχεία, και στους φακέλους, της συσκευής σου,
 από έναν σταθερό υπολογιστή ή από έναν φορητό.\n\n
 \
 Κατά προεπιλογή, καί το όνομα χρήστη καί το συνθηματικό είναι \'ftp\'.
 Θα πρέπει να τα αλλάξεις.
-Χρησιμοποιείς αυτό το όνομα χρήστη και αυτό το συνθηματικό, 
-για να έχεις πρόσβαση στον εξυπηρετητή.\n\n
+Αυτό το όνομα χρήστη, και αυτό το συνθηματικό, τα χρησιμοποιείς,
+όταν θέλεις να έχεις πρόσβαση στον εξυπηρετητή.\n\n
 \
 Υπάρχει η επιλογή ρύθμισης (\"Διατήρηση ξύπνιας της συσκευής\"), 
 η οποία διορθώνει ένα πρόβλημα, όπου η μεταφορά αρχείων καθυστερεί, 
 ή και σταματά τελείως, όταν το τηλέφωνο κοιμάται. Αν έχεις αυτό το πρόβλημα,
-τσέκαρε αυτό το κουτάκι, και ξαναξεκίνα την εφαρμογή. Το τηλέφωνό σου
+τσέκαρε αυτό το κουτάκι, και ξεκίνα ξανά την εφαρμογή. Το τηλέφωνό σου
 θα παραμένει ξύπνιο, όσο τρέχει ο εξυπηρετητής.\n\n
 \
 Για λόγους ενέργειας και ασφάλειας, συστήνεται να τερματίζεται η λειτουργία
@@ -140,7 +140,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="about_contributor_title">Συμμετέχοντες</string>
 
     <string name="app_theme">Θέμα...</string>
-    <string name="dark_theme">Σκοτεινό θέμα</string>
+    <string name="dark_theme">Σκοτεινό Θέμα</string>
     <string name="light_theme">Φωτεινό Θέμα</string>
     <string name="mixed_theme">Ανάμεικτο Θέμα</string>
 
