@@ -131,6 +131,18 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".gui.FsTileService"
+            android:label="@string/swiftp_name"
+            android:icon="@mipmap/ic_qs_ftp_server"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+
+        </service>
+
     </application>
 
 </manifest>
