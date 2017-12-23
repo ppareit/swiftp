@@ -1,12 +1,9 @@
-plugins {
-    id "me.tatarka.retrolambda" version "3.7.0"
-}
 apply plugin: 'com.android.application'
 
 android {
 
     compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "be.ppareit.swiftp"
@@ -15,6 +12,7 @@ android {
         versionCode 21701
         versionName "2.17.1"
     }
+    flavorDimensions "default"
     productFlavors {
         playstore_paid {
             applicationId "be.ppareit.swiftp"
@@ -36,7 +34,6 @@ android {
             }
         }
     }
-    // Needed for retrolambda
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -45,11 +42,12 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'net.vrallev.android:cat:1.0.2'
-    provided "org.projectlombok:lombok:1.16.6"
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
+    compile 'net.vrallev.android:cat:1.0.5'
+    provided "org.projectlombok:lombok:1.16.12"
+    compile 'com.android.support:appcompat-v7:25.4.0'
+    compile 'com.android.support:design:25.4.0'
     compile 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3'
+    annotationProcessor 'org.projectlombok:lombok:1.16.12'
 }
 
 android {
