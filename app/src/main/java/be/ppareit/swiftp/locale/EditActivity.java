@@ -18,6 +18,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
  */
 package be.ppareit.swiftp.locale;
 
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,13 +27,12 @@ import android.view.MenuItem;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.twofortyfouram.locale.sdk.client.ui.activity.AbstractPluginActivity;
+import com.twofortyfouram.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
 
 import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
-import be.ppareit.swiftp.Util;
 
 import static be.ppareit.swiftp.locale.SettingsBundleHelper.BUNDLE_BOOLEAN_RUNNING;
 import static be.ppareit.swiftp.locale.SettingsBundleHelper.generateBundle;
@@ -41,7 +41,7 @@ import static be.ppareit.swiftp.locale.SettingsBundleHelper.getBundleRunningStat
 /**
  * Created by ppareit on 29/04/16.
  */
-public class EditActivity extends AbstractPluginActivity {
+public class EditActivity extends AbstractAppCompatPluginActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,20 +52,19 @@ public class EditActivity extends AbstractPluginActivity {
 
         CharSequence callingApplicationLabel = null;
         try {
-            callingApplicationLabel =
-                    getPackageManager().getApplicationLabel(
-                            getPackageManager().getApplicationInfo(getCallingPackage(),
-                                    0));
+            PackageManager pm = getPackageManager();
+            ApplicationInfo ai = pm.getApplicationInfo(getCallingPackage(), 0);
+            callingApplicationLabel = pm.getApplicationLabel(ai);
         } catch (final PackageManager.NameNotFoundException e) {
             Cat.e("Calling package couldn't be found%s", e); //$NON-NLS-1$
         }
         if (null != callingApplicationLabel) {
             setTitle(callingApplicationLabel);
         }
-
-        getActionBar().setSubtitle("Swiftp");
-
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setSubtitle(R.string.swiftp_name);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
