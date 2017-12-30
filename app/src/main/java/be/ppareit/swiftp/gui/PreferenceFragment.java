@@ -19,6 +19,7 @@
 
 package be.ppareit.swiftp.gui;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,10 +27,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
@@ -39,6 +42,8 @@ import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.text.util.Linkify;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
@@ -62,7 +67,10 @@ import be.ppareit.swiftp.R;
  */
 public class PreferenceFragment extends android.preference.PreferenceFragment implements OnSharedPreferenceChangeListener {
 
+    private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
+
     private EditTextPreference mPassWordPref;
+    private DynamicMultiSelectListPreference mAutoconnectListPref;
     private Handler mHandler = new Handler();
 
     @Override
@@ -125,8 +133,8 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
             stopServer();
             return true;
         });
-        DynamicMultiSelectListPreference autoconnectListPref = findPref("autoconnect_preference");
-        autoconnectListPref.setOnPopulateListener(
+        mAutoconnectListPref = findPref("autoconnect_preference");
+        mAutoconnectListPref.setOnPopulateListener(
                 pref -> {
                     Cat.d("autoconnect populate listener");
 
@@ -154,6 +162,29 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
                     pref.setEntries(niceSsids);
                     pref.setEntryValues(ssids);
                 });
+        mAutoconnectListPref.setOnPreferenceClickListener(preference -> {
+            Cat.d("Clicked");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle(R.string.request_coarse_location_dlg_title)
+                                .setMessage(R.string.request_coarse_location_dlg_message)
+                                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, ACCESS_COARSE_LOCATION_REQUEST_CODE);
+                                })
+                                .setOnCancelListener(dialog -> {
+                                    mAutoconnectListPref.getDialog().cancel();
+                                })
+                                .create()
+                                .show();
+                    } else {
+                        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, ACCESS_COARSE_LOCATION_REQUEST_CODE);
+                    }
+                }
+            }
+            return false;
+        });
 
         EditTextPreference portnum_pref = findPref("portNum");
         portnum_pref.setSummary(sp.getString("portNum",
@@ -243,6 +274,15 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
             return true;
         });
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == ACCESS_COARSE_LOCATION_REQUEST_CODE) {
+            if (permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION) && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                mAutoconnectListPref.getDialog().cancel();
+            }
+        }
     }
 
     @Override

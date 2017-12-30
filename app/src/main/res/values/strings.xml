@@ -162,4 +162,16 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="unable_to_start_mail_client">Unable to start mail client to send feedback.</string>
     <string name="use_english">Please use clear English!</string>
 
+    <!-- since 2.18 -->
+
+    <string name="request_coarse_location_dlg_title">Request permission for location</string>
+    <string name="request_coarse_location_dlg_message">
+        An application that knows the current access point can deduce the location of the device.
+        As such the location permission is needed. This permission is only needed if you want to
+        automatically start the server if it connects to a particular wifi access point.
+        Needless to say that this application does not use the location information.\n\n
+        If you don\'t grant this permission, the app will still work,
+        you just won\'t be able to automatically connect.
+    </string>
+
 </resources>
