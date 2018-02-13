@@ -325,7 +325,7 @@ public class FsService extends Service implements Runnable {
                 && (ni.getType() & (ConnectivityManager.TYPE_WIFI | ConnectivityManager.TYPE_ETHERNET)) != 0;
         if (!connected) {
             Log.d(TAG, "isConnectedToLocalNetwork: see if it is an WIFI AP");
-            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            WifiManager wm = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             try {
                 Method method = wm.getClass().getDeclaredMethod("isWifiApEnabled");
                 connected = (Boolean) method.invoke(wm);
@@ -348,7 +348,6 @@ public class FsService extends Service implements Runnable {
         }
         return connected;
     }
-
 
     /**
      * The FTPServerService must know about all running session threads so they can be
