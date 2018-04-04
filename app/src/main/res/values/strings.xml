@@ -174,4 +174,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
         you just won\'t be able to automatically connect.
     </string>
 
+    <!-- since 2.19 -->
+    <string name="unable_to_proceed_no_permissions">Unable to proceed without the needed permissions, shutting down</string>
+
 </resources>

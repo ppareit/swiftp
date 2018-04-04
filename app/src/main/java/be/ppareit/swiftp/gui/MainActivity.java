@@ -36,6 +36,8 @@ import android.widget.Toast;
 
 import net.vrallev.android.cat.Cat;
 
+import java.util.Arrays;
+
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.FsSettings;
@@ -45,7 +47,7 @@ import be.ppareit.swiftp.R;
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
  */
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     final static int PERMISSIONS_REQUEST_CODE = 12;
 
@@ -67,10 +69,7 @@ public class MainActivity extends AppCompatActivity{
             AlertDialog ad = new AlertDialog.Builder(this)
                     .setTitle(R.string.demo_while_paid_dialog_title)
                     .setMessage(R.string.demo_while_paid_dialog_message)
-                    .setPositiveButton(getText(android.R.string.ok),
-                            (d, w) -> {
-                                finish();
-                            })
+                    .setPositiveButton(getText(android.R.string.ok), (d, w) -> finish())
                     .create();
             ad.show();
         }
@@ -86,13 +85,13 @@ public class MainActivity extends AppCompatActivity{
             Cat.e("Unhandled request code");
             return;
         }
-        Cat.d("permissions: " + permissions.toString());
-        Cat.d("grantResults: " + grantResults.toString());
+        Cat.d("permissions: " + Arrays.toString(permissions));
+        Cat.d("grantResults: " + Arrays.toString(grantResults));
         if (grantResults.length > 0) {
             // Permissions not granted, close down
             for (int result : grantResults) {
                 if (result != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Unable to proceed without the needed permissions, shutting down", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.unable_to_proceed_no_permissions, Toast.LENGTH_LONG).show();
                     finish();
                 }
             }
