@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
 
     compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "be.ppareit.swiftp"
@@ -41,12 +41,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'net.vrallev.android:cat:1.0.5'
-    provided "org.projectlombok:lombok:1.16.12"
-    compile 'com.android.support:appcompat-v7:25.4.0'
-    compile 'com.android.support:design:25.4.0'
-    compile 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'net.vrallev.android:cat:1.0.5'
+    compileOnly "org.projectlombok:lombok:1.16.12"
+    implementation 'com.android.support:appcompat-v7:25.4.0'
+    implementation 'com.android.support:design:25.4.0'
+    implementation 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3'
     annotationProcessor 'org.projectlombok:lombok:1.16.12'
 }
 
