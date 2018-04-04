@@ -226,7 +226,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
                                     Toast.LENGTH_LONG).show();
                         } else if (!root.canWrite()) {
                             Toast.makeText(getActivity(),
-                                    "Notice that we can't write in this folder, reading will work. Writing in subfolders might work.",
+                                    "Notice that we can't write in this folder, reading will work. Writing in sub folders might work.",
                                     Toast.LENGTH_LONG).show();
                         }
 
