@@ -148,7 +148,11 @@ public abstract class FileUtil {
     public static boolean deleteFile(@NonNull final File file, Context context) {
         // First try the normal deletion.
         if (file == null) return true;
-        boolean fileDelete = rmdir(file, context);
+
+        boolean fileDelete = false;
+        if (file.isDirectory()) {
+            fileDelete = rmdir(file, context);
+        }
         if (file.delete() || fileDelete)
             return true;
 
