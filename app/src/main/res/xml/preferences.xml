@@ -99,6 +99,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:defaultValue="@string/wakelock_default"
                 android:key="stayAwake"
                 android:title="@string/wakelock_label" />
+
+            <CheckBoxPreference
+                android:defaultValue="@string/writeExternalStorage_default"
+                android:key="writeExternalStorage"
+                android:title="@string/writeExternalStorage_label" />
         </PreferenceScreen>
 
     </PreferenceCategory>

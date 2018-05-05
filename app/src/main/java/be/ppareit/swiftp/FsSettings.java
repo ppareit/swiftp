@@ -80,7 +80,7 @@ public class FsSettings {
     public static boolean setChrootDir(String dir) {
         File chrootTest = new File(dir);
         if (!chrootTest.isDirectory() || !chrootTest.canRead())
-                return false;
+            return false;
         final SharedPreferences sp = getSharedPreferences();
         sp.edit().putString("chrootDir", dir).apply();
         return true;
@@ -108,7 +108,7 @@ public class FsSettings {
     public static int getTheme() {
         SharedPreferences sp = getSharedPreferences();
 
-        switch(sp.getString("theme", "0")) {
+        switch (sp.getString("theme", "0")) {
             case "0":
                 return R.style.AppThemeDark;
             case "1":
@@ -173,6 +173,16 @@ public class FsSettings {
 
     public static void setLogScrollBack(int serverLogScrollBack) {
         FsSettings.serverLogScrollBack = serverLogScrollBack;
+    }
+
+    public static String getExternalStorageUri() {
+        final SharedPreferences sp = getSharedPreferences();
+        return sp.getString("externalStorageUri", null);
+    }
+
+    public static void setExternalStorageUri(String externalStorageUri) {
+        final SharedPreferences sp = getSharedPreferences();
+        sp.edit().putString("externalStorageUri", externalStorageUri).apply();
     }
 
 }
