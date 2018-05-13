@@ -23,6 +23,9 @@ import java.io.File;
 
 import android.util.Log;
 
+import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.utils.FileUtil;
+
 public class CmdMKD extends FtpCmd implements Runnable {
     private static final String TAG = CmdMKD.class.getSimpleName();
 
@@ -39,7 +42,8 @@ public class CmdMKD extends FtpCmd implements Runnable {
         String param = getParameter(input);
         File toCreate;
         String errString = null;
-        mainblock: {
+        mainblock:
+        {
             // If the param is an absolute path, use it as is. If it's a
             // relative path, prepend the current working directory.
             if (param.length() < 1) {
@@ -55,7 +59,8 @@ public class CmdMKD extends FtpCmd implements Runnable {
                 errString = "550 Already exists\r\n";
                 break mainblock;
             }
-            if (!toCreate.mkdir()) {
+
+            if (!FileUtil.mkdirs(App.getAppContext(), toCreate)) {
                 errString = "550 Error making directory (permissions?)\r\n";
                 break mainblock;
             }

@@ -20,6 +20,7 @@
 package be.ppareit.swiftp.gui;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -44,7 +45,9 @@ import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.provider.DocumentFile;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,6 +71,7 @@ import be.ppareit.swiftp.R;
 public class PreferenceFragment extends android.preference.PreferenceFragment implements OnSharedPreferenceChangeListener {
 
     private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
+    private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
 
     private EditTextPreference mPassWordPref;
     private DynamicMultiSelectListPreference mAutoconnectListPref;
@@ -245,6 +249,23 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
             return true;
         });
 
+        final CheckBoxPreference writeExternalStorage_pref = findPref("writeExternalStorage");
+        String externalStorageUri = FsSettings.getExternalStorageUri();
+        if (externalStorageUri == null) {
+            writeExternalStorage_pref.setChecked(false);
+        }
+        writeExternalStorage_pref.setOnPreferenceChangeListener((preference, newValue) -> {
+            if ((boolean) newValue) {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
+                return false;
+            } else {
+                FsSettings.setExternalStorageUri(null);
+                return true;
+            }
+        });
+
+
         ListPreference theme = findPref("theme");
         theme.setSummary(theme.getEntry());
         theme.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -319,6 +340,29 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
         updateLoginInfo();
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (requestCode == ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
+            Uri treeUri = resultData.getData();
+            String path = treeUri.getPath();
+
+            final CheckBoxPreference writeExternalStorage_pref = findPref("writeExternalStorage");
+            if (!":".equals(path.substring(path.length() - 1)) || path.contains("primary")) {
+                writeExternalStorage_pref.setChecked(false);
+            } else {
+                FsSettings.setExternalStorageUri(treeUri.toString());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    getActivity().getContentResolver().takePersistableUriPermission(treeUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+                writeExternalStorage_pref.setChecked(true);
+            }
+        }
+
+    }
+
 
     private void startServer() {
         getActivity().sendBroadcast(new Intent(FsService.ACTION_START_FTPSERVER));

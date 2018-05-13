@@ -63,6 +63,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="chroot_label">Stay in folder</string>
     <string name="accept_wifi_label">Accept connection from wifi</string>
     <string name="wakelock_label">Keep device awake (full CPU speed)</string>
+    <string name="writeExternalStorage_label">Writing external storage</string>
     <string name="extra_label">Extra</string>
     <string name="help_label">Help...</string>
     <string name="about_label">About...</string>

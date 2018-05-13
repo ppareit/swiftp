@@ -22,7 +22,11 @@ package be.ppareit.swiftp.server;
 import java.io.File;
 import java.io.IOException;
 
+import android.os.Build;
 import android.util.Log;
+
+import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdRNTO extends FtpCmd implements Runnable {
     private static final String TAG = CmdRNTO.class.getSimpleName();
@@ -40,7 +44,8 @@ public class CmdRNTO extends FtpCmd implements Runnable {
         String param = getParameter(input);
         String errString = null;
         File toFile = null;
-        mainblock: {
+        mainblock:
+        {
             Log.i(TAG, "param: " + param);
             toFile = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
             Log.i(TAG, "RNTO to file: " + toFile.getPath());
@@ -54,32 +59,42 @@ public class CmdRNTO extends FtpCmd implements Runnable {
                 break mainblock;
             }
             Log.i(TAG, "RNTO from file: " + fromFile.getPath());
-            // TODO: this code is working around a bug that java6 and before cannot
-            // reliable move a file, once java7 is supported by Dalvik, this code can
-            // be replaced with Files.move()
-            File tmpFile = null;
-            try {
-                tmpFile = File.createTempFile("temp_" + fromFile.getName(), null,
-                        sessionThread.getWorkingDir());
-                if (fromFile.isDirectory()) {
-                    String tmpFilePath = tmpFile.getPath();
-                    tmpFile.delete();
-                    tmpFile = new File(tmpFilePath);
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                // TODO: this code is working around a bug that java6 and before cannot
+                // reliable move a file, once java7 is supported by Dalvik, this code can
+                // be replaced with Files.move()
+                File tmpFile = null;
+                try {
+                    tmpFile = File.createTempFile("temp_" + fromFile.getName(), null,
+                            sessionThread.getWorkingDir());
+                    if (fromFile.isDirectory()) {
+                        String tmpFilePath = tmpFile.getPath();
+                        tmpFile.delete();
+                        tmpFile = new File(tmpFilePath);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    errString = "550 Error during rename operation\r\n";
+                    break mainblock;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                errString = "550 Error during rename operation\r\n";
-                break mainblock;
+                if (!fromFile.renameTo(tmpFile)) {
+                    errString = "550 Error during rename operation\r\n";
+                    break mainblock;
+                }
+                fromFile.delete();
+                if (!tmpFile.renameTo(toFile)) {
+                    errString = "550 Error during rename operation\r\n";
+                    break mainblock;
+                }
+            } else {
+                if (fromFile.isDirectory()) {
+                    FileUtil.renameFolder(fromFile, toFile, App.getAppContext());
+                } else {
+                    FileUtil.moveFile(fromFile, toFile, App.getAppContext());
+                }
             }
-            if (!fromFile.renameTo(tmpFile)) {
-                errString = "550 Error during rename operation\r\n";
-                break mainblock;
-            }
-            fromFile.delete();
-            if (!tmpFile.renameTo(toFile)) {
-                errString = "550 Error during rename operation\r\n";
-                break mainblock;
-            }
+
         }
         if (errString != null) {
             sessionThread.writeString(errString);

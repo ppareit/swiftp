@@ -22,7 +22,10 @@ package be.ppareit.swiftp.server;
 import java.io.File;
 
 import android.util.Log;
+
+import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.MediaUpdater;
+import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdRMD extends FtpCmd implements Runnable {
     private static final String TAG = CmdRMD.class.getSimpleName();
@@ -40,7 +43,8 @@ public class CmdRMD extends FtpCmd implements Runnable {
         String param = getParameter(input);
         File toRemove;
         String errString = null;
-        mainblock: {
+        mainblock:
+        {
             if (param.length() < 1) {
                 errString = "550 Invalid argument\r\n";
                 break mainblock;
@@ -75,7 +79,7 @@ public class CmdRMD extends FtpCmd implements Runnable {
     /**
      * Accepts a file or directory name, and recursively deletes the contents of that
      * directory and all subdirectories.
-     * 
+     *
      * @param toDelete
      * @return Whether the operation completed successfully
      */
@@ -90,10 +94,10 @@ public class CmdRMD extends FtpCmd implements Runnable {
                 success &= recursiveDelete(entry);
             }
             Log.d(TAG, "Recursively deleted: " + toDelete);
-            return success && toDelete.delete();
+            return success && FileUtil.deleteFile(toDelete, App.getAppContext());
         } else {
             Log.d(TAG, "RMD deleting file: " + toDelete);
-            boolean success = toDelete.delete();
+            boolean success = FileUtil.deleteFile(toDelete, App.getAppContext());
             MediaUpdater.notifyFileDeleted(toDelete.getPath());
             return success;
         }
