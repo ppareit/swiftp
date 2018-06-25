@@ -24,8 +24,6 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 
-import be.ppareit.swiftp.FsSettings;
-
 /**
  * PRINT WORKING DIRECTORY (PWD)
  * Command returns the working directory in the reply.
@@ -47,7 +45,7 @@ public class CmdPWD extends FtpCmd implements Runnable {
         // user-visible path (inside the chroot directory).
         try {
             String currentDir = sessionThread.getWorkingDir().getCanonicalPath();
-            File chrootDir = FsSettings.getChrootDir();
+            File chrootDir = sessionThread.getChrootDir();
             if (chrootDir != null) {
                 currentDir = currentDir.substring(chrootDir.getCanonicalPath().length());
             }

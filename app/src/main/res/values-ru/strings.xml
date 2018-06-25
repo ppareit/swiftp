@@ -37,7 +37,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="username_label">Имя пользователя</string>
     <string name="password_label">Пароль</string>
     <string name="show_password_label">Отображать пароль</string>
-    <string name="anonymous_label">АНОНИМНОЕ ПОДКЛЮЧЕНИЕ</string>
     <string name="allow_anonymous_label">Разрешить анонимное подключение</string>
     <string name="anonymous_summary">При анонимном подключении доступ резрешен только на чтение</string>
     <string name="advanced_settings_label">Расширенные настройки...</string>

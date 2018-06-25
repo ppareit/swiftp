@@ -47,7 +47,8 @@ public class SessionThread extends Thread {
     private boolean binaryMode = false;
     private String userName = null;  // username that the client sends
     private boolean userAuthenticated = false;
-    private File workingDir = FsSettings.getChrootDir();
+    private File workingDir = FsSettings.getDefaultChrootDir();
+    private File chrootDir = workingDir;
     private Socket dataSocket = null;
     private File renameFrom = null;
     private LocalDataSocket localDataSocket;
@@ -398,5 +399,19 @@ public class SessionThread extends Thread {
 
     public void setHashingAlgorithm(String algorithm) {
         this.hashingAlgorithm = algorithm;
+    }
+
+    public File getChrootDir() {
+        return chrootDir.isDirectory() ? chrootDir : FsSettings.getDefaultChrootDir();
+    }
+
+    public void setChrootDir(String chrootPath) {
+        if (chrootPath == null)
+            return;
+        File chrootDir = new File(chrootPath);
+        if (chrootDir.isDirectory()) {
+            this.chrootDir = chrootDir;
+            this.workingDir = chrootDir;
+        }
     }
 }

@@ -43,15 +43,15 @@ public class CmdPASS extends FtpCmd implements Runnable {
             sessionThread.writeString("503 Must send USER first\r\n");
             return;
         }
-        String username = FsSettings.getUserName();
-        String password = FsSettings.getPassWord();
-        if (username == null || password == null) {
-            Log.e(TAG, "Username or password misconfiguration");
+        FtpUser user = FsSettings.getUser(attemptUsername);
+        if (user == null) {
+            Log.e(TAG, "Username does not exist!");
             sessionThread.writeString("500 Internal error during authentication");
-        } else if (username.equals(attemptUsername) && password.equals(attemptPassword)) {
+        } else if (user.getPassword().equals(attemptPassword)) {
             sessionThread.writeString("230 Access granted\r\n");
-            Log.i(TAG, "User " + username + " password verified");
+            Log.i(TAG, "User " + user.getUsername() + " password verified");
             sessionThread.authAttempt(true);
+            sessionThread.setChrootDir(user.getChroot());
         } else if (attemptUsername.equals("anonymous") && FsSettings.allowAnoymous()) {
             sessionThread.writeString("230 Guest login ok, read only access.\r\n");
             Log.i(TAG, "Guest logged in with email: " + attemptPassword);

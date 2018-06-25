@@ -27,7 +27,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -45,16 +44,12 @@ import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.provider.DocumentFile;
 import android.text.util.Linkify;
-import android.util.Log;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import net.vrallev.android.cat.Cat;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -68,12 +63,11 @@ import be.ppareit.swiftp.R;
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
  */
-public class PreferenceFragment extends android.preference.PreferenceFragment implements OnSharedPreferenceChangeListener {
+public class PreferenceFragment extends android.preference.PreferenceFragment {
 
     private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
     private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
 
-    private EditTextPreference mPassWordPref;
     private DynamicMultiSelectListPreference mAutoconnectListPref;
     private Handler mHandler = new Handler();
 
@@ -116,27 +110,12 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
             prefScreen.removePreference(marketVersionPref);
         }
 
-        updateLoginInfo();
-
-        EditTextPreference usernamePref = findPref("username");
-        usernamePref.setOnPreferenceChangeListener((preference, newValue) -> {
-            String newUsername = (String) newValue;
-            if (preference.getSummary().equals(newUsername))
-                return false;
-            if (!newUsername.matches("[a-zA-Z0-9]+")) {
-                Toast.makeText(getActivity(),
-                        R.string.username_validation_error, Toast.LENGTH_LONG).show();
-                return false;
-            }
-            stopServer();
+        Preference managerUsersPref = findPref("manage_users");
+        managerUsersPref.setOnPreferenceClickListener((preference) -> {
+            startActivity(new Intent(getActivity(), ManageUsersActivity.class));
             return true;
         });
 
-        mPassWordPref = findPref("password");
-        mPassWordPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            stopServer();
-            return true;
-        });
         mAutoconnectListPref = findPref("autoconnect_preference");
         mAutoconnectListPref.setOnPopulateListener(
                 pref -> {
@@ -213,36 +192,6 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
             return true;
         });
 
-        Preference chroot_pref = findPref("chrootDir");
-        chroot_pref.setSummary(FsSettings.getChrootDirAsString());
-        chroot_pref.setOnPreferenceClickListener(preference -> {
-            AlertDialog folderPicker = new FolderPickerDialogBuilder(getActivity(), FsSettings.getChrootDir())
-                    .setSelectedButton(R.string.select, path -> {
-                        if (preference.getSummary().equals(path))
-                            return;
-                        if (!FsSettings.setChrootDir(path))
-                            return;
-                        // TODO: this is a hotfix, create correct resources, improve UI/UX
-                        final File root = new File(path);
-                        if (!root.canRead()) {
-                            Toast.makeText(getActivity(),
-                                    "Notice that we can't read/write in this folder.",
-                                    Toast.LENGTH_LONG).show();
-                        } else if (!root.canWrite()) {
-                            Toast.makeText(getActivity(),
-                                    "Notice that we can't write in this folder, reading will work. Writing in sub folders might work.",
-                                    Toast.LENGTH_LONG).show();
-                        }
-
-                        preference.setSummary(path);
-                        stopServer();
-                    })
-                    .setNegativeButton(R.string.cancel, null)
-                    .create();
-            folderPicker.show();
-            return true;
-        });
-
         final CheckBoxPreference wakelock_pref = findPref("stayAwake");
         wakelock_pref.setOnPreferenceChangeListener((preference, newValue) -> {
             stopServer();
@@ -312,10 +261,6 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
 
         updateRunningState();
 
-        Cat.d("onResume: Register the preference change listner");
-        SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
-        sp.registerOnSharedPreferenceChangeListener(this);
-
         Cat.d("onResume: Registering the FTP server actions");
         IntentFilter filter = new IntentFilter();
         filter.addAction(FsService.ACTION_STARTED);
@@ -330,15 +275,6 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
 
         Cat.v("onPause: Unregistering the FTPServer actions");
         getActivity().unregisterReceiver(mFsActionsReceiver);
-
-        Cat.d("onPause: Unregistering the preference change listner");
-        SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
-        sp.unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-        updateLoginInfo();
     }
 
     @Override
@@ -370,23 +306,6 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
 
     private void stopServer() {
         getActivity().sendBroadcast(new Intent(FsService.ACTION_STOP_FTPSERVER));
-    }
-
-    private void updateLoginInfo() {
-
-        String username = FsSettings.getUserName();
-        String password = FsSettings.getPassWord();
-
-        Cat.v("Updating login summary");
-        PreferenceScreen loginPreference = findPref("login");
-        loginPreference.setSummary(username + " : " + transformPassword(password));
-        ((BaseAdapter) loginPreference.getRootAdapter()).notifyDataSetChanged();
-
-        EditTextPreference usernamePref = findPref("username");
-        usernamePref.setSummary(username);
-
-        EditTextPreference passWordPref = findPref("password");
-        passWordPref.setSummary(transformPassword(password));
     }
 
     private void updateRunningState() {
@@ -437,23 +356,6 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
             }
         }
     };
-
-    static private String transformPassword(String password) {
-        Context context = App.getAppContext();
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        Resources res = context.getResources();
-        String showPasswordString = res.getString(R.string.show_password_default);
-        boolean showPassword = showPasswordString.equals("true");
-        showPassword = sp.getBoolean("show_password", showPassword);
-        if (showPassword)
-            return password;
-        else {
-            StringBuilder sb = new StringBuilder(password.length());
-            for (int i = 0; i < password.length(); ++i)
-                sb.append('*');
-            return sb.toString();
-        }
-    }
 
     @SuppressWarnings({"unchecked", "deprecation"})
     protected <T extends Preference> T findPref(CharSequence key) {

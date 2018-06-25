@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright 2011-2013 Pieter Pareit
 Copyright 2009 David Revell
 
@@ -47,14 +46,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="password_label">Password</string>
     <string name="show_password_label">Display password</string>
     <string name="username_validation_error">
-        The password must consist of 1 or more alphanumeric characters.
+        The username must consist of 1 or more alphanumeric characters.
         No other characters are allowed.
     </string>
     <string name="password_validation_error">
         The password must consist of 1 or more alphanumeric characters.
         No other characters are allowed.
     </string>
-    <string name="anonymous_label">Anonymous</string>
     <string name="allow_anonymous_label">Allow anonymous login</string>
     <string name="anonymous_summary">Anonymous logins are only allowed read access</string>
     <string name="advanced_settings_label">Advanced settings...</string>
@@ -177,5 +175,11 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <!-- since 2.19 -->
     <string name="unable_to_proceed_no_permissions">Unable to proceed without the needed permissions, shutting down</string>
+    <string name="manage_users_label">Manage users...</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="user_exists_error">Another user with same username already exists!</string>
+    <string name="confirm_delete_message">Delete user \'%1$s\'?</string>
 
 </resources>

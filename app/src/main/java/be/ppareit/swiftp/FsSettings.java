@@ -26,22 +26,112 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import net.vrallev.android.cat.Cat;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
+import be.ppareit.swiftp.server.FtpUser;
 
 public class FsSettings {
 
     private final static String TAG = FsSettings.class.getSimpleName();
 
-    public static String getUserName() {
+    private static JSONArray getUserArray() throws JSONException {
         final SharedPreferences sp = getSharedPreferences();
-        return sp.getString("username", "ftp");
+        return new JSONArray(sp.getString("users", "[ [\"ftp\", \"ftp\", null] ]"));
     }
 
-    public static String getPassWord() {
-        final SharedPreferences sp = getSharedPreferences();
-        return sp.getString("password", "ftp");
+    public static List<FtpUser> listAllUsers() {
+        try {
+            JSONArray _users = getUserArray();
+            List<FtpUser> users = new ArrayList<>(_users.length());
+            JSONArray details;
+            for (int i = _users.length() - 1; i >= 0; i--) {
+                details = _users.getJSONArray(i);
+                users.add(new FtpUser(details.getString(0), details.getString(1), details.getString(2)));
+            }
+            return users;
+        } catch (JSONException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public static FtpUser getUser(String username) {
+        try {
+            JSONArray _users = getUserArray();
+            JSONArray details;
+            for (int i = 0; i < _users.length(); i++) {
+                details = _users.getJSONArray(i);
+                if (details.getString(0).equals(username)) {
+                    return new FtpUser(username, details.getString(1), details.getString(2));
+                }
+            }
+        } catch (JSONException e) {
+            Cat.w(e);
+        }
+        return null;
+    }
+
+    public static void addUser(FtpUser user) {
+        if (getUser(user.getUsername()) != null) {
+            throw new IllegalArgumentException("User already exists");
+        }
+        try {
+            JSONArray _users = getUserArray();
+            JSONArray details = new JSONArray();
+            details.put(user.getUsername());
+            details.put(user.getPassword());
+            details.put(user.getChroot());
+            _users.put(details);
+            getSharedPreferences().edit().putString("users", _users.toString()).apply();
+        } catch (JSONException e) {
+            Cat.w(e);
+        }
+    }
+
+    public static void removeUser(String username) {
+        try {
+            JSONArray _users = getUserArray();
+            JSONArray updatedUsers = new JSONArray();
+            JSONArray details;
+            for (int i = 0; i < _users.length(); i++) {
+                details = _users.getJSONArray(i);
+                if (!details.getString(0).equals(username)) {
+                    updatedUsers.put(details);
+                }
+            }
+            getSharedPreferences().edit().putString("users", updatedUsers.toString()).apply();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void modifyUser(String username, FtpUser newUser) {
+        try {
+            JSONArray _users = getUserArray();
+            JSONArray updatedUsers = new JSONArray();
+            JSONArray details;
+            for (int i = 0; i < _users.length(); i++) {
+                details = _users.getJSONArray(i);
+                if (details.getString(0).equals(username)) {
+                    details = new JSONArray();
+                    details.put(newUser.getUsername());
+                    details.put(newUser.getPassword());
+                    details.put(newUser.getChroot());
+                }
+                updatedUsers.put(details);
+            }
+            getSharedPreferences().edit().putString("users", updatedUsers.toString()).apply();
+        } catch (JSONException e) {
+            Cat.w(e);
+        }
     }
 
     public static boolean allowAnoymous() {
@@ -49,18 +139,12 @@ public class FsSettings {
         return sp.getBoolean("allow_anonymous", false);
     }
 
-    public static File getChrootDir() {
-        final SharedPreferences sp = getSharedPreferences();
-        String dirName = sp.getString("chrootDir", "");
-        File chrootDir = new File(dirName);
-        // when the stored dirName was not initialized, initialize to good default
-        // or when the chrootDir is garbage, initialize to good default
-        if (dirName.equals("") || !chrootDir.isDirectory()) {
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                chrootDir = Environment.getExternalStorageDirectory();
-            } else {
-                chrootDir = new File("/");
-            }
+    public static File getDefaultChrootDir() {
+        File chrootDir;
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            chrootDir = Environment.getExternalStorageDirectory();
+        } else {
+            chrootDir = new File("/");
         }
         if (!chrootDir.isDirectory()) {
             Log.e(TAG, "getChrootDir: not a directory");
@@ -70,20 +154,6 @@ public class FsSettings {
             return App.getAppContext().getFilesDir();
         }
         return chrootDir;
-    }
-
-    public static String getChrootDirAsString() {
-        File dirFile = getChrootDir();
-        return dirFile != null ? dirFile.getAbsolutePath() : "";
-    }
-
-    public static boolean setChrootDir(String dir) {
-        File chrootTest = new File(dir);
-        if (!chrootTest.isDirectory() || !chrootTest.canRead())
-            return false;
-        final SharedPreferences sp = getSharedPreferences();
-        sp.edit().putString("chrootDir", dir).apply();
-        return true;
     }
 
     public static int getPortNumber() {

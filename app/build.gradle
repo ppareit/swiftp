@@ -45,6 +45,7 @@ dependencies {
     implementation 'net.vrallev.android:cat:1.0.5'
     compileOnly "org.projectlombok:lombok:1.16.12"
     implementation 'com.android.support:appcompat-v7:25.4.0'
+    implementation 'com.android.support:cardview-v7:25.4.0'
     implementation 'com.android.support:design:25.4.0'
     implementation 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3'
     annotationProcessor 'org.projectlombok:lombok:1.16.12'
