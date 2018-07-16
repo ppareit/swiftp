@@ -39,7 +39,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="username_label">ユーザ名</string>
     <string name="password_label">パスワード</string>
     <string name="show_password_label">パスワードを表示する</string>
-    <string name="anonymous_label">匿名</string>
     <string name="allow_anonymous_label">匿名ログインを許可する</string>
     <string name="anonymous_summary">匿名ログインは読み取りアクセスのみ許可されます</string>
     <string name="advanced_settings_label">拡張設定...</string>

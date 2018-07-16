@@ -49,7 +49,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="password_validation_error">
        Το συνθηματικό θα πρέπει να αποτελείται από 1 ή περισσότερους αλφαριθμητικούς χαρακτήρες.
        Δεν επιτρέπονται άλλου τύπου χαρακτήρες</string>
-    <string name="anonymous_label">Ανώνυμος</string>
     <string name="allow_anonymous_label">Να επιτρέπονται οι ανώνυμες συνδέσεις</string>
     <string name="anonymous_summary">Στις ανώνυμες συνδέσεις επιτρέπεται μόνο πρόσβαση ανάγνωσης</string>
     <string name="advanced_settings_label">Προχωρημένες ρυθμίσεις...</string>

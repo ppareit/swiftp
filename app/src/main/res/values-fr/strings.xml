@@ -54,7 +54,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         Le mot de passe doit être composé de 1 caractère alphanumérique ou plus.
         Aucun autre caractère n\'est accepté.
     </string>
-    <string name="anonymous_label">Anonyme</string>
     <string name="allow_anonymous_label">Autoriser les identifications anonymes</string>
     <string name="anonymous_summary">Les identifications anonymes ont un accès en lecture seulement</string>
     <string name="advanced_settings_label">Paramètres avancés...</string>

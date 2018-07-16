@@ -19,11 +19,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.util.Log;
+
 import java.io.File;
 import java.lang.reflect.Constructor;
-
-import android.util.Log;
-import be.ppareit.swiftp.FsSettings;
 
 public abstract class FtpCmd implements Runnable {
     private static final String TAG = FtpCmd.class.getSimpleName();
@@ -184,12 +183,11 @@ public abstract class FtpCmd implements Runnable {
         return getParameter(input, false);
     }
 
-    public static File inputPathToChrootedFile(File existingPrefix, String param) {
+    public static File inputPathToChrootedFile(File chrootDir, File existingPrefix, String param) {
         try {
             if (param.charAt(0) == '/') {
                 // The STOR contained an absolute path
-                File chroot = FsSettings.getChrootDir();
-                return new File(chroot, param);
+                return new File(chrootDir, param);
             }
         } catch (Exception e) {
         }
@@ -202,7 +200,7 @@ public abstract class FtpCmd implements Runnable {
         try {
             // taking the canonical path as new devices have sdcard symlinked
             // for multiuser support
-            File chroot = FsSettings.getChrootDir();
+            File chroot = sessionThread.getChrootDir();
             String canonicalChroot = chroot.getCanonicalPath();
             String canonicalPath = file.getCanonicalPath();
             if (!canonicalPath.startsWith(canonicalChroot)) {

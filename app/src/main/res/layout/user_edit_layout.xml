@@ -1,0 +1,67 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/user_edit_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_user"
+        android:drawableStart="@drawable/ic_user"
+        android:hint="@string/username_label"
+        android:inputType="text"
+        android:maxLines="1" />
+
+    <EditText
+        android:id="@+id/user_edit_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_password"
+        android:drawableStart="@drawable/ic_password"
+        android:hint="@string/password_label"
+        android:inputType="text"
+        android:maxLines="1" />
+
+    <TextView
+        style="@style/Widget.AppCompat.EditText"
+        android:id="@+id/user_edit_chroot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_shared_dir"
+        android:drawableStart="@drawable/ic_shared_dir"
+        android:hint="@string/chroot_label"
+        android:maxLines="1" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/user_cancel_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_cancel"
+            android:drawableStart="@drawable/ic_cancel"
+            android:text="@android:string/cancel" />
+
+        <View
+            android:layout_width="5dp"
+            android:layout_height="0dp" />
+
+        <Button
+            android:id="@+id/user_save_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_save"
+            android:drawableStart="@drawable/ic_save"
+            android:text="@string/save" />
+
+    </LinearLayout>
+
+</LinearLayout>

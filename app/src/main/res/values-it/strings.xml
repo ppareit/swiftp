@@ -37,7 +37,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="username_label">Nome utente</string>
     <string name="password_label">Password</string>
     <string name="show_password_label">Mostra password</string>
-    <string name="anonymous_label">Anonimo</string>
     <string name="allow_anonymous_label">Permetti login anonimo</string>
     <string name="anonymous_summary">Gli utenti anonimi avranno accesso in sola lettura</string>
     <string name="advanced_settings_label">Impostazioni avanzate...</string>

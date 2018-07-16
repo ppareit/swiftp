@@ -52,7 +52,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
 
     public void doStorOrAppe(String param, boolean append) {
         Log.d(TAG, "STOR/APPE executing with append=" + append);
-        File storeFile = inputPathToChrootedFile(sessionThread.getWorkingDir(), param);
+        File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
 
         String errString = null;
         //OutputStream out = null;
