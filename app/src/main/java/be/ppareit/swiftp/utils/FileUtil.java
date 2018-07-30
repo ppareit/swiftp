@@ -130,7 +130,7 @@ public abstract class FileUtil {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 // Storage Access Framework
                 DocumentFile targetDocument = getDocumentFile(target, false, context);
-                outStream = new FileOutputStream(context.getContentResolver().openFileDescriptor(targetDocument.getUri(), "rw").getFileDescriptor());
+                outStream =  new ParcelFileDescriptor.AutoCloseOutputStream(context.getContentResolver().openFileDescriptor(targetDocument.getUri(), "rw"));
             } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
                 // Workaround for Kitkat ext SD card
                 return MediaStoreHack.getOutputStream(context, target.getPath());
