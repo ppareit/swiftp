@@ -12,6 +12,10 @@ android {
         versionCode 21800
         versionName "2.18"
     }
+    lintOptions {
+        disable 'GoogleAppIndexingWarning'
+        baseline file("lint-baseline.xml")
+    }
     flavorDimensions "default"
     productFlavors {
         playstore_paid {
