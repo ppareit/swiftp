@@ -31,6 +31,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,6 +53,7 @@ import net.vrallev.android.cat.Cat;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Set;
 
 import be.ppareit.android.DynamicMultiSelectListPreference;
 import be.ppareit.swiftp.App;
@@ -146,7 +148,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                     pref.setEntryValues(ssids);
                 });
         mAutoconnectListPref.setOnPreferenceClickListener(preference -> {
-            Cat.d("Clicked");
+            Cat.d("Clicked to open auto connect list preference");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
@@ -167,6 +169,33 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                 }
             }
             return false;
+        });
+        mAutoconnectListPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            Cat.d("Changed auto connect list preference");
+
+            Set<String> oldList = FsSettings.getAutoConnectList();
+            Set<String> newList = (Set<String>)newValue;
+
+            Cat.d("Old List: " + oldList + " New List: " + newList);
+
+            WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext()
+                    .getSystemService(Context.WIFI_SERVICE);
+            if (wifiManager == null) {
+                return true;
+            }
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            if (wifiInfo == null) {
+                Cat.e("Null wifi info received, bailing");
+                return true;
+            }
+            Cat.d("We are connected to " + wifiInfo.getSSID());
+            if (newList.contains(wifiInfo.getSSID())) {
+                getActivity().sendBroadcast(new Intent(FsService.ACTION_START_FTPSERVER));
+            }
+            if (oldList.contains(wifiInfo.getSSID()) && !newList.contains(wifiInfo.getSSID())) {
+                getActivity().sendBroadcast(new Intent(FsService.ACTION_STOP_FTPSERVER));
+            }
+            return true;
         });
 
         EditTextPreference portnum_pref = findPref("portNum");
