@@ -97,14 +97,20 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             </intent-filter>
         </receiver>
 
-        <receiver android:name="be.ppareit.swiftp.WifiStateChangeReceiver">
+        <receiver android:name="be.ppareit.swiftp.AutoConnect$WifiStateChangedReceiver">
             <intent-filter>
                 <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>
         </receiver>
 
-        <service android:name="be.ppareit.swiftp.WifiStateChangeReceiver$StartServerService" />
-        <service android:name="be.ppareit.swiftp.WifiStateChangeReceiver$StopServerService" />
+        <receiver android:name="be.ppareit.swiftp.AutoConnect$ServerStoppedReceiver">
+            <intent-filter>
+                <action android:name="be.ppareit.swiftp.FTPSERVER_STOPPED" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="be.ppareit.swiftp.AutoConnect$StartServerService" />
+        <service android:name="be.ppareit.swiftp.AutoConnect$StopServerService" />
 
         <receiver
             android:name="be.ppareit.swiftp.gui.FsWidgetProvider"

@@ -38,6 +38,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import be.ppareit.swiftp.server.FtpUser;
+import lombok.experimental.var;
+import lombok.val;
 
 public class FsSettings {
 
@@ -173,6 +175,13 @@ public class FsSettings {
     public static Set<String> getAutoConnectList() {
         SharedPreferences sp = getSharedPreferences();
         return sp.getStringSet("autoconnect_preference", new TreeSet<>());
+    }
+
+    public static void removeFromAutoConnectList(final String ssid) {
+        val sp = getSharedPreferences();
+        Set<String> autoConnectList = sp.getStringSet("autoconnect_preference", new TreeSet<>());
+        autoConnectList.remove(ssid);
+        sp.edit().putStringSet("autoconnect_preference", autoConnectList).apply();
     }
 
     public static int getTheme() {

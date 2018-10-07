@@ -146,6 +146,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                     }
                     pref.setEntries(niceSsids);
                     pref.setEntryValues(ssids);
+                    pref.setValues(FsSettings.getAutoConnectList());
                 });
         mAutoconnectListPref.setOnPreferenceClickListener(preference -> {
             Cat.d("Clicked to open auto connect list preference");
