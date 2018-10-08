@@ -178,10 +178,11 @@ public class FsSettings {
     }
 
     public static void removeFromAutoConnectList(final String ssid) {
-        val sp = getSharedPreferences();
-        Set<String> autoConnectList = sp.getStringSet("autoconnect_preference", new TreeSet<>());
+        Set<String> autoConnectList = getAutoConnectList();
         autoConnectList.remove(ssid);
-        sp.edit().putStringSet("autoconnect_preference", autoConnectList).apply();
+        val editor = getSharedPreferences().edit();
+        editor.remove("autoconnect_preference").apply(); // work around bug in android
+        editor.putStringSet("autoconnect_preference", autoConnectList).apply();
     }
 
     public static int getTheme() {
