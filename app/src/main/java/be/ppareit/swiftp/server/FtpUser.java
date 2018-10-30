@@ -1,26 +1,35 @@
 package be.ppareit.swiftp.server;
 
+import android.support.annotation.NonNull;
+
+import java.io.File;
+
 import be.ppareit.swiftp.FsSettings;
 
 public class FtpUser {
 
-    private String username, password, chroot;
+    final private String mUsername;
+    final private String mPassword;
+    final private String mChroot;
 
-    public FtpUser(String username, String password, String chroot) {
-        this.username = username;
-        this.password = password;
-        this.chroot = chroot.equals("null") ? FsSettings.getDefaultChrootDir().getPath() : chroot;
+    public FtpUser(@NonNull String username, @NonNull String password, @NonNull String chroot) {
+        mUsername = username;
+        mPassword = password;
+
+        final File rootPath = new File(chroot);
+        mChroot = rootPath.isDirectory() ? chroot : FsSettings.getDefaultChrootDir().getPath();
+
     }
 
     public String getUsername() {
-        return username;
+        return mUsername;
     }
 
     public String getPassword() {
-        return password;
+        return mPassword;
     }
 
     public String getChroot() {
-        return chroot;
+        return mChroot;
     }
 }

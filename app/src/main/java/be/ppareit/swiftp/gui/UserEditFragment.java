@@ -82,13 +82,9 @@ public class UserEditFragment extends Fragment {
                 .setSelectedButton(R.string.select, path -> {
                     final File root = new File(path);
                     if (!root.canRead()) {
-                        Toast.makeText(getActivity(),
-                                "Notice that we can't read/write in this folder.",
-                                Toast.LENGTH_LONG).show();
+                        showToast(R.string.notice_cant_read_write);
                     } else if (!root.canWrite()) {
-                        Toast.makeText(getActivity(),
-                                "Notice that we can't write in this folder, reading will work. Writing in sub folders might work.",
-                                Toast.LENGTH_LONG).show();
+                        showToast(R.string.notice_cant_write);
                     }
                     chrootView.setText(path);
                 })
@@ -100,17 +96,17 @@ public class UserEditFragment extends Fragment {
 
     private boolean validateInput(String username, String password) {
         if (!username.matches("[a-zA-Z0-9]+")) {
-            toastError(R.string.username_validation_error);
+            showToast(R.string.username_validation_error);
             return false;
         }
         if (!password.matches("[a-zA-Z0-9]+")) {
-            toastError(R.string.password_validation_error);
+            showToast(R.string.password_validation_error);
             return false;
         }
         return true;
     }
 
-    private void toastError(int errorResId) {
+    private void showToast(int errorResId) {
         Toast.makeText(getActivity(), errorResId, Toast.LENGTH_LONG).show();
     }
 
