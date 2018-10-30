@@ -255,6 +255,12 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
+        val showNotificationIconPref = findPref("show_notification_icon_preference");
+        showNotificationIconPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            getActivity().sendBroadcast(new Intent(FsNotification.ACTION_UPDATE_NOTIFICATION));
+            return true;
+        });
+
         Preference help = findPref("help");
         help.setOnPreferenceClickListener(preference -> {
             Cat.v("On preference help clicked");

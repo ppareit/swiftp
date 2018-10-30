@@ -167,6 +167,11 @@ public class FsSettings {
         return R.style.AppThemeDark;
     }
 
+    public static boolean showNotificationIcon() {
+        val sp = getSharedPreferences();
+        return sp.getBoolean("show_notification_icon_preference", true);
+    }
+
     /**
      * @return the SharedPreferences for this application
      */

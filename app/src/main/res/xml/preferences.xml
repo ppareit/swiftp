@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright 2011-2013 Pieter Pareit
 
 This file is part of SwiFTP.
@@ -18,15 +17,14 @@ You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<PreferenceScreen
-    android:key="preference_screen"
-    xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="preference_screen">
 
     <SwitchPreference
+        android:defaultValue="false"
         android:key="running_switch"
-        android:title="@string/running_label"
         android:summary="@string/running_summary_stopped"
-        android:defaultValue="false" />
+        android:title="@string/running_label" />
     <Preference
         android:key="market_version"
         android:summary="@string/market_version_summary"
@@ -34,36 +32,44 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <PreferenceCategory
         android:key="settings"
-        android:title="@string/settings_label" >
+        android:title="@string/settings_label">
 
         <Preference
             android:key="manage_users"
             android:title="@string/manage_users_label" />
 
         <CheckBoxPreference
+            android:defaultValue="@string/allow_anonymous_default"
             android:key="allow_anonymous"
-            android:title="@string/allow_anonymous_label"
             android:summary="@string/anonymous_summary"
-            android:defaultValue="@string/allow_anonymous_default" />
+            android:title="@string/allow_anonymous_label" />
 
         <be.ppareit.android.DynamicMultiSelectListPreference
-            android:key="autoconnect_preference"
-            android:title="@string/autoconnect_label"
-            android:summary="@string/autoconnect_summary"
+            android:defaultValue="@array/empty_array"
             android:entries="@array/empty_array"
             android:entryValues="@array/empty_array"
-            android:defaultValue="@array/empty_array" />
+            android:key="autoconnect_preference"
+            android:summary="@string/autoconnect_summary"
+            android:title="@string/autoconnect_label" />
 
-        <ListPreference
-            android:key="theme"
-            android:title="@string/app_theme"
-            android:entries="@array/pref_list_themes"
-            android:entryValues="@array/pref_list_themes_values"
-            android:defaultValue="0"/>
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="@string/gui_settings_label">
+            <ListPreference
+                android:defaultValue="0"
+                android:entries="@array/pref_list_themes"
+                android:entryValues="@array/pref_list_themes_values"
+                android:key="theme"
+                android:title="@string/app_theme" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_notification_icon_preference"
+                android:summary="@string/show_notification_icon_summary"
+                android:title="@string/show_notification_icon" />
+        </PreferenceScreen>
 
-        <PreferenceScreen
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:title="@string/advanced_settings_label" >
+
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="@string/advanced_settings_label">
             <EditTextPreference
                 android:defaultValue="@string/portnumber_default"
                 android:key="portNum"
@@ -84,7 +90,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <PreferenceCategory
         android:key="extra_category"
-        android:title="@string/extra_label" >
+        android:title="@string/extra_label">
         <Preference
             android:key="help"
             android:title="@string/help_label" />

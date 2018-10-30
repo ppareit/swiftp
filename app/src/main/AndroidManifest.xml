@@ -72,6 +72,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:name="be.ppareit.swiftp.gui.FsNotification"
             android:exported="false">
             <intent-filter>
+                <action android:name="be.ppareit.swiftp.ACTION_UPDATE_NOTIFICATION" />
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STARTED" />
                 <action android:name="be.ppareit.swiftp.FTPSERVER_STOPPED" />
             </intent-filter>

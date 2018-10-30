@@ -184,5 +184,8 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notice_cant_write">Notice that we can\'t write in this folder, reading will work. Writing in sub folders might work.</string>
     <string name="manage_users_no_users">No users available, create a user.</string>
     <string name="manage_users_multiple_users">Multiple users available, see list.</string>
+    <string name="gui_settings_label">Appearance...</string>
+    <string name="show_notification_icon_summary">Show the notification icon while the server is running</string>
+    <string name="show_notification_icon">Show notification icon</string>
 
 </resources>
