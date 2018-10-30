@@ -60,6 +60,7 @@ import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
+import lombok.val;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -112,8 +113,9 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             prefScreen.removePreference(marketVersionPref);
         }
 
-        Preference managerUsersPref = findPref("manage_users");
-        managerUsersPref.setOnPreferenceClickListener((preference) -> {
+        Preference manageUsersPref = findPref("manage_users");
+        updateUsersPref();
+        manageUsersPref.setOnPreferenceClickListener((preference) -> {
             startActivity(new Intent(getActivity(), ManageUsersActivity.class));
             return true;
         });
@@ -175,7 +177,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             Cat.d("Changed auto connect list preference");
 
             Set<String> oldList = FsSettings.getAutoConnectList();
-            Set<String> newList = (Set<String>)newValue;
+            Set<String> newList = (Set<String>) newValue;
 
             Cat.d("Old List: " + oldList + " New List: " + newList);
 
@@ -290,6 +292,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         super.onResume();
 
         updateRunningState();
+        updateUsersPref();
 
         Cat.d("onResume: Registering the FTP server actions");
         IntentFilter filter = new IntentFilter();
@@ -309,6 +312,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        Cat.d("onActivityResult called");
         if (requestCode == ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
             Uri treeUri = resultData.getData();
             String path = treeUri.getPath();
@@ -336,6 +340,22 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
 
     private void stopServer() {
         getActivity().sendBroadcast(new Intent(FsService.ACTION_STOP_FTPSERVER));
+    }
+
+    private void updateUsersPref() {
+        val manageUsersPref = findPref("manage_users");
+        val users = FsSettings.getUsers();
+        switch (users.size()) {
+            case 0:
+                manageUsersPref.setSummary(R.string.manage_users_no_users);
+                break;
+            case 1:
+                val user = users.get(0);
+                manageUsersPref.setSummary(user.getUsername() + ":" + user.getPassword());
+                break;
+            default:
+                manageUsersPref.setSummary(R.string.manage_users_multiple_users);
+        }
     }
 
     private void updateRunningState() {

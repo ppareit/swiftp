@@ -182,5 +182,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="confirm_delete_message">Delete user \'%1$s\'?</string>
     <string name="notice_cant_read_write">Notice that we can\'t read/write in this folder.</string>
     <string name="notice_cant_write">Notice that we can\'t write in this folder, reading will work. Writing in sub folders might work.</string>
+    <string name="manage_users_no_users">No users available, create a user.</string>
+    <string name="manage_users_multiple_users">Multiple users available, see list.</string>
 
 </resources>
