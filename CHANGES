@@ -1,3 +1,12 @@
+Version 2.19 (2018/10/31)
+    + Allow writing to external sdcard (by j3l11234)
+    + Multi user support (by Ashutosh Gangwar)
+    + Allow hiding of notification icon
+    * Optimize deletion of files (by j3l11234)
+    * Fixed bad file descriptor error (by Timotheos Constambeys)
+    * Auto connect correctly when changing settings
+    * Disable auto connect when user manually stops server on network
+    * Fixed smaller errors/issues
 Version 2.18 (2018/02/12)
     + Support quick settings tile (by Ashutosh Gangwar)
     + Initial support for leanback
