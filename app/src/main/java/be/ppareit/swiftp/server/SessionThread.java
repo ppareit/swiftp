@@ -52,6 +52,7 @@ public class SessionThread extends Thread {
     private Socket dataSocket = null;
     private File renameFrom = null;
     private LocalDataSocket localDataSocket;
+    private InputStream dataInputStream = null;
     private OutputStream dataOutputStream = null;
     private boolean sendWelcomeBanner;
     // FTP control sessions should start out in ASCII, according to the RFC. However, many clients
@@ -135,11 +136,10 @@ public class SessionThread extends Thread {
             Cat.i("Can't receive from unconnected socket");
             return -2;
         }
-        InputStream in;
+
         try {
-            in = dataSocket.getInputStream();
             do {
-                bytesRead = in.read(buf, 0, buf.length);
+                bytesRead = dataInputStream.read(buf, 0, buf.length);
             } while (bytesRead == 0);
         } catch (IOException e) {
             Cat.i("Error reading data socket");
@@ -188,6 +188,7 @@ public class SessionThread extends Thread {
                 Cat.i("dataSocketFactory.onTransfer() returned null");
                 return false;
             }
+            dataInputStream = dataSocket.getInputStream();
             dataOutputStream = dataSocket.getOutputStream();
             return true;
         } catch (IOException e) {
@@ -202,6 +203,13 @@ public class SessionThread extends Thread {
      */
     public void closeDataSocket() {
         Cat.d("Closing data socket");
+        if (dataInputStream != null) {
+            try {
+                dataInputStream.close();
+            } catch (IOException ignore) {
+            }
+            dataInputStream = null;
+        }
         if (dataOutputStream != null) {
             try {
                 dataOutputStream.close();
@@ -263,11 +271,9 @@ public class SessionThread extends Thread {
 
     public void writeBytes(byte[] bytes) {
         try {
-            // TODO: do we really want to do all of this on each write? Why?
-            BufferedOutputStream out = new BufferedOutputStream(
-                    cmdSocket.getOutputStream(), DATA_CHUNK_SIZE);
-            out.write(bytes);
-            out.flush();
+            OutputStream outputStream = cmdSocket.getOutputStream();
+            outputStream.write(bytes);
+            outputStream.flush();
             localDataSocket.reportTraffic(bytes.length);
         } catch (IOException e) {
             Cat.i("Exception writing socket");
