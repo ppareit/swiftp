@@ -26,55 +26,48 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import net.vrallev.android.cat.Cat;
-
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import be.ppareit.swiftp.server.FtpUser;
+import lombok.val;
 
 public class FsSettings {
 
     private final static String TAG = FsSettings.class.getSimpleName();
 
-    private static JSONArray getUserArray() throws JSONException {
+    public static List<FtpUser> getUsers() {
         final SharedPreferences sp = getSharedPreferences();
-        return new JSONArray(sp.getString("users", "[ [\"ftp\", \"ftp\", null] ]"));
-    }
-
-    public static List<FtpUser> listAllUsers() {
-        try {
-            JSONArray _users = getUserArray();
-            List<FtpUser> users = new ArrayList<>(_users.length());
-            JSONArray details;
-            for (int i = _users.length() - 1; i >= 0; i--) {
-                details = _users.getJSONArray(i);
-                users.add(new FtpUser(details.getString(0), details.getString(1), details.getString(2)));
-            }
-            return users;
-        } catch (JSONException e) {
-            return new ArrayList<>();
+        if (sp.contains("users")) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<FtpUser>>() {
+            }.getType();
+            return gson.fromJson(sp.getString("users", null), listType);
+        } else if (sp.contains("username")) {
+            // on ftp server version < 2.19 we had username/password preference
+            String username = sp.getString("username", "ftp");
+            String password = sp.getString("password", "ftp");
+            String chroot = sp.getString("chrootDir", "");
+            return new ArrayList<>(Arrays.asList(new FtpUser(username,password, chroot)));
+        } else {
+            val defaultUser = new FtpUser("ftp","ftp", "\\");
+            return new ArrayList<>(Arrays.asList(defaultUser));
         }
     }
 
     public static FtpUser getUser(String username) {
-        try {
-            JSONArray _users = getUserArray();
-            JSONArray details;
-            for (int i = 0; i < _users.length(); i++) {
-                details = _users.getJSONArray(i);
-                if (details.getString(0).equals(username)) {
-                    return new FtpUser(username, details.getString(1), details.getString(2));
-                }
-            }
-        } catch (JSONException e) {
-            Cat.w(e);
+        // TODO: on java 8 (and android support) we can use getUsers().stream.filter(...)
+        for (val user : getUsers()) {
+            if (user.getUsername().equals(username))
+                return user;
         }
         return null;
     }
@@ -83,55 +76,31 @@ public class FsSettings {
         if (getUser(user.getUsername()) != null) {
             throw new IllegalArgumentException("User already exists");
         }
-        try {
-            JSONArray _users = getUserArray();
-            JSONArray details = new JSONArray();
-            details.put(user.getUsername());
-            details.put(user.getPassword());
-            details.put(user.getChroot());
-            _users.put(details);
-            getSharedPreferences().edit().putString("users", _users.toString()).apply();
-        } catch (JSONException e) {
-            Cat.w(e);
-        }
+        val sp = getSharedPreferences();
+        Gson gson = new Gson();
+        val userList = getUsers();
+        userList.add(user);
+        sp.edit().putString("users", gson.toJson(userList)).apply();
     }
 
     public static void removeUser(String username) {
-        try {
-            JSONArray _users = getUserArray();
-            JSONArray updatedUsers = new JSONArray();
-            JSONArray details;
-            for (int i = 0; i < _users.length(); i++) {
-                details = _users.getJSONArray(i);
-                if (!details.getString(0).equals(username)) {
-                    updatedUsers.put(details);
-                }
+        // TODO: on java 8 (and android support) we can use getUsers().removeIf(...)
+        val sp = getSharedPreferences();
+        Gson gson = new Gson();
+        val users = getUsers();
+        val found = new ArrayList<FtpUser>();
+        for (val user : users) {
+            if (user.getUsername().equals(username)) {
+                found.add(user);
             }
-            getSharedPreferences().edit().putString("users", updatedUsers.toString()).apply();
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
+        users.removeAll(found);
+        sp.edit().putString("users", gson.toJson(users)).apply();
     }
 
     public static void modifyUser(String username, FtpUser newUser) {
-        try {
-            JSONArray _users = getUserArray();
-            JSONArray updatedUsers = new JSONArray();
-            JSONArray details;
-            for (int i = 0; i < _users.length(); i++) {
-                details = _users.getJSONArray(i);
-                if (details.getString(0).equals(username)) {
-                    details = new JSONArray();
-                    details.put(newUser.getUsername());
-                    details.put(newUser.getPassword());
-                    details.put(newUser.getChroot());
-                }
-                updatedUsers.put(details);
-            }
-            getSharedPreferences().edit().putString("users", updatedUsers.toString()).apply();
-        } catch (JSONException e) {
-            Cat.w(e);
-        }
+        removeUser(username);
+        addUser(newUser);
     }
 
     public static boolean allowAnoymous() {
@@ -175,6 +144,14 @@ public class FsSettings {
         return sp.getStringSet("autoconnect_preference", new TreeSet<>());
     }
 
+    public static void removeFromAutoConnectList(final String ssid) {
+        Set<String> autoConnectList = getAutoConnectList();
+        autoConnectList.remove(ssid);
+        val editor = getSharedPreferences().edit();
+        editor.remove("autoconnect_preference").apply(); // work around bug in android
+        editor.putStringSet("autoconnect_preference", autoConnectList).apply();
+    }
+
     public static int getTheme() {
         SharedPreferences sp = getSharedPreferences();
 
@@ -188,6 +165,11 @@ public class FsSettings {
         }
 
         return R.style.AppThemeDark;
+    }
+
+    public static boolean showNotificationIcon() {
+        val sp = getSharedPreferences();
+        return sp.getBoolean("show_notification_icon_preference", true);
     }
 
     /**

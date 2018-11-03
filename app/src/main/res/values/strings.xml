@@ -162,7 +162,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="use_english">Please use clear English!</string>
 
     <!-- since 2.18 -->
-
     <string name="request_coarse_location_dlg_title">Request permission for location</string>
     <string name="request_coarse_location_dlg_message">
         An application that knows the current access point can deduce the location of the device.
@@ -181,5 +180,12 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="save">Save</string>
     <string name="user_exists_error">Another user with same username already exists!</string>
     <string name="confirm_delete_message">Delete user \'%1$s\'?</string>
+    <string name="notice_cant_read_write">Notice that we can\'t read/write in this folder.</string>
+    <string name="notice_cant_write">Notice that we can\'t write in this folder, reading will work. Writing in sub folders might work.</string>
+    <string name="manage_users_no_users">No users available, create a user.</string>
+    <string name="manage_users_multiple_users">Multiple users available, see list.</string>
+    <string name="gui_settings_label">Appearance...</string>
+    <string name="show_notification_icon_summary">Show the notification icon while the server is running</string>
+    <string name="show_notification_icon">Show notification icon</string>
 
 </resources>

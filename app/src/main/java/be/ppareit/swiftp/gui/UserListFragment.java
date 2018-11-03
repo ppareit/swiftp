@@ -35,7 +35,8 @@ public class UserListFragment extends Fragment {
         View root = inflater.inflate(R.layout.user_list_layout, container, false);
         listView = (ListView) root.findViewById(R.id.user_list);
         listView.setAdapter(new UserListAdapter(getActivity()));
-        root.findViewById(R.id.user_add_btn).setOnClickListener((buttonView) -> showEditItemFragment(null));
+        View addBtn = root.findViewById(R.id.user_add_btn);
+        addBtn.setOnClickListener((buttonView) -> showEditItemFragment(null));
         return root;
     }
 
@@ -60,7 +61,9 @@ public class UserListFragment extends Fragment {
                 try {
                     FsSettings.addUser(newItem);
                 } catch (IllegalArgumentException ignored) {
-                    Toast.makeText(getActivity(), R.string.user_exists_error, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(),
+                            R.string.user_exists_error,
+                            Toast.LENGTH_LONG).show();
                 }
             }
             refreshUserList();
@@ -87,7 +90,7 @@ public class UserListFragment extends Fragment {
     private void refreshUserList() {
         UserListAdapter listAdapter = (UserListAdapter) listView.getAdapter();
         listAdapter.clear();
-        listAdapter.addAll(FsSettings.listAllUsers());
+        listAdapter.addAll(FsSettings.getUsers());
         listAdapter.notifyDataSetInvalidated();
     }
 
@@ -110,7 +113,7 @@ public class UserListFragment extends Fragment {
         private LayoutInflater layoutInflater;
 
         private UserListAdapter(@NonNull Context context) {
-            super(context, 0, FsSettings.listAllUsers());
+            super(context, 0, FsSettings.getUsers());
             layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
@@ -126,7 +129,6 @@ public class UserListFragment extends Fragment {
                 viewHolder = (UserItemViewHolder) convertView.getTag();
             }
             final FtpUser item = getItem(position);
-            assert item != null;
             viewHolder.username.setText(item.getUsername());
             viewHolder.password.setText(item.getPassword());
             viewHolder.chroot.setText(item.getChroot());

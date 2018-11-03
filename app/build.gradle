@@ -3,14 +3,18 @@ apply plugin: 'com.android.application'
 android {
 
     compileSdkVersion 25
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 21800
-        versionName "2.18"
+        versionCode 21900
+        versionName "2.19"
+    }
+    lintOptions {
+        disable 'GoogleAppIndexingWarning'
+        baseline file("lint-baseline.xml")
     }
     flavorDimensions "default"
     productFlavors {
@@ -49,6 +53,7 @@ dependencies {
     implementation 'com.android.support:design:25.4.0'
     implementation 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3'
     annotationProcessor 'org.projectlombok:lombok:1.16.12'
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
 
 android {

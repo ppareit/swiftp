@@ -43,20 +43,24 @@ public class CmdPASS extends FtpCmd implements Runnable {
             sessionThread.writeString("503 Must send USER first\r\n");
             return;
         }
+        if (attemptUsername.equals("anonymous") && FsSettings.allowAnoymous()) {
+            Log.i(TAG, "Guest logged in with email: " + attemptPassword);
+            sessionThread.writeString("230 Guest login ok, read only access.\r\n");
+            return;
+        }
         FtpUser user = FsSettings.getUser(attemptUsername);
         if (user == null) {
-            Log.e(TAG, "Username does not exist!");
-            sessionThread.writeString("500 Internal error during authentication");
+            Log.i(TAG, "Failed authentication, username does not exist!");
+            Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
+            sessionThread.writeString("500 Login incorrect.\r\n");
+            sessionThread.authAttempt( false);
         } else if (user.getPassword().equals(attemptPassword)) {
-            sessionThread.writeString("230 Access granted\r\n");
             Log.i(TAG, "User " + user.getUsername() + " password verified");
+            sessionThread.writeString("230 Access granted\r\n");
             sessionThread.authAttempt(true);
             sessionThread.setChrootDir(user.getChroot());
-        } else if (attemptUsername.equals("anonymous") && FsSettings.allowAnoymous()) {
-            sessionThread.writeString("230 Guest login ok, read only access.\r\n");
-            Log.i(TAG, "Guest logged in with email: " + attemptPassword);
         } else {
-            Log.i(TAG, "Failed authentication");
+            Log.i(TAG, "Failed authentication, incorrect password");
             Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
             sessionThread.writeString("530 Login incorrect.\r\n");
             sessionThread.authAttempt(false);

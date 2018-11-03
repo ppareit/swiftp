@@ -27,11 +27,13 @@ import android.view.View;
 import net.vrallev.android.cat.Cat;
 
 /**
- * Created by ppareit on 31/12/15.
+ * This is the same as the sdk MultiSelectListPreference but each time
+ * it shows, it will repopulate the list. Use the setOnPopulateListener()
+ * to attach a listener.
  */
 public class DynamicMultiSelectListPreference extends MultiSelectListPreference {
 
-    OnPopulateListener mPopulateListener;
+    private OnPopulateListener mPopulateListener;
 
     public DynamicMultiSelectListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);

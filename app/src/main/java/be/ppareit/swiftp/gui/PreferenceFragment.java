@@ -31,6 +31,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,12 +53,14 @@ import net.vrallev.android.cat.Cat;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Set;
 
 import be.ppareit.android.DynamicMultiSelectListPreference;
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
+import lombok.val;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -110,8 +113,9 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             prefScreen.removePreference(marketVersionPref);
         }
 
-        Preference managerUsersPref = findPref("manage_users");
-        managerUsersPref.setOnPreferenceClickListener((preference) -> {
+        Preference manageUsersPref = findPref("manage_users");
+        updateUsersPref();
+        manageUsersPref.setOnPreferenceClickListener((preference) -> {
             startActivity(new Intent(getActivity(), ManageUsersActivity.class));
             return true;
         });
@@ -144,9 +148,10 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                     }
                     pref.setEntries(niceSsids);
                     pref.setEntryValues(ssids);
+                    pref.setValues(FsSettings.getAutoConnectList());
                 });
         mAutoconnectListPref.setOnPreferenceClickListener(preference -> {
-            Cat.d("Clicked");
+            Cat.d("Clicked to open auto connect list preference");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
@@ -167,6 +172,33 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                 }
             }
             return false;
+        });
+        mAutoconnectListPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            Cat.d("Changed auto connect list preference");
+
+            Set<String> oldList = FsSettings.getAutoConnectList();
+            Set<String> newList = (Set<String>) newValue;
+
+            Cat.d("Old List: " + oldList + " New List: " + newList);
+
+            WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext()
+                    .getSystemService(Context.WIFI_SERVICE);
+            if (wifiManager == null) {
+                return true;
+            }
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            if (wifiInfo == null) {
+                Cat.e("Null wifi info received, bailing");
+                return true;
+            }
+            Cat.d("We are connected to " + wifiInfo.getSSID());
+            if (newList.contains(wifiInfo.getSSID())) {
+                getActivity().sendBroadcast(new Intent(FsService.ACTION_START_FTPSERVER));
+            }
+            if (oldList.contains(wifiInfo.getSSID()) && !newList.contains(wifiInfo.getSSID())) {
+                getActivity().sendBroadcast(new Intent(FsService.ACTION_STOP_FTPSERVER));
+            }
+            return true;
         });
 
         EditTextPreference portnum_pref = findPref("portNum");
@@ -223,6 +255,12 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
+        val showNotificationIconPref = findPref("show_notification_icon_preference");
+        showNotificationIconPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            getActivity().sendBroadcast(new Intent(FsNotification.ACTION_UPDATE_NOTIFICATION));
+            return true;
+        });
+
         Preference help = findPref("help");
         help.setOnPreferenceClickListener(preference -> {
             Cat.v("On preference help clicked");
@@ -260,6 +298,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         super.onResume();
 
         updateRunningState();
+        updateUsersPref();
 
         Cat.d("onResume: Registering the FTP server actions");
         IntentFilter filter = new IntentFilter();
@@ -279,6 +318,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        Cat.d("onActivityResult called");
         if (requestCode == ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
             Uri treeUri = resultData.getData();
             String path = treeUri.getPath();
@@ -306,6 +346,22 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
 
     private void stopServer() {
         getActivity().sendBroadcast(new Intent(FsService.ACTION_STOP_FTPSERVER));
+    }
+
+    private void updateUsersPref() {
+        val manageUsersPref = findPref("manage_users");
+        val users = FsSettings.getUsers();
+        switch (users.size()) {
+            case 0:
+                manageUsersPref.setSummary(R.string.manage_users_no_users);
+                break;
+            case 1:
+                val user = users.get(0);
+                manageUsersPref.setSummary(user.getUsername() + ":" + user.getPassword());
+                break;
+            default:
+                manageUsersPref.setSummary(R.string.manage_users_multiple_users);
+        }
     }
 
     private void updateRunningState() {

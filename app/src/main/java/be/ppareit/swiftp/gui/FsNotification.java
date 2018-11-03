@@ -37,12 +37,18 @@ import be.ppareit.swiftp.R;
 
 public class FsNotification extends BroadcastReceiver {
 
+    public final static String ACTION_UPDATE_NOTIFICATION = "be.ppareit.swiftp.ACTION_UPDATE_NOTIFICATION";
+
     private final int NOTIFICATION_ID = 7890;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Cat.d("onReceive broadcast: " + intent.getAction());
         switch (intent.getAction()) {
+            case FsNotification.ACTION_UPDATE_NOTIFICATION:
+                clearNotification(context);
+                setupNotification(context);
+                break;
             case FsService.ACTION_STARTED:
                 setupNotification(context);
                 break;
@@ -92,6 +98,9 @@ public class FsNotification extends BroadcastReceiver {
         preferenceIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent preferencePendingIntent = PendingIntent.getActivity(context, 0, preferenceIntent, 0);
 
+        int priority = FsSettings.showNotificationIcon() ? Notification.PRIORITY_DEFAULT
+                : Notification.PRIORITY_MIN;
+
         Notification notification = new NotificationCompat.Builder(context)
                 .setContentTitle(contentTitle)
                 .setContentText(contentText)
@@ -102,7 +111,7 @@ public class FsNotification extends BroadcastReceiver {
                 .setOngoing(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setPriority(priority)
                 .addAction(stopIcon, stopText, stopPendingIntent)
                 .addAction(preferenceIcon, preferenceText, preferencePendingIntent)
                 .setShowWhen(false)
