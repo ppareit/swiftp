@@ -214,8 +214,12 @@ public abstract class FileUtil {
             if (document == null) {
                 return false;
             }
-            if (DocumentsContract.renameDocument(context.getContentResolver(), document.getUri(), target.getName()) != null) {
-                return true;
+            try {
+                if (DocumentsContract.renameDocument(context.getContentResolver(), document.getUri(), target.getName()) != null) {
+                    return true;
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
         }
 
@@ -255,8 +259,12 @@ public abstract class FileUtil {
             if (document == null) {
                 return false;
             }
-            if (DocumentsContract.renameDocument(context.getContentResolver(), document.getUri(), target.getName()) != null) {
-                return true;
+            try {
+                if(DocumentsContract.renameDocument(context.getContentResolver(), document.getUri(), target.getName()) != null) {
+                    return true;
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
         }
 
