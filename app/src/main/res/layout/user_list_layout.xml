@@ -11,7 +11,7 @@
         android:descendantFocusability="afterDescendants"
         android:divider="@android:color/transparent" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/user_add_btn"
         style="@style/Widget.Design.FloatingActionButton"
         android:layout_width="wrap_content"

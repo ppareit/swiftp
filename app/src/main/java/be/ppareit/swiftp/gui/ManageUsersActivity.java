@@ -1,7 +1,7 @@
 package be.ppareit.swiftp.gui;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import be.ppareit.swiftp.FsSettings;

@@ -15,7 +15,7 @@ public class BroadcastReceiverUtils {
         };
     }
 
-    public interface Receiver{
+    public interface Receiver {
         void onReceive(Context context, Intent intent);
     }
 

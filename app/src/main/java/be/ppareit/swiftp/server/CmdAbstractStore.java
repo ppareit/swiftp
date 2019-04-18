@@ -24,18 +24,12 @@ package be.ppareit.swiftp.server;
  * the common code is in this class, and inherited by CmdSTOR and CmdAPPE.
  */
 
-import android.app.Application;
-import android.net.Uri;
-import android.os.ParcelFileDescriptor;
-import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.utils.FileUtil;

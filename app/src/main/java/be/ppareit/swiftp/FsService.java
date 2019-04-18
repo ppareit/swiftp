@@ -113,7 +113,6 @@ public class FsService extends Service implements Runnable {
         if (!FsService.isRunning()) {
             context.startService(serverService);
         }
-        // TODO: let everybody know we have started
     }
 
     /**

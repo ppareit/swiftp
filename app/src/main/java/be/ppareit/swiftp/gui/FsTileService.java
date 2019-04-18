@@ -1,19 +1,16 @@
 package be.ppareit.swiftp.gui;
 
 import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import net.vrallev.android.cat.Cat;
 
 import java.net.InetAddress;
 
-import be.ppareit.android.BroadcastReceiverUtils;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;

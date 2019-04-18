@@ -20,7 +20,7 @@ package be.ppareit.swiftp.locale;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.twofortyfouram.assertion.BundleAssertions;
 import com.twofortyfouram.spackle.AppBuildInfo;
