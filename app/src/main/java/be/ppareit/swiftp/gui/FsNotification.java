@@ -20,20 +20,25 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package be.ppareit.swiftp.gui;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
 import net.vrallev.android.cat.Cat;
 
 import java.net.InetAddress;
 
+import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class FsNotification extends BroadcastReceiver {
 
@@ -61,8 +66,7 @@ public class FsNotification extends BroadcastReceiver {
     private void setupNotification(Context context) {
         Cat.d("Setting up the notification");
         // Get NotificationManager reference
-        String ns = Context.NOTIFICATION_SERVICE;
-        NotificationManager nm = (NotificationManager) context.getSystemService(ns);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         // get ip address
         InetAddress address = FsService.getLocalInetAddress();
@@ -88,8 +92,9 @@ public class FsNotification extends BroadcastReceiver {
 
         int stopIcon = android.R.drawable.ic_menu_close_clear_cancel;
         CharSequence stopText = context.getString(R.string.notification_stop_text);
-        Intent stopIntent = new Intent(FsService.ACTION_STOP_FTPSERVER);
-        PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0,
+        Intent stopIntent = new Intent(context, FsService.class);
+        stopIntent.setAction(FsService.ACTION_REQUEST_STOP);
+        PendingIntent stopPendingIntent = PendingIntent.getService(context, 0,
                 stopIntent, PendingIntent.FLAG_ONE_SHOT);
 
         int preferenceIcon = android.R.drawable.ic_menu_preferences;
@@ -100,6 +105,16 @@ public class FsNotification extends BroadcastReceiver {
 
         int priority = FsSettings.showNotificationIcon() ? Notification.PRIORITY_DEFAULT
                 : Notification.PRIORITY_MIN;
+
+        String channelId = "be.ppareit.swiftp.notification.channelId";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Show FTP Server state";
+            String description = "This notification shows the current state of the FTP Server";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+            channel.setDescription(description);
+            nm.createNotificationChannel(channel);
+        }
 
         Notification notification = new NotificationCompat.Builder(context)
                 .setContentTitle(contentTitle)
@@ -115,6 +130,7 @@ public class FsNotification extends BroadcastReceiver {
                 .addAction(stopIcon, stopText, stopPendingIntent)
                 .addAction(preferenceIcon, preferenceText, preferencePendingIntent)
                 .setShowWhen(false)
+                .setChannelId(channelId)
                 .build();
 
         // Pass Notification to NotificationManager
@@ -126,7 +142,7 @@ public class FsNotification extends BroadcastReceiver {
 
     private void clearNotification(Context context) {
         Cat.d("Clearing the notifications");
-        String ns = Context.NOTIFICATION_SERVICE;
+        String ns = NOTIFICATION_SERVICE;
         NotificationManager nm = (NotificationManager) context.getSystemService(ns);
         nm.cancelAll();
         Cat.d("Cleared notification");

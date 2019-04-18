@@ -87,8 +87,7 @@ abstract public class Util {
     public static void sleepIgnoreInterrupt(long millis) {
         try {
             Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            /* swallow */
+        } catch (InterruptedException ignored) {
         }
     }
 

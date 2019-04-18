@@ -13,19 +13,22 @@ import net.vrallev.android.cat.Cat;
 
 import java.net.InetAddress;
 
+import be.ppareit.android.BroadcastReceiverUtils;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
+
+import static be.ppareit.android.BroadcastReceiverUtils.createBroadcastReceiver;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class FsTileService extends TileService {
 
     @Override
     public void onClick() {
-        if(getQsTile().getState() == Tile.STATE_INACTIVE)
-            sendBroadcast(new Intent(FsService.ACTION_START_FTPSERVER));
-        else if(getQsTile().getState() == Tile.STATE_ACTIVE)
-            sendBroadcast(new Intent(FsService.ACTION_STOP_FTPSERVER));
+        if (getQsTile().getState() == Tile.STATE_INACTIVE)
+            FsService.start();
+        else if (getQsTile().getState() == Tile.STATE_ACTIVE)
+            FsService.stop();
     }
 
     @Override
@@ -62,10 +65,7 @@ public class FsTileService extends TileService {
         tile.updateTile();
     }
 
-    BroadcastReceiver mFsActionsReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateTileState();
-        }
-    };
+    BroadcastReceiver mFsActionsReceiver = createBroadcastReceiver(
+                    (context, intent) -> updateTileState()
+    );
 }

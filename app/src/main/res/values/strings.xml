@@ -187,5 +187,8 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="gui_settings_label">Appearance...</string>
     <string name="show_notification_icon_summary">Show the notification icon while the server is running</string>
     <string name="show_notification_icon">Show notification icon</string>
+    <string name="auto_connect_stop_server_remove_from_list">
+        Stopping FTP Server while connected to a wifi network we automatically connected to. Removing this wifi network from the preferences
+    </string>
 
 </resources>

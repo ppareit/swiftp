@@ -86,9 +86,9 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         updateRunningState();
         runningPref.setOnPreferenceChangeListener((preference, newValue) -> {
             if ((Boolean) newValue) {
-                startServer();
+                FsService.start();
             } else {
-                stopServer();
+                FsService.stop();
             }
             return true;
         });
@@ -193,10 +193,10 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             }
             Cat.d("We are connected to " + wifiInfo.getSSID());
             if (newList.contains(wifiInfo.getSSID())) {
-                getActivity().sendBroadcast(new Intent(FsService.ACTION_START_FTPSERVER));
+                FsService.start();
             }
             if (oldList.contains(wifiInfo.getSSID()) && !newList.contains(wifiInfo.getSSID())) {
-                getActivity().sendBroadcast(new Intent(FsService.ACTION_STOP_FTPSERVER));
+                FsService.stop();
             }
             return true;
         });
@@ -220,13 +220,13 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                 return false;
             }
             preference.setSummary(newPortnumString);
-            stopServer();
+            FsService.stop();
             return true;
         });
 
         final CheckBoxPreference wakelock_pref = findPref("stayAwake");
         wakelock_pref.setOnPreferenceChangeListener((preference, newValue) -> {
-            stopServer();
+            FsService.stop();
             return true;
         });
 
@@ -337,15 +337,6 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             }
         }
 
-    }
-
-
-    private void startServer() {
-        getActivity().sendBroadcast(new Intent(FsService.ACTION_START_FTPSERVER));
-    }
-
-    private void stopServer() {
-        getActivity().sendBroadcast(new Intent(FsService.ACTION_STOP_FTPSERVER));
     }
 
     private void updateUsersPref() {

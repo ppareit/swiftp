@@ -26,16 +26,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:label="@string/swiftp_name_free"
         tools:replace="android:label">
 
-        <!-- Don't export this receiver in free, this clashes with paid -->
-        <receiver
-            android:name="be.ppareit.swiftp.RequestStartStopReceiver"
-            android:exported="false"
-            tools:replace="android:exported">
-            <intent-filter>
-                <action android:name="be.ppareit.swiftp.ACTION_START_FTPSERVER" />
-                <action android:name="be.ppareit.swiftp.ACTION_STOP_FTPSERVER" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

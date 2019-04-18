@@ -43,14 +43,16 @@ public class NsdService extends Service {
     // keep runaway threads in check
     private volatile boolean running = false;
 
-    public static class StartStopReceiver extends BroadcastReceiver {
+    public static class ServerActionsReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "onReceive broadcast: " + intent.getAction());
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                Log.w(TAG, "onReceive: Running pre-JB, version to old for "
-                        + "NSD functionality, bailing out");
+                Log.w(TAG, "Pre-JB to old for NSD functionality");
+                return;
+            }
+            if (intent.getAction() == null) {
                 return;
             }
             if (intent.getAction().equals(FsService.ACTION_STARTED)) {

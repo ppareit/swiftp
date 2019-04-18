@@ -29,10 +29,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import net.vrallev.android.cat.Cat;
 
@@ -55,14 +58,14 @@ import lombok.val;
 public class FsService extends Service implements Runnable {
     private static final String TAG = FsService.class.getSimpleName();
 
+    // Service will check following actions when started through intent
+    static public final String ACTION_REQUEST_START = "be.ppareit.swiftp.REQUEST_START";
+    static public final String ACTION_REQUEST_STOP = "be.ppareit.swiftp.REQUEST_STOP";
+
     // Service will (global) broadcast when server start/stop
     static public final String ACTION_STARTED = "be.ppareit.swiftp.FTPSERVER_STARTED";
     static public final String ACTION_STOPPED = "be.ppareit.swiftp.FTPSERVER_STOPPED";
     static public final String ACTION_FAILEDTOSTART = "be.ppareit.swiftp.FTPSERVER_FAILEDTOSTART";
-
-    // RequestStartStopReceiver listens for these actions to start/stop this server
-    static public final String ACTION_START_FTPSERVER = "be.ppareit.swiftp.ACTION_START_FTPSERVER";
-    static public final String ACTION_STOP_FTPSERVER = "be.ppareit.swiftp.ACTION_STOP_FTPSERVER";
 
     protected static Thread serverThread = null;
     protected boolean shouldExit = false;
@@ -81,8 +84,81 @@ public class FsService extends Service implements Runnable {
     private PowerManager.WakeLock wakeLock;
     private WifiLock wifiLock = null;
 
+
+    /**
+     * Check to see if the FTP Server is up and running
+     *
+     * @return true if the FTP Server is up and running
+     */
+    public static boolean isRunning() {
+        // return true if and only if a server Thread is running
+        if (serverThread == null) {
+            Log.d(TAG, "Server is not running (null serverThread)");
+            return false;
+        }
+        if (!serverThread.isAlive()) {
+            Log.d(TAG, "serverThread non-null but !isAlive()");
+        } else {
+            Log.d(TAG, "Server is alive");
+        }
+        return true;
+    }
+
+    /**
+     * Start this service, which will start the FTP Server
+     */
+    public static void start() {
+        Context context = App.getAppContext();
+        Intent serverService = new Intent(context, FsService.class);
+        if (!FsService.isRunning()) {
+            context.startService(serverService);
+        }
+        // TODO: let everybody know we have started
+    }
+
+    /**
+     * Stop the service and thus stop the FTP Server
+     */
+    public static void stop() {
+        Context context = App.getAppContext();
+        Intent serverService = new Intent(context, FsService.class);
+        context.stopService(serverService);
+    }
+
+    /**
+     * Will check if the device contains external storage (sdcard) and display a warning
+     * for the user if there is no external storage. Nothing more.
+     */
+    private static void warnIfNoExternalStorage() {
+        String storageState = Environment.getExternalStorageState();
+        if (!storageState.equals(Environment.MEDIA_MOUNTED)) {
+            Log.v(TAG, "Warning due to storage state " + storageState);
+            Toast toast = Toast.makeText(App.getAppContext(),
+                    R.string.storage_warning, Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Cat.d("onStartCommand called with action: " + intent.getAction());
+
+        if (intent.getAction() != null) {
+            switch (intent.getAction()) {
+                case ACTION_REQUEST_START:
+                    if (isRunning()) {
+                        return START_STICKY;
+                    }
+                    break;
+                case ACTION_REQUEST_STOP:
+                    stopSelf();
+                    return START_NOT_STICKY;
+            }
+        }
+
+        warnIfNoExternalStorage();
+
         shouldExit = false;
         int attempts = 10;
         // The previous server thread may still be cleaning up, wait for it to finish.
@@ -102,20 +178,6 @@ public class FsService extends Service implements Runnable {
         return START_STICKY;
     }
 
-    public static boolean isRunning() {
-        // return true if and only if a server Thread is running
-        if (serverThread == null) {
-            Log.d(TAG, "Server is not running (null serverThread)");
-            return false;
-        }
-        if (!serverThread.isAlive()) {
-            Log.d(TAG, "serverThread non-null but !isAlive()");
-        } else {
-            Log.d(TAG, "Server is alive");
-        }
-        return true;
-    }
-
     @Override
     public void onDestroy() {
         Log.i(TAG, "onDestroy() Stopping server");
@@ -127,7 +189,7 @@ public class FsService extends Service implements Runnable {
         serverThread.interrupt();
         try {
             serverThread.join(10000); // wait 10 sec for server thread to finish
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
         }
         if (serverThread.isAlive()) {
             Log.w(TAG, "Server thread failed to exit");
@@ -141,7 +203,7 @@ public class FsService extends Service implements Runnable {
                 Log.i(TAG, "Closing listenSocket");
                 listenSocket.close();
             }
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
 
         if (wifiLock != null) {

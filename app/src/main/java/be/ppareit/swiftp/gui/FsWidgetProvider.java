@@ -50,8 +50,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
         Log.v(TAG, "Received broadcast: " + intent.getAction());
         // watch for the broadcasts by the ftp server and update the widget if needed
         final String action = intent.getAction();
-        if (action.equals(FsService.ACTION_STARTED)
-                || action.equals(FsService.ACTION_STOPPED)) {
+        if (action.equals(FsService.ACTION_STARTED) || action.equals(FsService.ACTION_STOPPED)) {
             Intent updateIntent = new Intent(context, UpdateService.class);
             context.startService(updateIntent);
         }
@@ -77,7 +76,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
             final int drawable;
             final String text;
             if (FsService.isRunning()) {
-                action = FsService.ACTION_STOP_FTPSERVER;
+                action = FsService.ACTION_REQUEST_STOP;
                 drawable = R.drawable.widget_on;
                 // get ip address
                 InetAddress address = FsService.getLocalInetAddress();
@@ -88,12 +87,13 @@ public class FsWidgetProvider extends AppWidgetProvider {
                     text = address.getHostAddress();
                 }
             } else {
-                action = FsService.ACTION_START_FTPSERVER;
+                action = FsService.ACTION_REQUEST_START;
                 drawable = R.drawable.widget_off;
                 text = getString(R.string.swiftp_name);
             }
-            Intent startIntent = new Intent(action);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0,
+            Intent startIntent = new Intent(this, FsService.class);
+            startIntent.setAction(action);
+            PendingIntent pendingIntent = PendingIntent.getService(this, 0,
                     startIntent, 0);
             RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_layout);
             // setup the info on the widget

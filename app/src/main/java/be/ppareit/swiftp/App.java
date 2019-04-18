@@ -20,12 +20,16 @@ package be.ppareit.swiftp;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
 import net.vrallev.android.cat.Cat;
 
+import be.ppareit.swiftp.gui.FsNotification;
+import be.ppareit.swiftp.gui.FsWidgetProvider;
 import lombok.val;
 
 public class App extends Application {
@@ -36,6 +40,18 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(FsService.ACTION_STARTED);
+        intentFilter.addAction(FsService.ACTION_STOPPED);
+        intentFilter.addAction(FsService.ACTION_FAILEDTOSTART);
+
+        registerReceiver(new FsNotification(), intentFilter);
+        registerReceiver(new AutoConnect.ServerActionsReceiver(), intentFilter);
+        registerReceiver(new NsdService.ServerActionsReceiver(), intentFilter);
+        registerReceiver(new FsWidgetProvider(), intentFilter);
+
+        startService(new Intent(this, AutoConnect.BackgroundService.class));
     }
 
     /**
