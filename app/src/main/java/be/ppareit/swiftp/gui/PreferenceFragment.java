@@ -79,9 +79,6 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
-        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        Resources resources = getResources();
-
         TwoStatePreference runningPref = findPref("running_switch");
         updateRunningState();
         runningPref.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -202,8 +199,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         });
 
         EditTextPreference portnum_pref = findPref("portNum");
-        portnum_pref.setSummary(sp.getString("portNum",
-                resources.getString(R.string.portnumber_default)));
+        portnum_pref.setSummary(FsSettings.getPortNumber());
         portnum_pref.setOnPreferenceChangeListener((preference, newValue) -> {
             String newPortnumString = (String) newValue;
             if (preference.getSummary().equals(newPortnumString))
