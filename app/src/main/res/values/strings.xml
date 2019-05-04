@@ -190,5 +190,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="auto_connect_stop_server_remove_from_list">
         Stopping FTP Server while connected to a wifi network we automatically connected to. Removing this wifi network from the preferences
     </string>
+    <string name="write_external_storage_old_android_version_summary">On these devices, all store is available using the file hierarchy.</string>
 
 </resources>

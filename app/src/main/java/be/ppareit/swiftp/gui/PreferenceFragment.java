@@ -26,7 +26,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -40,14 +39,14 @@ import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import android.text.util.Linkify;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
 import net.vrallev.android.cat.Cat;
 
@@ -174,7 +173,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             Cat.d("Changed auto connect list preference");
 
             Set<String> oldList = FsSettings.getAutoConnectList();
-            Set<String> newList = (Set<String>) newValue;
+            Set<?> newList = (Set<?>) newValue;
 
             Cat.d("Old List: " + oldList + " New List: " + newList);
 
@@ -226,27 +225,33 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
-        final CheckBoxPreference writeExternalStorage_pref = findPref("writeExternalStorage");
-        String externalStorageUri = FsSettings.getExternalStorageUri();
-        if (externalStorageUri == null) {
-            writeExternalStorage_pref.setChecked(false);
-        }
-        writeExternalStorage_pref.setOnPreferenceChangeListener((preference, newValue) -> {
-            if ((boolean) newValue) {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
-                return false;
-            } else {
-                FsSettings.setExternalStorageUri(null);
-                return true;
+        final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            String externalStorageUri = FsSettings.getExternalStorageUri();
+            if (externalStorageUri == null) {
+                writeExternalStoragePref.setChecked(false);
             }
-        });
+            writeExternalStoragePref.setOnPreferenceChangeListener((preference, newValue) -> {
+                if ((boolean) newValue) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                    startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
+                    return false;
+                } else {
+                    FsSettings.setExternalStorageUri(null);
+                    return true;
+                }
+            });
+        } else {
+            writeExternalStoragePref.setEnabled(false);
+            writeExternalStoragePref.setChecked(true);
+            writeExternalStoragePref.setSummary(getString(R.string.write_external_storage_old_android_version_summary));
+        }
 
 
-        ListPreference theme = findPref("theme");
-        theme.setSummary(theme.getEntry());
-        theme.setOnPreferenceChangeListener((preference, newValue) -> {
-            theme.setSummary(theme.getEntry());
+        ListPreference themePref = findPref("theme");
+        themePref.setSummary(themePref.getEntry());
+        themePref.setOnPreferenceChangeListener((preference, newValue) -> {
+            themePref.setSummary(themePref.getEntry());
             getActivity().recreate();
             return true;
         });
@@ -382,6 +387,9 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             Cat.v("action received: " + intent.getAction());
+            if (intent.getAction() == null) {
+                return;
+            }
             // remove all pending callbacks
             mHandler.removeCallbacksAndMessages(null);
             // action will be ACTION_STARTED or ACTION_STOPPED
