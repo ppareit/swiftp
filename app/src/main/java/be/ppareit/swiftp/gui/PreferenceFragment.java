@@ -197,15 +197,15 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
-        EditTextPreference portnum_pref = findPref("portNum");
-        portnum_pref.setSummary(FsSettings.getPortNumber());
-        portnum_pref.setOnPreferenceChangeListener((preference, newValue) -> {
-            String newPortnumString = (String) newValue;
-            if (preference.getSummary().equals(newPortnumString))
+        EditTextPreference portNumberPref = findPref("portNum");
+        portNumberPref.setSummary(String.valueOf(FsSettings.getPortNumber()));
+        portNumberPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            String newPortNumberString = (String) newValue;
+            if (preference.getSummary().equals(newPortNumberString))
                 return false;
             int portnum = 0;
             try {
-                portnum = Integer.parseInt(newPortnumString);
+                portnum = Integer.parseInt(newPortNumberString);
             } catch (Exception e) {
                 Cat.d("Error parsing port number! Moving on...");
             }
@@ -214,7 +214,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                         R.string.port_validation_error, Toast.LENGTH_LONG).show();
                 return false;
             }
-            preference.setSummary(newPortnumString);
+            preference.setSummary(newPortNumberString);
             FsService.stop();
             return true;
         });
