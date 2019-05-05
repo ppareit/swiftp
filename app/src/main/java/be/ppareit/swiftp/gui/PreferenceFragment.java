@@ -219,8 +219,8 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
-        final CheckBoxPreference wakelock_pref = findPref("stayAwake");
-        wakelock_pref.setOnPreferenceChangeListener((preference, newValue) -> {
+        final CheckBoxPreference wakelockPref = findPref("stayAwake");
+        wakelockPref.setOnPreferenceChangeListener((preference, newValue) -> {
             FsService.stop();
             return true;
         });
@@ -262,8 +262,8 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
-        Preference help = findPref("help");
-        help.setOnPreferenceClickListener(preference -> {
+        Preference helpPref = findPref("help");
+        helpPref.setOnPreferenceClickListener(preference -> {
             Cat.v("On preference help clicked");
             Context context = getActivity();
             AlertDialog ad = new AlertDialog.Builder(context)
@@ -277,8 +277,8 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
-        Preference about = findPref("about");
-        about.setOnPreferenceClickListener(preference -> {
+        Preference aboutPref = findPref("about");
+        aboutPref.setOnPreferenceClickListener(preference -> {
             startActivity(new Intent(getActivity(), AboutActivity.class));
             return true;
         });
