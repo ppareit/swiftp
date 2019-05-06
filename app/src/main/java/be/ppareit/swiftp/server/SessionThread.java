@@ -21,7 +21,6 @@ package be.ppareit.swiftp.server;
 
 import net.vrallev.android.cat.Cat;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -324,14 +323,14 @@ public class SessionThread extends Thread {
      * @return true if we should allow FTP opperations
      */
     public boolean isAuthenticated() {
-        return userAuthenticated || FsSettings.allowAnoymous();
+        return userAuthenticated || FsSettings.allowAnonymous();
     }
 
     /**
      * @return true only when we are anonymously logged in
      */
     public boolean isAnonymouslyLoggedIn() {
-        return !userAuthenticated && FsSettings.allowAnoymous();
+        return !userAuthenticated && FsSettings.allowAnonymous();
     }
 
     /**

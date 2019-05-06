@@ -43,7 +43,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
             sessionThread.writeString("503 Must send USER first\r\n");
             return;
         }
-        if (attemptUsername.equals("anonymous") && FsSettings.allowAnoymous()) {
+        if (attemptUsername.equals("anonymous") && FsSettings.allowAnonymous()) {
             Log.i(TAG, "Guest logged in with email: " + attemptPassword);
             sessionThread.writeString("230 Guest login ok, read only access.\r\n");
             return;

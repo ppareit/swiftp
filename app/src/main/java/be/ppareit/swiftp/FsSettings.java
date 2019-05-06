@@ -32,7 +32,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -56,15 +56,19 @@ public class FsSettings {
             String username = sp.getString("username", "ftp");
             String password = sp.getString("password", "ftp");
             String chroot = sp.getString("chrootDir", "");
-            return new ArrayList<>(Arrays.asList(new FtpUser(username,password, chroot)));
+            if (username == null || password == null || chroot == null) {
+                username = "ftp";
+                password = "ftp";
+                chroot = "";
+            }
+            return new ArrayList<>(Collections.singletonList(new FtpUser(username, password, chroot)));
         } else {
-            val defaultUser = new FtpUser("ftp","ftp", "\\");
-            return new ArrayList<>(Arrays.asList(defaultUser));
+            val defaultUser = new FtpUser("ftp", "ftp", "\\");
+            return new ArrayList<>(Collections.singletonList(defaultUser));
         }
     }
 
     public static FtpUser getUser(String username) {
-        // TODO: on java 8 (and android support) we can use getUsers().stream.filter(...)
         for (val user : getUsers()) {
             if (user.getUsername().equals(username))
                 return user;
@@ -84,7 +88,6 @@ public class FsSettings {
     }
 
     public static void removeUser(String username) {
-        // TODO: on java 8 (and android support) we can use getUsers().removeIf(...)
         val sp = getSharedPreferences();
         Gson gson = new Gson();
         val users = getUsers();
@@ -103,7 +106,7 @@ public class FsSettings {
         addUser(newUser);
     }
 
-    public static boolean allowAnoymous() {
+    public static boolean allowAnonymous() {
         final SharedPreferences sp = getSharedPreferences();
         return sp.getBoolean("allow_anonymous", false);
     }
@@ -157,17 +160,22 @@ public class FsSettings {
 
     public static int getTheme() {
         SharedPreferences sp = getSharedPreferences();
+        String theme = sp.getString("theme", "0");
+        if (theme == null) {
+            return R.style.AppThemeDark;
+        }
 
-        switch (sp.getString("theme", "0")) {
+        switch (theme) {
             case "0":
                 return R.style.AppThemeDark;
             case "1":
                 return R.style.AppThemeLight;
             case "2":
                 return R.style.AppThemeLight_DarkActionBar;
+            default:
+                return R.style.AppThemeDark;
         }
 
-        return R.style.AppThemeDark;
     }
 
     public static boolean showNotificationIcon() {
@@ -181,53 +189,6 @@ public class FsSettings {
     private static SharedPreferences getSharedPreferences() {
         final Context context = App.getAppContext();
         return PreferenceManager.getDefaultSharedPreferences(context);
-    }
-
-    // cleaning up after his
-    protected static int inputBufferSize = 256;
-    protected static boolean allowOverwrite = false;
-    protected static int dataChunkSize = 8192; // do file I/O in 8k chunks
-    protected static int sessionMonitorScrollBack = 10;
-    protected static int serverLogScrollBack = 10;
-
-    public static int getInputBufferSize() {
-        return inputBufferSize;
-    }
-
-    public static void setInputBufferSize(int inputBufferSize) {
-        FsSettings.inputBufferSize = inputBufferSize;
-    }
-
-    public static boolean isAllowOverwrite() {
-        return allowOverwrite;
-    }
-
-    public static void setAllowOverwrite(boolean allowOverwrite) {
-        FsSettings.allowOverwrite = allowOverwrite;
-    }
-
-    public static int getDataChunkSize() {
-        return dataChunkSize;
-    }
-
-    public static void setDataChunkSize(int dataChunkSize) {
-        FsSettings.dataChunkSize = dataChunkSize;
-    }
-
-    public static int getSessionMonitorScrollBack() {
-        return sessionMonitorScrollBack;
-    }
-
-    public static void setSessionMonitorScrollBack(int sessionMonitorScrollBack) {
-        FsSettings.sessionMonitorScrollBack = sessionMonitorScrollBack;
-    }
-
-    public static int getServerLogScrollBack() {
-        return serverLogScrollBack;
-    }
-
-    public static void setLogScrollBack(int serverLogScrollBack) {
-        FsSettings.serverLogScrollBack = serverLogScrollBack;
     }
 
     public static String getExternalStorageUri() {

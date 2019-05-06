@@ -2,6 +2,7 @@
   <dictionary name="ppareit">
     <words>
       <w>autoconnect</w>
+      <w>chroot</w>
       <w>ppareit</w>
       <w>swiftp</w>
     </words>
