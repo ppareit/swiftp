@@ -78,20 +78,31 @@ public class App extends Application {
         return false;
     }
 
+    /**
+     * @return true if the paid version is installed on this device
+     */
     public static boolean isPaidVersionInstalled() {
-        Context context = getAppContext();
-        val pm = context.getPackageManager();
-        val packages = pm.getInstalledApplications(0);
-        for (ApplicationInfo packageInfo : packages) {
-            if(packageInfo.packageName.equals("be.ppareit.swiftp"))
-                return true;
+        return isPackageInstalled("be.ppareit.swiftp");
+    }
+
+    /**
+     * @param packageName is the name of the package to check
+     * @return true if packageName is installed on this device
+     */
+    public static boolean isPackageInstalled(String packageName) {
+        try {
+            Context context = getAppContext();
+            val packageManager = context.getPackageManager();
+            packageManager.getPackageInfo(packageName, 0);
+        } catch (NameNotFoundException e) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
      * Get the version from the manifest.
-     * 
+     *
      * @return The version as a String.
      */
     public static String getVersion() {
