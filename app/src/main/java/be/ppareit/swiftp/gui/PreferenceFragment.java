@@ -91,23 +91,21 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
 
         PreferenceScreen prefScreen = findPref("preference_screen");
         Preference marketVersionPref = findPref("market_version");
+        if (!App.isFreeVersion()) {
+            prefScreen.removePreference(marketVersionPref);
+        }
+        if (!(App.isPackageInstalled("com.android.vending") ||
+                App.isPackageInstalled("com.google.market"))) {
+            prefScreen.removePreference(marketVersionPref);
+        }
         marketVersionPref.setOnPreferenceClickListener(preference -> {
             // start the market at our application
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setData(Uri.parse("market://details?id=be.ppareit.swiftp"));
-            try {
-                // this can fail if there is no market installed
-                startActivity(intent);
-            } catch (Exception e) {
-                Cat.e("Failed to launch the market.");
-                e.printStackTrace();
-            }
+            startActivity(intent);
             return false;
         });
-        if (!App.isFreeVersion()) {
-            prefScreen.removePreference(marketVersionPref);
-        }
 
         Preference manageUsersPref = findPref("manage_users");
         updateUsersPref();
