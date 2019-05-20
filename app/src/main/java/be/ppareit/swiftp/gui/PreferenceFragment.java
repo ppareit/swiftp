@@ -335,7 +335,6 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                 writeExternalStorage_pref.setChecked(true);
             }
         }
-
     }
 
     private void updateUsersPref() {
