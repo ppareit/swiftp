@@ -48,6 +48,29 @@ import static be.ppareit.android.BroadcastReceiverUtils.createBroadcastReceiver;
  */
 public class AutoConnect {
 
+    static final int NOTIFICATION_ID = 20;
+
+    /**
+     * Start listening for different wifi connections. When this service
+     * is not needed, does not start. When it does start, this needs to
+     * run as a foreground service.
+     *
+     * @param context
+     */
+    public static void maybeStartService(Context context) {
+        Intent autoConnectIntent = new Intent(context,
+                AutoConnect.BackgroundService.class);
+        if (FsSettings.getAutoConnectList().isEmpty()) {
+            context.stopService(autoConnectIntent);
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(autoConnectIntent);
+        } else {
+            context.startService(autoConnectIntent);
+        }
+    }
+
     public static class BackgroundService extends Service {
 
         @Override
@@ -81,7 +104,7 @@ public class AutoConnect {
                     .setChannelId(channelId)
                     .build();
 
-            startForeground(20, notification);
+            startForeground(AutoConnect.NOTIFICATION_ID, notification);
 
             IntentFilter wifiStateChangedFilter = new IntentFilter();
             wifiStateChangedFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
@@ -94,6 +117,7 @@ public class AutoConnect {
         @Override
         public void onDestroy() {
             super.onDestroy();
+            stopForeground(true);
 
             try {
                 unregisterReceiver(mWifiStateChangedReceiver);

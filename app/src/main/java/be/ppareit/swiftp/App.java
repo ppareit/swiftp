@@ -22,7 +22,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
@@ -52,11 +51,7 @@ public class App extends Application {
         registerReceiver(new NsdService.ServerActionsReceiver(), intentFilter);
         registerReceiver(new FsWidgetProvider(), intentFilter);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(new Intent(this, AutoConnect.BackgroundService.class));
-        } else {
-            startService(new Intent(this, AutoConnect.BackgroundService.class));
-        }
+        AutoConnect.maybeStartService(this);
     }
 
     /**

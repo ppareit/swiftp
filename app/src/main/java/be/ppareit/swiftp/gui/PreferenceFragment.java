@@ -26,6 +26,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -39,6 +40,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
 import android.text.util.Linkify;
@@ -56,6 +58,7 @@ import java.util.Set;
 
 import be.ppareit.android.DynamicMultiSelectListPreference;
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.AutoConnect;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
@@ -65,7 +68,7 @@ import lombok.val;
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
  */
-public class PreferenceFragment extends android.preference.PreferenceFragment {
+public class PreferenceFragment extends android.preference.PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
     private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
@@ -305,6 +308,9 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         filter.addAction(FsService.ACTION_STOPPED);
         filter.addAction(FsService.ACTION_FAILEDTOSTART);
         getActivity().registerReceiver(mFsActionsReceiver, filter);
+
+        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -313,6 +319,9 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
 
         Cat.v("onPause: Unregistering the FTPServer actions");
         getActivity().unregisterReceiver(mFsActionsReceiver);
+
+        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -334,6 +343,15 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                 }
                 writeExternalStorage_pref.setChecked(true);
             }
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        switch (key) {
+            case "autoconnect_preference":
+                AutoConnect.maybeStartService(App.getAppContext());
+                break;
         }
     }
 
