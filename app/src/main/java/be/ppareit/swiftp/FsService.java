@@ -79,7 +79,7 @@ public class FsService extends Service implements Runnable {
     public static final int WAKE_INTERVAL_MS = 1000; // milliseconds
 
     private TcpListener wifiListener = null;
-    private final List<SessionThread> sessionThreads = new ArrayList<SessionThread>();
+    private final List<SessionThread> sessionThreads = new ArrayList<>();
 
     private PowerManager.WakeLock wakeLock;
     private WifiLock wifiLock = null;
@@ -229,7 +229,7 @@ public class FsService extends Service implements Runnable {
     public void run() {
         Log.d(TAG, "Server thread running");
 
-        if (isConnectedToLocalNetwork() == false) {
+        if (!isConnectedToLocalNetwork()) {
             Log.w(TAG, "run: There is no local network, bailing out");
             stopSelf();
             sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
@@ -260,7 +260,7 @@ public class FsService extends Service implements Runnable {
                     Log.d(TAG, "Joining crashed wifiListener thread");
                     try {
                         wifiListener.join();
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException ignored) {
                     }
                     wifiListener = null;
                 }

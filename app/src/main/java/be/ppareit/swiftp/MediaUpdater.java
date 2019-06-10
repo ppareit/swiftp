@@ -12,13 +12,9 @@ import android.util.Log;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
-
 /**
- * This media rescanner runs in the background. The rescan might
+ * This media scanner runs in the background. The rescan might
  * not happen immediately.
- * 
- *
  */
 public enum MediaUpdater {
     INSTANCE;
@@ -34,7 +30,6 @@ public enum MediaUpdater {
         public void onScanCompleted(String path, Uri uri) {
             Log.i(TAG, "Scan completed: " + path + " : " + uri);
         }
-
     }
 
     public static void notifyFileCreated(String path) {
@@ -55,8 +50,7 @@ public enum MediaUpdater {
             sTimer.cancel();
             // that timer is of no value any more, create a new one
             sTimer = new Timer();
-            // and in 5s let it send the broadcast, might never hapen if
-            // before
+            // and in 5s let it send the broadcast, might never happen if before
             // that time it gets canceled by this code path
             sTimer.schedule(new TimerTask() {
                 @Override
