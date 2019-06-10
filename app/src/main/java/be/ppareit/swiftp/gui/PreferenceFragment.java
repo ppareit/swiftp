@@ -349,12 +349,19 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {
+            // The AutoConnect service must be started or stopped depending if there are
+            // networks to monitor or not.
             case "autoconnect_preference":
                 AutoConnect.maybeStartService(App.getAppContext());
                 break;
         }
     }
 
+    /**
+     * Update the summary for the users. When there are no users, ask to add at least one user.
+     * When there is one user, display helpful message about user/password. When there are
+     * multiple users, refer to the list.
+     */
     private void updateUsersPref() {
         val manageUsersPref = findPref("manage_users");
         val users = FsSettings.getUsers();
@@ -371,6 +378,11 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
         }
     }
 
+    /**
+     * Display helpful message in the ummary about the state of the ftp server. When the
+     * server is running, display the ip address to reach it. When there was
+     * a failure starting the server, let this know.
+     */
     private void updateRunningState() {
         Resources res = getResources();
         TwoStatePreference runningPref = findPref("running_switch");
