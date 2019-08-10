@@ -27,13 +27,15 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import be.ppareit.swiftp.Util;
+
 import android.util.Log;
 
+import net.vrallev.android.cat.Cat;
+
 /**
- * Implements File Modification Time
+ * CmdMFMT implements File Modification Time. See draft-somers-ftp-mfxx-04 in documentation.
  */
 public class CmdMFMT extends FtpCmd implements Runnable {
-    private static final String TAG = CmdMFMT.class.getSimpleName();
 
     private String mInput;
 
@@ -44,14 +46,19 @@ public class CmdMFMT extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
-        Log.d(TAG, "run: MFMT executing, input: " + mInput);
-        String[] params = getParameter(mInput).split(" ");
+        Cat.d("run: MFMT executing, input: " + mInput);
 
-        if (params.length != 2) {
+        //Syntax: "MFMT" SP time-val SP pathname CRLF
+        String parameter = getParameter(mInput);
+        int splitPosition = parameter.indexOf(' ');
+        if (splitPosition == -1) {
             sessionThread.writeString("500 wrong number of parameters\r\n");
-            Log.d(TAG, "run: MFMT failed, wrong number of parameters");
+            Cat.d("run: MFMT failed, wrong number of parameters");
             return;
         }
+
+        String timeString = parameter.substring(0, splitPosition);
+        String pathName = parameter.substring(splitPosition + 1);
 
         // Format of time-val: YYYYMMDDHHMMSS.ss, see rfc3659, p6
         // BUG: The milliseconds part get's ignored
@@ -60,28 +67,27 @@ public class CmdMFMT extends FtpCmd implements Runnable {
 
         Date timeVal;
         try {
-            timeVal = Util.parseDate(params[0]);
+            timeVal = Util.parseDate(timeString);
         } catch (ParseException e) {
             sessionThread.writeString("501 unable to parse parameter time-val\r\n");
-            Log.d(TAG, "run: MFMT failed, unable to parse parameter time-val");
+            Cat.d("run: MFMT failed, unable to parse parameter time-val");
             return;
         }
 
-        String pathName = params[1];
-        File file = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), pathName);
+        File file = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                sessionThread.getWorkingDir(), pathName);
 
-        if (file.exists() == false) {
+        if (!file.exists()) {
             sessionThread.writeString("550 file does not exist on server\r\n");
-            Log.d(TAG, "run: MFMT failed, file does not exist");
+            Cat.d("run: MFMT failed, file does not exist");
             return;
         }
 
         boolean success = file.setLastModified(timeVal.getTime());
-        if (success == false) {
+        if (!success) {
             sessionThread.writeString("500 unable to modify last modification time\r\n");
-            Log.d(TAG, "run: MFMT failed, unable to modify last modification time");
-            // more info at
-            // https://code.google.com/p/android/issues/detail?id=18624
+            Cat.d("run: MFMT failed, unable to modify last modification time");
+            // more info at https://code.google.com/p/android/issues/detail?id=18624
             return;
         }
 
@@ -90,7 +96,7 @@ public class CmdMFMT extends FtpCmd implements Runnable {
                 + file.getAbsolutePath() + "\r\n";
         sessionThread.writeString(response);
 
-        Log.d(TAG, "run: MFMT completed succesful");
+        Cat.d("run: MFMT completed succesful");
     }
 
 }
