@@ -141,9 +141,11 @@ public class FsService extends Service implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Cat.d("onStartCommand called with action: " + intent.getAction());
+        //https://developer.android.com/reference/android/app/Service.html
+        //if there are not any pending start commands to be delivered to the service, it will be called with a null intent object,
+        if (intent != null && intent.getAction() != null) {
+            Cat.d("onStartCommand called with action: " + intent.getAction());
 
-        if (intent.getAction() != null) {
             switch (intent.getAction()) {
                 case ACTION_REQUEST_START:
                     if (isRunning()) {
