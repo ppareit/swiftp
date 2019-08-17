@@ -52,7 +52,13 @@ public class FsWidgetProvider extends AppWidgetProvider {
         final String action = intent.getAction();
         if (action.equals(FsService.ACTION_STARTED) || action.equals(FsService.ACTION_STOPPED)) {
             Intent updateIntent = new Intent(context, UpdateService.class);
-            context.startService(updateIntent);
+            try {
+                //IllegalStateException: not allowed to start service Intent when app is in background
+                context.startService(updateIntent);
+            } catch (Exception ex) {
+                //NEEDS TO BE FIXED
+                Log.e(FsWidgetProvider.TAG, ex.getMessage());
+            }
         }
         super.onReceive(context, intent);
     }
