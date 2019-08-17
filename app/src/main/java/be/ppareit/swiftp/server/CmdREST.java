@@ -46,12 +46,9 @@ public class CmdREST extends FtpCmd implements Runnable {
             sessionThread.offset = offset;
             sessionThread.writeString("350 Restart position accepted (" + offset + ")\r\n");
         } else {
-            if (offset != 0) {
-                sessionThread.writeString("550 Restart position != 0 not accepted in ASCII mode\r\n");
-            } else {
-                sessionThread.offset = offset;
-                sessionThread.writeString("350 Restart position accepted (" + offset + ")\r\n");
-            }
+            // We do not allow a REST in ASCII mode as this this causes problems
+            // when server and client use different line ending format
+            sessionThread.writeString("550 Restart position not accepted in ASCII mode\r\n");
         }
     }
 

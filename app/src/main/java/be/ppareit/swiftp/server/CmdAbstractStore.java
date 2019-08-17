@@ -26,6 +26,8 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
+import net.vrallev.android.cat.Cat;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -36,24 +38,19 @@ import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.MediaUpdater;
 
 abstract public class CmdAbstractStore extends FtpCmd {
-    private final static String TAG = "CmdAbstractStore"; // TODO: .class.getSimpleName()
-    // from abstract class
-    public static final String message = "TEMPLATE!!";
 
     public CmdAbstractStore(SessionThread sessionThread, String input) {
         super(sessionThread);
     }
 
     public void doStorOrAppe(String param, boolean append) {
-        Log.d(TAG, "STOR/APPE executing with append=" + append);
+        Cat.d("STOR/APPE executing with append = " + append);
+
         File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
 
         String errString = null;
-        //OutputStream out = null;
         FileOutputStream out = null;
-        // DedicatedWriter dedicatedWriter = null;
-        // int origPriority = Thread.currentThread().getPriority();
-        // myLog.l(Log.DEBUG, "STOR original priority: " + origPriority);
+
         storing:
         {
             // Get a normalized absolute path for the desired file
@@ -69,6 +66,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 errString = "555 Append can not be used after a REST command\r\n";
                 break storing;
             }
+
             try {
                 if (storeFile.exists()) {
                     if (!append) {
@@ -88,29 +86,13 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 //file
                 if (sessionThread.offset <= 0) {
                     out.getChannel().position(storeFile.length());
-                    //out = new FileOutputStream(storeFile, append);
-                } else if (sessionThread.offset == storeFile.length()) {
-                    out.getChannel().position(storeFile.length());
-                    //out = new FileOutputStream(storeFile, true);
                 } else {
                     out.getChannel().position(sessionThread.offset);
-//                    final RandomAccessFile raf = new RandomAccessFile(storeFile, "rw");
-//                    raf.seek(sessionThread.offset);
-//                    out = new OutputStream() {
-//                        @Override
-//                        public void write(int oneByte) throws IOException {
-//                            raf.write(oneByte);
-//                        }
-//
-//                        @Override
-//                        public void close() throws IOException {
-//                            raf.close();
-//                        }
-//                    };
+                    sessionThread.offset = -1;
                 }
 
             } catch (FileNotFoundException e) {
-                Log.e(TAG, "error : ", e);
+                Cat.e("error : ", e);
                 try {
                     errString = "451 Couldn't open file \"" + param + "\" aka \""
                             + storeFile.getCanonicalPath() + "\" for writing\r\n";
@@ -126,29 +108,18 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 errString = "425 Couldn't open data socket\r\n";
                 break storing;
             }
-            Log.d(TAG, "Data socket ready");
+            Cat.d("Data socket ready");
             sessionThread.writeString("150 Data socket ready\r\n");
             byte[] buffer = new byte[SessionThread.DATA_CHUNK_SIZE];
-            // dedicatedWriter = new DedicatedWriter(out);
-            // dedicatedWriter.start(); // start the writer thread executing
-            // myLog.l(Log.DEBUG, "Started DedicatedWriter");
+
             int numRead;
-            // Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-            // int newPriority = Thread.currentThread().getPriority();
-            // myLog.l(Log.DEBUG, "New STOR prio: " + newPriority);
-            if (sessionThread.isBinaryMode()) {
-                Log.d(TAG, "Mode is binary");
-            } else {
-                Log.d(TAG, "Mode is ascii");
-            }
+
+            Cat.d("Mode is " + (sessionThread.isBinaryMode() ? "binary" : "ascii"));
+
             while (true) {
-                /*
-                 * if(dedicatedWriter.checkErrorFlag()) { errString =
-                 * "451 File IO problem\r\n"; break storing; }
-                 */
                 switch (numRead = sessionThread.receiveFromDataSocket(buffer)) {
                     case -1:
-                        Log.d(TAG, "Returned from final read");
+                        Cat.d("Returned from final read");
                         // We're finished reading
                         break storing;
                     case 0:
@@ -159,11 +130,8 @@ abstract public class CmdAbstractStore extends FtpCmd {
                         break storing;
                     default:
                         try {
-                            // Log.d(TAG, "Enqueueing buffer of " + numRead);
-                            // dedicatedWriter.enqueueBuffer(buffer, numRead);
                             if (sessionThread.isBinaryMode()) {
                                 out.write(buffer, 0, numRead);
-
                             } else {
                                 // ASCII mode, substitute \r\n to \n
                                 int startPos = 0, endPos;
@@ -180,67 +148,24 @@ abstract public class CmdAbstractStore extends FtpCmd {
                                     out.write(buffer, startPos, endPos - startPos);
                                 }
                             }
-
-                            // Attempted bugfix for transfer stalls. Reopen file periodically.
-                            // bytesSinceReopen += numRead;
-                            // if(bytesSinceReopen >= Defaults.bytes_between_reopen &&
-                            // Defaults.do_reopen_hack) {
-                            // Log.d(TAG, "Closing and reopening file: " + storeFile);
-                            // out.close();
-                            // out = new FileOutputStream(storeFile, true/*append*/);
-                            // bytesSinceReopen = 0;
-                            // }
-
-                            // Attempted bugfix for transfer stalls. Flush file periodically.
-                            // bytesSinceFlush += numRead;
-                            // if(bytesSinceFlush >= Defaults.bytes_between_flush &&
-                            // Defaults.do_flush_hack) {
-                            // Log.d(TAG, "Flushing: " + storeFile);
-                            // out.flush();
-                            // bytesSinceFlush = 0;
-                            // }
-
-                            // If this transfer fails, a later APPEND operation might be
-                            // received. In that case, we will need to have flushed the
-                            // previous writes in order for the append to work. The
-                            // filesystem on my G1 doesn't seem to recognized unflushed
-                            // data when appending.
-
-                            //out.flush();
-
                         } catch (IOException e) {
                             errString = "451 File IO problem. Device might be full.\r\n";
-                            Log.d(TAG, "Exception while storing: " + e);
-                            Log.d(TAG, "Message: " + e.getMessage());
-                            Log.d(TAG, "Stack trace: ");
-                            StackTraceElement[] traceElems = e.getStackTrace();
-                            for (StackTraceElement elem : traceElems) {
-                                Log.d(TAG, elem.toString());
-                            }
+                            Cat.d("Exception while storing: " + e);
                             break storing;
                         }
                         break;
                 }
             }
         }
-        // // Clean up the dedicated writer thread
-        // if(dedicatedWriter != null) {
-        // dedicatedWriter.exit(); // set its exit flag
-        // dedicatedWriter.interrupt(); // make sure it wakes up to process the flag
-        // }
-        // Thread.currentThread().setPriority(origPriority);
         try {
-            // if(dedicatedWriter != null) {
-            // dedicatedWriter.exit();
-            // }
             if (out != null) {
                 out.close();
             }
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
 
         if (errString != null) {
-            Log.i(TAG, "STOR error: " + errString.trim());
+            Cat.i("STOR error: " + errString.trim());
             sessionThread.writeString(errString);
         } else {
             sessionThread.writeString("226 Transmission complete\r\n");
@@ -249,6 +174,6 @@ abstract public class CmdAbstractStore extends FtpCmd {
             MediaUpdater.notifyFileCreated(storeFile.getPath());
         }
         sessionThread.closeDataSocket();
-        Log.d(TAG, "STOR finished");
+        Cat.d("STOR finished");
     }
 }

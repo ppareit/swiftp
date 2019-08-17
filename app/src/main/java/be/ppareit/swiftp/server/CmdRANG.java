@@ -2,6 +2,11 @@ package be.ppareit.swiftp.server;
 
 import net.vrallev.android.cat.Cat;
 
+
+/**
+ * CmdRANG add's a RANG command to be used by clients to designate an octet range to a
+ * file, including a start and end point. See draft-bryan-ftp-range-08 in documentation.
+ */
 public class CmdRANG extends FtpCmd implements Runnable {
 
     private String input;
