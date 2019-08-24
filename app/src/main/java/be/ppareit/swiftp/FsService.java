@@ -38,6 +38,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import net.vrallev.android.cat.Cat;
 
 import java.io.IOException;
@@ -114,11 +116,7 @@ public class FsService extends Service implements Runnable {
         Intent serverService = new Intent(context, FsService.class);
         if (!FsService.isRunning()) {
             //https://developer.android.com/about/versions/oreo/background
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(serverService);
-            } else {
-                context.startService(serverService);
-            }
+            ContextCompat.startForegroundService(context, serverService);
         }
     }
 
