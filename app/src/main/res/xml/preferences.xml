@@ -60,6 +60,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:entryValues="@array/pref_list_themes_values"
                 android:key="theme"
                 android:title="@string/app_theme" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_notification_icon_preference"
+                android:summary="@string/show_notification_icon_summary"
+                android:title="@string/show_notification_icon" />
         </PreferenceScreen>
 
 
