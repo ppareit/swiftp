@@ -52,7 +52,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:summary="@string/autoconnect_summary"
             android:title="@string/autoconnect_label" />
 
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        <PreferenceScreen
             android:key="appearance_screen"
             android:title="@string/gui_settings_label">
             <ListPreference
@@ -69,7 +69,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         </PreferenceScreen>
 
 
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        <PreferenceScreen
             android:title="@string/advanced_settings_label">
             <EditTextPreference
                 android:defaultValue="@string/portnumber_default"
