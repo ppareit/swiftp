@@ -53,6 +53,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:title="@string/autoconnect_label" />
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:key="appearance_screen"
             android:title="@string/gui_settings_label">
             <ListPreference
                 android:defaultValue="0"
