@@ -40,13 +40,12 @@ abstract public class Util {
         return (byte) (value >> shift);
     }
 
-    public static String ipToString(int addr, String sep) {
-        // myLog.l(Log.DEBUG, "IP as int: " + addr);
-        if (addr > 0) {
+    public static String ipToString(int address, String sep) {
+        if (address > 0) {
             StringBuffer buf = new StringBuffer();
-            buf.append(byteOfInt(addr, 0)).append(sep).append(byteOfInt(addr, 1))
-                    .append(sep).append(byteOfInt(addr, 2)).append(sep)
-                    .append(byteOfInt(addr, 3));
+            buf.append(byteOfInt(address, 0)).append(sep).append(byteOfInt(address, 1))
+                    .append(sep).append(byteOfInt(address, 2)).append(sep)
+                    .append(byteOfInt(address, 3));
             Log.d(TAG, "ipToString returning: " + buf.toString());
             return buf.toString();
         } else {
@@ -67,14 +66,14 @@ abstract public class Util {
         }
     }
 
-    public static String ipToString(int addr) {
-        if (addr == 0) {
+    public static String ipToString(int address) {
+        if (address == 0) {
             // This can only occur due to an error, we shouldn't blindly
             // convert 0 to string.
             Log.e(TAG, "ipToString won't convert value 0");
             return null;
         }
-        return ipToString(addr, ".");
+        return ipToString(address, ".");
     }
 
     public static String[] concatStrArrays(String[] a1, String[] a2) {

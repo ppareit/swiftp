@@ -51,22 +51,22 @@ public class FsNotification {
 
         // get ip address
         InetAddress address = FsService.getLocalInetAddress();
-        String iptext;
+        String ipText;
         if (address == null) {
-            iptext = "-";
+            ipText = "-";
         } else {
-            iptext = "ftp://" + address.getHostAddress() + ":"
+            ipText = "ftp://" + address.getHostAddress() + ":"
                     + FsSettings.getPortNumber() + "/";
         }
 
         // Instantiate a Notification
         int icon = R.mipmap.notification;
-        CharSequence tickerText = String.format(context.getString(R.string.notification_server_starting), iptext);
+        CharSequence tickerText = String.format(context.getString(R.string.notification_server_starting), ipText);
         long when = System.currentTimeMillis();
 
         // Define Notification's message and Intent
         CharSequence contentTitle = context.getString(R.string.notification_title);
-        CharSequence contentText = String.format(context.getString(R.string.notification_text), iptext);
+        CharSequence contentText = String.format(context.getString(R.string.notification_text), ipText);
 
         Intent notificationIntent = new Intent(context, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);

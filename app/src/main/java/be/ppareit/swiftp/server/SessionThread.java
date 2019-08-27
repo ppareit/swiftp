@@ -320,7 +320,7 @@ public class SessionThread extends Thread {
     }
 
     /**
-     * @return true if we should allow FTP opperations
+     * @return true if we should allow FTP operations
      */
     public boolean isAuthenticated() {
         return userAuthenticated || FsSettings.allowAnonymous();

@@ -428,7 +428,7 @@ public abstract class FileUtil {
      * Check if a file is readable.
      *
      * @param file The file
-     * @return true if the file is reabable.
+     * @return true if the file is readable.
      */
     public static boolean isReadable(final File file) {
         if (file == null)

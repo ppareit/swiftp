@@ -15,14 +15,14 @@ DOCUMENTATION
 We make use of the lombok val keyword. See
      https://projectlombok.org/features/val
 We don't use this everywhere, only when writing the
-declaration would require a linewrap and when the
+declaration would require a line wrap and when the
 context is clear and when the usage of the variable
 is close to the declaration.
 
 Retrolambda is being used to enable us to use
 the java 8 lambda construct. You should read up
 on this and then enjoy this in your own code. Java 8
-is comming to android, so this library will soon not be
+is coming to android, so this library will soon not be
 needed anymore. The code changes should be minimal.
 
 MAKING CHANGES

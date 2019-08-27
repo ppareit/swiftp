@@ -41,13 +41,13 @@ public class CmdPASV extends FtpCmd implements Runnable {
             sessionThread.writeString(cantOpen);
             return;
         }
-        InetAddress addr = sessionThread.getDataSocketPasvIp();
-        if (addr == null) {
+        InetAddress address = sessionThread.getDataSocketPasvIp();
+        if (address == null) {
             Log.e(TAG, "PASV IP string invalid");
             sessionThread.writeString(cantOpen);
             return;
         }
-        Log.d(TAG, "PASV sending IP: " + addr.getHostAddress());
+        Log.d(TAG, "PASV sending IP: " + address.getHostAddress());
         if (port < 1) {
             Log.e(TAG, "PASV port number invalid");
             sessionThread.writeString(cantOpen);
@@ -55,7 +55,7 @@ public class CmdPASV extends FtpCmd implements Runnable {
         }
         StringBuilder response = new StringBuilder("227 Entering Passive Mode (");
         // Output our IP address in the format xxx,xxx,xxx,xxx
-        response.append(addr.getHostAddress().replace('.', ','));
+        response.append(address.getHostAddress().replace('.', ','));
         response.append(",");
         // Output our port in the format p1,p2 where port=p1*256+p2
         response.append(port / 256);

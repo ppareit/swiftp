@@ -204,13 +204,13 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
             String newPortNumberString = (String) newValue;
             if (preference.getSummary().equals(newPortNumberString))
                 return false;
-            int portnum = 0;
+            int portNumber = 0;
             try {
-                portnum = Integer.parseInt(newPortNumberString);
+                portNumber = Integer.parseInt(newPortNumberString);
             } catch (Exception e) {
                 Cat.d("Error parsing port number! Moving on...");
             }
-            if (portnum <= 0 || 65535 < portnum) {
+            if (portNumber <= 0 || 65535 < portNumber) {
                 Toast.makeText(getActivity(),
                         R.string.port_validation_error, Toast.LENGTH_LONG).show();
                 return false;
@@ -383,7 +383,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
     }
 
     /**
-     * Display helpful message in the ummary about the state of the ftp server. When the
+     * Display helpful message in the summary about the state of the ftp server. When the
      * server is running, display the ip address to reach it. When there was
      * a failure starting the server, let this know.
      */
@@ -399,9 +399,9 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
                 runningPref.setSummary(R.string.running_summary_failed_to_get_ip_address);
                 return;
             }
-            String iptext = "ftp://" + address.getHostAddress() + ":"
+            String ipText = "ftp://" + address.getHostAddress() + ":"
                     + FsSettings.getPortNumber() + "/";
-            String summary = res.getString(R.string.running_summary_started, iptext);
+            String summary = res.getString(R.string.running_summary_started, ipText);
             runningPref.setSummary(summary);
         } else {
             runningPref.setChecked(false);
@@ -439,7 +439,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
         }
     };
 
-    @SuppressWarnings({"unchecked", "deprecation"})
+    @SuppressWarnings({"unchecked"})
     protected <T extends Preference> T findPref(CharSequence key) {
         return (T) findPreference(key);
     }

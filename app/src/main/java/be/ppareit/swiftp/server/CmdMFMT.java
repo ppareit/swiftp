@@ -96,7 +96,7 @@ public class CmdMFMT extends FtpCmd implements Runnable {
                 + file.getAbsolutePath() + "\r\n";
         sessionThread.writeString(response);
 
-        Cat.d("run: MFMT completed succesful");
+        Cat.d("run: MFMT completed successful");
     }
 
 }

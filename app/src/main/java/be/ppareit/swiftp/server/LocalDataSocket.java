@@ -38,7 +38,7 @@ public class LocalDataSocket {
     // Listener socket used for PASV mode
     ServerSocket server = null;
     // Remote IP & port information used for PORT mode
-    private InetAddress remoteAddr;
+    private InetAddress remoteAddress;
     private int remotePort;
     private boolean isPasvMode = true;
 
@@ -58,7 +58,7 @@ public class LocalDataSocket {
             }
         }
         server = null;
-        remoteAddr = null;
+        remoteAddress = null;
         remotePort = 0;
         Log.d(TAG, "State cleared");
     }
@@ -77,9 +77,9 @@ public class LocalDataSocket {
         }
     }
 
-    public boolean onPort(InetAddress remoteAddr, int remotePort) {
+    public boolean onPort(InetAddress remoteAddress, int remotePort) {
         clearState();
-        this.remoteAddr = remoteAddr;
+        this.remoteAddress = remoteAddress;
         this.remotePort = remotePort;
         return true;
     }
@@ -87,16 +87,16 @@ public class LocalDataSocket {
     public Socket onTransfer() {
         if (server == null) {
             // We're in PORT mode (not PASV)
-            if (remoteAddr == null || remotePort == 0) {
+            if (remoteAddress == null || remotePort == 0) {
                 Log.i(TAG, "PORT mode but not initialized correctly");
                 clearState();
                 return null;
             }
             Socket socket;
             try {
-                socket = new Socket(remoteAddr, remotePort);
+                socket = new Socket(remoteAddress, remotePort);
             } catch (IOException e) {
-                Log.i(TAG, "Couldn't open PORT data socket to: " + remoteAddr.toString()
+                Log.i(TAG, "Couldn't open PORT data socket to: " + remoteAddress.toString()
                         + ":" + remotePort);
                 clearState();
                 return null;
@@ -135,7 +135,7 @@ public class LocalDataSocket {
      */
     public int getPortNumber() {
         if (server != null) {
-            return server.getLocalPort(); // returns -1 if serversocket is unbound
+            return server.getLocalPort(); // returns -1 if server socket is unbound
         } else {
             return -1;
         }

@@ -40,7 +40,7 @@ import be.ppareit.swiftp.R;
  */
 public class MediaStoreHack {
 
-    private static final String ALBUM_ART_URI = "content://media/external/audio/albumart";
+    private static final String ALBUM_ART_URI = "content://media/external/audio/album art";
 
     private static final String[] ALBUM_PROJECTION = {
             BaseColumns._ID, MediaStore.Audio.AlbumColumns.ALBUM_ID, "media_type"
@@ -109,21 +109,21 @@ public class MediaStoreHack {
     public static Uri getUriFromFile(final String path, Context context) {
         ContentResolver resolver = context.getContentResolver();
 
-        Cursor filecursor = resolver.query(MediaStore.Files.getContentUri("external"),
+        Cursor fileCursor = resolver.query(MediaStore.Files.getContentUri("external"),
                 new String[]{BaseColumns._ID}, MediaStore.MediaColumns.DATA + " = ?",
                 new String[]{path}, MediaStore.MediaColumns.DATE_ADDED + " desc");
-        filecursor.moveToFirst();
+        fileCursor.moveToFirst();
 
-        if (filecursor.isAfterLast()) {
-            filecursor.close();
+        if (fileCursor.isAfterLast()) {
+            fileCursor.close();
             ContentValues values = new ContentValues();
             values.put(MediaStore.MediaColumns.DATA, path);
             return resolver.insert(MediaStore.Files.getContentUri("external"), values);
         } else {
-            int imageId = filecursor.getInt(filecursor.getColumnIndex(BaseColumns._ID));
+            int imageId = fileCursor.getInt(fileCursor.getColumnIndex(BaseColumns._ID));
             Uri uri = MediaStore.Files.getContentUri("external").buildUpon().appendPath(
                     Integer.toString(imageId)).build();
-            filecursor.close();
+            fileCursor.close();
             return uri;
         }
     }
@@ -137,7 +137,7 @@ public class MediaStoreHack {
         try {
             temporaryTrack = installTemporaryTrack(context);
         } catch (final IOException ex) {
-            Log.w("MediaFile", "Error installing tempory track.", ex);
+            Log.w("MediaFile", "Error installing temporary track.", ex);
             return 0;
         }
         final Uri filesUri = MediaStore.Files.getContentUri("external");
@@ -206,7 +206,7 @@ public class MediaStoreHack {
         if (externalFilesDir == null) {
             return null;
         }
-        final File temporaryTrack = new File(externalFilesDir, "temptrack.mp3");
+        final File temporaryTrack = new File(externalFilesDir, "temporary_track.mp3");
         if (!temporaryTrack.exists()) {
             InputStream in = null;
             OutputStream out = null;

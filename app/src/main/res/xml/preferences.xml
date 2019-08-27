@@ -20,23 +20,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="preference_screen">
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="running_switch"
-        android:summary="@string/running_summary_stopped"
-        android:title="@string/running_label" />
     <Preference
         android:key="market_version"
         android:summary="@string/market_version_summary"
         android:title="@string/market_version_label" />
-
     <PreferenceCategory
         android:key="settings"
         android:title="@string/settings_label">
-
-        <Preference
-            android:key="manage_users"
-            android:title="@string/manage_users_label" />
 
         <CheckBoxPreference
             android:defaultValue="@string/allow_anonymous_default"
@@ -44,38 +34,27 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:summary="@string/anonymous_summary"
             android:title="@string/allow_anonymous_label" />
 
-        <be.ppareit.android.DynamicMultiSelectListPreference
-            android:defaultValue="@array/empty_array"
-            android:entries="@array/empty_array"
-            android:entryValues="@array/empty_array"
-            android:key="autoconnect_preference"
-            android:summary="@string/autoconnect_summary"
-            android:title="@string/autoconnect_label" />
+        <Preference
+            android:key="manage_users"
+            android:title="@string/manage_users_label" />
 
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        <PreferenceScreen
             android:key="appearance_screen"
             android:title="@string/gui_settings_label">
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_notification_icon_preference"
+                android:summary="@string/show_notification_icon_summary"
+                android:title="@string/show_notification_icon" />
             <ListPreference
                 android:defaultValue="0"
                 android:entries="@array/pref_list_themes"
                 android:entryValues="@array/pref_list_themes_values"
                 android:key="theme"
                 android:title="@string/app_theme" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="show_notification_icon_preference"
-                android:summary="@string/show_notification_icon_summary"
-                android:title="@string/show_notification_icon" />
         </PreferenceScreen>
 
-
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-            android:title="@string/advanced_settings_label">
-            <EditTextPreference
-                android:defaultValue="@string/portnumber_default"
-                android:key="portNum"
-                android:title="@string/port_number_label" />
-
+        <PreferenceScreen android:title="@string/advanced_settings_label">
             <CheckBoxPreference
                 android:defaultValue="@string/wakelock_default"
                 android:key="stayAwake"
@@ -85,7 +64,21 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:defaultValue="@string/writeExternalStorage_default"
                 android:key="writeExternalStorage"
                 android:title="@string/writeExternalStorage_label" />
+
+            <EditTextPreference
+                android:defaultValue="@string/portnumber_default"
+                android:key="portNum"
+                android:title="@string/port_number_label" />
         </PreferenceScreen>
+
+
+        <be.ppareit.android.DynamicMultiSelectListPreference
+            android:defaultValue="@array/empty_array"
+            android:entries="@array/empty_array"
+            android:entryValues="@array/empty_array"
+            android:key="autoconnect_preference"
+            android:summary="@string/autoconnect_summary"
+            android:title="@string/autoconnect_label" />
 
     </PreferenceCategory>
 
@@ -99,5 +92,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:key="about"
             android:title="@string/about_label" />
     </PreferenceCategory>
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="running_switch"
+        android:summary="@string/running_summary_stopped"
+        android:title="@string/running_label" />
 
 </PreferenceScreen>

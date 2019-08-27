@@ -198,8 +198,8 @@ public abstract class FtpCmd implements Runnable {
 
     public boolean violatesChroot(File file) {
         try {
-            // taking the canonical path as new devices have sdcard symlinked
-            // for multiuser support
+            // taking the canonical path as new devices have sdcard symbolic linked
+            // for multi user support
             File chroot = sessionThread.getChrootDir();
             String canonicalChroot = chroot.getCanonicalPath();
             String canonicalPath = file.getCanonicalPath();
