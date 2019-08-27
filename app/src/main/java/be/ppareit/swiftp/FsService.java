@@ -29,6 +29,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -36,6 +37,8 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 import net.vrallev.android.cat.Cat;
 
@@ -51,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import be.ppareit.swiftp.gui.FsNotification;
 import be.ppareit.swiftp.server.SessionThread;
 import be.ppareit.swiftp.server.TcpListener;
 import lombok.val;
@@ -111,7 +115,8 @@ public class FsService extends Service implements Runnable {
         Context context = App.getAppContext();
         Intent serverService = new Intent(context, FsService.class);
         if (!FsService.isRunning()) {
-            context.startService(serverService);
+            //https://developer.android.com/about/versions/oreo/background
+            ContextCompat.startForegroundService(context, serverService);
         }
     }
 
@@ -141,6 +146,8 @@ public class FsService extends Service implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        startForeground(FsNotification.NOTIFICATION_ID, FsNotification.setupNotification(getApplicationContext()));
+
         //https://developer.android.com/reference/android/app/Service.html
         //if there are not any pending start commands to be delivered to the service, it will be called with a null intent object,
         if (intent != null && intent.getAction() != null) {

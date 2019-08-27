@@ -46,7 +46,6 @@ public class App extends Application {
         intentFilter.addAction(FsService.ACTION_STOPPED);
         intentFilter.addAction(FsService.ACTION_FAILEDTOSTART);
 
-        registerReceiver(new FsNotification(), intentFilter);
         registerReceiver(new AutoConnect.ServerActionsReceiver(), intentFilter);
         registerReceiver(new NsdService.ServerActionsReceiver(), intentFilter);
         registerReceiver(new FsWidgetProvider(), intentFilter);

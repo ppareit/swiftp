@@ -27,6 +27,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+
 import androidx.core.app.NotificationCompat;
 
 import net.vrallev.android.cat.Cat;
@@ -39,42 +40,24 @@ import be.ppareit.swiftp.R;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
-public class FsNotification extends BroadcastReceiver {
+public class FsNotification {
 
-    public final static String ACTION_UPDATE_NOTIFICATION = "be.ppareit.swiftp.ACTION_UPDATE_NOTIFICATION";
+    public static final int NOTIFICATION_ID = 7890;
 
-    private final int NOTIFICATION_ID = 7890;
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Cat.d("onReceive broadcast: " + intent.getAction());
-        switch (intent.getAction()) {
-            case FsNotification.ACTION_UPDATE_NOTIFICATION:
-                clearNotification(context);
-                setupNotification(context);
-                break;
-            case FsService.ACTION_STARTED:
-                setupNotification(context);
-                break;
-            case FsService.ACTION_STOPPED:
-                clearNotification(context);
-                break;
-        }
-    }
-
-    private void setupNotification(Context context) {
+    public static Notification setupNotification(Context context) {
         Cat.d("Setting up the notification");
         // Get NotificationManager reference
         NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         // get ip address
         InetAddress address = FsService.getLocalInetAddress();
+        String iptext;
         if (address == null) {
-            Cat.w("Unable to retrieve the local ip address");
-            return;
+            iptext = "-";
+        } else {
+            iptext = "ftp://" + address.getHostAddress() + ":"
+                    + FsSettings.getPortNumber() + "/";
         }
-        String iptext = "ftp://" + address.getHostAddress() + ":"
-                + FsSettings.getPortNumber() + "/";
 
         // Instantiate a Notification
         int icon = R.mipmap.notification;
@@ -133,17 +116,7 @@ public class FsNotification extends BroadcastReceiver {
                 .build();
 
         // Pass Notification to NotificationManager
-        nm.notify(NOTIFICATION_ID, notification);
-
-        Cat.d("Notification setup done");
+        return notification;
     }
 
-
-    private void clearNotification(Context context) {
-        Cat.d("Clearing the notifications");
-        String ns = NOTIFICATION_SERVICE;
-        NotificationManager nm = (NotificationManager) context.getSystemService(ns);
-        nm.cancelAll();
-        Cat.d("Cleared notification");
-    }
 }
