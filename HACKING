@@ -19,12 +19,6 @@ declaration would require a line wrap and when the
 context is clear and when the usage of the variable
 is close to the declaration.
 
-Retrolambda is being used to enable us to use
-the java 8 lambda construct. You should read up
-on this and then enjoy this in your own code. Java 8
-is coming to android, so this library will soon not be
-needed anymore. The code changes should be minimal.
-
 MAKING CHANGES
 ==============
 The code is released under the GPLv3, you might want to read
