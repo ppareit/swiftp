@@ -22,82 +22,13 @@ Waldemar Stoczkowski
 Changes in translations
 =======================
 
-For version 2.17.1
-    + use_english
-    + unable_to_start_mail_client
-
-For version 2.14.1
-    (Nothing needs to be done by the translators for this version)
-    * running_summary_failed_to_get_ip_address (used to be cant_get_url)
-    - unknown
-    - ok
-    - wifi_state_receiver_label
-    - pst_connecting
-    - pst_connected
-    - pst_failed
-    - pst_unreachable
-    - pst_disconnected
-
-For version 2.14
-    + app_copyright
-    + app_url
-    + about_license_title
-    + about_license_name
-    + about_license_url
-    + about_description_title
-    + about_description_text
-    + about_libraries_title
-    + about_contributor_title
-    + about_contributor_list
-    - about_dlg_title
-    - about_dlg_message
-
-For version 2.13.1
-    + demo_while_paid_dialog_title
-    + demo_while_paid_dialog_message
-
-For version 2.12
-    * swiftp_name        (For some language those strings
-    * swiftp_name_free    are better left alone, this is
-    * swiftp_name_demo    the string that is displayed in
-                          the launcher)
-
-For version 2.11
-	+ notif_settings_text
-	+ select
-	+ cancel
-	+ feedback
-	+ about
-	+ autoconnect_label
-	+ autoconnect_summary
-
-
-For version 2.10.2
-	+ swiftp_name_demo
-
-For version 2.10:
-	+ notif_stop_server
-	+ user_label
-	+ loginsettings_label
-	+ anonymous_label
-	+ allow_anonymous_label
-	+ anonymous_summary
-
-For version 2.8.2:
-	+ nsd_servername_postfix
-
-For version 2.7.1:
-	+ running_summary_started
-
-For version 2.7:
-	+ running_summary
-
+See file
+SwiFTP/app/src/main/res/values/strings.xml
 
 Help with translating
 =====================
-The changes are marked with a + (addition), - (removal) or * (change).
-The default file is in SwiFTP/res/values/strings.xml. If you would for instance
-translated to dutch, you would need to create a new file SwiFTP/res/values-nl/strings.xml
+The default file is in SwiFTP/app/src/main/res/values/strings.xml. If you would for instance
+translated to dutch, you would need to create a new file ../res/values-nl/strings.xml
 that file should contain the same contents as the default file, but the strings must be
 translated in dutch. The language codes are available at
 http://www.loc.gov/standards/iso639-2/php/code_list.php .
