@@ -113,10 +113,9 @@ public class FsService extends Service implements Runnable {
      */
     public static void start() {
         Context context = App.getAppContext();
-        Intent serverService = new Intent(context, FsService.class);
+        Intent serviceIntent = new Intent(context, FsService.class);
         if (!FsService.isRunning()) {
-            //https://developer.android.com/about/versions/oreo/background
-            ContextCompat.startForegroundService(context, serverService);
+            ContextCompat.startForegroundService(context, serviceIntent);
         }
     }
 

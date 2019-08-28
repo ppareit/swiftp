@@ -40,6 +40,7 @@ import android.widget.Toast;
 import net.vrallev.android.cat.Cat;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
+import static androidx.core.content.ContextCompat.startForegroundService;
 import static be.ppareit.android.BroadcastReceiverUtils.createBroadcastReceiver;
 
 /**
@@ -64,11 +65,7 @@ public class AutoConnect {
             context.stopService(autoConnectIntent);
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(autoConnectIntent);
-        } else {
-            context.startService(autoConnectIntent);
-        }
+        startForegroundService(context, autoConnectIntent);
     }
 
     public static class BackgroundService extends Service {
