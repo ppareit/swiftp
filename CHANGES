@@ -1,3 +1,13 @@
+Version 3.0 (2019/08/28)
+    * Get O, P, Q support by Timotheos Constambeys
+    * Performance improvements in reading and writing of files
+    * Stability improvements
+    * Improve play store support
+    + Show notification when AutoConnect is running (obligated by android)
+    + Polish language translation by Waldemar Stoczkowski
+    * Improve MFMT
+    * Fix REST support by Terry Hooper
+
 Version 2.19 (2018/10/31)
     + Allow writing to external sdcard (by j3l11234)
     + Multi user support (by Ashutosh Gangwar)
