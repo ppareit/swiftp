@@ -18,6 +18,9 @@
  ******************************************************************************/
 package be.ppareit.swiftp.gui;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -25,16 +28,23 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import net.vrallev.android.cat.Cat;
 
 import java.net.InetAddress;
 
+import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.R;
+
+import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
 /**
  * Simple widget for FTP Server.
@@ -52,13 +62,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
         final String action = intent.getAction();
         if (action.equals(FsService.ACTION_STARTED) || action.equals(FsService.ACTION_STOPPED)) {
             Intent updateIntent = new Intent(context, UpdateService.class);
-            try {
-                //IllegalStateException: not allowed to start service Intent when app is in background
-                context.startService(updateIntent);
-            } catch (Exception ex) {
-                //NEEDS TO BE FIXED
-                Log.e(FsWidgetProvider.TAG, ex.getMessage());
-            }
+            ContextCompat.startForegroundService(context, updateIntent);
         }
         super.onReceive(context, intent);
     }
@@ -68,8 +72,8 @@ public class FsWidgetProvider extends AppWidgetProvider {
                          int[] appWidgetIds) {
         Log.d(TAG, "updated called");
         // let the updating happen by a service
-        Intent intent = new Intent(context, UpdateService.class);
-        context.startService(intent);
+        Intent updateIntent = new Intent(context, UpdateService.class);
+        ContextCompat.startForegroundService(context, updateIntent);
     }
 
     public static class UpdateService extends Service {
@@ -77,6 +81,29 @@ public class FsWidgetProvider extends AppWidgetProvider {
         @Override
         public int onStartCommand(Intent intent, int flags, int startId) {
             Log.d(TAG, "UpdateService start command");
+            // We won't take long, but still we need to keep display a notification while updating
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            String channelId = "be.ppareit.swiftp.widget_provider.channelId";
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CharSequence name = "Update's the notification";
+                String description = "This notification checks if the FTP Server is running.";
+                int importance = NotificationManager.IMPORTANCE_NONE;
+                NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+                channel.setDescription(description);
+                nm.createNotificationChannel(channel);
+            }
+            Notification notification = new NotificationCompat.Builder(this)
+                    .setContentTitle("FTP Server")
+                    .setContentText("Widget provider background service")
+                    .setSmallIcon(R.mipmap.notification)
+                    .setOngoing(true)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                    .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                    .setPriority(NotificationCompat.PRIORITY_MIN)
+                    .setShowWhen(false)
+                    .setChannelId(channelId)
+                    .build();
+            startForeground(33, notification);
             // depending on whether or not the server is running, choose correct properties
             final String action;
             final int drawable;
@@ -97,10 +124,16 @@ public class FsWidgetProvider extends AppWidgetProvider {
                 drawable = R.drawable.widget_off;
                 text = getString(R.string.swiftp_name);
             }
-            Intent startIntent = new Intent(this, FsService.class);
+            Intent startIntent = new Intent(App.getAppContext(), FsService.class);
             startIntent.setAction(action);
-            PendingIntent pendingIntent = PendingIntent.getService(this, 0,
-                    startIntent, 0);
+            PendingIntent pendingIntent;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                pendingIntent = PendingIntent.getForegroundService(this, 0,
+                        startIntent, 0);
+            } else {
+                pendingIntent = PendingIntent.getService(this, 0,
+                        startIntent, 0);
+            }
             RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_layout);
             // setup the info on the widget
             views.setOnClickPendingIntent(R.id.widget_button, pendingIntent);
@@ -111,6 +144,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
             ComponentName widget = new ComponentName(this, FsWidgetProvider.class);
             manager.updateAppWidget(widget, views);
             // service has done it's work, android may kill it
+            stopSelf();
             return START_NOT_STICKY;
         }
 
@@ -118,5 +152,12 @@ public class FsWidgetProvider extends AppWidgetProvider {
         public IBinder onBind(Intent intent) {
             return null;
         }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            stopForeground(true);
+        }
     }
+
 }

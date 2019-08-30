@@ -1,0 +1,1335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 3.5">
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 16 (current min is 14): `android.app.Notification#PRIORITY_DEFAULT`">
+        <location
+            file="src/main/java/be/ppareit/swiftp/gui/FsNotification.java"
+            line="88"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 16 (current min is 14): `android.app.Notification#PRIORITY_MIN`">
+        <location
+            file="src/main/java/be/ppareit/swiftp/gui/FsNotification.java"
+            line="89"/>
+    </issue>
+
+    <issue
+        id="OldTargetApi"
+        message="Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the android.os.Build.VERSION_CODES javadoc for details.">
+        <location
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `banner` is only used in API level 21 and higher (current min is 14)">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="45"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `parentActivityName` is only used in API level 16 and higher (current min is 14)">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="62"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `parentActivityName` is only used in API level 16 and higher (current min is 14)">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="67"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `backgroundTint` is only used in API level 21 and higher (current min is 14)">
+        <location
+            file="src/main/res/layout/user_list_layout.xml"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="Untranslatable"
+        message="The resource string &quot;app_url&quot; is marked as translatable=&quot;false&quot;, but is translated to &quot;pl&quot; (Polish) here">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="136"/>
+    </issue>
+
+    <issue
+        id="Untranslatable"
+        message="The resource string &quot;about_license_url&quot; is marked as translatable=&quot;false&quot;, but is translated to &quot;pl&quot; (Polish) here">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="141"/>
+    </issue>
+
+    <issue
+        id="Untranslatable"
+        message="The resource string &quot;about_contributor_list&quot; is marked as translatable=&quot;false&quot;, but is translated to &quot;pl&quot; (Polish) here">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="150"/>
+    </issue>
+
+    <issue
+        id="ExportedReceiver"
+        message="Exported receiver does not require permission">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="111"/>
+    </issue>
+
+    <issue
+        id="AllowBackup"
+        message="On SDK version 23 and up, your app data will be automatically backed up and restored on app install. Consider adding the attribute `android:fullBackupContent` to specify an `@xml` resource which configures which files to backup. More info: https://developer.android.com/training/backup/autosyncapi.html">
+        <location
+            file="src/fdroid_free/AndroidManifest.xml"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="AllowBackup"
+        message="On SDK version 23 and up, your app data will be automatically backed up and restored on app install. Consider adding the attribute `android:fullBackupContent` to specify an `@xml` resource which configures which files to backup. More info: https://developer.android.com/training/backup/autosyncapi.html">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="WakelockTimeout"
+        message="Provide a timeout when requesting a wakelock with `PowerManager.Wakelock.acquire(long timeout)`. This will ensure the OS will cleanup any wakelocks that last longer than you intend, and will save your user&apos;s battery.">
+        <location
+            file="src/main/java/be/ppareit/swiftp/FsService.java"
+            line="336"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `?android:selectableItemBackground` with a theme that also paints a background (inferred theme is `@android:style/Theme.Holo`)">
+        <location
+            file="src/main/res/layout/widget_layout.xml"
+            line="5"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.colorPrimary` appears to be unused">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="3"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.colorPrimaryDark` appears to be unused">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="4"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.colorAccent` appears to be unused">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="5"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.chroot_default` appears to be unused">
+        <location
+            file="src/main/res/values/defaults.xml"
+            line="22"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.username_default` appears to be unused">
+        <location
+            file="src/main/res/values/defaults.xml"
+            line="23"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.password_default` appears to be unused">
+        <location
+            file="src/main/res/values/defaults.xml"
+            line="24"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.show_password_default` appears to be unused">
+        <location
+            file="src/main/res/values/defaults.xml"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.acceptwifi_default` appears to be unused">
+        <location
+            file="src/main/res/values/defaults.xml"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.notification` appears to be unused">
+        <location
+            file="src/main/res/drawable/notification.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.swiftp_name_demo` appears to be unused">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="25"/>
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="26"/>
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="25"/>
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="26"/>
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="26"/>
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="25"/>
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="24"/>
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="26"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.user_label` appears to be unused">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="43"/>
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="35"/>
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="41"/>
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="36"/>
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="44"/>
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="35"/>
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="37"/>
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="32"/>
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="43"/>
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="35"/>
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="37"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.login_settings_label` appears to be unused">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="44"/>
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="36"/>
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="42"/>
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="37"/>
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="45"/>
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="36"/>
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="38"/>
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="33"/>
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="44"/>
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="36"/>
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="38"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.show_password_label` appears to be unused">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="47"/>
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="39"/>
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="45"/>
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="40"/>
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="48"/>
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="39"/>
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="41"/>
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="36"/>
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="47"/>
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="39"/>
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="41"/>
+        <location
+            file="src/main/res/values-zh-rCN/strings.xml"
+            line="34"/>
+        <location
+            file="src/main/res/values-zh-rTW/strings.xml"
+            line="35"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.accept_wifi_label` appears to be unused">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="62"/>
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="45"/>
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="58"/>
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="46"/>
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="63"/>
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="45"/>
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="47"/>
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="42"/>
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="62"/>
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="45"/>
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="47"/>
+        <location
+            file="src/main/res/values-zh-rCN/strings.xml"
+            line="38"/>
+        <location
+            file="src/main/res/values-zh-rTW/strings.xml"
+            line="39"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.widget_name` appears to be unused">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="133"/>
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="86"/>
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="131"/>
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="114"/>
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="135"/>
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="90"/>
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="116"/>
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="92"/>
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="133"/>
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="104"/>
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="116"/>
+        <location
+            file="src/main/res/values-zh-rCN/strings.xml"
+            line="83"/>
+        <location
+            file="src/main/res/values-zh-rTW/strings.xml"
+            line="84"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.about_libraries_title` appears to be unused">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="148"/>
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="138"/>
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="121"/>
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="144"/>
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="123"/>
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="148"/>
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="123"/>
+    </issue>
+
+    <issue
+        id="TypographyDashes"
+        message="Replace &quot;-&quot; with an &quot;en dash&quot; character (–, &amp;#8211;) ?">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="116"/>
+    </issue>
+
+    <issue
+        id="TypographyDashes"
+        message="Replace &quot;-&quot; with an &quot;en dash&quot; character (–, &amp;#8211;) ?">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="118"/>
+    </issue>
+
+    <issue
+        id="TypographyDashes"
+        message="Replace &quot;-&quot; with an &quot;en dash&quot; character (–, &amp;#8211;) ?">
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="133"/>
+    </issue>
+
+    <issue
+        id="TypographyDashes"
+        message="Replace &quot;-&quot; with an &quot;en dash&quot; character (–, &amp;#8211;) ?">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="135"/>
+    </issue>
+
+    <issue
+        id="TypographyDashes"
+        message="Replace &quot;-&quot; with an &quot;en dash&quot; character (–, &amp;#8211;) ?">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="135"/>
+    </issue>
+
+    <issue
+        id="TypographyDashes"
+        message="Replace &quot;-&quot; with an &quot;en dash&quot; character (–, &amp;#8211;) ?">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="137"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="33"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-zh-rCN/strings.xml"
+            line="35"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="36"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="36"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="36"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-zh-rTW/strings.xml"
+            line="36"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="38"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="38"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="39"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-zh-rCN/strings.xml"
+            line="41"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-zh-rCN/strings.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-zh-rTW/strings.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-zh-rTW/strings.xml"
+            line="43"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="44"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="44"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="44"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-zh-rCN/strings.xml"
+            line="44"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="44"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="45"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="45"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-zh-rTW/strings.xml"
+            line="45"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="46"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="48"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="48"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="48"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="48"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="49"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="49"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="49"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="50"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="50"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="51"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="51"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="51"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="51"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="51"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="53"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="53"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="54"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="58"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="58"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="59"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="61"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="62"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="64"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="66"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="66"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="66"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="67"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="67"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="67"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="69"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="70"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="70"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="80"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="84"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="90"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="93"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="94"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="94"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="94"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-nl/strings.xml"
+            line="96"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ru/strings.xml"
+            line="109"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="111"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="111"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="113"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="116"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="126"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="128"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-sr/strings.xml"
+            line="128"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-el/strings.xml"
+            line="141"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="149"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="157"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="157"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="177"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="177"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="187"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="187"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/banner.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/banner.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/feature.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/feature.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/notification.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/notification.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/widget_off.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/widget_off.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/widget_on.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/widget_on.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: widget_on.png, launcher.png">
+        <location
+            file="src/main/res/mipmap-hdpi/launcher.png"/>
+        <location
+            file="src/main/res/drawable/widget_on.png"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="The view name (`@+id/user_edit_password`) suggests this is a password, but it does not include &apos;`textPassword`&apos; in the `inputType`">
+        <location
+            file="src/main/res/layout/user_edit_layout.xml"
+            line="24"/>
+        <location
+            file="src/main/res/layout/user_edit_layout.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src/main/res/layout/user_edit_layout.xml"
+            line="7"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="src/main/res/layout/user_edit_layout.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image">
+        <location
+            file="src/main/res/layout/about_layout.xml"
+            line="39"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image">
+        <location
+            file="src/main/res/layout/widget_layout.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="src/main/java/be/ppareit/swiftp/gui/AboutActivity.java"
+            line="37"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="src/main/java/be/ppareit/swiftp/gui/AboutActivity.java"
+            line="40"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Pieter Pareit&quot;, should use `@string` resource">
+        <location
+            file="src/main/res/layout/about_layout.xml"
+            line="82"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Set FTP Server state:&quot;, should use `@string` resource">
+        <location
+            file="src/main/res/layout/locale_edit_layout.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Running&quot;, should use `@string` resource">
+        <location
+            file="src/main/res/layout/locale_edit_layout.xml"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Stopped&quot;, should use `@string` resource">
+        <location
+            file="src/main/res/layout/locale_edit_layout.xml"
+            line="36"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Consider adding `android:layout_marginStart=&quot;5dp&quot;` to better support right-to-left layouts">
+        <location
+            file="src/main/res/layout/about_layout.xml"
+            line="131"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Consider adding `android:layout_marginStart=&quot;5dp&quot;` to better support right-to-left layouts">
+        <location
+            file="src/main/res/layout/about_layout.xml"
+            line="137"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Consider adding `android:layout_marginStart=&quot;5dp&quot;` to better support right-to-left layouts">
+        <location
+            file="src/main/res/layout/about_layout.xml"
+            line="151"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Consider adding `android:layout_marginStart=&quot;5dp&quot;` to better support right-to-left layouts">
+        <location
+            file="src/main/res/layout/about_layout.xml"
+            line="164"/>
+    </issue>
+
+    <issue
+        id="RtlEnabled"
+        message="The project references RTL attributes, but does not explicitly enable or disable RTL support with `android:supportsRtl` in the manifest">
+        <location
+            file="src/main/AndroidManifest.xml"/>
+    </issue>
+
+</issues>
