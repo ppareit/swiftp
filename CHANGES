@@ -1,3 +1,5 @@
+Version 3.0.1 (2019/08/30)
+    * Fix widget issues on Oreo
 Version 3.0 (2019/08/28)
     * Get O, P, Q support by Timotheos Constambeys
     * Performance improvements in reading and writing of files
@@ -7,7 +9,6 @@ Version 3.0 (2019/08/28)
     + Polish language translation by Waldemar Stoczkowski
     * Improve MFMT
     * Fix REST support by Terry Hooper
-
 Version 2.19 (2018/10/31)
     + Allow writing to external sdcard (by j3l11234)
     + Multi user support (by Ashutosh Gangwar)

@@ -9,8 +9,8 @@ android {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 30000
-        versionName "3.0"
+        versionCode 30001
+        versionName "3.0.1"
     }
     lintOptions {
         disable 'GoogleAppIndexingWarning'
