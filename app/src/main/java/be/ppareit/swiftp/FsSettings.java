@@ -45,6 +45,7 @@ public class FsSettings {
     private final static String TAG = FsSettings.class.getSimpleName();
 
     public static List<FtpUser> getUsers() {
+        final Context context = App.getAppContext();
         final SharedPreferences sp = getSharedPreferences();
         if (sp.contains("users")) {
             Gson gson = new Gson();
@@ -53,17 +54,17 @@ public class FsSettings {
             return gson.fromJson(sp.getString("users", null), listType);
         } else if (sp.contains("username")) {
             // on ftp server version < 2.19 we had username/password preference
-            String username = sp.getString("username", "ftp");
-            String password = sp.getString("password", "ftp");
+            String username = sp.getString("username", context.getString(R.string.username_default));
+            String password = sp.getString("password", context.getString(R.string.password_default));
             String chroot = sp.getString("chrootDir", "");
             if (username == null || password == null || chroot == null) {
-                username = "ftp";
-                password = "ftp";
+                username = context.getString(R.string.username_default);
+                password = context.getString(R.string.password_default);
                 chroot = "";
             }
             return new ArrayList<>(Collections.singletonList(new FtpUser(username, password, chroot)));
         } else {
-            val defaultUser = new FtpUser("ftp", "ftp", "\\");
+            val defaultUser = new FtpUser(context.getString(R.string.username_default), context.getString(R.string.password_default), "\\");
             return new ArrayList<>(Collections.singletonList(defaultUser));
         }
     }
