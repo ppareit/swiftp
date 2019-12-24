@@ -25,11 +25,19 @@ import java.io.IOException;
 import android.os.Build;
 import android.util.Log;
 
+import net.vrallev.android.cat.Cat;
+
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.utils.FileUtil;
 
+/**
+ * CmdRNTO implements RENAME TO (RNTO)
+ * This command specifies the new pathname of the file
+ * specified in the immediately preceding "rename from"
+ * command. Together the two commands cause a file to be
+ * renamed.
+ */
 public class CmdRNTO extends FtpCmd implements Runnable {
-    private static final String TAG = CmdRNTO.class.getSimpleName();
 
     protected String input;
 
@@ -40,15 +48,14 @@ public class CmdRNTO extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
-        Log.d(TAG, "RNTO executing");
+        Cat.d("RNTO executing");
         String param = getParameter(input);
         String errString = null;
         File toFile = null;
         mainblock:
         {
-            Log.i(TAG, "param: " + param);
             toFile = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
-            Log.i(TAG, "RNTO to file: " + toFile.getPath());
+            Cat.i("RNTO to file: " + toFile.getPath());
             if (violatesChroot(toFile)) {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;
@@ -58,7 +65,7 @@ public class CmdRNTO extends FtpCmd implements Runnable {
                 errString = "550 Rename error, maybe RNFR not sent\r\n";
                 break mainblock;
             }
-            Log.i(TAG, "RNTO from file: " + fromFile.getPath());
+            Cat.i("RNTO from file: " + fromFile.getPath());
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                 // TODO: this code is working around a bug that java6 and before cannot
@@ -98,11 +105,11 @@ public class CmdRNTO extends FtpCmd implements Runnable {
         }
         if (errString != null) {
             sessionThread.writeString(errString);
-            Log.i(TAG, "RNFR failed: " + errString.trim());
+            Cat.i("RNFR failed: " + errString.trim());
         } else {
             sessionThread.writeString("250 rename successful\r\n");
         }
         sessionThread.setRenameFrom(null);
-        Log.d(TAG, "RNTO finished");
+        Cat.d("RNTO finished");
     }
 }

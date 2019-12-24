@@ -173,11 +173,8 @@ public abstract class FileUtil {
         return !file.exists();
     }
 
-    private static boolean rename(File f, String name) {
-        String newPath = f.getParent() + "/" + name;
-        if (f.getParentFile().canWrite()) {
-            return f.renameTo(new File(newPath));
-        }
+    private static boolean rename(File source, File target) {
+        source.renameTo(target);
         return false;
     }
 
@@ -189,13 +186,14 @@ public abstract class FileUtil {
      * @return true if the copying was successful.
      */
     public static boolean moveFile(@NonNull final File source, @NonNull final File target, Context context) {
-        // First try the normal rename.
-        // First try the normal rename.
-        if (rename(source, target.getName())) {
-            return true;
-        }
+
         if (target.exists()) {
             return false;
+        }
+
+        // First try the normal rename.
+        if (rename(source, target)) {
+            return true;
         }
 
         // Try the Storage Access Framework if it is just a rename within the same parent folder.
@@ -214,13 +212,8 @@ public abstract class FileUtil {
             }
         }
 
-
-        String fileName = source.getName();
-        if (!copyFile(source, target, context)) {
-            return false;
-        }
-
-        if (!deleteFile(source, context)) {
+        // if all else failed, try to copy the file and delete the source file
+        if (!copyFile(source, target, context) || !deleteFile(source, context)) {
             return false;
         }
 
@@ -236,7 +229,7 @@ public abstract class FileUtil {
      */
     public static boolean renameFolder(@NonNull final File source, @NonNull final File target, Context context) {
         // First try the normal rename.
-        if (rename(source, target.getName())) {
+        if (rename(source, target)) {
             return true;
         }
         if (target.exists()) {
