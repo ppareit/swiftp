@@ -48,6 +48,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
 import net.vrallev.android.cat.Cat;
@@ -68,7 +69,9 @@ import lombok.val;
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
  */
-public class PreferenceFragment extends android.preference.PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class PreferenceFragment
+        extends android.preference.PreferenceFragment
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
     private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
@@ -122,8 +125,8 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
                 pref -> {
                     Cat.d("autoconnect populate listener");
 
-                    WifiManager wifiManager = (WifiManager)
-                            getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    val appContext = getActivity().getApplicationContext();
+                    val wifiManager = (WifiManager) appContext.getSystemService(Context.WIFI_SERVICE);
                     List<WifiConfiguration> configs = wifiManager.getConfiguredNetworks();
                     if (configs == null) {
                         Cat.e("Unable to receive wifi configurations, bark at user and bail");
@@ -150,21 +153,23 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
         mAutoconnectListPref.setOnPreferenceClickListener(preference -> {
             Cat.d("Clicked to open auto connect list preference");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                if (ActivityCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_DENIED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                            Manifest.permission.ACCESS_COARSE_LOCATION)) {
                         new AlertDialog.Builder(getContext())
                                 .setTitle(R.string.request_coarse_location_dlg_title)
                                 .setMessage(R.string.request_coarse_location_dlg_message)
-                                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, ACCESS_COARSE_LOCATION_REQUEST_CODE);
-                                })
+                                .setPositiveButton(android.R.string.ok,
+                                        (dialog, which) -> requestAccessCoarseLocationPermission())
                                 .setOnCancelListener(dialog -> {
                                     mAutoconnectListPref.getDialog().cancel();
                                 })
                                 .create()
                                 .show();
                     } else {
-                        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, ACCESS_COARSE_LOCATION_REQUEST_CODE);
+                        requestAccessCoarseLocationPermission();
                     }
                 }
             }
@@ -212,7 +217,8 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
             }
             if (portNumber <= 0 || 65535 < portNumber) {
                 Toast.makeText(getActivity(),
-                        R.string.port_validation_error, Toast.LENGTH_LONG).show();
+                        R.string.port_validation_error,
+                        Toast.LENGTH_LONG).show();
                 return false;
             }
             preference.setSummary(newPortNumberString);
@@ -290,10 +296,19 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void requestAccessCoarseLocationPermission() {
+        val permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION};
+        requestPermissions(permissions, ACCESS_COARSE_LOCATION_REQUEST_CODE);
+    }
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         if (requestCode == ACCESS_COARSE_LOCATION_REQUEST_CODE) {
-            if (permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION) && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+            if (permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 mAutoconnectListPref.getDialog().cancel();
             }
         }
@@ -334,18 +349,20 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
         if (requestCode == ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
             Uri treeUri = resultData.getData();
             String path = treeUri.getPath();
+            Cat.d("Action Open Document Tree on path " + path);
 
-            final CheckBoxPreference writeExternalStorage_pref = findPref("writeExternalStorage");
+            final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
             if (!":".equals(path.substring(path.length() - 1)) || path.contains("primary")) {
-                writeExternalStorage_pref.setChecked(false);
+                writeExternalStoragePref.setChecked(false);
             } else {
                 FsSettings.setExternalStorageUri(treeUri.toString());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    getActivity().getContentResolver().takePersistableUriPermission(treeUri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    getActivity().getContentResolver()
+                            .takePersistableUriPermission(treeUri,
+                                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 }
-                writeExternalStorage_pref.setChecked(true);
+                writeExternalStoragePref.setChecked(true);
             }
         }
     }

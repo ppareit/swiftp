@@ -27,8 +27,11 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,6 +45,11 @@ import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
+import lombok.val;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -57,11 +65,8 @@ public class MainActivity extends AppCompatActivity {
         setTheme(FsSettings.getTheme());
         super.onCreate(savedInstanceState);
 
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ||
-                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_CODE);
-            }
+        if (!haveReadWritePermissions()) {
+            requestReadWritePermissions();
         }
 
         if (App.isFreeVersion() && App.isPaidVersionInstalled()) {
@@ -79,8 +84,27 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
+    private boolean haveReadWritePermissions() {
+        if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return checkSelfPermission(READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED
+                    && checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED;
+        } else {
+            return true;
+        }
+    }
+
+    private void requestReadWritePermissions() {
+        if (VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return;
+        }
+        val permissions = new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE};
+        requestPermissions(permissions, PERMISSIONS_REQUEST_CODE);
+    }
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         if (requestCode != PERMISSIONS_REQUEST_CODE) {
             Cat.e("Unhandled request code");
             return;
@@ -90,8 +114,9 @@ public class MainActivity extends AppCompatActivity {
         if (grantResults.length > 0) {
             // Permissions not granted, close down
             for (int result : grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, R.string.unable_to_proceed_no_permissions, Toast.LENGTH_LONG).show();
+                if (result != PERMISSION_GRANTED) {
+                    Toast.makeText(this, R.string.unable_to_proceed_no_permissions,
+                            Toast.LENGTH_LONG).show();
                     finish();
                 }
             }
