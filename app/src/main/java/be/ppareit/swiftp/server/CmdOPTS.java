@@ -93,14 +93,14 @@ public class CmdOPTS extends FtpCmd implements Runnable {
                 Log.d(TAG, "Got OPTS MLST: " + optVal);
                 String[] opts = optVal.split(";");
                 boolean hasType = false, hasSize = false, hasModify = false, hasPerm = false;
-                for (int i = 0; i < opts.length; i++) {
-                    if(opts[i].equalsIgnoreCase("Type")){
+                for (String opt : opts) {
+                    if (opt.equalsIgnoreCase("Type")) {
                         hasType = true;
-                    } else if(opts[i].equalsIgnoreCase("Size")) {
+                    } else if (opt.equalsIgnoreCase("Size")) {
                         hasSize = true;
-                    } else if(opts[i].equalsIgnoreCase("Modify")) {
+                    } else if (opt.equalsIgnoreCase("Modify")) {
                         hasModify = true;
-                    } else if(opts[i].equalsIgnoreCase("Perm")) {
+                    } else if (opt.equalsIgnoreCase("Perm")) {
                         hasPerm = true;
                     }
                 }
