@@ -48,9 +48,10 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'net.vrallev.android:cat:1.0.5'
     compileOnly "org.projectlombok:lombok:1.16.12"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+	implementation "androidx.documentfile:documentfile:1.0.1"
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3'
     annotationProcessor 'org.projectlombok:lombok:1.16.12'
     implementation 'com.google.code.gson:gson:2.8.5'
