@@ -1,86 +1,185 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright 2011-2013 Pieter Pareit
 Copyright 2009 David Revell
-
 This file is part of SwiFTP.
-
 SwiFTP is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
-
 SwiFTP is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
 You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <resources>
+
     <string name="swiftp_name">FTP Server</string>
-    <string name="running_label">正在運行</string>
-    <string name="running_summary_stopped">開始 FTP server</string>
-    <string name="running_summary_started">FTP server 運行於 %s 端口</string>
-    <string name="running_summary_failed">FTP server 啟動失敗，您尚未連結到 Wi-Fi 或以太網路？</string>
-    <string name="market_version_label">市場版本</string>
-    <string name="market_version_summary">歡迎使用 FTP Server Demo 版本。
-        您可以通過在 Google Play 中購買 FTP Server 以支持開發者。
-		點擊此處跳轉至 Google Play 市場。</string>
+    <string name="swiftp_name_free">FTP Server (免費版本)</string>
+    <string name="swiftp_name_demo">FTP Server (示範版本)</string>
+    <string name="running_label">FTP Server</string>
+    <string name="running_summary_stopped">切換FTP伺服器的狀態</string>
+    <string name="running_summary_started">位於埠 %s</string>
+    <string name="running_summary_failed">
+        無法啟動FTP伺服器，是否未連接到本地網絡(Wi-Fi或乙太網路)？
+    </string>
+    <string name="running_summary_failed_to_get_ip_address">
+        無法啟動FTP伺服器，無法取得IP地址
+    </string>
+
+    <string name="market_version_label">商店版本</string>
+    <string name="market_version_summary">
+        這是FTP Server的示範版本。
+        請從Google Play 商店下載FTP Server以支援開發團隊。
+        按此前進商店。
+    </string>
     <string name="settings_label">設定</string>
-    <string name="username_label">用戶名</string>
+    <string name="user_label">用戶</string>
+    <string name="login_settings_label">登入設定...</string>
+    <string name="username_label">用戶名稱</string>
     <string name="password_label">密碼</string>
     <string name="show_password_label">顯示密碼</string>
-    <string name="advanced_settings_label">高級設定...</string>
-    <string name="port_number_label">端口號</string>
+    <string name="username_validation_error">
+        用戶名稱必須包含一個或以上的字母數字字符。
+        不允許使用其他字符。
+    </string>
+    <string name="password_validation_error">
+        密碼必須包含一個或以上的字母數字字符。
+        不允許使用其他字符。
+    </string>
+    <string name="allow_anonymous_label">允許匿名登入</string>
+    <string name="anonymous_summary">匿名登入功能僅允許讀取</string>
+    <string name="advanced_settings_label">進階設定...</string>
+    <string name="port_number_label">埠號</string>
+    <string name="port_validation_error">埠號必須在1到65535之間。</string>
     <string name="chroot_label">設為根目錄</string>
     <string name="accept_wifi_label">接受 Wi-Fi 連結</string>
-    <string name="wakelock_label">保持設備喚醒（最大 CPU 頻率）</string>
+    <string name="wakelock_label">禁止裝置睡眠 (高CPU速度)</string>
+    <string name="writeExternalStorage_label">寫入外部儲存</string>
     <string name="extra_label">其他</string>
     <string name="help_label">幫助...</string>
     <string name="about_label">關於...</string>
     <string name="help_dlg_title">FTP Server 幫助</string>
+    <!--string is too long to translate, when editing, split it in logical parts, see issue #105-->
     <string name="help_dlg_message">\
-感謝您使用 FTP Server (SwiFTP)！這裏有一些簡要的使用說明。更多
-使用信息您可登陸 http://ppareit.github.com/swiftp/ 查看。\n\n\
+非常感謝您使用 FTP Server (SwiFTP)！這裏有一些簡單的使用說明。您可
+以在 http://ppareit.github.com/swiftp/ 找到更多的使用說明。\n\n\
 \
-此項目允許您在 Android 設備中運行 FTP 服務器，這意味
-著當您開啟 FTP 服務的時候任何程式均可訪問您設備中的
-所有文件，例如在桌面端或筆記本的 Firefox 瀏覽器地址
-欄中輸入 \"ftp://...\" 即可瀏覽您設備中的所有文件。\n\n
+這個應用程式可使您在 Android 裝置中運行 FTP 伺服器。當您開啟 FTP 
+服務的時候任何程式可讀取您裝置上的所有檔案，例如說，只要在 Firefox 
+的網址列輸入 \'ftp://...\' 可以在桌上型電腦或膝上型電腦瀏覽裝置上
+的檔案。\n\n
 \
-在通常情況下，用戶名以及密碼均為 \"ftp\"，您應該在使用
-時修改它們，並且使用此用戶名以及密碼訪問此服務器。\n\n
+在預設情況下，用戶名稱和密碼都是 \'ftp\' ，在讀取伺服器時將會使用此
+用戶名稱和密碼，但您也應該更改它們。\n\n
 \
-在配置選項中的“保持設備喚醒”可以修復當設
-備休眠時傳輸速度緩慢或完全停止的問題，若
-您出現了此問題，請選中此復選框並重啟程式
-後重試。您的設備將在服務運行時保持喚醒。\n\n
+在設定中的其中一個選項 (\"禁止裝置睡眠\") 可解決檔案傳輸變慢或完全
+停止的問題，如果您的裝置有這個問題請選擇此選項並重啟程式。只要伺服器
+運行，您的電話就會保持喚醒狀態。\n\n
 \
-由於電源以及安全性方面原因，我們建議您在使用後關閉服務。\n\n\
+為了電源效能和安全，建議在使用伺服器後將其停止。\n\n\
 \
-如果沒有如您預期的那樣正常工作，請將其反饋
-至 Pieter Pareit(pieter.pareit@gmail.com)。\n\n\
+如果此應用程式無法正常地運作，請傳送錯誤回報至 Pieter Pareit 
+(pieter.pareit@gmail.com)。\n\n\
 \
-您可以通過在 Google Play 中購買支持此程式的付費版開源項目
-的後續開發。您可以訪問 https://github.com/ppareit/swiftp
-隨時查看並跟進開發進度，如果您有任何建議或想法，您可以訪問
+您可以在 Google Play 中購買此程式的付費版以支援此開源項目
+的後續開發。您可以到 https://github.com/ppareit/swiftp
+隨時查看並跟進開發進度，如果您有任何建議或想法，您可以到
 https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     </string>
 
+    <string name="notification_server_starting">於 %s 啟動</string>
+    <string name="notification_title">FTP Server 正在運行</string>
+    <string name="notification_text">位於 %s</string>
+    <string name="notification_stop_text">停止伺服器</string>
+
     <string name="nsd_servername_postfix">FTP Server</string>
 
-    <string name="notification_server_starting">啟動於 %s 端口</string>
-    <string name="notification_title">FTP Server 正在運行</string>
-    <string name="notification_text">服務運行於 %s 端口</string>
+    <string name="select">選擇</string>
+    <string name="cancel">取消</string>
 
-    <string name="running_summary_failed_to_get_ip_address">無法檢索 URL</string>
-    <string name="username_validation_error">用戶名至少需要包括一個或更多字符，不允許為空。</string>
-    <string name="password_validation_error">密碼至少需要包括一個或更多字符，不允許為空。</string>
-    <string name="port_validation_error">端口號必須在 1 至 65535 之間。</string>
-    <string name="storage_warning">警告：當前存儲暫不可用，您可能需要取消掛載。</string>
-    <string name="widget_name">FTP Server Widget</string>
+    <string name="feedback">傳送反饋</string>
+    <string name="about">關於</string>
+
+    <string name="autoconnect_label">自動連接設定...</string>
+    <string name="autoconnect_summary">選擇要自動連接的Wi-Fi網路</string>
+    <string name="autoconnect_error_enable_wifi_for_access_points">
+        啟動Wi-Fi以獲取存取點列表
+    </string>
+
+    <string name="demo_while_paid_dialog_title">
+        示範版本在安裝付費版本後啟動
+    </string>
+    <string name="demo_while_paid_dialog_message">
+        感謝您支援開發團隊！\n\n
+        您現在使用的是FTP Server的示範版本，付費版本已經安裝在您的裝置上。為了確保每一步的操作，我們請求您刪除示範版本，並啟動付費版本。
+    </string>
+
+    <string name="storage_warning">
+        警告：存儲空間不可用。您可能需要卸載它。
+    </string>
+
+
+    <!-- auto added strings by AS -->
+    <string name="widget_name">FTP Server 小工具</string>
+    <string name="notif_settings_text">設定</string>
+    <string name="app_copyright">版權所有 2012 - 2017</string>
+    <string name="app_url" translatable="false">
+        https://ppareit.github.io/swiftp/
+    </string>
+    <string name="about_license_title">授權條款</string>
+    <string name="about_license_name">GNU通用公眾特許條款第3版 (GNU GPL3)</string>
+    <string name="about_license_url" translatable="false">
+        https://www.gnu.org/licenses/gpl-3.0.en.html
+    </string>
+    <string name="about_description_title">說明</string>
+    <string name="about_description_text">
+        FTP Server (SwiFTP) 使您在Android裝置上能夠運行FTP伺服器。
+    </string>
+    <string name="about_libraries_title">函數庫</string>
+    <string name="about_contributor_title">貢獻者</string>
+    <string name="about_contributor_list" translatable="false">
+        Dave Revell, Alexander Friesen, tescott425, Peng Fei, MadMaverick9, j3l11234,
+        Sergey Kondakov, Tianhao Wu, Lorenzo M, Naofumi Fukue, Valerio Bozzolan,
+        Thomas Löwe, Mladen Pejaković, valentind44, Ashutosh Gangwar, Nicoss, Poussinou,
+        Timotheos Constambeys, chankruze, Waldemar Stoczkowski, Terry Hooper,
+        Birgit Niemegeers
+    </string>
+
+    <string name="app_theme">主題...</string>
+    <string name="dark_theme">暗色主題</string>
+    <string name="light_theme">亮色主題</string>
+    <string name="mixed_theme">混合主題</string>
+    <string name="unable_to_start_mail_client">無法啟動郵件用戶端以傳送反饋。</string>
+    <string name="use_english">請使用清晰英語來表達！</string>
+
+    <!-- since 2.18 -->
+    <string name="request_coarse_location_dlg_title">請求位置權限</string>
+    <string name="request_coarse_location_dlg_message">
+        知道當前存取點的應用程式可以推斷出設備的位置，因此需要位置權限。當伺服器連接到特定的Wi-Fi存取點時，並需要自動啟動伺服器，才需要此權限。當然，這個應用程式不使用位置資訊的。\n\n
+        如果您未允許此權限，這個應用程式仍能夠正常運行，只是無法使用自動連接功能。
+    </string>
+
+    <!-- since 2.19 -->
+    <string name="unable_to_proceed_no_permissions">沒有所需的權限，無法繼續，正在關閉</string>
+    <string name="manage_users_label">管理使用者...</string>
+    <string name="edit">編輯</string>
+    <string name="delete">刪除</string>
+    <string name="save">儲存</string>
+    <string name="user_exists_error">具有相同用戶名稱的用戶已經存在！</string>
+    <string name="confirm_delete_message">要刪除用戶 \'%1$s\'？</string>
+    <string name="notice_cant_read_write">請注意我們無法讀取/寫入此資料夾。</string>
+    <string name="notice_cant_write">請注意我們無法寫入此資料夾，但可以讀取。此資料夾內的子資料夾或可寫入。</string>
+    <string name="manage_users_no_users">沒有可用的用戶，請建立用戶。</string>
+    <string name="manage_users_multiple_users">多個用戶可用，參見清單。</string>
+    <string name="gui_settings_label">外觀...</string>
+    <string name="show_notification_icon_summary">當伺服器運行時顯示通知圖示</string>
+    <string name="show_notification_icon">顯示通知圖示</string>
+    <string name="auto_connect_stop_server_remove_from_list">
+        在連接到自動連接的Wi-Fi網絡時停止FTP伺服器。從設定中刪除此Wi-Fi網絡
+    </string>
+    <string name="write_external_storage_old_android_version_summary">在這些裝置上，可以使用檔案階層標準來使用所有存儲空間。</string>
 
 </resources>
