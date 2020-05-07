@@ -60,7 +60,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
         Log.v(TAG, "Received broadcast: " + intent.getAction());
         // watch for the broadcasts by the ftp server and update the widget if needed
         final String action = intent.getAction();
-        if (action.equals(FsService.ACTION_STARTED) || action.equals(FsService.ACTION_STOPPED)) {
+        if (FsService.ACTION_STARTED.equals(action) || FsService.ACTION_STOPPED.equals(action)) {
             Intent updateIntent = new Intent(context, UpdateService.class);
             ContextCompat.startForegroundService(context, updateIntent);
         }
@@ -83,6 +83,10 @@ public class FsWidgetProvider extends AppWidgetProvider {
             Log.d(TAG, "UpdateService start command");
             // We won't take long, but still we need to keep display a notification while updating
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            if (nm == null) {
+                Log.e(TAG, "We were unable to receive the notification manager.");
+                return START_NOT_STICKY;
+            }
             String channelId = "be.ppareit.swiftp.widget_provider.channelId";
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 CharSequence name = "Update's the notification";
