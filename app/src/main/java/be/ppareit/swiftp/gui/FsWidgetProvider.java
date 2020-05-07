@@ -30,7 +30,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
@@ -44,8 +43,6 @@ import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.R;
 
-import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
-
 /**
  * Simple widget for FTP Server.
  *
@@ -53,11 +50,9 @@ import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
  */
 public class FsWidgetProvider extends AppWidgetProvider {
 
-    private static final String TAG = FsWidgetProvider.class.getSimpleName();
-
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.v(TAG, "Received broadcast: " + intent.getAction());
+        Cat.v("Received broadcast: " + intent.getAction());
         // watch for the broadcasts by the ftp server and update the widget if needed
         final String action = intent.getAction();
         if (FsService.ACTION_STARTED.equals(action) || FsService.ACTION_STOPPED.equals(action)) {
@@ -70,7 +65,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager,
                          int[] appWidgetIds) {
-        Log.d(TAG, "updated called");
+        Cat.d("onUpdated called");
         // let the updating happen by a service
         Intent updateIntent = new Intent(context, UpdateService.class);
         ContextCompat.startForegroundService(context, updateIntent);
@@ -80,11 +75,11 @@ public class FsWidgetProvider extends AppWidgetProvider {
         // all real work is done in a service to avoid ANR messages
         @Override
         public int onStartCommand(Intent intent, int flags, int startId) {
-            Log.d(TAG, "UpdateService start command");
+            Cat.d("UpdateService start command");
             // We won't take long, but still we need to keep display a notification while updating
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             if (nm == null) {
-                Log.e(TAG, "We were unable to receive the notification manager.");
+                Cat.e("We were unable to receive the notification manager.");
                 return START_NOT_STICKY;
             }
             String channelId = "be.ppareit.swiftp.widget_provider.channelId";
