@@ -33,8 +33,9 @@ import java.util.Locale;
 
 import android.util.Log;
 
+import net.vrallev.android.cat.Cat;
+
 public class CmdLIST extends CmdAbstractListing implements Runnable {
-    static private final String TAG = CmdLIST.class.getSimpleName();
 
     // The approximate number of milliseconds in 6 months
     public final static long MS_IN_SIX_MONTHS = 6L * 30L * 24L * 60L * 60L * 1000L;
@@ -51,10 +52,10 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
 
         mainblock: {
             String param = getParameter(input);
-            Log.d(TAG, "LIST parameter: " + param);
+            Cat.d("LIST parameter: " + param);
             while (param.startsWith("-")) {
                 // Skip all dashed -args, if present
-                Log.d(TAG, "LIST is skipping dashed arg " + param);
+                Cat.d("LIST is skipping dashed arg " + param);
                 param = getParameter(param);
             }
             File fileToList = null;
@@ -94,9 +95,9 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
 
         if (errString != null) {
             sessionThread.writeString(errString);
-            Log.d(TAG, "LIST failed with: " + errString);
+            Cat.d("LIST failed with: " + errString);
         } else {
-            Log.d(TAG, "LIST completed OK");
+            Cat.d("LIST completed OK");
         }
         // The success or error response over the control connection will
         // have already been handled by sendListing, so we can just quit now.
@@ -109,7 +110,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
         StringBuilder response = new StringBuilder();
 
         if (!file.exists()) {
-            Log.i(TAG, "makeLsString had nonexistent file");
+            Cat.i("makeLsString had nonexistent file");
             return null;
         }
 
@@ -120,7 +121,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
         String lastNamePart = file.getName();
         // Many clients can't handle files containing these symbols
         if (lastNamePart.contains("*") || lastNamePart.contains("/")) {
-            Log.i(TAG, "Filename omitted due to disallowed character");
+            Cat.i("Filename omitted due to disallowed character");
             return null;
         } else {
             // The following line generates many calls in large directories
