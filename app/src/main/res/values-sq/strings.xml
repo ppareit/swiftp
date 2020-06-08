@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+Copyright 2011-2013 Pieter Pareit
+Copyright 2009 David Revell
+
+This file is part of SwiFTP.
+
+SwiFTP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SwiFTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="swiftp_name">FTP Server</string>
+    <string name="swiftp_name_free">FTP Server (Falas)</string>
+    <string name="swiftp_name_demo">FTP Server (Demonstrim)</string>
+    <string name="running_label">FTP Server</string>
+    <string name="running_summary_stopped">Ndryshoni gjendjen e serverit ftp</string>
+    <string name="running_summary_started">në %s</string>
+    <string name="running_summary_failed">
+        Dështoi te nis serverit FTP, nuk ka lidhje me rrjetin lokal (wifi ose ethernet)?
+    </string>
+    <string name="running_summary_failed_to_get_ip_address">
+        Dështoi në fillimin e serverit FTP, nuk esht e mundur të marrë adresën IP
+    </string>
+
+    <string name="market_version_label">Market version</string>
+    <string name="market_version_summary">
+         Ky është versioni Demo FTP Server.
+         Ndihmoni zhvillimin duke marrë FTP Server nga tregu android.
+         Klikoni këtu për të shkuar në treg.
+    </string>
+    <string name="settings_label">Cilësimet</string>
+    <string name="user_label">Përdorues</string>
+    <string name="login_settings_label">Parametrat e hyrjes...</string>
+    <string name="username_label">Emri</string>
+    <string name="password_label">Fjalëkalim</string>
+    <string name="show_password_label">Shfaq fjalëkalimin</string>
+    <string name="username_validation_error">
+        Emri i përdoruesit duhet të përbëhet nga 1 ose më shumë karaktere alfanumerike.
+         Asnjë karaktere tjetër nuk lejohet.
+    </string>
+    <string name="password_validation_error">
+        Fjalëkalimi i përdoruesit duhet të përbëhet nga 1 ose më shumë karaktere alfanumerike.
+         Asnjë karaktere tjetër nuk lejohet.
+    </string>
+    <string name="allow_anonymous_label">Lejo hyrjen anonime</string>
+    <string name="anonymous_summary">Hyrjet anonime lejohen vetëm me qasje për lexim</string>
+    <string name="advanced_settings_label">Cilësimet e përparuara ...</string>
+    <string name="port_number_label">Numri i Portit</string>
+    <string name="port_validation_error">Numri i portit duhet të jetë në intervalin 1 deri në 65535.</string>
+    <string name="chroot_label">Qëndroni në dosje</string>
+    <string name="accept_wifi_label">Pranoni lidhje nga wifi</string>
+    <string name="wakelock_label">Mbajeni zgjuar pajisjen (shpejtësia e plotë e CPU)</string>
+    <string name="writeExternalStorage_label">Shkrimi i ruajtjes së jashtme</string>
+    <string name="extra_label">Shtesë</string>
+    <string name="help_label">Ndihmë...</string>
+    <string name="about_label">Rreth...</string>
+    <string name="help_dlg_title">Ndihmë për serverin FTP</string>
+    <string name="help_dlg_message">\
+Faleminderit që përdorni FTP Server (SwiFTP)! Këtu janë disa udhëzime të shkurtra të përdorimit. më shumë
+informacionet mund të gjenden tek http://ppareit.github.com/swiftp/. \n \n\
+\
+Ky program ju lejon të ekzekutoni një server ftp në pajisjen tuaj android. Kjo do të thotë se çdo
+programi mund të hyjë në skedarët në pajisjen tuaj ndërsa serveri ftp po funksionon. Për shembull,
+hyrja \'ftp://…\' në shiritin url të Firefox do t\'ju lejojë të shfletoni skedarët në
+pajisje tuaj nga një kompjuter desktop ose një laptop. \n\n\
+\
+Si parazgjedhje, emri i përdoruesit dhe fjalëkalimi janë të dy \'ftp\', ju duhet t\'i ndryshoni ato. Ju përdorni
+këtë emër përdoruesi dhe fjalëkalimin kur hyrjen në server.\n\n\
+\
+Ekziston një mundësi konfigurimi (\ "mbaj zgjuar telefonin \") që rregullon një problem ku
+transferimet e skedarëve shkojnë ngadalë ose ndalen plotësisht kur telefoni fle. Nëse e keni këtë
+problem, kontrolloni këtë kuti dhe rinisni programin. Telefoni juaj do të qëndrojë zgjuar për aq kohë sa
+serveri po funksionon.\n\n\
+\
+Për arsye të fuqisë dhe sigurisë, rekomandohet që serveri të ndalet pas përdorimit.\n\n\
+\
+Nëse diçka nuk po funksionon ashtu siç e prisni, ju lutemi raportojeni tek Pieter Pareit
+(pieter.pareit@gmail.com).\n\n\
+\
+Zhvillimi i këtij programi me burim të hapur mbështetet duke blerë përmes këtij programi
+dyqani Google play. Mund ta ndiqni zhvillimin në https://github.com/ppareit/swiftp.
+Për të pasur një ide mbi tiparet që do të zbatohen, shikoni gjurmuesin e problemit në
+https://github.com/ppareit/swiftp/issues .\n\n
+    </string>
+
+    <string name="notification_server_starting">Duke filluar nga %s</string>
+    <string name="notification_title">FTP Server po funksionon</string>
+    <string name="notification_text">në %s</string>
+    <string name="notification_stop_text">Stop serveri</string>
+
+    <string name="nsd_servername_postfix">Serveri FTP</string>
+
+    <string name="select">Zgjidh</string>
+    <string name="cancel">Anulo</string>
+
+    <string name="feedback">Dërgoni reagime</string>
+    <string name="about">Rreth</string>
+
+    <string name="autoconnect_label">Cilësimet e automatizimit ...</string>
+    <string name="autoconnect_summary">Zgjidhni rrjetet wifi në të cilat do të lidhen automatikisht</string>
+    <string name="autoconnect_error_enable_wifi_for_access_points">
+        Aktivizoni wifi për të marrë listën e pikave të hyrjes
+    </string>
+
+    <string name="demo_while_paid_dialog_title">
+       Demo filloi ndërsa versioni me pagesë është i instaluar
+    </string>
+    <string name="demo_while_paid_dialog_message">
+        Faleminderit që përkrahët zhvillimin!\n\n
+         Po përpiqeni të filloni versionin demo ndërsa versioni i paguar
+         është i instaluar. Për të siguruar funksionimin optimal, ju kërkojmë të hiqni
+         versionin demo dhe filloni vetëm versionin e paguar.
+    </string>
+
+    <string name="storage_warning">
+       Paralajmërim: ruajtja nuk është në dispozicion. Ju mund të dëshironi ta çmontoni atë.
+    </string>
+
+
+
+    <string name="widget_name">Vegël e serverit FTP</string>
+    <string name="notif_settings_text">Cilësimet</string>
+    <string name="app_copyright">Të drejtat e autorit 2012 - 2017</string>
+    <string name="app_url" translatable="false">
+        https://ppareit.github.io/swiftp/
+    </string>
+    <string name="about_license_title">License</string>
+    <string name="about_license_name">GNU GPL3</string>
+    <string name="about_license_url" translatable="false">
+        https://www.gnu.org/licenses/gpl-3.0.en.html
+    </string>
+    <string name="about_description_title">Përshkrim</string>
+    <string name="about_description_text">
+        FTP Server (SwiFTP) ju lejon të ekzekutoni një server FTP në pajisjen tuaj Android.
+    </string>
+    <string name="about_libraries_title">Bibliotekat</string>
+    <string name="about_contributor_title">Kontribuesit</string>
+    <string name="about_contributor_list" translatable="false">
+        Dave Revell, Alexander Friesen, tescott425, Peng Fei, MadMaverick9, j3l11234,
+        Sergey Kondakov, Tianhao Wu, Lorenzo M, Naofumi Fukue, Valerio Bozzolan,
+        Thomas Löwe, Mladen Pejaković, valentind44, Ashutosh Gangwar, Nicoss, Poussinou,
+        Timotheos Constambeys, chankruze, Waldemar Stoczkowski, Terry Hooper,
+        Birgit Niemegeers
+    </string>
+
+    <string name="app_theme">Temë...</string>
+    <string name="dark_theme">Tema e errët</string>
+    <string name="light_theme">Tema e çelët</string>
+    <string name="mixed_theme">Tema e përzier</string>
+    <string name="unable_to_start_mail_client">E pamundur për të filluar klientin e postës për të dërguar reagime.</string>
+    <string name="use_english">Ju lutemi përdorni anglisht të qartë!</string>
+
+    <!-- since 2.18 -->
+    <string name="request_coarse_location_dlg_title">Kërkoni leje për vendndodhje</string>
+    <string name="request_coarse_location_dlg_message">
+      Një aplikacion që njeh pikën aktuale të hyrjes mund të nxjerrë vendndodhjen e pajisjes.
+         Si i tillë kërkohet leja e vendndodhjes. Kjo leje është e nevojshme vetëm nëse dëshironi
+         automatikisht filloni serverin nëse lidhet me një pikë të veçantë të hyrjes me WiFi.
+         Lessshtë e panevojshme të thuhet se ky aplikacion nuk përdor informacionin e vendndodhjes.\n\n
+        Nëse nuk e jepni këtë leje, aplikacioni do të funksionojë akoma,
+         thjesht nuk do të mund të lidhesh automatikisht.
+    </string>
+
+    <!-- since 2.19 -->
+    <string name="unable_to_proceed_no_permissions">E pamundur për të vazhduar pa lejet e nevojshme, mbyllja</string>
+    <string name="manage_users_label">Menaxhoni përdoruesit...</string>
+    <string name="edit">Redaktoj</string>
+    <string name="delete">Fshini</string>
+    <string name="save">Ruaj</string>
+    <string name="user_exists_error">Ekziston një përdorues tjetër me të njëjtin emër përdoruesi!</string>
+    <string name="confirm_delete_message">Fshij përdoruesin \'%1$s\'?</string>
+    <string name="notice_cant_read_write">Vini re se ne nuk mund të lexojmë/shkruajmë në këtë dosje.</string>
+    <string name="notice_cant_write">Vini re se ne nuk mund të shkruajmë në këtë dosje, leximi do të funksionojë. Shkrimi në nën dosje mund të funksionojë.</string>
+    <string name="manage_users_no_users">Asnjë përdorues në dispozicion, krijoni një përdorues.</string>
+    <string name="manage_users_multiple_users">Shumë përdorues të disponueshëm, shihni listën.</string>
+    <string name="gui_settings_label">Paraqitja...</string>
+    <string name="show_notification_icon_summary">Trego ikonën e njoftimit ndërsa serveri po funksionon</string>
+    <string name="show_notification_icon">Shfaq ikonën e njoftimit</string>
+    <string name="auto_connect_stop_server_remove_from_list">
+        Ndalimi i serverit FTP ndërsa ishte i lidhur me një rrjet wifi me të cilin automatikisht jemi lidhur. Heqja e këtij rrjeti wifi nga preferencat
+    </string>
+    <string name="write_external_storage_old_android_version_summary">Në këto pajisje, e gjithë dyqani është në dispozicion duke përdorur hierarkinë e skedarit.</string>
+
+</resources>
