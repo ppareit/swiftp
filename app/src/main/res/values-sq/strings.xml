@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-Copyright 2011-2013 Pieter Pareit
-Copyright 2009 David Revell
+Të drejtat e autorit 2011-2013 Pieter Pareit
+Të drejtat e autorit 2009 David Revell
 
-This file is part of SwiFTP.
+Kjo skedar është pjesë e SwiFTP.
 
-SwiFTP is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+SwiFTP është softuer falas: ju mund ta rishpërndani atë dhe / ose modifikoni
+nën kushtet e licencës së përgjithshme publike të GNU-së ashtu siç është botuar nga
+Fondacioni i Softuerit të Lirë, qoftë versioni 3 i licencës, ose
+(sipas opsionit tuaj) çdo version i mëvonshëm.
 
 SwiFTP is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+but WITHOUT ANY WARRANTY; pa as garancinë e nënkuptuar të
+SHITJES apo PËRDORIMIT PËR NJË QËLLIM TË CAKTUAR.Shihni
+Licencë e Përgjithshme Publike GNU për më shumë detaje.
 
-You should have received a copy of the GNU General Public License
-along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+Ju duhet të keni marrë një kopje të licencës së përgjithshme publike të GNU
+së bashku me SwiFTP. Nëse jo, shihni <http://www.gnu.org/licenses/>.
 -->
+
+
 
 <resources>
 
