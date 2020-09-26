@@ -62,7 +62,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                     android:layout_gravity="center"
                     android:layout_margin="5dp"
                     android:contentDescription="@+id/app_name"
-                    android:src="@mipmap/launcher" />
+                    android:src="@mipmap/ic_launcher" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

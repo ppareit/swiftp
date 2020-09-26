@@ -44,7 +44,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:allowBackup="true"
         android:banner="@drawable/banner"
         android:requestLegacyExternalStorage="true"
-        android:icon="@mipmap/launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/swiftp_name">
 
         <activity
@@ -80,7 +80,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <receiver
             android:name="be.ppareit.swiftp.gui.FsWidgetProvider"
             android:exported="false"
-            android:icon="@mipmap/launcher"
+            android:icon="@mipmap/ic_launcher"
             android:label="@string/swiftp_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
