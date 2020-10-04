@@ -27,6 +27,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_summary_stopped">Cambiar el estado del servidor FTP</string>
     <string name="running_summary_started">en %s</string>
     <string name="running_summary_failed">Fallo al iniciar el servidor FTP. ¿Hay conexión con la red local (Wi\u2011Fi o Ethernet)?</string>
+    <string name="running_summary_failed_to_get_ip_address">
+        Failed to start the FTP server, unable to get IP address
+    </string>
+
     <string name="market_version_label">Versión de pago</string>
     <string name="market_version_summary">
         Esta es una versión de demostración.
@@ -38,13 +42,19 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="username_label">Nombre de usuario</string>
     <string name="password_label">Contraseña</string>
     <string name="show_password_label">Mostrar contraseña</string>
+    <string name="username_validation_error">El usuario debe tener uno o más caracteres alfanuméricos. El resto de caracteres no están permitidos.</string>
+
+    <string name="password_validation_error">La contraseña debe tener uno o más caracteres alfanuméricos. El resto de caracteres no están permitidos.</string>
+
     <string name="allow_anonymous_label">Permitir acceso anónimo</string>
     <string name="anonymous_summary">El acceso anónimo solo tiene permisos de lectura</string>
     <string name="advanced_settings_label">Ajustes avanzados\u2026</string>
     <string name="port_number_label">Número de puerto</string>
+    <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
     <string name="chroot_label">Carpeta de inicio</string>
     <string name="accept_wifi_label">Aceptar conexión desde Wi\u2011Fi</string>
     <string name="wakelock_label">Mantener encendido (máxima velocidad de CPU)</string>
+    <string name="writeExternalStorage_label">Writing external storage</string>
     <string name="extra_label">Otros</string>
     <string name="help_label">Ayuda\u2026</string>
     <string name="about_label">Acerca de\u2026</string>
@@ -105,23 +115,56 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
         solo ejecutes la versión de pago.
     </string>
     
-    <string name="running_summary_failed_to_get_ip_address">Imposible obtener url</string>
-    <string name="username_validation_error">El usuario debe tener uno o más caracteres alfanuméricos. El resto de caracteres no están permitidos.</string>
-    <string name="password_validation_error">La contraseña debe tener uno o más caracteres alfanuméricos. El resto de caracteres no están permitidos.</string>
-    <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
     <string name="storage_warning">Aviso: Almacenamiento no disponible. Puede que quieras desmontarlo.</string>
 
     <string name="widget_name">Widget FTP Server</string>
     <string name="notif_settings_text">Ajustes</string>
     <string name="app_copyright">Copyright 2012 - 2017</string>
+
     <string name="about_license_title">Licencia</string>
     <string name="about_license_name">GNU GPL3</string>
     <string name="about_description_title">Descripción</string>
     <string name="about_description_text">FTP Server (SwiFTP) te permite ejecutar un servidor FTP en tu dispositivo Android.</string>
-    <string name="about_libraries_title">Librerías</string>
+    <string name="about_libraries_title">Bibliotecas</string>
     <string name="about_contributor_title">Colaboradores</string>
     <string name="dark_theme">Tema oscuro</string>
     <string name="light_theme">Tema ligero</string>
     <string name="mixed_theme">Tema mixto</string>
     <string name="app_theme">Tema...</string>
+
+
+    <string name="unable_to_start_mail_client">No se puede iniciar el cliente de correo para enviar opinión.</string>
+    <string name="use_english">¡Utiliza un inglés claro!</string>
+
+    <!-- since 2.18 -->
+    <string name="request_coarse_location_dlg_title">Solicitar permiso para la ubicación</string>
+    <string name="request_coarse_location_dlg_message">
+        Una aplicación que conoce el punto de acceso actual puede deducir la ubicación del dispositivo.
+        Como tal, se necesita el permiso de ubicación. Este permiso solo es necesario si deseas
+        iniciar automáticamente el servidor si se conecta a un punto de acceso wifi en particular.
+        No hace falta decir que esta aplicación no usa la información de ubicación.\n\n
+        Si no concedes este permiso, la aplicación seguirá funcionando. Simplemente, no podrá conectarse automáticamente.
+    </string>
+
+    <!-- since 2.19 -->
+    <string name="unable_to_proceed_no_permissions">No se puede continuar sin los permisos necesarios, cerrando</string>
+    <string name="manage_users_label">Administrar usuarios...</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Borrar</string>
+    <string name="save">Guardar</string>
+    <string name="user_exists_error">¡Ya existe otro usuario con el mismo nombre de usuario!</string>
+    <string name="confirm_delete_message">Borrar usuario \'%1$s\'?</string>
+    <string name="notice_cant_read_write">Ten en cuenta que no podemos leer/escribir en esta carpeta.</string>
+    <string name="notice_cant_write">Tendrás en cuenta que no podemos escribir en esta carpeta, la lectura de esta funcionará. Escribir en subcarpetas podría funcionar.</string>
+    <string name="manage_users_no_users">No hay usuarios disponibles, crea un usuario.</string>
+    <string name="manage_users_multiple_users">Varios usuarios disponibles, mira la lista.</string>
+    <string name="gui_settings_label">Apariencia...</string>
+    <string name="show_notification_icon_summary">Mostrar el icono de notificación mientras el servidor se está ejecutando</string>
+    <string name="show_notification_icon">Mostrar el icono de notificación</string>
+    <string name="auto_connect_stop_server_remove_from_list">
+        Detener el servidor FTP mientras estamos conectados a una red wifi a la que nos conectamos automáticamente. Eliminar esta red wifi de las preferencias
+    </string>
+    <string name="write_external_storage_old_android_version_summary">En estos dispositivos, toda lo guardado está disponible utilizando la jerarquía de archivos.</string>
+
 </resources>
+
