@@ -89,4 +89,6 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
     <string name="mixed_theme">Gemischtes Thema</string>
     <string name="app_theme">Thema...</string>
 
+    <string name="boot_auto_start_label">Permitir inicio de arranque</string>
+    <string name="boot_auto_start">Iniciar automáticamente después de arrancar Android</string>
 </resources>

@@ -124,4 +124,7 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="light_theme">Tema ligero</string>
     <string name="mixed_theme">Tema mixto</string>
     <string name="app_theme">Tema...</string>
+
+    <string name="boot_auto_start_label">Allow After Boot startup</string>
+    <string name="boot_auto_start">Automatically start after booting android</string>
 </resources>

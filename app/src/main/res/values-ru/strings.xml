@@ -108,4 +108,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Смешанная тема</string>
     <string name="app_theme">Тема...</string>
 
+    <string name="boot_auto_start_label">Allow After Boot startup</string>
+    <string name="boot_auto_start">Automatically start after booting android</string>
 </resources>

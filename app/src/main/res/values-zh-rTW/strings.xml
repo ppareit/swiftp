@@ -182,4 +182,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     </string>
     <string name="write_external_storage_old_android_version_summary">在這些裝置上，可以使用檔案階層標準來使用所有存儲空間。</string>
 
+    <string name="boot_auto_start_label">Allow After Boot startup</string>
+    <string name="boot_auto_start">Automatically start after booting android</string>
 </resources>

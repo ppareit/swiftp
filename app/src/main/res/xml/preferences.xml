@@ -44,6 +44,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:summary="@string/anonymous_summary"
             android:title="@string/allow_anonymous_label" />
 
+        <CheckBoxPreference
+            android:defaultValue="@string/start_after_boot"
+            android:key="allow_start_after_boot"
+            android:summary="@string/boot_auto_start"
+            android:title="@string/boot_auto_start_label" />
+
         <be.ppareit.android.DynamicMultiSelectListPreference
             android:defaultValue="@array/empty_array"
             android:entries="@array/empty_array"
