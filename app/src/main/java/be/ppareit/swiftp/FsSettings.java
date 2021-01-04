@@ -112,6 +112,11 @@ public class FsSettings {
         return sp.getBoolean("allow_anonymous", false);
     }
 
+    public static boolean allowAfterBootStart() {
+        final SharedPreferences sp = getSharedPreferences();
+        return sp.getBoolean("allow_start_after_boot", false);
+    }
+
     public static File getDefaultChrootDir() {
         File chrootDir;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {

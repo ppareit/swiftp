@@ -127,4 +127,6 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="mixed_theme">混合テーマ</string>
     <string name="app_theme">テーマ...</string>
 
+    <string name="boot_auto_start_label">Allow After Boot startup</string>
+    <string name="boot_auto_start">Automatically start after booting android</string>
 </resources>

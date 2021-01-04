@@ -95,4 +95,6 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Gemengd thema</string>
     <string name="app_theme">Thema...</string>
 
+    <string name="boot_auto_start_label">Allow After Boot startup</string>
+    <string name="boot_auto_start">Automatically start after booting android</string>
 </resources>
