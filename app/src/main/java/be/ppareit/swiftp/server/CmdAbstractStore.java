@@ -69,7 +69,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
 
             try {
                 if (storeFile.exists()) {
-                    if (!append) {
+                    if (!append && sessionThread.offset < 0) {
                         if (!FileUtil.deleteFile(storeFile, App.getAppContext())) {
                             errString = "451 Couldn't truncate file\r\n";
                             break storing;
@@ -84,11 +84,23 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 out = FileUtil.getOutputStream(storeFile, App.getAppContext());
 
                 //file
-                if (sessionThread.offset <= 0) {
-                    out.getChannel().position(storeFile.length());
-                } else {
-                    out.getChannel().position(sessionThread.offset);
-                    sessionThread.offset = -1;
+                if(out == null){
+                    errString = "451 Couldn't open file \"" + param + "\" aka \""
+                            + storeFile.getCanonicalPath() + "\" for writing\r\n";
+                    break storing;
+                }
+                try {
+                    if (sessionThread.offset < 0) {
+                        out.getChannel().position(storeFile.length());
+                    } else {
+                        out.getChannel().position(sessionThread.offset);
+                        sessionThread.offset = -1;
+                    }
+                }
+                catch (NullPointerException e){
+                    errString = "451 Couldn't open file \"" + param + "\" aka \""
+                            + storeFile.getCanonicalPath() + "\" for writing. Failed to create output stream.\r\n";
+                    break storing;
                 }
 
             } catch (FileNotFoundException e) {
