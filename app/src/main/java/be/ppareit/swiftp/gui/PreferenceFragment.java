@@ -30,9 +30,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,17 +46,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
 
 import net.vrallev.android.cat.Cat;
 
 import java.net.InetAddress;
-import java.util.List;
-import java.util.Set;
 
 import be.ppareit.android.DynamicMultiSelectListPreference;
 import be.ppareit.swiftp.App;
-import be.ppareit.swiftp.AutoConnect;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
@@ -69,9 +62,7 @@ import lombok.val;
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
  */
-public class PreferenceFragment
-        extends android.preference.PreferenceFragment
-        implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class PreferenceFragment extends android.preference.PreferenceFragment {
 
     private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
     private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
@@ -117,89 +108,6 @@ public class PreferenceFragment
         updateUsersPref();
         manageUsersPref.setOnPreferenceClickListener((preference) -> {
             startActivity(new Intent(getActivity(), ManageUsersActivity.class));
-            return true;
-        });
-
-        mAutoconnectListPref = findPref("autoconnect_preference");
-        mAutoconnectListPref.setOnPopulateListener(
-                pref -> {
-                    Cat.d("autoconnect populate listener");
-
-                    val appContext = getActivity().getApplicationContext();
-                    val wifiManager = (WifiManager) appContext.getSystemService(Context.WIFI_SERVICE);
-                    List<WifiConfiguration> configs = wifiManager.getConfiguredNetworks();
-                    if (configs == null) {
-                        Cat.e("Unable to receive wifi configurations, bark at user and bail");
-                        Toast.makeText(getActivity(),
-                                R.string.autoconnect_error_enable_wifi_for_access_points,
-                                Toast.LENGTH_LONG)
-                                .show();
-                        return;
-                    }
-                    CharSequence[] ssids = new CharSequence[configs.size()];
-                    CharSequence[] niceSsids = new CharSequence[configs.size()];
-                    for (int i = 0; i < configs.size(); ++i) {
-                        ssids[i] = configs.get(i).SSID;
-                        String ssid = configs.get(i).SSID;
-                        if (ssid.length() > 2 && ssid.startsWith("\"") && ssid.endsWith("\"")) {
-                            ssid = ssid.substring(1, ssid.length() - 1);
-                        }
-                        niceSsids[i] = ssid;
-                    }
-                    pref.setEntries(niceSsids);
-                    pref.setEntryValues(ssids);
-                    pref.setValues(FsSettings.getAutoConnectList());
-                });
-        mAutoconnectListPref.setOnPreferenceClickListener(preference -> {
-            Cat.d("Clicked to open auto connect list preference");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ActivityCompat.checkSelfPermission(getContext(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION)
-                        == PackageManager.PERMISSION_DENIED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                            Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                        new AlertDialog.Builder(getContext())
-                                .setTitle(R.string.request_coarse_location_dlg_title)
-                                .setMessage(R.string.request_coarse_location_dlg_message)
-                                .setPositiveButton(android.R.string.ok,
-                                        (dialog, which) -> requestAccessCoarseLocationPermission())
-                                .setOnCancelListener(dialog -> {
-                                    mAutoconnectListPref.getDialog().cancel();
-                                })
-                                .create()
-                                .show();
-                    } else {
-                        requestAccessCoarseLocationPermission();
-                    }
-                }
-            }
-            return false;
-        });
-        mAutoconnectListPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            Cat.d("Changed auto connect list preference");
-
-            Set<String> oldList = FsSettings.getAutoConnectList();
-            Set<?> newList = (Set<?>) newValue;
-
-            Cat.d("Old List: " + oldList + " New List: " + newList);
-
-            WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext()
-                    .getSystemService(Context.WIFI_SERVICE);
-            if (wifiManager == null) {
-                return true;
-            }
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            if (wifiInfo == null) {
-                Cat.e("Null wifi info received, bailing");
-                return true;
-            }
-            Cat.d("We are connected to " + wifiInfo.getSSID());
-            if (newList.contains(wifiInfo.getSSID())) {
-                FsService.start();
-            }
-            if (oldList.contains(wifiInfo.getSSID()) && !newList.contains(wifiInfo.getSSID())) {
-                FsService.stop();
-            }
             return true;
         });
 
@@ -327,9 +235,6 @@ public class PreferenceFragment
         filter.addAction(FsService.ACTION_STOPPED);
         filter.addAction(FsService.ACTION_FAILEDTOSTART);
         getActivity().registerReceiver(mFsActionsReceiver, filter);
-
-        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -338,9 +243,6 @@ public class PreferenceFragment
 
         Cat.v("onPause: Unregistering the FTPServer actions");
         getActivity().unregisterReceiver(mFsActionsReceiver);
-
-        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -364,17 +266,6 @@ public class PreferenceFragment
                 }
                 writeExternalStoragePref.setChecked(true);
             }
-        }
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        switch (key) {
-            // The AutoConnect service must be started or stopped depending if there are
-            // networks to monitor or not.
-            case "autoconnect_preference":
-                AutoConnect.maybeStartService(App.getAppContext());
-                break;
         }
     }
 

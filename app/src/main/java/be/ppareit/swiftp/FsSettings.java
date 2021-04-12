@@ -146,19 +146,6 @@ public class FsSettings {
         return sp.getBoolean("stayAwake", false);
     }
 
-    public static Set<String> getAutoConnectList() {
-        SharedPreferences sp = getSharedPreferences();
-        return sp.getStringSet("autoconnect_preference", new TreeSet<>());
-    }
-
-    public static void removeFromAutoConnectList(final String ssid) {
-        Set<String> autoConnectList = getAutoConnectList();
-        autoConnectList.remove(ssid);
-        val editor = getSharedPreferences().edit();
-        editor.remove("autoconnect_preference").apply(); // work around bug in android
-        editor.putStringSet("autoconnect_preference", autoConnectList).apply();
-    }
-
     public static int getTheme() {
         SharedPreferences sp = getSharedPreferences();
         String theme = sp.getString("theme", "0");

@@ -72,11 +72,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <service android:name="be.ppareit.swiftp.NsdService" />
 
-        <service android:name=".AutoConnect$BackgroundService" />
-
-        <service android:name="be.ppareit.swiftp.AutoConnect$StartServerService" />
-        <service android:name="be.ppareit.swiftp.AutoConnect$StopServerService" />
-
         <receiver
             android:name="be.ppareit.swiftp.gui.FsWidgetProvider"
             android:exported="false"

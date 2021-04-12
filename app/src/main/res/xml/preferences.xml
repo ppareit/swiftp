@@ -44,14 +44,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:summary="@string/anonymous_summary"
             android:title="@string/allow_anonymous_label" />
 
-        <be.ppareit.android.DynamicMultiSelectListPreference
-            android:defaultValue="@array/empty_array"
-            android:entries="@array/empty_array"
-            android:entryValues="@array/empty_array"
-            android:key="autoconnect_preference"
-            android:summary="@string/autoconnect_summary"
-            android:title="@string/autoconnect_label" />
-
         <PreferenceScreen
             android:key="appearance_screen"
             android:title="@string/gui_settings_label">
