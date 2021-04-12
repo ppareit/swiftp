@@ -2,13 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
 
-    compileSdkVersion 29
-    buildToolsVersion '29.0.2'
+    compileSdkVersion 30
 
     defaultConfig {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 14
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 30100
         versionName "3.1"
     }
@@ -54,7 +53,7 @@ dependencies {
     implementation 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3'
     compileOnly 'org.projectlombok:lombok:1.18.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.jetbrains:annotations:15.0'
 }
 
