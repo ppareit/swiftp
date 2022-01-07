@@ -24,10 +24,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="swiftp_name_free">FTP Server (Free)</string>
     <string name="swiftp_name_demo">FTP Server (Demo)</string>
     <string name="running_label">FTP Server</string>
-    <string name="running_summary_stopped">Toggle the state of the ftp server</string>
+    <string name="running_summary_stopped">Toggle the state of the FTP server</string>
     <string name="running_summary_started">at %s</string>
     <string name="running_summary_failed">
-        Failed to start the FTP server, not connected to the local network (wifi or ethernet)?
+        Failed to start the FTP server, not connected to the local network (Wi-Fi or Ethernet)?
     </string>
     <string name="running_summary_failed_to_get_ip_address">
         Failed to start the FTP server, unable to get IP address
@@ -41,7 +41,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     </string>
     <string name="settings_label">Settings</string>
     <string name="user_label">User</string>
-    <string name="login_settings_label">Login settings...</string>
+    <string name="login_settings_label">Login settings…</string>
     <string name="username_label">Username</string>
     <string name="password_label">Password</string>
     <string name="show_password_label">Display password</string>
@@ -55,16 +55,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     </string>
     <string name="allow_anonymous_label">Allow anonymous login</string>
     <string name="anonymous_summary">Anonymous logins are only allowed read access</string>
-    <string name="advanced_settings_label">Advanced settings...</string>
+    <string name="advanced_settings_label">Advanced settings…</string>
     <string name="port_number_label">Port Number</string>
     <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
     <string name="chroot_label">Stay in folder</string>
-    <string name="accept_wifi_label">Accept connection from wifi</string>
+    <string name="accept_wifi_label">Accept connection from Wi-Fi</string>
     <string name="wakelock_label">Keep device awake (full CPU speed)</string>
     <string name="writeExternalStorage_label">Writing external storage</string>
     <string name="extra_label">Extra</string>
-    <string name="help_label">Help...</string>
-    <string name="about_label">About...</string>
+    <string name="help_label">Help…</string>
+    <string name="about_label">About…</string>
     <string name="help_dlg_title">FTP Server Help</string>
     <!--string is too long to translate, when editing, split it in logical parts, see issue #105-->
     <string name="help_dlg_message">\
@@ -73,10 +73,10 @@ information can be found at http://ppareit.github.com/swiftp/.\n\n\
 \
 This program allows you to run an ftp server on your android device. This means that any
 program can access the files on your device while the ftp server is running. For example,
-entering \'ftp://...\' in the firefox url bar will allow you to browse the files on your
+entering \"ftp://...\" in the firefox url bar will allow you to browse the files on your
 device from a desktop pc or a laptop.\n\n
 \
-By default, the user name and password are both \'ftp\', you should change them. You use
+By default, the user name and password are both \"ftp\", you should change them. You use
 this username and password when accessing the server.\n\n
 \
 There is a configuration option (\"keep phone awake\") that fixes a problem where
@@ -108,10 +108,10 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Send feedback</string>
     <string name="about">About</string>
 
-    <string name="autoconnect_label">Autoconnect settings...</string>
-    <string name="autoconnect_summary">Select the wifi networks on which to autoconnect</string>
+    <string name="autoconnect_label">Autoconnect settings…</string>
+    <string name="autoconnect_summary">Select the Wi-Fi networks on which to autoconnect</string>
     <string name="autoconnect_error_enable_wifi_for_access_points">
-        Enable wifi to get list of access points
+        Enable Wi-Fi to get list of access points
     </string>
 
     <string name="demo_while_paid_dialog_title">
@@ -125,7 +125,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
 
     <string name="storage_warning">
-        Warning: storage is not available. You may want to unmount it.
+        Warning: Storage is not available. You may want to unmount it.
     </string>
 
 
@@ -143,7 +143,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="about_description_title">Description</string>
     <string name="about_description_text">
-        FTP Server (SwiFTP) allows you to run an ftp server on your android device.
+        FTP Server (SwiFTP) allows you to run an FTP server on your android device.
     </string>
     <string name="about_libraries_title">Libraries</string>
     <string name="about_contributor_title">Contributors</string>
@@ -155,7 +155,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
         Birgit Niemegeers
     </string>
 
-    <string name="app_theme">Theme...</string>
+    <string name="app_theme">Theme…</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="light_theme">Light Theme</string>
     <string name="mixed_theme">Mixed Theme</string>
@@ -167,29 +167,29 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="request_coarse_location_dlg_message">
         An application that knows the current access point can deduce the location of the device.
         As such the location permission is needed. This permission is only needed if you want to
-        automatically start the server if it connects to a particular wifi access point.
+        automatically start the server if it connects to a particular Wi-Fi access point.
         Needless to say that this application does not use the location information.\n\n
-        If you don\'t grant this permission, the app will still work,
-        you just won\'t be able to automatically connect.
+        If you don not grant this permission, the app will still work,
+        you just won not be able to automatically connect.
     </string>
 
     <!-- since 2.19 -->
     <string name="unable_to_proceed_no_permissions">Unable to proceed without the needed permissions, shutting down</string>
-    <string name="manage_users_label">Manage users...</string>
+    <string name="manage_users_label">Manage users…</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="save">Save</string>
     <string name="user_exists_error">Another user with same username already exists!</string>
-    <string name="confirm_delete_message">Delete user \'%1$s\'?</string>
-    <string name="notice_cant_read_write">Notice that we can\'t read/write in this folder.</string>
-    <string name="notice_cant_write">Notice that we can\'t write in this folder, reading will work. Writing in sub folders might work.</string>
+    <string name="confirm_delete_message">Delete user \"%1$s\"?</string>
+    <string name="notice_cant_read_write">Notice that we can not read/write in this folder.</string>
+    <string name="notice_cant_write">Notice that we can not write in this folder, reading will work. Writing in sub folders might work.</string>
     <string name="manage_users_no_users">No users available, create a user.</string>
     <string name="manage_users_multiple_users">Multiple users available, see list.</string>
-    <string name="gui_settings_label">Appearance...</string>
+    <string name="gui_settings_label">Appearance…</string>
     <string name="show_notification_icon_summary">Show the notification icon while the server is running</string>
     <string name="show_notification_icon">Show notification icon</string>
     <string name="auto_connect_stop_server_remove_from_list">
-        Stopping FTP Server while connected to a wifi network we automatically connected to. Removing this wifi network from the preferences
+        Stopping FTP Server while connected to a Wi-Fi network we automatically connected to. Removing this Wi-Fi network from the preferences.
     </string>
     <string name="write_external_storage_old_android_version_summary">On these devices, all store is available using the file hierarchy.</string>
 

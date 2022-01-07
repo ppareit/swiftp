@@ -24,10 +24,10 @@ wraz z SwiFTP. Jeśli nie, zobacz <http://www.gnu.org/licenses/>.
     <string name="swiftp_name_free">FTP Server (Darmowy)</string>
     <string name="swiftp_name_demo">FTP Server (Demo)</string>
     <string name="running_label">FTP Server</string>
-    <string name="running_summary_stopped">Przełącz stan serwera ftp</string>
+    <string name="running_summary_stopped">Przełącz stan serwera FTP</string>
     <string name="running_summary_started">na %s</string>
     <string name="running_summary_failed">
-        Nie udało się uruchomić serwera FTP, nie połączono z siecią lokalną (wifi lub ethernet)?
+        Nie udało się uruchomić serwera FTP, nie połączono z siecią lokalną (Wi-Fi lub Ethernet)?
     </string>
     <string name="running_summary_failed_to_get_ip_address">
         Nie można uruchomić serwera FTP, nie można uzyskać adresu IP
@@ -41,7 +41,7 @@ wraz z SwiFTP. Jeśli nie, zobacz <http://www.gnu.org/licenses/>.
     </string>
     <string name="settings_label">Ustawienia</string>
     <string name="user_label">Użytkownik</string>
-    <string name="login_settings_label">Ustawienia logowania...</string>
+    <string name="login_settings_label">Ustawienia logowania…</string>
     <string name="username_label">Nazwa użytkownika</string>
     <string name="password_label">Hasło</string>
     <string name="show_password_label">Wyświetl hasło</string>
@@ -55,16 +55,16 @@ wraz z SwiFTP. Jeśli nie, zobacz <http://www.gnu.org/licenses/>.
     </string>
     <string name="allow_anonymous_label">Zezwól na anonimowe logowanie</string>
     <string name="anonymous_summary">Logowanie anonimowe jest dozwolone tylko do odczytu</string>
-    <string name="advanced_settings_label">Ustawienia zaawansowane...</string>
+    <string name="advanced_settings_label">Ustawienia zaawansowane…</string>
     <string name="port_number_label">Numer portu</string>
     <string name="port_validation_error">Numer portu musi być z zakresu od 1 do 65535.</string>
-    <string name="chroot_label">Pozostań w folderze</string>
-    <string name="accept_wifi_label">Zaakceptuj połączenie z wifi</string>
+    <string name="chroot_label">Pozostań w katalogu</string>
+    <string name="accept_wifi_label">Zaakceptuj połączenie z Wi-Fi</string>
     <string name="wakelock_label">Utrzymuj urządzenie w stanie czuwania (pełna prędkość procesora)</string>
     <string name="writeExternalStorage_label">Zapisywanie w pamięci zewnętrznej</string>
     <string name="extra_label">Dodatkowe</string>
-    <string name="help_label">Pomoc...</string>
-    <string name="about_label">O FTP Server...</string>
+    <string name="help_label">Pomoc…</string>
+    <string name="about_label">O FTP Server…</string>
     <string name="help_dlg_title">Pomoc FTP Server</string>
     <!--string is too long to translate, when editing, split it in logical parts, see issue #105-->
     <string name="help_dlg_message">\
@@ -73,10 +73,10 @@ informacji można znaleźć na stronie http://ppareit.github.com/swiftp/.\n\n\
 \
 Ten program pozwala na uruchomienie serwera ftp na urządzeniu z systemem Android. Oznacza to, że każdy
 program może uzyskiwać dostęp do plików na twoim urządzeniu podczas działania serwera ftp. Na przykład, 
-wchodząc \'ftp://...\' na pasku url firefox pozwoli ci przeglądać pliki na twoim 
+wchodząc \"ftp://...\" na pasku url firefox pozwoli ci przeglądać pliki na twoim 
 urządzenie z komputera stacjonarnego lub laptopa.\n\n
 \
-Domyślnie zarówno nazwa użytkownika, jak i hasło to \'ftp\', powinieneś je zmienić. Używasz 
+Domyślnie zarówno nazwa użytkownika, jak i hasło to \"ftp\", powinieneś je zmienić. Używasz 
 tej nazwy użytkownika i hasła podczas uzyskiwania dostępu do serwera.\n\n
 \
 Dostępna jest również opcja konfiguracji (\"utrzymuj telefon w stanie czuwania\"), która rozwiązuje problem, gdy
@@ -108,7 +108,7 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Prześlij opinię</string>
     <string name="about">O FTP Server</string>
 
-    <string name="autoconnect_label">Ustawienia automatycznego łączenia...</string>
+    <string name="autoconnect_label">Ustawienia automatycznego łączenia…</string>
     <string name="autoconnect_summary">Wybierz sieci Wi-Fi, w których chcesz się łączyć automatycznie</string>
     <string name="autoconnect_error_enable_wifi_for_access_points">
         Włącz Wi-Fi, aby uzyskać listę punktów dostępu
@@ -125,7 +125,7 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     </string>
 
     <string name="storage_warning">
-        Ostrzeżenie: pamięć jest niedostępna. Może ją odłączyłeś.
+        Ostrzeżenie: Pamięć jest niedostępna. Może ją odłączyłeś.
     </string>
 
 
@@ -143,7 +143,7 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="about_description_title">Opis</string>
     <string name="about_description_text">
-        FTP Server (SwiFTP) pozwala na uruchomienie serwera ftp na urządzeniu z systemem Androidem.
+        FTP Server (SwiFTP) pozwala na uruchomienie serwera FTP na urządzeniu z systemem Androidem.
     </string>
     <string name="about_libraries_title">Biblioteki</string>
     <string name="about_contributor_title">Współtwórcy</string>
@@ -154,15 +154,15 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
         Birgit Niemegeers
     </string>
 
-    <string name="app_theme">Wygląd...</string>
+    <string name="app_theme">Wygląd…</string>
     <string name="dark_theme">Ciemny</string>
     <string name="light_theme">Jasny</string>
     <string name="mixed_theme">Mieszany</string>
     <string name="unable_to_start_mail_client">Nie można uruchomić klienta poczty, aby wysłać opinię.</string>
-    <string name="use_english">Proszę użyć czystego angielskiego!</string>
+    <string name="use_english">Użyj czystego angielskiego!</string>
 
     <!-- since 2.18 -->
-    <string name="request_coarse_location_dlg_title">Poprosić o zezwolenie na lokalizację</string>
+    <string name="request_coarse_location_dlg_title">Poproś o pozwolenie na lokalizację</string>
     <string name="request_coarse_location_dlg_message">
         Aplikacja, która zna bieżący punkt dostępu, może określić lokalizację urządzenia.
         W związku z tym potrzebne jest pozwolenie na lokalizację. Zezwolenie to jest potrzebne tylko, jeśli chcesz
@@ -174,21 +174,21 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
 
     <!-- since 2.19 -->
     <string name="unable_to_proceed_no_permissions">Nie można kontynuować bez wymaganych uprawnień, zamykam</string>
-    <string name="manage_users_label">Zarządzaj użytkownikami...</string>
+    <string name="manage_users_label">Zarządzaj użytkownikami…</string>
     <string name="edit">Edytuj</string>
     <string name="delete">Usuń</string>
     <string name="save">Zapisz</string>
     <string name="user_exists_error">Inny użytkownik o tej samej nazwie już istnieje!</string>
-    <string name="confirm_delete_message">Usuń użytkownika \'%1$s\'?</string>
-    <string name="notice_cant_read_write">Nie można odczytać/zapisać w tym folderze.</string>
-    <string name="notice_cant_write">Nie można zapisać w tym folderze, odczytywanie będzie działać. Zapisanie w podfolderach może działać.</string>
+    <string name="confirm_delete_message">Usuń użytkownika \"%1$s\"?</string>
+    <string name="notice_cant_read_write">Nie można odczytać/zapisać w tym katalogu.</string>
+    <string name="notice_cant_write">Nie można zapisać w tym katalogu, odczytywanie będzie działać. Zapisywanie w podkatalogach może działać.</string>
     <string name="manage_users_no_users">Brak użytkowników, utwórz użytkownika.</string>
     <string name="manage_users_multiple_users">Dostępnych jest wielu użytkowników, patrz lista.</string>
-    <string name="gui_settings_label">Prezentacja...</string>
+    <string name="gui_settings_label">Wygląd…</string>
     <string name="show_notification_icon_summary">Pokaż ikonę powiadomienia podczas działania serwera</string>
     <string name="show_notification_icon">Pokaż ikonę powiadomienia</string>
     <string name="auto_connect_stop_server_remove_from_list">
-        Zatrzymywanie serwera FTP połączonego z siecią Wi-Fi, z którą łączyłeś się automatycznie. Usuwanie tej sieci Wi-Fi z preferencji
+        Zatrzymywanie serwera FTP połączonego z siecią Wi-Fi, z którą łączyłeś się automatycznie. Usuwanie tej sieci Wi-Fi z preferencji.
     </string>
     <string name="write_external_storage_old_android_version_summary">Na tych urządzeniach cały sklep jest dostępny przy użyciu hierarchii plików.</string>
 
