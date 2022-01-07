@@ -96,16 +96,74 @@ https://github.com/ppareit/swiftp/issues .\n\n
         Для отримання списку мереж увімкніть wifi
     </string>
 
+    <string name="demo_while_paid_dialog_title">
+        Демо розпочато, коли встановлено платну версію
+    </string>
+    <string name="demo_while_paid_dialog_message">
+        Дякуємо за підтримку розробки!\n\n
+        Ви намагаєтеся запустити демо-версію в той час як встановлена платна версія.
+        Щоб забезпечити оптимальну роботу, ми просимо вас видалити
+        демо-версію і запустити лише платну версію.
+    </string>
+
+    <string name="storage_warning">
+        Попередження: сховище недоступне. Ви можете відключити його.
+    </string>
+
+    <!-- auto added strings by AS -->
+    <string name="widget_name">FTP Server Widget</string>
+    <string name="notif_settings_text">Налаштування</string>
+    <string name="about_license_title">Ліцензія</string>
+    <string name="about_description_title">Опис</string>
+    <string name="about_description_text">
+        FTP-сервер (SwiFTP) дозволяє запустити ftp-сервер на вашому пристрої Android.
+    </string>
+    <string name="about_libraries_title">Бібліотеки</string>
+    <string name="about_contributor_title">Співавтори</string>
+
     <string name="running_summary_failed_to_get_ip_address">Не вдається отримати URL</string>
     <string name="username_validation_error">Ім\'я користувача має складатися з одного або кількох буквено-цифрових символів. Жодні інші символи не допускаються.</string>
     <string name="password_validation_error">Пароль повинен складатися з одного або більше буквено-цифрових символів. Жодні інші символи не допускаються.</string>
     <string name="port_validation_error">Номер порту повинен мати значення від 1 до 65 535.</string>
-    <string name="storage_warning">Попередження: носій недоступний. Можливо, Ви хотіли від\'єднати його.</string>
-    <string name="widget_name">FTP Server Widget</string>
-    <string name="notif_settings_text">Налаштування</string>
+
+    <string name="app_theme">Тема...</string>
     <string name="dark_theme">Темна тема</string>
     <string name="light_theme">Світла тема</string>
     <string name="mixed_theme">Змішана тема</string>
-    <string name="app_theme">Тема...</string>
+
+    <string name="unable_to_start_mail_client">Не вдається запустити поштовий клієнт для надсилання відгуку.</string>
+    <string name="use_english">Будь ласка, використовуйте зрозумілу англійську!</string>
+
+    <!-- since 2.18 -->
+    <string name="request_coarse_location_dlg_title">Запит дозволу для розташування</string>
+    <string name="request_coarse_location_dlg_message">
+        Програма, яка знає поточну точку доступу, може визначити місцезнаходження пристрою.
+        Тому потрібен дозвіл на місцезнаходження. Цей дозвіл потрібен лише в тому випадку, якщо ви цього хочете
+        автоматично запускати сервер, якщо він підключається до певної точки доступу Wi-Fi.
+        Зайве говорити, що ця програма не використовує інформацію про місцезнаходження.\n\n
+        Якщо ви не надасте цей дозвіл, програма все одно працюватиме,
+        ви просто не зможете автоматично підключитися.
+    </string>
+
+    <!-- since 2.19 -->
+    <string name="unable_to_proceed_no_permissions">Неможливо продовжити без потрібних дозволів, вихід</string>
+    <string name="manage_users_label">Керування користувачами...</string>
+    <string name="edit">Редагувати</string>
+    <string name="delete">Видалити</string>
+    <string name="save">Зберегти</string>
+    <string name="user_exists_error">Інший користувач із таким самим іменем вже існує!</string>
+    <string name="confirm_delete_message">Видалити користувача \'%1$s\'?</string>
+    <string name="notice_cant_read_write">Зверніть увагу, що не можливо читати/записувати в цій директорії.</string>
+    <string name="notice_cant_write">Зверніть увагу, що ми не можливо записувати в цю директорію, читання працюватиме. Запис у піддиректорії може працювати.</string>
+    <string name="manage_users_no_users">Відсутні доступні користувачі, створіть користувача.</string>
+    <string name="manage_users_multiple_users">Доступно кілька користувачів, дивіться список.</string>
+    <string name="gui_settings_label">Зовнішній вигляд...</string>
+    <string name="show_notification_icon_summary">Показувати значок сповіщення під час роботи сервера</string>
+    <string name="show_notification_icon">Показати значок сповіщення</string>
+    <string name="auto_connect_stop_server_remove_from_list">
+        Зупинка FTP-сервера під час підключення до мережі Wi-Fi, до якої ми автоматично підключилися. Видалення цієї мережі Wi-Fi з налаштувань
+    </string>
+    <string name="write_external_storage_old_android_version_summary">На цих пристроях вся пам\'ять доступна за допомогою ієрархії файлів.</string>
+
 
 </resources>
