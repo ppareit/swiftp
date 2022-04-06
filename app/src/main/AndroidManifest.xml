@@ -49,7 +49,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <activity
             android:name="be.ppareit.swiftp.gui.MainActivity"
-            android:theme="@style/AppThemeDark">
+            android:theme="@style/AppThemeDark"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -116,7 +117,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:name=".gui.FsTileService"
             android:icon="@mipmap/ic_qs_ftp_server"
             android:label="@string/swiftp_name"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
