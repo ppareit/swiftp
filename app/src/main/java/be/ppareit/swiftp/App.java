@@ -20,17 +20,13 @@ package be.ppareit.swiftp;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;
 
 import net.vrallev.android.cat.Cat;
 
-import be.ppareit.swiftp.gui.FsNotification;
 import be.ppareit.swiftp.gui.FsWidgetProvider;
-import lombok.val;
 
 public class App extends Application {
 
@@ -83,7 +79,7 @@ public class App extends Application {
     public static boolean isPackageInstalled(String packageName) {
         try {
             Context context = getAppContext();
-            val packageManager = context.getPackageManager();
+            PackageManager packageManager = context.getPackageManager();
             packageManager.getPackageInfo(packageName, 0);
         } catch (NameNotFoundException e) {
             return false;

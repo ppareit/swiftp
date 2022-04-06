@@ -19,23 +19,23 @@
 
 package be.ppareit.swiftp.gui;
 
-import android.Manifest;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import net.vrallev.android.cat.Cat;
 
@@ -45,11 +45,6 @@ import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
-import lombok.val;
-
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -97,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         if (VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return;
         }
-        val permissions = new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE};
+        String[] permissions = new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE};
         requestPermissions(permissions, PERMISSIONS_REQUEST_CODE);
     }
 

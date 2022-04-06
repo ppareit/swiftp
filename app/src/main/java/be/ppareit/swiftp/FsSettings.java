@@ -34,11 +34,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import be.ppareit.swiftp.server.FtpUser;
-import lombok.val;
 
 public class FsSettings {
 
@@ -64,13 +61,13 @@ public class FsSettings {
             }
             return new ArrayList<>(Collections.singletonList(new FtpUser(username, password, chroot)));
         } else {
-            val defaultUser = new FtpUser(context.getString(R.string.username_default), context.getString(R.string.password_default), "\\");
+            FtpUser defaultUser = new FtpUser(context.getString(R.string.username_default), context.getString(R.string.password_default), "\\");
             return new ArrayList<>(Collections.singletonList(defaultUser));
         }
     }
 
     public static FtpUser getUser(String username) {
-        for (val user : getUsers()) {
+        for (FtpUser user : getUsers()) {
             if (user.getUsername().equals(username))
                 return user;
         }
@@ -81,19 +78,19 @@ public class FsSettings {
         if (getUser(user.getUsername()) != null) {
             throw new IllegalArgumentException("User already exists");
         }
-        val sp = getSharedPreferences();
+        SharedPreferences sp = getSharedPreferences();
         Gson gson = new Gson();
-        val userList = getUsers();
+        List<FtpUser> userList = getUsers();
         userList.add(user);
         sp.edit().putString("users", gson.toJson(userList)).apply();
     }
 
     public static void removeUser(String username) {
-        val sp = getSharedPreferences();
+        SharedPreferences sp = getSharedPreferences();
         Gson gson = new Gson();
-        val users = getUsers();
-        val found = new ArrayList<FtpUser>();
-        for (val user : users) {
+        List<FtpUser> users = getUsers();
+        ArrayList<FtpUser> found = new ArrayList<>();
+        for (FtpUser user : users) {
             if (user.getUsername().equals(username)) {
                 found.add(user);
             }
@@ -167,7 +164,7 @@ public class FsSettings {
     }
 
     public static boolean showNotificationIcon() {
-        val sp = getSharedPreferences();
+        SharedPreferences sp = getSharedPreferences();
         return sp.getBoolean("show_notification_icon_preference", true);
     }
 

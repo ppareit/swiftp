@@ -29,7 +29,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
-import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -57,7 +56,6 @@ import java.util.List;
 import be.ppareit.swiftp.gui.FsNotification;
 import be.ppareit.swiftp.server.SessionThread;
 import be.ppareit.swiftp.server.TcpListener;
-import lombok.val;
 
 public class FsService extends Service implements Runnable {
     private static final String TAG = FsService.class.getSimpleName();
@@ -357,7 +355,7 @@ public class FsService extends Service implements Runnable {
             return null;
         }
         try {
-            val networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            ArrayList<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface networkInterface : networkInterfaces) {
                 // only check network interfaces that give local connection
                 if (!networkInterface.getName().matches("^(eth|wlan).*"))
@@ -405,7 +403,7 @@ public class FsService extends Service implements Runnable {
         if (!connected) {
             Log.d(TAG, "isConnectedToLocalNetwork: see if it is an USB AP");
             try {
-                val networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+                ArrayList<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
                 for (NetworkInterface netInterface : networkInterfaces) {
                     if (netInterface.getDisplayName().startsWith("rndis")) {
                         connected = true;
