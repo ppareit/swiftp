@@ -128,7 +128,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
             PendingIntent pendingIntent;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 pendingIntent = PendingIntent.getForegroundService(this, 0,
-                        startIntent, 0);
+                        startIntent, PendingIntent.FLAG_IMMUTABLE);
             } else {
                 pendingIntent = PendingIntent.getService(this, 0,
                         startIntent, 0);

@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "be.ppareit.swiftp"
-        minSdkVersion 14
+        minSdkVersion 23
         targetSdkVersion 32
         versionCode 30100
         versionName "3.1"
@@ -46,13 +46,14 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'net.vrallev.android:cat:1.0.5'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.documentfile:documentfile:1.0.1'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.jetbrains:annotations:15.0'
+    implementation 'androidx.work:work-runtime:2.7.1'
 }
 
 android {
