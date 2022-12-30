@@ -24,7 +24,7 @@ package be.ppareit.swiftp.server;
  * the common code is in this class, and inherited by CmdSTOR and CmdAPPE.
  */
 
-import android.util.Log;
+import androidx.documentfile.provider.DocumentFile;
 
 import net.vrallev.android.cat.Cat;
 
@@ -32,8 +32,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.MediaUpdater;
 
@@ -46,11 +48,12 @@ abstract public class CmdAbstractStore extends FtpCmd {
     public void doStorOrAppe(String param, boolean append) {
         Cat.d("STOR/APPE executing with append = " + append);
 
-        File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
-
+        File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                sessionThread.getWorkingDir(), param, false);
+        DocumentFile docStoreFile = null;
         String errString = null;
         FileOutputStream out = null;
-
+        OutputStream os = null;
         storing:
         {
             // Get a normalized absolute path for the desired file
@@ -75,26 +78,50 @@ abstract public class CmdAbstractStore extends FtpCmd {
                             break storing;
                         }
                         // Notify other apps that we just deleted a file
-                        MediaUpdater.notifyFileDeleted(storeFile.getPath());
+                        if (!Util.useScopedStorage()) {
+                            // don't allow on Android 11+ as it causes problems
+                            MediaUpdater.notifyFileDeleted(storeFile.getPath());
+                        }
                     }
                 }
+
                 if (!storeFile.exists()) {
-                    FileUtil.mkfile(storeFile, App.getAppContext());
+                    if (Util.useScopedStorage()) {
+                        final String mime = "application/octet-stream";
+                        //final URI fileUri = storeFile.toURI();
+                        //final URL url = fileUri.toURL();
+                        //mime = url.openConnection().getContentType(); // sometimes makes exe's into html files
+                        docStoreFile = FileUtil.mkfile(storeFile, App.getAppContext(), mime);
+                        if(docStoreFile == null){
+                            errString = "451 Couldn't open file \"" + param + "\" aka \""
+                                    + storeFile.getCanonicalPath() + "\" for writing\r\n";
+                            break storing;
+                        }
+                    } else {
+                        FileUtil.mkfile(storeFile, App.getAppContext());
+                    }
                 }
-                out = FileUtil.getOutputStream(storeFile, App.getAppContext());
+
+                if (docStoreFile != null) {
+                    os = App.getAppContext().getContentResolver().openOutputStream(docStoreFile.getUri());
+                } else {
+                    out = FileUtil.getOutputStream(storeFile, App.getAppContext());
+                }
 
                 //file
-                if(out == null){
+                if(docStoreFile == null && out == null){
                     errString = "451 Couldn't open file \"" + param + "\" aka \""
                             + storeFile.getCanonicalPath() + "\" for writing\r\n";
                     break storing;
                 }
                 try {
-                    if (sessionThread.offset < 0) {
-                        out.getChannel().position(storeFile.length());
-                    } else {
-                        out.getChannel().position(sessionThread.offset);
-                        sessionThread.offset = -1;
+                    if (out != null) {
+                        if (sessionThread.offset < 0) {
+                            out.getChannel().position(storeFile.length());
+                        } else {
+                            out.getChannel().position(sessionThread.offset);
+                            sessionThread.offset = -1;
+                        }
                     }
                 }
                 catch (NullPointerException e){
@@ -143,13 +170,15 @@ abstract public class CmdAbstractStore extends FtpCmd {
                     default:
                         try {
                             if (sessionThread.isBinaryMode()) {
-                                out.write(buffer, 0, numRead);
+                                if (os != null) os.write(buffer, 0, numRead);
+                                else out.write(buffer, 0, numRead);
                             } else {
                                 // ASCII mode, substitute \r\n to \n
                                 int startPos = 0, endPos;
                                 for (endPos = 0; endPos < numRead; endPos++) {
                                     if (buffer[endPos] == '\r') {
-                                        out.write(buffer, startPos, endPos - startPos);
+                                        if (os != null) os.write(buffer, startPos, endPos - startPos);
+                                        else out.write(buffer, startPos, endPos - startPos);
                                         // Our hacky method is to drop all \r
                                         startPos = endPos + 1;
                                     }
@@ -157,7 +186,8 @@ abstract public class CmdAbstractStore extends FtpCmd {
                                 // Write last part of buffer as long as there was something
                                 // left after handling the last \r
                                 if (startPos < numRead) {
-                                    out.write(buffer, startPos, endPos - startPos);
+                                    if (os != null) os.write(buffer, startPos, endPos - startPos);
+                                    else if (out != null) out.write(buffer, startPos, endPos - startPos);
                                 }
                             }
                         } catch (IOException e) {
@@ -173,6 +203,9 @@ abstract public class CmdAbstractStore extends FtpCmd {
             if (out != null) {
                 out.close();
             }
+            if (os != null) {
+                os.close();
+            }
         } catch (IOException ignored) {
         }
 
@@ -183,7 +216,10 @@ abstract public class CmdAbstractStore extends FtpCmd {
             sessionThread.writeString("226 Transmission complete\r\n");
             // Notify the music player (and possibly others) that a few file has
             // been uploaded.
-            MediaUpdater.notifyFileCreated(storeFile.getPath());
+            if (!Util.useScopedStorage()) {
+                // don't allow on Android 11+ as it causes problems
+                MediaUpdater.notifyFileCreated(storeFile.getPath());
+            }
         }
         sessionThread.closeDataSocket();
         Cat.d("STOR finished");

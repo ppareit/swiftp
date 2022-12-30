@@ -29,7 +29,7 @@ package be.ppareit.swiftp.server;
 import java.io.File;
 
 import android.util.Log;
-import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdMLSD extends CmdAbstractListing implements Runnable {
     static private final String TAG = CmdMLSD.class.getSimpleName();
@@ -72,7 +72,12 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
             // TBD
             // https://tools.ietf.org/html/rfc3659#page-39
             // MLSD auto need to add [type=cdir] and [type=pdir]
-            errString = listDirectory(response, fileToList);
+            FileUtil.Gen gen = FileUtil.createGenFromFile(fileToList);
+            if (gen.getOb() == null) {
+                errString = "MLSD failed. Try write external storage\r\n";
+                break mainblock;
+            }
+            errString = listDirectory(response, gen);
             if (errString != null) {
                 break mainblock;
             }
@@ -96,7 +101,7 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
 
     // Generates a line of a directory listing in the Format of MLSx
     @Override
-    protected String makeLsString(File file) {      
+    protected String makeLsString(FileUtil.Gen file) {
         StringBuilder response = new StringBuilder();
 
         if (!file.exists()) {
@@ -118,43 +123,8 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
             // staticLog.l(Log.DEBUG, "Filename: " + lastNamePart);
         }
 
-        String[] selectedTypes = sessionThread.getFormatTypes();   
-        if(selectedTypes != null){
-            for (int i = 0; i < selectedTypes.length; ++i) {
-                String type = selectedTypes[i];
-                if (type.equalsIgnoreCase("size")) {
-                    response.append("Size=" + String.valueOf(file.length()) + ';');
-                } else if (type.equalsIgnoreCase("modify")) {
-                    String timeStr = Util.getFtpDate(file.lastModified());
-                    response.append("Modify=" + timeStr + ';');
-                } else if (type.equalsIgnoreCase("type")) {
-                    if (file.isFile()) {
-                        response.append("Type=file;");
-                    } else if (file.isDirectory()) {
-                        response.append("Type=dir;");
-                    }
-                } else if (type.equalsIgnoreCase("perm")) {
-                    response.append("Perm=");
-                    if (file.canRead()) {
-                        if (file.isFile()) {
-                            response.append('r');
-                        } else if (file.isDirectory()) {
-                            response.append("el");
-                        }
-                    }
-                    if (file.canWrite()) {
-                        if (file.isFile()) {
-                            response.append("adfw");
-                        } else if (file.isDirectory()) {
-                            response.append("fpcm");
-                        }
-                    }
-                    response.append(';');
-                }
-            }
-        }
-
-        response.append(' ');    
+        response.append(sessionThread.makeSelectedTypesResponse(file));
+        response.append(' ');
         response.append(lastNamePart);
         response.append("\r\n");
         return response.toString();

@@ -23,7 +23,10 @@ import java.io.File;
 
 import android.util.Log;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.MediaUpdater;
 
@@ -41,14 +44,38 @@ public class CmdDELE extends FtpCmd implements Runnable {
     public void run() {
         Log.d(TAG, "DELE executing");
         String param = getParameter(input);
-        File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
+        File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                sessionThread.getWorkingDir(), param, false);
+
+        if (Util.useScopedStorage()) {
+            final String clientPath = storeFile.getPath().substring(0, storeFile.getPath()
+                    .lastIndexOf(File.separator));
+            DocumentFile docStoreFile = FileUtil.getDocumentFileWithParamScopedStorage(File.separator +
+                    param, null, clientPath);
+            tryToDelete(new FileUtil.Gen(docStoreFile), clientPath);
+            return;
+        }
+
+        tryToDelete(new FileUtil.Gen(storeFile), param);
+    }
+
+    private void tryToDelete(FileUtil.Gen storeFile, String param) {
         String errString = null;
-        if (violatesChroot(storeFile)) {
+        if (storeFile == null || storeFile.getOb() == null) {
             errString = "550 Invalid name or chroot violation\r\n";
-        } else if (storeFile.isDirectory()) {
-            errString = "550 Can't DELE a directory\r\n";
-        } else if (!FileUtil.deleteFile(storeFile, App.getAppContext())) {
-            errString = "450 Error deleting file\r\n";
+        } else {
+            final boolean isDocumentFile = storeFile.getOb() instanceof DocumentFile;
+            final boolean isFile = !isDocumentFile;
+            final String path = FileUtil.getScopedClientPath(param, null, null);
+            if ((isDocumentFile && violatesChroot((DocumentFile) storeFile.getOb(), path))
+                    || (isFile && violatesChroot((File) storeFile.getOb()))) {
+                errString = "550 Invalid name or chroot violation\r\n";
+            } else if (storeFile.isDirectory()) {
+                errString = "550 Can't DELE a directory\r\n";
+            } else if ((isDocumentFile && !((DocumentFile) storeFile.getOb()).delete())
+                    || (isFile && !FileUtil.deleteFile((File) storeFile.getOb(), App.getAppContext()))) {
+                errString = "450 Error deleting file\r\n";
+            }
         }
 
         if (errString != null) {
@@ -56,7 +83,10 @@ public class CmdDELE extends FtpCmd implements Runnable {
             Log.i(TAG, "DELE failed: " + errString.trim());
         } else {
             sessionThread.writeString("250 File successfully deleted\r\n");
-            MediaUpdater.notifyFileDeleted(storeFile.getPath());
+            if (!Util.useScopedStorage()) {
+                // don't allow on Android 11+ as it causes problems
+                MediaUpdater.notifyFileDeleted(((File) storeFile.getOb()).getPath());
+            }
         }
         Log.d(TAG, "DELE finished");
     }

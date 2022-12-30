@@ -34,7 +34,8 @@ public class CmdHASH extends FtpCmd implements Runnable {
 
         mainblock:
         {
-            fileToHash = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
+            fileToHash = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                    sessionThread.getWorkingDir(), param, false);
             if (violatesChroot(fileToHash)) {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;

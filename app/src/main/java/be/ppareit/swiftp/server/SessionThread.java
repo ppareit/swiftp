@@ -35,11 +35,15 @@ import java.nio.ByteBuffer;
 
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsSettings;
+import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 
 public class SessionThread extends Thread {
 
     private static final int MAX_AUTH_FAILS = 3;
     public static final int DATA_CHUNK_SIZE = 65536;  // do file I/O in 64k chunks
+
+    private static boolean[] selectedTypesCached = null;
 
     private Socket cmdSocket;
     private boolean pasvMode = false;
@@ -418,5 +422,67 @@ public class SessionThread extends Thread {
             this.chrootDir = chrootDir;
             this.workingDir = chrootDir;
         }
+    }
+
+    public String makeSelectedTypesResponse(FileUtil.Gen gen) {
+        StringBuilder response = new StringBuilder();
+        String[] selectedTypes = getFormatTypes();
+
+        if (selectedTypesCached == null && selectedTypes != null) {
+            selectedTypesCached = new boolean[formatTypes.length];
+            for (String selectedType : selectedTypes) {
+                switch (selectedType) {
+                    case "Size":
+                        selectedTypesCached[0] = true;
+                        break;
+                    case "Modify":
+                        selectedTypesCached[1] = true;
+                        break;
+                    case "Type":
+                        selectedTypesCached[2] = true;
+                        break;
+                    case "Perm":
+                        selectedTypesCached[3] = true;
+                        break;
+                }
+            }
+        }
+
+        final boolean isFile = gen.isFile();
+        final boolean isDirectory = gen.isDirectory();
+
+        if (selectedTypesCached[0]) {
+            response.append("Size=").append(gen.length()).append(';');
+        }
+        if (selectedTypesCached[1]) {
+            String timeStr = Util.getFtpDate(gen.lastModified());
+            response.append("Modify=").append(timeStr).append(';');
+        }
+        if (selectedTypesCached[2]) {
+            if (isFile) {
+                response.append("Type=file;");
+            } else if (isDirectory) {
+                response.append("Type=dir;");
+            }
+        }
+        if (selectedTypesCached[3]) {
+            response.append("Perm=");
+            if (gen.canRead()) {
+                if (isFile) {
+                    response.append('r');
+                } else if (isDirectory) {
+                    response.append("el");
+                }
+            }
+            if (gen.canWrite()) {
+                if (isFile) {
+                    response.append("adfw");
+                } else if (isDirectory) {
+                    response.append("fpcm");
+                }
+            }
+            response.append(';');
+        }
+        return response.toString();
     }
 }

@@ -48,7 +48,8 @@ public class CmdRNFR extends FtpCmd implements Runnable {
         File file = null;
         mainblock:
         {
-            file = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
+            file = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                    sessionThread.getWorkingDir(), param, false);
             if (violatesChroot(file)) {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;

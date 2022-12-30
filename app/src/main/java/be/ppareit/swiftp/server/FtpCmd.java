@@ -19,10 +19,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.net.Uri;
 import android.util.Log;
+
+import androidx.documentfile.provider.DocumentFile;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+
+import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 
 public abstract class FtpCmd implements Runnable {
     private static final String TAG = FtpCmd.class.getSimpleName();
@@ -183,7 +189,98 @@ public abstract class FtpCmd implements Runnable {
         return getParameter(input, false);
     }
 
-    public static File inputPathToChrootedFile(File chrootDir, File existingPrefix, String param) {
+    public static File inputPathToChrootedFile(final File chrootDir, final File existingPrefix,
+                                               String param, final boolean isDirOnly) {
+        if (Util.useScopedStorage()) {
+            // NEW WAY
+            // Chroot is *1 tree & including eg *2 "/storage" that the tree doesn't contain.
+            // *3 The rest is provided by the client.
+            // *4 The param when with file is with *3 so we need to remove path from param when it is.
+            // *5 All that's left is to tack on the client provided path to the end of the tree.
+            // There are multiple conflicting oddities that happen and are dealt with here.
+            if (isDirOnly && !param.startsWith(File.separator)) param = File.separator + param;
+            // May be empty at times and param will instead have it.
+            String sessionClientPath = FileUtil.getScopedClientPath(param, existingPrefix, null);
+            // Get the full chroot path including storage.
+            Uri uri = FileUtil.getTreeUri();
+            DocumentFile df = FileUtil.getDocumentFileFromUri(uri);
+            final String tree = FileUtil.getUriStoragePathFullFromDocumentFile(df, "");
+            if (tree == null) return new File(""); // That's bad. Make following checks fail.
+            // Deal with param and client specified paths.
+            String paramClientPath = "";
+            if (!isDirOnly && param.contains(File.separator)) {
+                final int lastSlash = param.lastIndexOf(File.separator);
+                paramClientPath = param.substring(0, lastSlash);
+                // Can't have it in there with the new code. That's a conflict!
+                param = param.substring(lastSlash + 1);
+                if (!paramClientPath.startsWith(File.separator)) {
+                    // Keep it the same to avoid problems.
+                    paramClientPath = File.separator + paramClientPath;
+                }
+            } else if (isDirOnly && param.contains(File.separator)) {
+                // To make things worse, the param can also be a full path such as in FileZilla and
+                // using its tree to jump randomly anywhere. Here, the param already contains the
+                // entire path needed. And then sometimes it doesn't have the entire path lol :)
+                if (param.contains(tree)) {
+                    return new File(param);
+                }
+            }
+            String mPath = "";
+            // To make it worse, param can be dir and have no file and no slash lol. So...
+            // added isDirOnly in order to know what the calling method is working on as that can tell us.
+            if (isDirOnly) {
+                if (!sessionClientPath.isEmpty() && !sessionClientPath.equals(param)) {
+                    // Varoious fixes and checks of random ways it can do as seen on one device and internal
+                    if (param.startsWith(File.separator) && !tree.startsWith(File.separator)) {
+                        param = param.replaceFirst(File.separator, "");
+                    } else if (!param.startsWith(File.separator) && tree.startsWith(File.separator)) {
+                        param = File.separator + param;
+                    }
+                    if (param.endsWith(File.separator) && !tree.endsWith(File.separator)) {
+                        param = param.substring(0, param.length() - 1);
+                    } else if (!param.endsWith(File.separator) && tree.endsWith(File.separator)) {
+                        param += File.separator;
+                    }
+                    if (!param.equals(tree)) {
+                        mPath = sessionClientPath + File.separator + param;
+                    }
+                } else {
+                    mPath = param;
+                }
+            } else {
+                if (!sessionClientPath.isEmpty() && paramClientPath.isEmpty())
+                    mPath = sessionClientPath;
+                else if (sessionClientPath.isEmpty() && !paramClientPath.isEmpty())
+                    mPath = paramClientPath;
+                else {
+                    if (sessionClientPath.equals(paramClientPath)) mPath = sessionClientPath;
+                    else mPath = paramClientPath;
+                }
+            }
+            // Various checks and fixes as to ways it could go as seen on one device and internal
+            if (!mPath.startsWith(File.separator) && !tree.endsWith(File.separator)) {
+                mPath = File.separator + mPath;
+            } else if (mPath.startsWith(File.separator) && tree.endsWith(File.separator)) {
+                mPath = mPath.replaceFirst(File.separator, "");
+            }
+            // Finally get the full current path
+            String path = "";
+            if (!mPath.contains(tree)) path = tree + mPath;
+            // Let's end this.
+            if (!isDirOnly){
+                return new File(path, param);
+            }
+            if (sessionClientPath.equals(param)) {
+                final String doubleVision = sessionClientPath + param;
+                if (!path.endsWith(doubleVision)) {
+                    // Correct double vision; permutation fix
+                    return new File(path, param);
+                }
+            }
+            // Another possible end
+            return new File(path);
+        }
+        // OLD WAY (with issues and not compatible with the new way.)
         try {
             if (param.charAt(0) == '/') {
                 // The STOR contained an absolute path
@@ -212,7 +309,29 @@ public abstract class FtpCmd implements Runnable {
             return false;
         } catch (Exception e) {
             Log.i(TAG, "Path canonicalization problem: " + e.toString());
-            Log.i(TAG, "When checking file: " + file.getAbsolutePath());
+            if (file != null) Log.i(TAG, "When checking file: " + file.getAbsolutePath()); // fix possible crash
+            return true; // for security, assume violation
+        }
+    }
+
+    public boolean violatesChroot(DocumentFile file, String param) {
+        try {
+            // Get the full path to the chosen Android 11 dir and compare with that of the file
+            File chroot = sessionThread.getChrootDir();
+            String canonicalChroot = chroot.getCanonicalPath();
+            final String path = FileUtil.getScopedClientPath(param, null, null);
+            String canonicalPath = FileUtil.getUriStoragePathFullFromDocumentFile(file, path);
+
+            if (canonicalPath == null || !canonicalPath.startsWith(canonicalChroot)) {
+                Log.i(TAG, "Path violated folder restriction, denying");
+                Log.d(TAG, "path: " + canonicalPath);
+                Log.d(TAG, "chroot: " + chroot.toString());
+                return true; // the path must begin with the chroot path
+            }
+            return false;
+        } catch (Exception e) {
+            Log.i(TAG, "Path canonicalization problem: " + e.toString());
+            //Log.i(TAG, "When checking file: " + file.getAbsolutePath());
             return true; // for security, assume violation
         }
     }

@@ -19,10 +19,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.net.Uri;
 import android.util.Log;
+
+import androidx.documentfile.provider.DocumentFile;
 
 import java.io.File;
 import java.io.IOException;
+
+import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 
 /**
  * PRINT WORKING DIRECTORY (PWD)
@@ -45,13 +51,21 @@ public class CmdPWD extends FtpCmd implements Runnable {
         // user-visible path (inside the chroot directory).
         try {
             String currentDir = sessionThread.getWorkingDir().getCanonicalPath();
-            File chrootDir = sessionThread.getChrootDir();
-            if (chrootDir != null) {
-                currentDir = currentDir.substring(chrootDir.getCanonicalPath().length());
+            if (Util.useScopedStorage()) {
+                Uri uri = FileUtil.getFullCWDUri("", currentDir);
+                DocumentFile df = null;
+                if (uri != null) df = FileUtil.getDocumentFileFromUri(uri);
+                final String path = FileUtil.getScopedClientPath(currentDir, null, null);
+                if (df != null) currentDir = FileUtil.getUriStoragePathFullFromDocumentFile(df, path);
+            } else {
+                File chrootDir = sessionThread.getChrootDir();
+                if (chrootDir != null) {
+                    currentDir = currentDir.substring(chrootDir.getCanonicalPath().length());
+                }
             }
             // The root directory requires special handling to restore its
             // leading slash
-            if (currentDir.length() == 0) {
+            if (currentDir == null || currentDir.length() == 0) {
                 currentDir = "/";
             }
             sessionThread.writeString("257 \"" + currentDir + "\"\r\n");

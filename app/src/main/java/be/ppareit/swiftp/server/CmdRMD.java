@@ -23,8 +23,11 @@ import java.io.File;
 
 import android.util.Log;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.MediaUpdater;
+import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdRMD extends FtpCmd implements Runnable {
@@ -43,13 +46,52 @@ public class CmdRMD extends FtpCmd implements Runnable {
         String param = getParameter(input);
         File toRemove;
         String errString = null;
+
+        if (Util.useScopedStorage()) {
+            final String clientPath = sessionThread.getWorkingDir().getPath();
+            DocumentFile docFileToRemove = FileUtil.getDocumentFileWithParamScopedStorage(param,
+                    File.separator + param, clientPath);
+
+            mainblock:
+            {
+                if (docFileToRemove == null){
+                    errString = "550 Invalid name or chroot violation\r\n";
+                    break mainblock;
+                }
+                if (param.length() < 1) {
+                    errString = "550 Invalid argument\r\n";
+                    break mainblock;
+                }
+                if (violatesChroot(docFileToRemove, param)) {
+                    errString = "550 Invalid name or chroot violation\r\n";
+                    break mainblock;
+                }
+                if (!docFileToRemove.isDirectory()) {
+                    errString = "550 Can't RMD a non-directory\r\n";
+                    break mainblock;
+                }
+                if (!recursiveDelete(docFileToRemove)) {
+                    errString = "550 Deletion error, possibly incomplete\r\n";
+                }
+            }
+            if (errString != null) {
+                sessionThread.writeString(errString);
+                Log.i(TAG, "RMD failed: " + errString.trim());
+            } else {
+                sessionThread.writeString("250 Removed directory\r\n");
+            }
+            Log.d(TAG, "RMD finished");
+            return;
+        }
+
         mainblock:
         {
             if (param.length() < 1) {
                 errString = "550 Invalid argument\r\n";
                 break mainblock;
             }
-            toRemove = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
+            toRemove = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                    sessionThread.getWorkingDir(), param, false);
             if (violatesChroot(toRemove)) {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;
@@ -83,6 +125,31 @@ public class CmdRMD extends FtpCmd implements Runnable {
      * @param toDelete
      * @return Whether the operation completed successfully
      */
+    protected boolean recursiveDelete(DocumentFile toDelete) {
+        if (!toDelete.exists()) {
+            return false;
+        }
+        if (toDelete.isDirectory()) {
+            // If any of the recursive operations fail, then we return false
+            boolean success = true;
+            for (DocumentFile entry : toDelete.listFiles()) {
+                success &= recursiveDelete(entry);
+            }
+            Log.d(TAG, "Recursively deleted: " + toDelete);
+            return success && toDelete.delete();
+        } else {
+            Log.d(TAG, "RMD deleting file: " + toDelete);
+            return toDelete.delete();
+        }
+    }
+
+    /**
+     * Accepts a file or directory name, and recursively deletes the contents of that
+     * directory and all subdirectories.
+     *
+     * @param toDelete
+     * @return Whether the operation completed successfully
+     */
     protected boolean recursiveDelete(File toDelete) {
         if (!toDelete.exists()) {
             return false;
@@ -98,7 +165,10 @@ public class CmdRMD extends FtpCmd implements Runnable {
         } else {
             Log.d(TAG, "RMD deleting file: " + toDelete);
             boolean success = FileUtil.deleteFile(toDelete, App.getAppContext());
-            MediaUpdater.notifyFileDeleted(toDelete.getPath());
+            if (!Util.useScopedStorage()) {
+                // Don't allow on Android 11+ as it causes problems should it reach here
+                MediaUpdater.notifyFileDeleted(toDelete.getPath());
+            }
             return success;
         }
     }

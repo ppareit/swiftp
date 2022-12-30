@@ -22,7 +22,7 @@ package be.ppareit.swiftp.server;
 import java.io.File;
 
 import android.util.Log;
-import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 
 /**
  * Implements MLST command
@@ -41,18 +41,19 @@ public class CmdMLST extends FtpCmd implements Runnable {
     public void run() {
         Log.d(TAG, "run: LIST executing, input: " + mInput);
         String param = getParameter(mInput);
-        
+
         File fileToFormat = null;
         if(param.equals("")){
             fileToFormat = sessionThread.getWorkingDir();
             param = "/";
         }else{
-            fileToFormat = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
+            fileToFormat = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                    sessionThread.getWorkingDir(), param, false);
         }
-        
+
         if (fileToFormat.exists()) {
             sessionThread.writeString("250- Listing " + param + "\r\n");
-            sessionThread.writeString(makeString(fileToFormat) + "\r\n");
+            sessionThread.writeString(makeString(new FileUtil.Gen(fileToFormat)) + "\r\n");
             sessionThread.writeString("250 End\r\n");
         } else {
             Log.w(TAG, "run: file does not exist");
@@ -62,47 +63,11 @@ public class CmdMLST extends FtpCmd implements Runnable {
         Log.d(TAG, "run: LIST completed");
     }
 
-    public String makeString(File file){
+    public String makeString(FileUtil.Gen gen){
         StringBuilder response = new StringBuilder();
-        
-        String[] selectedTypes = sessionThread.getFormatTypes();   
-        if(selectedTypes != null){
-            for (int i = 0; i < selectedTypes.length; ++i) {
-                String type = selectedTypes[i];
-                if (type.equalsIgnoreCase("size")) {
-                    response.append("Size=" + String.valueOf(file.length()) + ';');
-                } else if (type.equalsIgnoreCase("modify")) {
-                    String timeStr = Util.getFtpDate(file.lastModified());
-                    response.append("Modify=" + timeStr + ';');
-                } else if (type.equalsIgnoreCase("type")) {
-                    if (file.isFile()) {
-                        response.append("Type=file;");
-                    } else if (file.isDirectory()) {
-                        response.append("Type=dir;");
-                    }
-                } else if (type.equalsIgnoreCase("perm")) {
-                    response.append("Perm=");
-                    if (file.canRead()) {
-                        if (file.isFile()) {
-                            response.append('r');
-                        } else if (file.isDirectory()) {
-                            response.append("el");
-                        }
-                    }
-                    if (file.canWrite()) {
-                        if (file.isFile()) {
-                            response.append("adfw");
-                        } else if (file.isDirectory()) {
-                            response.append("fpcm");
-                        }
-                    }
-                    response.append(';');
-                }
-            }
-        }
-
-        response.append(' ');    
-        response.append(file.getName());
+        response.append(sessionThread.makeSelectedTypesResponse(gen));
+        response.append(' ');
+        response.append(gen.getName());
         response.append("\r\n");
         return response.toString();
     }

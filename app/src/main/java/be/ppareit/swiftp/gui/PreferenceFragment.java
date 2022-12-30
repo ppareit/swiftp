@@ -26,6 +26,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.UriPermission;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -36,6 +38,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
 import android.text.util.Linkify;
@@ -44,9 +47,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.documentfile.provider.DocumentFile;
 
 import net.vrallev.android.cat.Cat;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -55,7 +60,9 @@ import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
+import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.server.FtpUser;
+import be.ppareit.swiftp.utils.FileUtil;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -248,24 +255,117 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
         Cat.d("onActivityResult called");
         if (requestCode == ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
+            if (resultData == null) return;
             Uri treeUri = resultData.getData();
+            if (treeUri == null) return;
             String path = treeUri.getPath();
             Cat.d("Action Open Document Tree on path " + path);
+            // *************************************
+            // The order following here is critical. They must stay ordered as they are.
+            setPermissionToUseExternalStorage(treeUri);
+            tryToUpgradeToScopedStorage(treeUri);
+            scopedStorageChrootOverride(treeUri);
+        }
+    }
 
-            final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
-            if (!":".equals(path.substring(path.length() - 1)) || path.contains("primary")) {
-                writeExternalStoragePref.setChecked(false);
-            } else {
-                FsSettings.setExternalStorageUri(treeUri.toString());
+    private void setPermissionToUseExternalStorage(Uri treeUri) {
+        final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
+        if (isNotExternalStorage(treeUri)) {
+            writeExternalStoragePref.setChecked(false);
+        } else {
+            try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    getActivity().getContentResolver()
-                            .takePersistableUriPermission(treeUri,
-                                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    if (removeAllUriPermissions(treeUri)) {
+                        FsSettings.setExternalStorageUri(treeUri.toString());
+                        getActivity().getContentResolver()
+                                .takePersistableUriPermission(treeUri,
+                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    }
                 }
                 writeExternalStoragePref.setChecked(true);
+            } catch (SecurityException e) {
+                // Harden code against crash: May reach here by adding exact same picker location but
+                // being removed at same time.
             }
         }
+    }
+
+    private boolean isNotExternalStorage(Uri treeUri) {
+        String folder = FileUtil.cleanupUriStoragePath(treeUri);
+        if (folder != null && folder.contains(":")) {
+            // Just get rid of the "primary:" part to get what we want (the user selected path/folder)
+            try {
+                folder = folder.substring(folder.indexOf(":") + 1);
+            } catch (IndexOutOfBoundsException e) {
+                folder = "";
+            }
+        }
+        return folder == null || folder.isEmpty();
+    }
+
+    /*
+     * If user is on older SDK, check if File can rw and if not then move to newer storage use.
+     * As we don't know what older SDK will have a problem where or not.
+     * Could just assume with this use but a check is fast.
+     * */
+    private void tryToUpgradeToScopedStorage(Uri treeUri) {
+        if (!Util.useScopedStorage()) {
+            DocumentFile df = FileUtil.getDocumentFileFromUri(treeUri);
+            if (df == null) return;
+            final String a11Path = FileUtil.getUriStoragePathFullFromDocumentFile(df, "");
+            if (a11Path == null) return;
+            File root = new File(a11Path);
+            if (!root.canRead() || !root.canWrite()) {
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+                sp.edit().putBoolean("OverrideScopedStorageMinimum", true).apply();
+            }
+        }
+    }
+
+    /*
+     * Override all and put path as chroot. Previously user chosen. On Android 11+ it is only
+     * decided now by the picker if its to be allowed on the Play Store unless allowance was made.
+     * */
+    private void scopedStorageChrootOverride(Uri treeUri) {
+        if (Util.useScopedStorage()) {
+            DocumentFile df = FileUtil.getDocumentFileFromUri(treeUri);
+            if (df == null) return;
+            final String a11Path = FileUtil.getUriStoragePathFullFromDocumentFile(df, "");
+            if (a11Path == null) return;
+            List<FtpUser> userList = FsSettings.getUsers();
+            for (int i = 0; i < userList.size(); i++) {
+                if (userList.get(i) == null) continue;
+                FtpUser entry = new FtpUser(userList.get(i).getUsername(),userList.get(i).getPassword(), a11Path);
+                FsSettings.modifyUser(userList.get(i).getUsername(), entry);
+            }
+        }
+    }
+
+    /*
+     * Clean up URI list since there's only one folder. They have a way of collecting on changes
+     * which causes an issue. More so only can use one.
+     * */
+    private boolean removeAllUriPermissions(Uri treeUri) {
+        List<UriPermission> oldList = App.getAppContext().getContentResolver().getPersistedUriPermissions();
+        if (oldList.size() == 0) return true;
+        // check against current and don't remove if only and same as it won't re-give same.
+        if (oldList.size() == 1) {
+            Uri uri = oldList.get(0).getUri();
+            if (uri != null) {
+                final String path = uri.getPath();
+                if (path != null) if (path.equals(treeUri.getPath())) return false;
+            }
+        }
+        // Release all
+        for (UriPermission uriToRemove : oldList) {
+            if (uriToRemove == null) continue;
+            getActivity().getContentResolver()
+                    .releasePersistableUriPermission(uriToRemove.getUri(),
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
+        return true;
     }
 
     /**

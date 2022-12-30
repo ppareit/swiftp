@@ -31,9 +31,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import android.util.Log;
+import android.net.Uri;
+
+import androidx.documentfile.provider.DocumentFile;
 
 import net.vrallev.android.cat.Cat;
+
+import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdLIST extends CmdAbstractListing implements Runnable {
 
@@ -49,6 +54,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
     @Override
     public void run() {
         String errString = null;
+        DocumentFile docFileToList = null;
 
         mainblock: {
             String param = getParameter(input);
@@ -61,27 +67,42 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
             File fileToList = null;
             if (param.equals("")) {
                 fileToList = sessionThread.getWorkingDir();
+                if (Util.useScopedStorage()) {
+                    final String clientPath = fileToList.getPath();
+                    Uri uri = FileUtil.getFullCWDUri("", clientPath);
+                    docFileToList = FileUtil.getDocumentFileFromUri(uri);
+                }
             } else {
                 if (param.contains("*")) {
                     errString = "550 LIST does not support wildcards\r\n";
                     break mainblock;
                 }
                 fileToList = new File(sessionThread.getWorkingDir(), param);
+                if (Util.useScopedStorage()) {
+                    final String clientPath = fileToList.getPath();
+                    docFileToList = FileUtil.getDocumentFileWithParamScopedStorage(param, "", clientPath);
+                }
                 if (violatesChroot(fileToList)) {
+                    // sd card should be eg /storage/xxx/
+                    // internal should be /storage/emulated/0/
                     errString = "450 Listing target violates chroot\r\n";
                     break mainblock;
                 }
             }
             String listing;
-            if (fileToList.isDirectory()) {
+            if (fileToList.isDirectory() || (docFileToList != null && docFileToList.isDirectory())) {
                 StringBuilder response = new StringBuilder();
-                errString = listDirectory(response, fileToList);
+                FileUtil.Gen gen;
+                if (docFileToList != null) gen = FileUtil.convertDocumentFileToGen(docFileToList);
+                else gen = FileUtil.createGenFromFile(fileToList);
+                errString = listDirectory(response, gen);
                 if (errString != null) {
                     break mainblock;
                 }
                 listing = response.toString();
             } else {
-                listing = makeLsString(fileToList);
+                if (docFileToList != null) listing = makeLsString(new FileUtil.Gen(docFileToList));
+                else listing = makeLsString(new FileUtil.Gen(fileToList));
                 if (listing == null) {
                     errString = "450 Couldn't list that file\r\n";
                     break mainblock;
@@ -94,6 +115,8 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
         }
 
         if (errString != null) {
+            // May see "error 450 couldn't list that file" from bad path handling and this would then
+            // be a bug and not an actual missing file.
             sessionThread.writeString(errString);
             Cat.d("LIST failed with: " + errString);
         } else {
@@ -105,11 +128,10 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
 
     // Generates a line of a directory listing in the traditional /bin/ls
     // format.
-    @Override
-    protected String makeLsString(File file) {
+    protected String makeLsString(FileUtil.Gen file) {
         StringBuilder response = new StringBuilder();
 
-        if (!file.exists()) {
+        if (file == null || !file.exists()) {
             Cat.i("makeLsString had nonexistent file");
             return null;
         }
