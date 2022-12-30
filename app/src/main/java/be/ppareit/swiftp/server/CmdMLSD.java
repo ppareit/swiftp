@@ -118,43 +118,8 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
             // staticLog.l(Log.DEBUG, "Filename: " + lastNamePart);
         }
 
-        String[] selectedTypes = sessionThread.getFormatTypes();   
-        if(selectedTypes != null){
-            for (int i = 0; i < selectedTypes.length; ++i) {
-                String type = selectedTypes[i];
-                if (type.equalsIgnoreCase("size")) {
-                    response.append("Size=" + String.valueOf(file.length()) + ';');
-                } else if (type.equalsIgnoreCase("modify")) {
-                    String timeStr = Util.getFtpDate(file.lastModified());
-                    response.append("Modify=" + timeStr + ';');
-                } else if (type.equalsIgnoreCase("type")) {
-                    if (file.isFile()) {
-                        response.append("Type=file;");
-                    } else if (file.isDirectory()) {
-                        response.append("Type=dir;");
-                    }
-                } else if (type.equalsIgnoreCase("perm")) {
-                    response.append("Perm=");
-                    if (file.canRead()) {
-                        if (file.isFile()) {
-                            response.append('r');
-                        } else if (file.isDirectory()) {
-                            response.append("el");
-                        }
-                    }
-                    if (file.canWrite()) {
-                        if (file.isFile()) {
-                            response.append("adfw");
-                        } else if (file.isDirectory()) {
-                            response.append("fpcm");
-                        }
-                    }
-                    response.append(';');
-                }
-            }
-        }
-
-        response.append(' ');    
+        response.append(sessionThread.makeSelectedTypesResponse(file));
+        response.append(' ');
         response.append(lastNamePart);
         response.append("\r\n");
         return response.toString();
