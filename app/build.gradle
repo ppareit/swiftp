@@ -2,18 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
 
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 23
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 30100
         versionName "3.1"
-    }
-    lintOptions {
-        disable 'GoogleAppIndexingWarning'
-        baseline file("lint-baseline.xml")
     }
     flavorDimensions "default"
     productFlavors {
@@ -57,16 +53,15 @@ dependencies {
 }
 
 android {
+
     packagingOptions {
-        exclude 'META-INF/DEPENDENCIES.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/dependencies.txt'
-        exclude 'META-INF/LGPL2.1'
+        resources {
+            excludes += ['META-INF/DEPENDENCIES.txt', 'META-INF/LICENSE.txt', 'META-INF/NOTICE.txt', 'META-INF/NOTICE', 'META-INF/LICENSE', 'META-INF/DEPENDENCIES', 'META-INF/notice.txt', 'META-INF/license.txt', 'META-INF/dependencies.txt', 'META-INF/LGPL2.1']
+        }
     }
+    lint {
+        baseline file('lint-baseline.xml')
+        disable 'GoogleAppIndexingWarning'
+    }
+    namespace 'be.ppareit.swiftp'
 }

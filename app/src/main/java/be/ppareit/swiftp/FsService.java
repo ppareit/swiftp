@@ -465,7 +465,7 @@ public class FsService extends Service implements Runnable {
         Intent restartService = new Intent(getApplicationContext(), this.getClass());
         restartService.setPackage(getPackageName());
         PendingIntent restartServicePI = PendingIntent.getService(
-                getApplicationContext(), 1, restartService, PendingIntent.FLAG_ONE_SHOT);
+                getApplicationContext(), 1, restartService, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmService = (AlarmManager) getApplicationContext()
                 .getSystemService(Context.ALARM_SERVICE);
         alarmService.set(AlarmManager.ELAPSED_REALTIME,
