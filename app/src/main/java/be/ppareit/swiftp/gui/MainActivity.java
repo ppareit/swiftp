@@ -19,6 +19,7 @@
 
 package be.ppareit.swiftp.gui;
 
+import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -64,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
             requestReadWritePermissions();
         }
 
+        if (!haveNotiPermissions()) {
+            requestNotiPermissions();
+        }
+
         if (App.isFreeVersion() && App.isPaidVersionInstalled()) {
             Cat.d("Running demo while paid is installed");
             AlertDialog ad = new AlertDialog.Builder(this)
@@ -93,6 +98,21 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         String[] permissions = new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE};
+        requestPermissions(permissions, PERMISSIONS_REQUEST_CODE);
+    }
+
+    private boolean haveNotiPermissions() {
+        if (VERSION.SDK_INT >= 33) {
+            return checkSelfPermission(POST_NOTIFICATIONS) == PERMISSION_GRANTED
+                    && checkSelfPermission(POST_NOTIFICATIONS) == PERMISSION_GRANTED;
+        } else {
+            return true;
+        }
+    }
+
+    private void requestNotiPermissions() {
+        if (VERSION.SDK_INT < 33) return;
+        String[] permissions = new String[]{POST_NOTIFICATIONS};
         requestPermissions(permissions, PERMISSIONS_REQUEST_CODE);
     }
 

@@ -99,7 +99,7 @@ public class FsNotification {
             nm.createNotificationChannel(channel);
         }
 
-        Notification notification = new NotificationCompat.Builder(context)
+        return new NotificationCompat.Builder(context, channelId)
                 .setContentTitle(contentTitle)
                 .setContentText(contentText)
                 .setContentIntent(contentIntent)
@@ -115,9 +115,6 @@ public class FsNotification {
                 .setShowWhen(false)
                 .setChannelId(channelId)
                 .build();
-
-        // Pass Notification to NotificationManager
-        return notification;
     }
 
 }

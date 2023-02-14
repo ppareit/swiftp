@@ -33,6 +33,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
