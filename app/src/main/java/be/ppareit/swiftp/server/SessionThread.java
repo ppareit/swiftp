@@ -249,7 +249,8 @@ public class SessionThread extends Thread {
                 String line;
                 line = in.readLine(); // will accept \r\n or \n for terminator
                 if (line != null) {
-                    Cat.d("Received line from client: " + line);
+                    //Should normally stay commented. Dumps password into public logcat in plain text.
+                    //Cat.d("Received line from client: " + line);
                     FtpCmd.dispatchCommand(this, line);
                 } else {
                     Cat.i("readLine gave null, quitting");
