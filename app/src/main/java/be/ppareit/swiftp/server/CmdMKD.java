@@ -70,7 +70,7 @@ public class CmdMKD extends FtpCmd implements Runnable {
             sessionThread.writeString(errString);
             Log.i(TAG, "MKD error: " + errString.trim());
         } else {
-            sessionThread.writeString("250 Directory created\r\n");
+            sessionThread.writeString("257 Directory created\r\n");
         }
         Log.i(TAG, "MKD complete");
     }
