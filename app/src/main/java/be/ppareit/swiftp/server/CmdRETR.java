@@ -59,7 +59,13 @@ public class CmdRETR extends FtpCmd implements Runnable {
 
             DocumentFile docFileToRetr = null;
             if (Util.useScopedStorage()) {
-                final String clientPath = fileToRetr.getPath().substring(0, fileToRetr.getPath().lastIndexOf(File.separator));
+                String clientPath;
+                final String ftrPath = fileToRetr.getPath();
+                if (ftrPath.contains(File.separator)) {
+                    clientPath = ftrPath.substring(0, ftrPath.lastIndexOf(File.separator));
+                } else {
+                    clientPath = ftrPath;
+                }
                 docFileToRetr = FileUtil.getDocumentFileWithParamScopedStorage(param, null, clientPath);
                 if (docFileToRetr == null) {
                     errString = "550 File does not exist\r\n";

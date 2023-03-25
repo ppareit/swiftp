@@ -223,6 +223,8 @@ public abstract class FtpCmd implements Runnable {
                 // entire path needed. And then sometimes it doesn't have the entire path lol :)
                 if (param.contains(tree)) {
                     return new File(param);
+                } else if (param.equals(File.separator)) {
+                    return new File(tree); // Fix an occasion where it does not return to root
                 }
             }
             String mPath = "";

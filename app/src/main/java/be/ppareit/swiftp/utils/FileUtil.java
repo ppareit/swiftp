@@ -735,9 +735,13 @@ public abstract class FileUtil {
 
         Uri treeUri = null;
         if (as != null) treeUri = Uri.parse(as);
-        if (treeUri == null) {
-            return null;
+        if (Util.useScopedStorage() && treeUri == null) {
+            // Fix Android 8.0 sd card having null with FsSettings.getExternalStorageUri()
+            // The rest works fine after this
+            treeUri = getTreeUri();
         }
+        if (treeUri == null) return null;
+
         if (file.exists()) {
             Uri documentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, DocumentsContract.getTreeDocumentId(treeUri) + relativePath);
             DocumentFile document = DocumentFile.fromSingleUri(context, documentUri);

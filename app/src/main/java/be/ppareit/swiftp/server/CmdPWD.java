@@ -51,14 +51,19 @@ public class CmdPWD extends FtpCmd implements Runnable {
         // user-visible path (inside the chroot directory).
         try {
             String currentDir = sessionThread.getWorkingDir().getCanonicalPath();
+            File chrootDir = sessionThread.getChrootDir();
             if (Util.useScopedStorage()) {
                 Uri uri = FileUtil.getFullCWDUri("", currentDir);
                 DocumentFile df = null;
                 if (uri != null) df = FileUtil.getDocumentFileFromUri(uri);
                 final String path = FileUtil.getScopedClientPath(currentDir, null, null);
                 if (df != null) currentDir = FileUtil.getUriStoragePathFullFromDocumentFile(df, path);
+                if (chrootDir != null) {
+                    final String chroot = chrootDir.getPath();
+                    // Send back path as "/" instead of as chroot
+                    if (currentDir != null && currentDir.equals(chroot)) currentDir = "/";
+                }
             } else {
-                File chrootDir = sessionThread.getChrootDir();
                 if (chrootDir != null) {
                     currentDir = currentDir.substring(chrootDir.getCanonicalPath().length());
                 }
