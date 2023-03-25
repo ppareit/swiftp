@@ -48,8 +48,13 @@ public class CmdDELE extends FtpCmd implements Runnable {
                 sessionThread.getWorkingDir(), param, false);
 
         if (Util.useScopedStorage()) {
-            final String clientPath = storeFile.getPath().substring(0, storeFile.getPath()
-                    .lastIndexOf(File.separator));
+            String clientPath;
+            final String sfPath = storeFile.getPath();
+            if (sfPath.contains(File.separator)) {
+                clientPath = sfPath.substring(0, sfPath.lastIndexOf(File.separator));
+            } else {
+                clientPath = sfPath;
+            }
             DocumentFile docStoreFile = FileUtil.getDocumentFileWithParamScopedStorage(File.separator +
                     param, null, clientPath);
             tryToDelete(new FileUtil.Gen(docStoreFile), clientPath);
