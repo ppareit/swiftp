@@ -46,6 +46,7 @@ import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
+import be.ppareit.swiftp.Util;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         setTheme(FsSettings.getTheme());
         super.onCreate(savedInstanceState);
 
-        if (!haveReadWritePermissions()) {
+        if (VERSION.SDK_INT < 33 /*denied on Android 13*/ && !haveReadWritePermissions()) {
             requestReadWritePermissions();
         }
 
