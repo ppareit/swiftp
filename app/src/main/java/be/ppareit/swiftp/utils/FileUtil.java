@@ -1035,6 +1035,9 @@ public abstract class FileUtil {
                                     end = true;
                                     break;
                                 }
+                            } else if (!c.isLast()) {
+                                // fix: Don't continue in the dir as it can wrongly match
+                                break;
                             }
                         }
                     } else if (dirMovementFinished && isMatchFound(name, filename)) {
