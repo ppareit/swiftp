@@ -318,7 +318,8 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             File root = new File(a11Path);
             if (!root.canRead() || !root.canWrite()) {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-                sp.edit().putBoolean("OverrideScopedStorageMinimum", true).apply();
+                // Fix: Use commit; override in next method using useScopedStorage() needs it.
+                sp.edit().putBoolean("OverrideScopedStorageMinimum", true).commit();
             }
         }
     }

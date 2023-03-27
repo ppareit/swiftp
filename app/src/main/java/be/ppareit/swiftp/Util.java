@@ -118,10 +118,8 @@ abstract public class Util {
      * Uses an override for when File fails to work during a test as the user sets up the app.
      * */
     public static boolean useScopedStorage() {
-        if (sp == null) {
-            sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-            overrideSDKVer = sp.getBoolean("OverrideScopedStorageMinimum", false);
-        }
+        if (sp == null) sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+        overrideSDKVer = sp.getBoolean("OverrideScopedStorageMinimum", false);
         return Build.VERSION.SDK_INT >= 30 || overrideSDKVer;
     }
 
