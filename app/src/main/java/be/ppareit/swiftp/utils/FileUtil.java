@@ -967,7 +967,15 @@ public abstract class FileUtil {
                     String[] split = s.split(File.separator);
                     String lastSubDir = split[split.length - 1];
                     final String path = cwdUri.getPath();
-                    if (path != null && !path.contains(lastSubDir)) return getFullCWDUriSlow(param);
+                    if (path != null && !path.contains(lastSubDir)) {
+                        // Fix: eg DCIM folder as target where pushing a file to it then makes the
+                        // listing empty from using this as fallback here. Shouldn't fallback anyway
+                        // as the faster custom way does have it correct.
+                        String chroot = getUriStoragePathFullFromDocumentFile(result, "");
+                        if (chroot == null || !chroot.contains(s)) {
+                            return getFullCWDUriSlow(param);
+                        }
+                    }
                     return result.getUri();
                 }
             } catch (NullPointerException e) {
