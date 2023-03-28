@@ -42,7 +42,7 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
@@ -78,7 +78,19 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         updateRunningState();
         runningPref.setOnPreferenceChangeListener((preference, newValue) -> {
             if ((Boolean) newValue) {
-                FsService.start();
+                if (FsSettings.getExternalStorageUri() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    FsService.start();
+                } else {
+                    AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
+                    adb.setTitle("Write External Storage is Required");
+                    adb.setMessage("Please set the starting directory at Advanced Settings->Writing external storage");
+                    adb.setPositiveButton("Ok", (dialog, which) -> {
+                        dialog.dismiss();
+                        runningPref.setChecked(false);
+                    });
+                    adb.show();
+                    FsService.stop();
+                }
             } else {
                 FsService.stop();
             }
