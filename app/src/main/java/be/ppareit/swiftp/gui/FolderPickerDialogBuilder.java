@@ -22,10 +22,10 @@ package be.ppareit.swiftp.gui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import net.vrallev.android.cat.Cat;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,7 +77,7 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
         try {
             mRoot = new File(mRoot.getCanonicalPath());
         } catch (IOException e) {
-            Cat.w("Directory root is incorrect, fixing to external storage.");
+            Log.w("swiftp","Directory root is incorrect, fixing to external storage.");
             mRoot = Environment.getExternalStorageDirectory();
         }
 
@@ -94,8 +94,8 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
                     return (file.isDirectory() && !file.isHidden());
                 });
         if (dirs == null) {
-            Cat.w("Unable to receive dirs list, no Access rights?");
-            Cat.d("Unable to fix, continue with empty list");
+            Log.w("swiftp", "Unable to receive dirs list, no Access rights?");
+            Log.d("swiftp","Unable to fix, continue with empty list");
             dirs = new String[]{};
         }
         mAdapter.add("..");

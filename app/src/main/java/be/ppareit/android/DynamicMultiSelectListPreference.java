@@ -22,9 +22,9 @@ package be.ppareit.android;
 import android.content.Context;
 import android.preference.MultiSelectListPreference;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
-import net.vrallev.android.cat.Cat;
 
 /**
  * This is the same as the sdk MultiSelectListPreference but each time
@@ -41,7 +41,7 @@ public class DynamicMultiSelectListPreference extends MultiSelectListPreference 
 
     @Override
     protected View onCreateDialogView() {
-        Cat.d("Creating dialog view");
+        Log.d("swiftp", "Creating dialog view");
 
         mPopulateListener.onPopulate(this);
 

@@ -30,7 +30,6 @@ import be.ppareit.swiftp.Util;
 
 import android.util.Log;
 
-import net.vrallev.android.cat.Cat;
 
 /**
  * CmdMFMT implements File Modification Time. See draft-somers-ftp-mfxx-04 in documentation.
@@ -46,14 +45,14 @@ public class CmdMFMT extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
-        Cat.d("run: MFMT executing, input: " + mInput);
+        Log.d("swiftp","run: MFMT executing, input: " + mInput);
 
         //Syntax: "MFMT" SP time-val SP pathname CRLF
         String parameter = getParameter(mInput);
         int splitPosition = parameter.indexOf(' ');
         if (splitPosition == -1) {
             sessionThread.writeString("500 wrong number of parameters\r\n");
-            Cat.d("run: MFMT failed, wrong number of parameters");
+            Log.d("swiftp","run: MFMT failed, wrong number of parameters");
             return;
         }
 
@@ -70,7 +69,7 @@ public class CmdMFMT extends FtpCmd implements Runnable {
             timeVal = Util.parseDate(timeString);
         } catch (ParseException e) {
             sessionThread.writeString("501 unable to parse parameter time-val\r\n");
-            Cat.d("run: MFMT failed, unable to parse parameter time-val");
+            Log.d("swiftp","run: MFMT failed, unable to parse parameter time-val");
             return;
         }
 
@@ -79,14 +78,14 @@ public class CmdMFMT extends FtpCmd implements Runnable {
 
         if (!file.exists()) {
             sessionThread.writeString("550 file does not exist on server\r\n");
-            Cat.d("run: MFMT failed, file does not exist");
+            Log.d("swiftp","run: MFMT failed, file does not exist");
             return;
         }
 
         boolean success = file.setLastModified(timeVal.getTime());
         if (!success) {
             sessionThread.writeString("500 unable to modify last modification time\r\n");
-            Cat.d("run: MFMT failed, unable to modify last modification time");
+            Log.d("swiftp","run: MFMT failed, unable to modify last modification time");
             // more info at https://code.google.com/p/android/issues/detail?id=18624
             return;
         }
@@ -96,7 +95,7 @@ public class CmdMFMT extends FtpCmd implements Runnable {
                 + file.getAbsolutePath() + "\r\n";
         sessionThread.writeString(response);
 
-        Cat.d("run: MFMT completed successful");
+        Log.d("swiftp","run: MFMT completed successful");
     }
 
 }

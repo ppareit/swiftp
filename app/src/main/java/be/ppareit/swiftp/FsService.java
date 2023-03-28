@@ -39,7 +39,6 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
-import net.vrallev.android.cat.Cat;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -148,7 +147,7 @@ public class FsService extends Service implements Runnable {
         //https://developer.android.com/reference/android/app/Service.html
         //if there are not any pending start commands to be delivered to the service, it will be called with a null intent object,
         if (intent != null && intent.getAction() != null) {
-            Cat.d("onStartCommand called with action: " + intent.getAction());
+            Log.d("swiftp","onStartCommand called with action: " + intent.getAction());
 
             switch (intent.getAction()) {
                 case ACTION_REQUEST_START:
@@ -365,7 +364,7 @@ public class FsService extends Service implements Runnable {
                             && !address.isLinkLocalAddress()
                             && address instanceof Inet4Address) {
                         if (returnAddress != null) {
-                            Cat.w("Found more than one valid address local inet address, why???");
+                            Log.w("swiftp","Found more than one valid address local inet address, why???");
                         }
                         returnAddress = address;
                     }

@@ -26,7 +26,6 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
-import net.vrallev.android.cat.Cat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,7 +43,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
     }
 
     public void doStorOrAppe(String param, boolean append) {
-        Cat.d("STOR/APPE executing with append = " + append);
+        Log.d("swiftp","STOR/APPE executing with append = " + append);
 
         File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
 
@@ -104,7 +103,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 }
 
             } catch (FileNotFoundException e) {
-                Cat.e("error : ", e);
+                Log.e("swiftp","error : ", e);
                 try {
                     errString = "451 Couldn't open file \"" + param + "\" aka \""
                             + storeFile.getCanonicalPath() + "\" for writing\r\n";
@@ -120,18 +119,18 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 errString = "425 Couldn't open data socket\r\n";
                 break storing;
             }
-            Cat.d("Data socket ready");
+            Log.d("swiftp","Data socket ready");
             sessionThread.writeString("150 Data socket ready\r\n");
             byte[] buffer = new byte[SessionThread.DATA_CHUNK_SIZE];
 
             int numRead;
 
-            Cat.d("Mode is " + (sessionThread.isBinaryMode() ? "binary" : "ascii"));
+            Log.d("swiftp","Mode is " + (sessionThread.isBinaryMode() ? "binary" : "ascii"));
 
             while (true) {
                 switch (numRead = sessionThread.receiveFromDataSocket(buffer)) {
                     case -1:
-                        Cat.d("Returned from final read");
+                        Log.d("swiftp","Returned from final read");
                         // We're finished reading
                         break storing;
                     case 0:
@@ -162,7 +161,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
                             }
                         } catch (IOException e) {
                             errString = "451 File IO problem. Device might be full.\r\n";
-                            Cat.d("Exception while storing: " + e);
+                            Log.d("swiftp","Exception while storing: " + e);
                             break storing;
                         }
                         break;
@@ -177,7 +176,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
         }
 
         if (errString != null) {
-            Cat.i("STOR error: " + errString.trim());
+            Log.i("swiftp","STOR error: " + errString.trim());
             sessionThread.writeString(errString);
         } else {
             sessionThread.writeString("226 Transmission complete\r\n");
@@ -186,6 +185,6 @@ abstract public class CmdAbstractStore extends FtpCmd {
             MediaUpdater.notifyFileCreated(storeFile.getPath());
         }
         sessionThread.closeDataSocket();
-        Cat.d("STOR finished");
+        Log.d("swiftp","STOR finished");
     }
 }

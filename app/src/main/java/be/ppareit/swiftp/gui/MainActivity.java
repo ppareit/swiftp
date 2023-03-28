@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,7 +38,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import net.vrallev.android.cat.Cat;
 
 import java.util.Arrays;
 
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Cat.d("created");
+        Log.d("swiftp","created");
         setTheme(FsSettings.getTheme());
         super.onCreate(savedInstanceState);
 
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (App.isFreeVersion() && App.isPaidVersionInstalled()) {
-            Cat.d("Running demo while paid is installed");
+            Log.d("swiftp","Running demo while paid is installed");
             AlertDialog ad = new AlertDialog.Builder(this)
                     .setTitle(R.string.demo_while_paid_dialog_title)
                     .setMessage(R.string.demo_while_paid_dialog_message)
@@ -101,11 +101,11 @@ public class MainActivity extends AppCompatActivity {
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode != PERMISSIONS_REQUEST_CODE) {
-            Cat.e("Unhandled request code");
+            Log.e("swiftp","Unhandled request code");
             return;
         }
-        Cat.d("permissions: " + Arrays.toString(permissions));
-        Cat.d("grantResults: " + Arrays.toString(grantResults));
+        Log.d("swiftp","permissions: " + Arrays.toString(permissions));
+        Log.d("swiftp","grantResults: " + Arrays.toString(grantResults));
         if (grantResults.length > 0) {
             // Permissions not granted, close down
             for (int result : grantResults) {

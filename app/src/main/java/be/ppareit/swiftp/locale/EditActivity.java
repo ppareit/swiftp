@@ -23,13 +23,14 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.twofortyfouram.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
 
-import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
@@ -56,7 +57,7 @@ public class EditActivity extends AbstractAppCompatPluginActivity {
             ApplicationInfo ai = pm.getApplicationInfo(getCallingPackage(), 0);
             callingApplicationLabel = pm.getApplicationLabel(ai);
         } catch (final PackageManager.NameNotFoundException e) {
-            Cat.e("Calling package couldn't be found%s", e); //$NON-NLS-1$
+            Log.e("swiftp","Calling package couldn't be found%s", e); //$NON-NLS-1$
         }
         if (null != callingApplicationLabel) {
             setTitle(callingApplicationLabel);
@@ -85,7 +86,7 @@ public class EditActivity extends AbstractAppCompatPluginActivity {
     public void onPostCreateWithPreviousResult(@NonNull Bundle previousBundle,
                                                @NonNull String previousBlurb) {
         if (!isBundleValid(previousBundle)) {
-            Cat.e("Invalid bundle received, repairing to default");
+            Log.e("swiftp","Invalid bundle received, repairing to default");
             previousBundle = generateBundle(this, false);
         }
         boolean running = previousBundle.getBoolean(BUNDLE_BOOLEAN_RUNNING);

@@ -2,7 +2,6 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
-import net.vrallev.android.cat.Cat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +26,7 @@ public class CmdHASH extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
-        Cat.d("HASH executing");
+        Log.d("swiftp","HASH executing");
         String param = getParameter(input);
         File fileToHash;
         String errString = null;
@@ -39,15 +38,15 @@ public class CmdHASH extends FtpCmd implements Runnable {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;
             } else if (fileToHash.isDirectory()) {
-                Cat.d("Ignoring HASH for directory");
+                Log.d("swiftp","Ignoring HASH for directory");
                 errString = "553 Can't HASH a directory\r\n";
                 break mainblock;
             } else if (!fileToHash.exists()) {
-                Cat.d("Can't HASH nonexistent file: " + fileToHash.getAbsolutePath());
+                Log.d("swiftp","Can't HASH nonexistent file: " + fileToHash.getAbsolutePath());
                 errString = "550 File does not exist\r\n";
                 break mainblock;
             } else if (!fileToHash.canRead()) {
-                Cat.i("Failed HASH permission (canRead() is false)");
+                Log.i("swiftp","Failed HASH permission (canRead() is false)");
                 errString = "556 No read permissions\r\n";
                 break mainblock;
             }
@@ -111,6 +110,6 @@ public class CmdHASH extends FtpCmd implements Runnable {
         if (errString != null) {
             sessionThread.writeString(errString);
         }
-        Cat.d("HASH done");
+        Log.d("swiftp","HASH done");
     }
 }

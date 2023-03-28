@@ -20,12 +20,13 @@ package be.ppareit.swiftp.locale;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.twofortyfouram.assertion.BundleAssertions;
 import com.twofortyfouram.spackle.AppBuildInfo;
 
-import net.vrallev.android.cat.Cat;
 
 public final class SettingsBundleHelper {
 
@@ -41,7 +42,7 @@ public final class SettingsBundleHelper {
             BundleAssertions.assertHasBoolean(bundle, BUNDLE_BOOLEAN_RUNNING);
             BundleAssertions.assertHasInt(bundle, BUNDLE_VERSION_CODE);
         } catch (AssertionError e) {
-            Cat.e("Bundle failed verification");
+            Log.e("swiftp","Bundle failed verification");
             return false;
         }
         return true;

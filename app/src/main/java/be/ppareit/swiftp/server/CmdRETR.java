@@ -21,7 +21,6 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
-import net.vrallev.android.cat.Cat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,7 +38,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
-        Cat.d("RETR executing");
+        Log.d("swiftp","RETR executing");
         String param = getParameter(input);
         File fileToRetr;
         String errString = null;
@@ -51,15 +50,15 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;
             } else if (fileToRetr.isDirectory()) {
-                Cat.d("Ignoring RETR for directory");
+                Log.d("swiftp","Ignoring RETR for directory");
                 errString = "550 Can't RETR a directory\r\n";
                 break mainblock;
             } else if (!fileToRetr.exists()) {
-                Cat.d("Can't RETR nonexistent file: " + fileToRetr.getAbsolutePath());
+                Log.d("swiftp","Can't RETR nonexistent file: " + fileToRetr.getAbsolutePath());
                 errString = "550 File does not exist\r\n";
                 break mainblock;
             } else if (!fileToRetr.canRead()) {
-                Cat.i("Failed RETR permission (canRead() is false)");
+                Log.i("swiftp","Failed RETR permission (canRead() is false)");
                 errString = "550 No read permissions\r\n";
                 break mainblock;
             }
@@ -70,15 +69,15 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 byte[] buffer = new byte[SessionThread.DATA_CHUNK_SIZE];
                 int bytesRead;
                 if (sessionThread.openDataSocket()) {
-                    Cat.d("RETR opened data socket");
+                    Log.d("swiftp","RETR opened data socket");
                 } else {
                     errString = "425 Error opening socket\r\n";
-                    Cat.i("Error in initDataSocket()");
+                    Log.i("swiftp","Error in initDataSocket()");
                     break mainblock;
                 }
                 sessionThread.writeString("150 Sending file\r\n");
                 if (sessionThread.isBinaryMode()) { // RANG is supported only in binary mode.
-                    Cat.d("Transferring in binary mode");
+                    Log.d("swiftp","Transferring in binary mode");
                     long offset = 0L;
                     long endPosition = fileToRetr.length() - 1;
                     if (sessionThread.offset >= 0) {
@@ -102,15 +101,15 @@ public class CmdRETR extends FtpCmd implements Runnable {
 
                         if (!success) {
                             errString = "426 Data socket error\r\n";
-                            Cat.i("Data socket error");
+                            Log.i("swiftp","Data socket error");
                             break mainblock;
                         }
                     }
                 } else { // We're in ASCII mode
-                    Cat.d("Transferring in ASCII mode");
+                    Log.d("swiftp","Transferring in ASCII mode");
                     if (sessionThread.offset >= 0) {
                         errString = "550 Unable to seek to requested position in ASCII mode";
-                        Cat.e("Error: " + errString);
+                        Log.e("swiftp","Error: " + errString);
                         break mainblock;
                     }
                     // We have to convert all solitary \n to \r\n
@@ -169,6 +168,6 @@ public class CmdRETR extends FtpCmd implements Runnable {
         } else {
             sessionThread.writeString("226 Transmission finished\r\n");
         }
-        Cat.d("RETR done");
+        Log.d("swiftp","RETR done");
     }
 }
