@@ -39,13 +39,13 @@ import android.preference.Preference;
 import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import net.vrallev.android.cat.Cat;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -78,7 +78,19 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         updateRunningState();
         runningPref.setOnPreferenceChangeListener((preference, newValue) -> {
             if ((Boolean) newValue) {
-                FsService.start();
+                if (FsSettings.getExternalStorageUri() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    FsService.start();
+                } else {
+                    AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
+                    adb.setTitle("Write External Storage is Required");
+                    adb.setMessage("Please set the starting directory at Advanced Settings->Writing external storage");
+                    adb.setPositiveButton("Ok", (dialog, which) -> {
+                        dialog.dismiss();
+                        runningPref.setChecked(false);
+                    });
+                    adb.show();
+                    FsService.stop();
+                }
             } else {
                 FsService.stop();
             }
@@ -120,7 +132,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             try {
                 portNumber = Integer.parseInt(newPortNumberString);
             } catch (Exception e) {
-                Cat.d("Error parsing port number! Moving on...");
+                Log.d("swiftp","Error parsing port number! Moving on...");
             }
             if (portNumber <= 0 || 65535 < portNumber) {
                 Toast.makeText(getActivity(),
@@ -182,7 +194,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
 
         Preference helpPref = findPref("help");
         helpPref.setOnPreferenceClickListener(preference -> {
-            Cat.v("On preference help clicked");
+            Log.v("swiftp","On preference help clicked");
             Context context = getActivity();
             AlertDialog ad = new AlertDialog.Builder(context)
                     .setTitle(R.string.help_dlg_title)
@@ -228,7 +240,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         updateRunningState();
         updateUsersPref();
 
-        Cat.d("onResume: Registering the FTP server actions");
+        Log.d("swiftp","onResume: Registering the FTP server actions");
         IntentFilter filter = new IntentFilter();
         filter.addAction(FsService.ACTION_STARTED);
         filter.addAction(FsService.ACTION_STOPPED);
@@ -240,17 +252,17 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
     public void onPause() {
         super.onPause();
 
-        Cat.v("onPause: Unregistering the FTPServer actions");
+        Log.v("swiftp","onPause: Unregistering the FTPServer actions");
         getActivity().unregisterReceiver(mFsActionsReceiver);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-        Cat.d("onActivityResult called");
+        Log.d("swiftp","onActivityResult called");
         if (requestCode == ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
             Uri treeUri = resultData.getData();
             String path = treeUri.getPath();
-            Cat.d("Action Open Document Tree on path " + path);
+            Log.d("swiftp","Action Open Document Tree on path " + path);
 
             final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
             if (!":".equals(path.substring(path.length() - 1)) || path.contains("primary")) {
@@ -302,7 +314,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             // Fill in the FTP server address
             InetAddress address = FsService.getLocalInetAddress();
             if (address == null) {
-                Cat.v("Unable to retrieve wifi ip address");
+                Log.v("swiftp","Unable to retrieve wifi ip address");
                 runningPref.setSummary(R.string.running_summary_failed_to_get_ip_address);
                 return;
             }
@@ -324,7 +336,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
     BroadcastReceiver mFsActionsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Cat.v("action received: " + intent.getAction());
+            Log.v("swiftp","action received: " + intent.getAction());
             if (intent.getAction() == null) {
                 return;
             }

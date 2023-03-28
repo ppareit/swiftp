@@ -30,12 +30,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
-import net.vrallev.android.cat.Cat;
 
 import java.net.InetAddress;
 
@@ -52,7 +52,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Cat.v("Received broadcast: " + intent.getAction());
+        Log.v("swiftp","Received broadcast: " + intent.getAction());
         // watch for the broadcasts by the ftp server and update the widget if needed
         final String action = intent.getAction();
         if (FsService.ACTION_STARTED.equals(action) || FsService.ACTION_STOPPED.equals(action)) {
@@ -65,7 +65,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager,
                          int[] appWidgetIds) {
-        Cat.d("onUpdated called");
+        Log.d("swiftp","onUpdated called");
         // let the updating happen by a service
         Intent updateIntent = new Intent(context, UpdateService.class);
         ContextCompat.startForegroundService(context, updateIntent);
@@ -75,11 +75,11 @@ public class FsWidgetProvider extends AppWidgetProvider {
         // all real work is done in a service to avoid ANR messages
         @Override
         public int onStartCommand(Intent intent, int flags, int startId) {
-            Cat.d("UpdateService start command");
+            Log.d("swiftp","UpdateService start command");
             // We won't take long, but still we need to keep display a notification while updating
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             if (nm == null) {
-                Cat.e("We were unable to receive the notification manager.");
+                Log.e("swiftp","We were unable to receive the notification manager.");
                 return START_NOT_STICKY;
             }
             String channelId = "be.ppareit.swiftp.widget_provider.channelId";
@@ -113,7 +113,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
                 // get ip address
                 InetAddress address = FsService.getLocalInetAddress();
                 if (address == null) {
-                    Cat.w("Unable to retrieve the local ip address");
+                    Log.w("swiftp","Unable to retrieve the local ip address");
                     text = "ERROR";
                 } else {
                     text = address.getHostAddress();

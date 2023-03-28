@@ -23,7 +23,6 @@ import java.io.File;
 
 import android.util.Log;
 
-import net.vrallev.android.cat.Cat;
 
 /**
  * CmdRNFR implements RENAME FROM (RNFR)
@@ -42,7 +41,7 @@ public class CmdRNFR extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
-        Cat.d("Executing RNFR");
+        Log.d("swiftp","Executing RNFR");
         String param = getParameter(input);
         String errString = null;
         File file = null;
@@ -59,7 +58,7 @@ public class CmdRNFR extends FtpCmd implements Runnable {
         }
         if (errString != null) {
             sessionThread.writeString(errString);
-            Cat.d("RNFR failed: " + errString.trim());
+            Log.d("swiftp","RNFR failed: " + errString.trim());
             sessionThread.setRenameFrom(null);
         } else {
             sessionThread.writeString("350 Filename noted, now send RNTO\r\n");

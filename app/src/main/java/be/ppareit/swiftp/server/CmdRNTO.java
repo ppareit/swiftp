@@ -25,7 +25,6 @@ import java.io.IOException;
 import android.os.Build;
 import android.util.Log;
 
-import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.utils.FileUtil;
@@ -48,14 +47,14 @@ public class CmdRNTO extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
-        Cat.d("RNTO executing");
+        Log.d("swiftp","RNTO executing");
         String param = getParameter(input);
         String errString = null;
         File toFile = null;
         mainblock:
         {
             toFile = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
-            Cat.i("RNTO to file: " + toFile.getPath());
+            Log.i("swiftp","RNTO to file: " + toFile.getPath());
             if (violatesChroot(toFile)) {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;
@@ -65,7 +64,7 @@ public class CmdRNTO extends FtpCmd implements Runnable {
                 errString = "550 Rename error, maybe RNFR not sent\r\n";
                 break mainblock;
             }
-            Cat.i("RNTO from file: " + fromFile.getPath());
+            Log.i("swiftp","RNTO from file: " + fromFile.getPath());
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                 // TODO: this code is working around a bug that java6 and before cannot
@@ -105,11 +104,11 @@ public class CmdRNTO extends FtpCmd implements Runnable {
         }
         if (errString != null) {
             sessionThread.writeString(errString);
-            Cat.i("RNFR failed: " + errString.trim());
+            Log.i("swiftp","RNFR failed: " + errString.trim());
         } else {
             sessionThread.writeString("250 rename successful\r\n");
         }
         sessionThread.setRenameFrom(null);
-        Cat.d("RNTO finished");
+        Log.d("swiftp","RNTO finished");
     }
 }

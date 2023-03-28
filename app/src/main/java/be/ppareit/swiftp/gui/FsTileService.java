@@ -5,9 +5,10 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
+import android.util.Log;
+
 import androidx.annotation.RequiresApi;
 
-import net.vrallev.android.cat.Cat;
 
 import java.net.InetAddress;
 
@@ -50,7 +51,7 @@ public class FsTileService extends TileService {
             // Fill in the FTP server address
             InetAddress address = FsService.getLocalInetAddress();
             if (address == null) {
-                Cat.v("Unable to retrieve wifi ip address");
+                Log.v("swiftp","Unable to retrieve wifi ip address");
                 tile.setLabel(getString(R.string.swiftp_name));
                 return;
             }

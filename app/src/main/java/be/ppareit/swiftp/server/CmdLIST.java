@@ -33,7 +33,6 @@ import java.util.Locale;
 
 import android.util.Log;
 
-import net.vrallev.android.cat.Cat;
 
 public class CmdLIST extends CmdAbstractListing implements Runnable {
 
@@ -52,10 +51,10 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
 
         mainblock: {
             String param = getParameter(input);
-            Cat.d("LIST parameter: " + param);
+            Log.d("swiftp","LIST parameter: " + param);
             while (param.startsWith("-")) {
                 // Skip all dashed -args, if present
-                Cat.d("LIST is skipping dashed arg " + param);
+                Log.d("swiftp","LIST is skipping dashed arg " + param);
                 param = getParameter(param);
             }
             File fileToList = null;
@@ -95,9 +94,9 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
 
         if (errString != null) {
             sessionThread.writeString(errString);
-            Cat.d("LIST failed with: " + errString);
+            Log.d("swiftp","LIST failed with: " + errString);
         } else {
-            Cat.d("LIST completed OK");
+            Log.d("swiftp","LIST completed OK");
         }
         // The success or error response over the control connection will
         // have already been handled by sendListing, so we can just quit now.
@@ -110,7 +109,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
         StringBuilder response = new StringBuilder();
 
         if (!file.exists()) {
-            Cat.i("makeLsString had nonexistent file");
+            Log.i("swiftp","makeLsString had nonexistent file");
             return null;
         }
 
@@ -121,7 +120,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
         String lastNamePart = file.getName();
         // Many clients can't handle files containing these symbols
         if (lastNamePart.contains("*") || lastNamePart.contains("/")) {
-            Cat.i("Filename omitted due to disallowed character");
+            Log.i("swiftp","Filename omitted due to disallowed character");
             return null;
         } else {
             // The following line generates many calls in large directories

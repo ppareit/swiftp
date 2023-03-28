@@ -28,10 +28,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import net.vrallev.android.cat.Cat;
 
 import java.net.InetAddress;
 
@@ -44,7 +44,7 @@ public class FsNotification {
     public static final int NOTIFICATION_ID = 7890;
 
     public static Notification setupNotification(Context context) {
-        Cat.d("Setting up the notification");
+        Log.d("swiftp","Setting up the notification");
         // Get NotificationManager reference
         NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
@@ -96,6 +96,7 @@ public class FsNotification {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(channelId, name, importance);
             channel.setDescription(description);
+            channel.setShowBadge(false);
             nm.createNotificationChannel(channel);
         }
 

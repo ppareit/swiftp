@@ -23,8 +23,8 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.util.Log;
 
-import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.gui.FsWidgetProvider;
 
@@ -99,7 +99,7 @@ public class App extends Application {
             PackageManager pm = context.getPackageManager();
             return pm.getPackageInfo(packageName, 0).versionName;
         } catch (NameNotFoundException e) {
-            Cat.e("Unable to find the name " + packageName + " in the package");
+            Log.e("swiftp","Unable to find the name " + packageName + " in the package");
             return null;
         }
     }
