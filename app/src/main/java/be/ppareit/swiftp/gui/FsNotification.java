@@ -96,6 +96,7 @@ public class FsNotification {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(channelId, name, importance);
             channel.setDescription(description);
+            channel.setShowBadge(false);
             nm.createNotificationChannel(channel);
         }
 
