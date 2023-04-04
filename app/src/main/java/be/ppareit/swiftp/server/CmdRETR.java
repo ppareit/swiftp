@@ -54,7 +54,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
         mainblock:
         {
             fileToRetr = inputPathToChrootedFile(sessionThread.getChrootDir(),
-                    sessionThread.getWorkingDir(), param, false);
+                    sessionThread.getWorkingDir(), param);
             Uri uri;
 
             DocumentFile docFileToRetr = null;

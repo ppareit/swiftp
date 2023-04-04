@@ -48,7 +48,7 @@ public class CmdMLST extends FtpCmd implements Runnable {
             param = "/";
         }else{
             fileToFormat = inputPathToChrootedFile(sessionThread.getChrootDir(),
-                    sessionThread.getWorkingDir(), param, false);
+                    sessionThread.getWorkingDir(), param);
         }
 
         if (fileToFormat.exists()) {

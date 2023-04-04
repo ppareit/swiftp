@@ -20,10 +20,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package be.ppareit.swiftp.server;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import be.ppareit.swiftp.Util;
 import android.util.Log;
@@ -46,7 +42,7 @@ public class CmdMDTM extends FtpCmd implements Runnable {
         Log.d(TAG, "run: MDTM executing, input: " + mInput);
         String param = getParameter(mInput);
         File file = inputPathToChrootedFile(sessionThread.getChrootDir(),
-                sessionThread.getWorkingDir(), param, false);
+                sessionThread.getWorkingDir(), param);
 
         if (file.exists()) {
             long lastModified = file.lastModified();

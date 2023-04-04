@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 
 import android.os.Build;
-import android.util.Log;
 
 import net.vrallev.android.cat.Cat;
 
@@ -55,7 +54,7 @@ public class CmdRNTO extends FtpCmd implements Runnable {
         mainblock:
         {
             toFile = inputPathToChrootedFile(sessionThread.getChrootDir(),
-                    sessionThread.getWorkingDir(), param, false);
+                    sessionThread.getWorkingDir(), param);
             Cat.i("RNTO to file: " + toFile.getPath());
             if (violatesChroot(toFile)) {
                 errString = "550 Invalid name or chroot violation\r\n";

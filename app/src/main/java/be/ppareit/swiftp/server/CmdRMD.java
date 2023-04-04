@@ -91,7 +91,7 @@ public class CmdRMD extends FtpCmd implements Runnable {
                 break mainblock;
             }
             toRemove = inputPathToChrootedFile(sessionThread.getChrootDir(),
-                    sessionThread.getWorkingDir(), param, false);
+                    sessionThread.getWorkingDir(), param);
             if (violatesChroot(toRemove)) {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;

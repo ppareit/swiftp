@@ -49,7 +49,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
         Cat.d("STOR/APPE executing with append = " + append);
 
         File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(),
-                sessionThread.getWorkingDir(), param, false);
+                sessionThread.getWorkingDir(), param);
         DocumentFile docStoreFile = null;
         String errString = null;
         FileOutputStream out = null;
