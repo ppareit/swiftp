@@ -317,8 +317,14 @@ public abstract class FileUtil {
             return true;
         }
 
-        // Try with Storage Access Framework.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && FileUtil.isOnExtSdCard(file, context)) {
+        if (Util.useScopedStorage()) {
+            // The original code below is having some random failures on Android 13 internal tests.
+            // This works around that and has no more failures.
+            DocumentFile documentFile = getDocumentFileFromFileScopedStorage(file, file.getPath());
+            if (documentFile == null) return false;
+            return documentFile.exists();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (FileUtil.isOnExtSdCard(file, context))) {
+            // Try with Storage Access Framework.
             DocumentFile document = getDocumentFile(file, true, context);
             if (document == null) {
                 return false;
@@ -1183,6 +1189,8 @@ public abstract class FileUtil {
         if (f != null) param = f.toString();
         else param = s;
         if (param.contains(tree)) param = param.substring(param.indexOf(tree) + tree.length());
+        // Fix for keeping path separators correct
+        if (!param.isEmpty() && !param.endsWith(File.separator)) param += File.separator;
         return param;
     }
 

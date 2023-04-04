@@ -52,25 +52,12 @@ public class CmdPWD extends FtpCmd implements Runnable {
         try {
             String currentDir = sessionThread.getWorkingDir().getCanonicalPath();
             File chrootDir = sessionThread.getChrootDir();
-            if (Util.useScopedStorage()) {
-                Uri uri = FileUtil.getFullCWDUri("", currentDir);
-                DocumentFile df = null;
-                if (uri != null) df = FileUtil.getDocumentFileFromUri(uri);
-                final String path = FileUtil.getScopedClientPath(currentDir, null, null);
-                if (df != null) currentDir = FileUtil.getUriStoragePathFullFromDocumentFile(df, path);
-                if (chrootDir != null) {
-                    final String chroot = chrootDir.getPath();
-                    // Send back path as "/" instead of as chroot
-                    if (currentDir != null && currentDir.equals(chroot)) currentDir = "/";
-                }
-            } else {
-                if (chrootDir != null) {
-                    currentDir = currentDir.substring(chrootDir.getCanonicalPath().length());
-                }
+            if (chrootDir != null) {
+                currentDir = currentDir.substring(chrootDir.getCanonicalPath().length());
             }
             // The root directory requires special handling to restore its
             // leading slash
-            if (currentDir == null || currentDir.length() == 0) {
+            if (currentDir.length() == 0) {
                 currentDir = "/";
             }
             sessionThread.writeString("257 \"" + currentDir + "\"\r\n");

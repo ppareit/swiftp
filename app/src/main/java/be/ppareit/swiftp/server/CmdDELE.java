@@ -45,7 +45,7 @@ public class CmdDELE extends FtpCmd implements Runnable {
         Log.d(TAG, "DELE executing");
         String param = getParameter(input);
         File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(),
-                sessionThread.getWorkingDir(), param, false);
+                sessionThread.getWorkingDir(), param);
 
         if (Util.useScopedStorage()) {
             String clientPath;

@@ -21,8 +21,6 @@ package be.ppareit.swiftp.server;
 
 import java.io.File;
 
-import android.util.Log;
-
 import net.vrallev.android.cat.Cat;
 
 /**
@@ -49,7 +47,7 @@ public class CmdRNFR extends FtpCmd implements Runnable {
         mainblock:
         {
             file = inputPathToChrootedFile(sessionThread.getChrootDir(),
-                    sessionThread.getWorkingDir(), param, false);
+                    sessionThread.getWorkingDir(), param);
             if (violatesChroot(file)) {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;
