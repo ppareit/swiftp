@@ -54,13 +54,19 @@ public abstract class CmdAbstractListing extends FtpCmd {
         }
         Log.d(TAG, "Listing directory: " + dir.toString());
 
+        return listEntries(response, dir);
+    }
+
+    private String listEntries(StringBuilder response, File dir) {
         // Get a listing of all files and directories in the path
         File[] entries = dir.listFiles();
         if (entries == null) {
             return "500 Couldn't list directory. Check config and mount status.\r\n";
         }
         Log.d(TAG, "Dir len " + entries.length);
-        try {
+
+        // Commented for performance. Not seeing any negative effect from not using. Client should do this anyway.
+/*        try {
             Arrays.sort(entries, listingComparator);
         } catch (Exception e) {
             // once got a FC on this, seems it is possible to have a dir that
@@ -69,13 +75,96 @@ public abstract class CmdAbstractListing extends FtpCmd {
             // play for sure, and get back the entries
             entries = dir.listFiles();
         }
+
+        if (entries == null) {
+            return "500 Couldn't list directory. Check config and mount status.\r\n";
+        }*/
+
+        // 5,161 files being listed:
+        // Old non-threaded time: 9 seconds
+        // New threaded time: < 1 second
+        final int cpuThreadCount = Runtime.getRuntime().availableProcessors();
+        if (entries.length < cpuThreadCount) { // use cpu count as an absolute minimum
+            buildResponseOldStyle(response, entries);
+        } else {
+            buildResponseThreaded(response, entries, cpuThreadCount);
+        }
+
+        return null;
+    }
+
+    private void buildResponseOldStyle(StringBuilder response, File[] entries) {
         for (File entry : entries) {
             String curLine = makeLsString(entry);
             if (curLine != null) {
                 response.append(curLine);
             }
         }
-        return null;
+    }
+
+    private void buildResponseThreaded(StringBuilder response, File[] entries, final int cpuThreadCount) {
+        // Prep for threading per core/thread count
+        // More than 2 threads should only help more as the entries count increase
+        Thread[] threads = new Thread[cpuThreadCount];
+        StringBuilder[] responses = new StringBuilder[cpuThreadCount];
+        final int totalCount = entries.length;
+        final int splitCount = totalCount / cpuThreadCount;
+        int[] startLoc = new int[cpuThreadCount];
+        int[] endLoc = new int[cpuThreadCount]; // eg 270 is total count 271 since starting at 0
+        for (int i = 0; i < cpuThreadCount; i++) {
+            startLoc[i] = splitCount * i;
+            if (i > 0) startLoc[i]++; // add one so they don't start where the other ends
+            endLoc[i] = i == 0 ? splitCount : splitCount * (i + 1);
+            if (i == cpuThreadCount - 1) {
+                if (endLoc[i] != totalCount - 1)
+                    endLoc[i] = totalCount - 1; // sometimes off
+            }
+            responses[i] = new StringBuilder();
+        }
+
+        // Split off onto the cores/threads of the device for more performance here
+        for (int i = 0; i < cpuThreadCount; i++) {
+            threads[i] = dynamicThreadSplitter(entries, responses, i, startLoc, endLoc);
+            threads[i].start();
+        }
+
+        // Need to wait until all are finished starting with first running to last running
+        dynamicThreadJoiner(threads);
+
+        // Need to include results from first to last to keep them in the proper order
+        response.append(dynamicResponseJoiner(responses));
+    }
+
+    private Thread dynamicThreadSplitter(File[] entries, StringBuilder[] response, final int loc, int[] startLoc,
+                                         int[] endLoc) {
+        return new Thread(() -> {
+            for (int i = startLoc[loc]; i <= endLoc[loc]; i++) { // Needs to start at next of prev thread
+                String curLine = makeLsString(entries[i]);
+                if (curLine != null) {
+                    response[loc].append(curLine);
+                }
+            }
+        });
+    }
+
+    private void dynamicThreadJoiner(Thread[] t) {
+        for (Thread thread : t) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                // just continue marching on
+            }
+        }
+    }
+
+    private StringBuilder dynamicResponseJoiner(StringBuilder[] sb) {
+        StringBuilder result = new StringBuilder();
+        for (StringBuilder each : sb) {
+            result.append(each);
+        }
+        return result;
     }
 
     // Send the directory listing over the data socket. Used by CmdLIST and CmdNLST.
