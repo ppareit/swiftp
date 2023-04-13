@@ -29,6 +29,7 @@ package be.ppareit.swiftp.server;
 import java.io.File;
 
 import android.util.Log;
+import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdNLST extends CmdAbstractListing implements Runnable {
     private static final String TAG = CmdNLST.class.getSimpleName();
@@ -75,13 +76,14 @@ public class CmdNLST extends CmdAbstractListing implements Runnable {
             String listing;
             if (fileToList.isDirectory()) {
                 StringBuilder response = new StringBuilder();
-                errString = listDirectory(response, fileToList);
+                FileUtil.Gen gen = FileUtil.createGenFromFile(fileToList);
+                errString = listDirectory(response, gen);
                 if (errString != null) {
                     break mainblock;
                 }
                 listing = response.toString();
             } else {
-                listing = makeLsString(fileToList);
+                listing = makeLsString(new FileUtil.Gen(fileToList));
                 if (listing == null) {
                     errString = "450 Couldn't list that file\r\n";
                     break mainblock;
@@ -104,7 +106,7 @@ public class CmdNLST extends CmdAbstractListing implements Runnable {
     }
 
     @Override
-    protected String makeLsString(File file) {
+    protected String makeLsString(FileUtil.Gen file) {
         if (!file.exists()) {
             Log.i(TAG, "makeLsString had nonexistent file");
             return null;

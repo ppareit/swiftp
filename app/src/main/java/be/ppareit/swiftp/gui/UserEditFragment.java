@@ -3,10 +3,11 @@ package be.ppareit.swiftp.gui;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +15,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.File;
 
+import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
+import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.server.FtpUser;
 
 public class UserEditFragment extends Fragment {
@@ -45,9 +51,19 @@ public class UserEditFragment extends Fragment {
         chroot.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus)
                 return;
-            showFolderPicker(chroot);
+            if (Util.useScopedStorage()) {
+                alertUsersToScopedStorage();
+            } else {
+                showFolderPicker(chroot);
+            }
         });
-        chroot.setOnClickListener(view -> showFolderPicker(chroot));
+        chroot.setOnClickListener(v -> {
+            if (Util.useScopedStorage()) {
+                alertUsersToScopedStorage();
+            } else {
+                showFolderPicker(chroot);
+            }
+        });
 
         if (item != null) {
             username.setText(item.getUsername());
@@ -81,10 +97,15 @@ public class UserEditFragment extends Fragment {
         AlertDialog folderPicker = new FolderPickerDialogBuilder(getActivity(), startDir)
                 .setSelectedButton(R.string.select, path -> {
                     final File root = new File(path);
-                    if (!root.canRead()) {
-                        showToast(R.string.notice_cant_read_write);
-                    } else if (!root.canWrite()) {
-                        showToast(R.string.notice_cant_write);
+                    if (!root.canRead() || !root.canWrite()) {
+                        Log.e("pre", "using scoped...");
+                        alertUsersToScopedStorage();
+                    } else {
+                        Log.e("pre", "FILE CAN READ & WRITE...");
+                        // Disable the storage minimum override if eg internal use has rw capability over sd card.
+                        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+                        sp.edit().remove("OverrideScopedStorageMinimum").apply();
+                        Util.reGetStorageOverride();
                     }
                     chrootView.setText(path);
                 })
@@ -112,5 +133,13 @@ public class UserEditFragment extends Fragment {
 
     interface OnEditFinishedListener {
         void onEditActionFinished(FtpUser oldItem, FtpUser newItem);
+    }
+
+    // Android 11+ must use the other picker only. Alert users to go there.
+    // eg Android 8.0 sd card may be required also determined by check above.
+    private void alertUsersToScopedStorage() {
+        final String s = getString(R.string.advanced_settings_label) + " > " +
+                getString(R.string.writeExternalStorage_label);
+        Toast.makeText(App.getAppContext(), s, Toast.LENGTH_SHORT).show();
     }
 }

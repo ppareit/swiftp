@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 
 public class SessionThread extends Thread {
 
@@ -423,7 +424,7 @@ public class SessionThread extends Thread {
         }
     }
 
-    public String makeSelectedTypesResponse(File file) {
+    public String makeSelectedTypesResponse(FileUtil.Gen gen) {
         StringBuilder response = new StringBuilder();
         String[] selectedTypes = getFormatTypes();
 
@@ -447,14 +448,14 @@ public class SessionThread extends Thread {
             }
         }
 
-        final boolean isFile = file.isFile();
-        final boolean isDirectory = file.isDirectory();
+        final boolean isFile = gen.isFile();
+        final boolean isDirectory = gen.isDirectory();
 
         if (selectedTypesCached[0]) {
-            response.append("Size=").append(file.length()).append(';');
+            response.append("Size=").append(gen.length()).append(';');
         }
         if (selectedTypesCached[1]) {
-            String timeStr = Util.getFtpDate(file.lastModified());
+            String timeStr = Util.getFtpDate(gen.lastModified());
             response.append("Modify=").append(timeStr).append(';');
         }
         if (selectedTypesCached[2]) {
@@ -466,14 +467,14 @@ public class SessionThread extends Thread {
         }
         if (selectedTypesCached[3]) {
             response.append("Perm=");
-            if (file.canRead()) {
+            if (gen.canRead()) {
                 if (isFile) {
                     response.append('r');
                 } else if (isDirectory) {
                     response.append("el");
                 }
             }
-            if (file.canWrite()) {
+            if (gen.canWrite()) {
                 if (isFile) {
                     response.append("adfw");
                 } else if (isDirectory) {

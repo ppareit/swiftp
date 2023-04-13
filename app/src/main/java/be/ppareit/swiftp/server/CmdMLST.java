@@ -22,7 +22,7 @@ package be.ppareit.swiftp.server;
 import java.io.File;
 
 import android.util.Log;
-import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 
 /**
  * Implements MLST command
@@ -41,18 +41,19 @@ public class CmdMLST extends FtpCmd implements Runnable {
     public void run() {
         Log.d(TAG, "run: LIST executing, input: " + mInput);
         String param = getParameter(mInput);
-        
+
         File fileToFormat = null;
         if(param.equals("")){
             fileToFormat = sessionThread.getWorkingDir();
             param = "/";
         }else{
-            fileToFormat = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
+            fileToFormat = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                    sessionThread.getWorkingDir(), param);
         }
-        
+
         if (fileToFormat.exists()) {
             sessionThread.writeString("250- Listing " + param + "\r\n");
-            sessionThread.writeString(makeString(fileToFormat) + "\r\n");
+            sessionThread.writeString(makeString(new FileUtil.Gen(fileToFormat)) + "\r\n");
             sessionThread.writeString("250 End\r\n");
         } else {
             Log.w(TAG, "run: file does not exist");
@@ -62,11 +63,11 @@ public class CmdMLST extends FtpCmd implements Runnable {
         Log.d(TAG, "run: LIST completed");
     }
 
-    public String makeString(File file){
+    public String makeString(FileUtil.Gen gen){
         StringBuilder response = new StringBuilder();
-        response.append(sessionThread.makeSelectedTypesResponse(file));
+        response.append(sessionThread.makeSelectedTypesResponse(gen));
         response.append(' ');
-        response.append(file.getName());
+        response.append(gen.getName());
         response.append("\r\n");
         return response.toString();
     }

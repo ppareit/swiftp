@@ -21,8 +21,12 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import java.io.File;
 import java.lang.reflect.Constructor;
+
+import be.ppareit.swiftp.utils.FileUtil;
 
 public abstract class FtpCmd implements Runnable {
     private static final String TAG = FtpCmd.class.getSimpleName();
@@ -183,7 +187,7 @@ public abstract class FtpCmd implements Runnable {
         return getParameter(input, false);
     }
 
-    public static File inputPathToChrootedFile(File chrootDir, File existingPrefix, String param) {
+    public static File inputPathToChrootedFile(final File chrootDir, final File existingPrefix, String param) {
         try {
             if (param.charAt(0) == '/') {
                 // The STOR contained an absolute path
@@ -212,7 +216,29 @@ public abstract class FtpCmd implements Runnable {
             return false;
         } catch (Exception e) {
             Log.i(TAG, "Path canonicalization problem: " + e.toString());
-            Log.i(TAG, "When checking file: " + file.getAbsolutePath());
+            if (file != null) Log.i(TAG, "When checking file: " + file.getAbsolutePath()); // fix possible crash
+            return true; // for security, assume violation
+        }
+    }
+
+    public boolean violatesChroot(DocumentFile file, String param) {
+        try {
+            // Get the full path to the chosen Android 11 dir and compare with that of the file
+            File chroot = sessionThread.getChrootDir();
+            String canonicalChroot = chroot.getCanonicalPath();
+            final String path = FileUtil.getScopedClientPath(param, null, null);
+            String canonicalPath = FileUtil.getUriStoragePathFullFromDocumentFile(file, path);
+
+            if (canonicalPath == null || !canonicalPath.startsWith(canonicalChroot)) {
+                Log.i(TAG, "Path violated folder restriction, denying");
+                Log.d(TAG, "path: " + canonicalPath);
+                Log.d(TAG, "chroot: " + chroot.toString());
+                return true; // the path must begin with the chroot path
+            }
+            return false;
+        } catch (Exception e) {
+            Log.i(TAG, "Path canonicalization problem: " + e.toString());
+            //Log.i(TAG, "When checking file: " + file.getAbsolutePath());
             return true; // for security, assume violation
         }
     }

@@ -20,7 +20,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp;
 
-import android.app.Activity;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -34,6 +35,8 @@ import java.util.TimeZone;
 
 abstract public class Util {
     final static String TAG = Util.class.getSimpleName();
+    private static SharedPreferences sp = null;
+    private static boolean overrideSDKVer = false;
 
     public static byte byteOfInt(int value, int which) {
         int shift = which * 8;
@@ -107,5 +110,19 @@ abstract public class Util {
     public static Date parseDate(String time) throws ParseException {
         SimpleDateFormat df = createSimpleDateFormat();
         return df.parse(time);
+    }
+
+    /*
+     * Implemented mainly for Android 11+ where its forced but can work on earlier Android versions.
+     * Uses an override for when File fails to work during a test as the user sets up the app.
+     * */
+    public static boolean useScopedStorage() {
+        if (sp == null) sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+        overrideSDKVer = sp.getBoolean("OverrideScopedStorageMinimum", false);
+        return Build.VERSION.SDK_INT >= 30 || overrideSDKVer;
+    }
+
+    public static void reGetStorageOverride() {
+        sp = null;
     }
 }

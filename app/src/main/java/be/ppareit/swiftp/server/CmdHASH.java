@@ -1,7 +1,5 @@
 package be.ppareit.swiftp.server;
 
-import android.util.Log;
-
 import net.vrallev.android.cat.Cat;
 
 import java.io.File;
@@ -34,7 +32,8 @@ public class CmdHASH extends FtpCmd implements Runnable {
 
         mainblock:
         {
-            fileToHash = inputPathToChrootedFile(sessionThread.getChrootDir(), sessionThread.getWorkingDir(), param);
+            fileToHash = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                    sessionThread.getWorkingDir(), param);
             if (violatesChroot(fileToHash)) {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;

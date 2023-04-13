@@ -29,6 +29,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import net.vrallev.android.cat.Cat;
+
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import java.util.Collections;
 import java.util.List;
 
 import be.ppareit.swiftp.server.FtpUser;
+import be.ppareit.swiftp.utils.FileUtil;
 
 public class FsSettings {
 
@@ -110,6 +113,31 @@ public class FsSettings {
     }
 
     public static File getDefaultChrootDir() {
+        // Get the path from the app's MANAGE USERS chroot folder UI text field that the user will use during setup.
+        String subFix = null;
+        if (Util.useScopedStorage()) {
+            // The app's MANAGE USERS chroot folder UI selection cannot select the sd card at least on Android 11+.
+            //  The picker does all that's needed there so that use should be switched with ADVANCED SETTINGS >
+            //  WRITE EXTERNAL picker or just make it invisible when on A11+ ? Could also just pull open the same
+            //  picker on both with A11+ or something else. It also presents possible conflicts with the Uri path
+            //  eg "/storage/sd card/" verses "/sd card/Test/".
+            String s = FileUtil.cleanupUriStoragePath(FileUtil.getTreeUri());
+            if (s != null && !s.contains("primary:")) {
+                final String chroot = FileUtil.getSdCardBaseFolderScopedStorage();
+                // Need to return eg "/storage" for sd card and "/storage/emulated/0" for internal.
+                if (chroot != null && !chroot.isEmpty()) return new File(chroot);
+                // otherwise just get the other path from below.
+            } else if (s != null && s.contains("primary:")) {
+                // Fix for issue seen on Android 8.0:
+                // Had to implement over below as the below chroot is forced to
+                // getExternalStorageDirectory() when actual chroot may include further sub dirs.
+                subFix = s.replace("primary:", "");
+                // At the moment, have to do it below, as a StackOverflow is happening on the test device
+                // here with any additional code for an unknown reason.
+            }
+        }
+
+        // Original below incorrectly returns "/storage/emulated/0" for sd card with Android 11+
         File chrootDir;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             chrootDir = Environment.getExternalStorageDirectory();
@@ -123,6 +151,12 @@ public class FsSettings {
             // but this will probably not be what the user wants
             return App.getAppContext().getFilesDir();
         }
+        if (!chrootDir.canRead() || !chrootDir.canWrite()) {
+            Cat.e("We cannot read/write in the default directory, changing to application directory");
+            return App.getAppContext().getFilesDir();
+        }
+
+        if (subFix != null) return new File(chrootDir, subFix);
         return chrootDir;
     }
 

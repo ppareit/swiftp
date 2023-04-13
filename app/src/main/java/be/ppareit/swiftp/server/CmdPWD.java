@@ -19,10 +19,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.net.Uri;
 import android.util.Log;
+
+import androidx.documentfile.provider.DocumentFile;
 
 import java.io.File;
 import java.io.IOException;
+
+import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 
 /**
  * PRINT WORKING DIRECTORY (PWD)

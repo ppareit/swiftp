@@ -28,8 +28,6 @@ import java.util.TimeZone;
 
 import be.ppareit.swiftp.Util;
 
-import android.util.Log;
-
 import net.vrallev.android.cat.Cat;
 
 /**

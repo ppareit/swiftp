@@ -29,7 +29,7 @@ package be.ppareit.swiftp.server;
 import java.io.File;
 
 import android.util.Log;
-import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdMLSD extends CmdAbstractListing implements Runnable {
     static private final String TAG = CmdMLSD.class.getSimpleName();
@@ -72,7 +72,12 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
             // TBD
             // https://tools.ietf.org/html/rfc3659#page-39
             // MLSD auto need to add [type=cdir] and [type=pdir]
-            errString = listDirectory(response, fileToList);
+            FileUtil.Gen gen = FileUtil.createGenFromFile(fileToList);
+            if (gen.getOb() == null) {
+                errString = "MLSD failed. Try write external storage\r\n";
+                break mainblock;
+            }
+            errString = listDirectory(response, gen);
             if (errString != null) {
                 break mainblock;
             }
@@ -96,7 +101,7 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
 
     // Generates a line of a directory listing in the Format of MLSx
     @Override
-    protected String makeLsString(File file) {      
+    protected String makeLsString(FileUtil.Gen file) {
         StringBuilder response = new StringBuilder();
 
         if (!file.exists()) {
