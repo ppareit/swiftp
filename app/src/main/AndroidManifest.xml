@@ -30,6 +30,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <uses-feature
         android:name="android.software.leanback"
