@@ -1,8 +1,6 @@
 FTP Server (swiftp)
 ===================
 
-Should the developer make these changes then you could grab them from the following. At this time these changes are not made there so you'd have to build from source using this code I provided here.
-
 <a href="https://f-droid.org/packages/be.ppareit.swiftp_free/" target="_blank">
 <img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80"/></a>
 <a href="https://play.google.com/store/apps/details?id=be.ppareit.swiftp" target="_blank">
