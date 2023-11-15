@@ -40,11 +40,6 @@ public abstract class FileUtil {
 
     private static final String LOG = "FileUtil";
 
-    public enum TYPE {
-        file,
-        dir
-    }
-
     /**
      * Copy a file. The target file may even be on external SD card for Kitkat.
      *
@@ -829,24 +824,19 @@ public abstract class FileUtil {
      * The meaning can change depending on slash or no slash since the param contains files or just dirs.
      * */
     public static DocumentFile getDocumentFileWithParamScopedStorage(String param, @Nullable String cwd, String clientPath) {
+        String mParam = param;
+        if (param.split(File.separator).length > 1) {
+            // Dirs tacked to the param will already be on the path. Avoid duplication of dirs.
+            mParam = param.substring(param.lastIndexOf(File.separator) + 1);
+        }
         DocumentFile f = null;
         // affected by param having slash or not; empty or not
-        Uri uri = FileUtil.getFullCWDUri(cwd != null ? cwd : param, clientPath);
+        Uri uri = FileUtil.getFullCWDUri(cwd != null ? cwd : mParam, clientPath);
         if (uri != null) {
             try {
                 // Get the file
-                String mParam = param;
-                if (param.contains(File.separator)) {
-                    try {
-                        mParam = param.substring(param.lastIndexOf(File.separator) + 1);
-                    } catch (NullPointerException e) {
-                        mParam = null;
-                    }
-                }
-                // param affects above but down there its file only:
-                f = FileUtil.customFindFile(uri, (mParam != null ? mParam : param), FileUtil.TYPE.file, clientPath);
-                if (f == null)
-                    f = FileUtil.getDocumentFileFromUri(uri).findFile((mParam != null ? mParam : param));
+                f = getDocumentFileFromUri(uri);
+                if (f == null) f = FileUtil.getDocumentFileFromUri(uri).findFile(mParam);
             } catch (NullPointerException e) {
                 //
             }
@@ -922,8 +912,8 @@ public abstract class FileUtil {
     }
 
     /*
-     * Uses DocumentFile.findFile() to get the Uri for the target dir but does it the slow way as
-     * findFile() has a major performance issue.
+     * Uses DocumentFile.findFile() to get the Uri for the target dir but terribly slow as
+     * findFile() has a *major* performance issue. The expected way.
      */
     public static Uri getFullCWDUriSlow(String param) {
         Uri uri = getTreeUri();
@@ -949,46 +939,14 @@ public abstract class FileUtil {
     }
 
     /*
-     * Mainly uses DocumentsContract to move through the dir's and files for speed.
-     * On an issue - should the faster but complex code fail - falls back to the incredibly slower
-     * DocumentFile.findFile() to get it.
+     * Uses DocumentsContract to move through the dir's and files for speed over DocumentFile.findFile().
      */
     public static Uri getFullCWDUri(String param, String clientPath) {
         Uri uri = getTreeUri();
         if (uri != null) {
             try {
-                final int paramDirCount = param.split(File.separator).length;
-                final boolean makeParamNull = param.isEmpty() || paramDirCount > 1;
-                final String mParam = makeParamNull ? null : param;
-                final boolean isDir = param.contains(File.separator) || param.isEmpty();
-                final TYPE type = isDir ? TYPE.dir : TYPE.file;
-                final DocumentFile result = customFindFile(uri, mParam, type, clientPath);
-                if (result != null) {
-                    Uri cwdUri = result.getUri();
-                    // Double check and do the slow way if needed
-                    String s = getScopedClientPath(clientPath, null, null);
-                    if (s.isEmpty() && param.contains(File.separator)) {
-                        s = param.substring(0, param.lastIndexOf(File.separator));
-                    }
-                    String[] split = s.split(File.separator);
-                    String lastSubDir;
-                    try {
-                        lastSubDir = split[split.length - 1];
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        lastSubDir = File.separator;
-                    }
-                    final String path = cwdUri.getPath();
-                    if (path != null && !path.contains(lastSubDir)) {
-                        // Fix: eg DCIM folder as target where pushing a file to it then makes the
-                        // listing empty from using this as fallback here. Shouldn't fallback anyway
-                        // as the faster custom way does have it correct.
-                        String chroot = getUriStoragePathFullFromDocumentFile(result, "");
-                        if (chroot == null || !chroot.contains(s)) {
-                            return getFullCWDUriSlow(param);
-                        }
-                    }
-                    return result.getUri();
-                }
+                final DocumentFile result = customFindFile(uri, param, clientPath);
+                if (result != null) return result.getUri();
             } catch (NullPointerException e) {
                 //
             }
@@ -1002,28 +960,127 @@ public abstract class FileUtil {
      * HUGE performance improvement over DocumentFile.findFile().
      * Use at least until Google fixes DocumentFile.findFile() performance (should it ever happen).
      */
-    public static DocumentFile customFindFile(Uri dirUri, @Nullable String filename, TYPE type, String clientPath) {
+    private static DocumentFile customFindFile(Uri dirUri, @Nullable String filename, String clientPath) {
+        final int returnUri = 0;
+        final int returnDf = 1;
+        final int continueTree = 2;
+        final int continueId = 3;
+        // Loop through the dirs in the provided path.
+        Object[] result1 = cFFDir(dirUri, null, clientPath);
+        if (result1[returnUri] != null) {
+            if ((filename == null || filename.isEmpty() || filename.equals(clientPath))) {
+                // Last found was a dir and there's nothing left to find.
+                return (DocumentFile) result1[returnDf];
+            }
+        }
+        // Filename can instead be dir so need to check that here with dirs before trying as a file.
+        Object[] result2 = cFFDir((Uri) result1[continueTree], (String) result1[continueId], filename);
+        if (result2[returnDf] != null) return (DocumentFile) result2[returnDf];
+        // Look for the actual file
+        return cFFFile((Uri) result1[continueTree], (String) result1[continueId], filename);
+    }
+
+    /*
+     * Loop through dirs to obtain the result of the last one.
+     * */
+    private static Object[] cFFDir(Uri inUri, String inId, String clientPath) {
+        DocumentFile df = null;
+        Uri contUri = null, uri2 = null;
+        String contId = null;
+        int userPathLoc = 0;
+        boolean end = false;
         ContentResolver contentResolver = App.getAppContext().getContentResolver();
-        Uri uri = DocumentsContract.buildChildDocumentsUriUsingTree(dirUri,DocumentsContract
-                .getTreeDocumentId(dirUri));
-        DocumentFile f = null;
+        final String mDocId = inId != null ? inId : DocumentsContract.getTreeDocumentId(inUri);
+        Uri uri = DocumentsContract.buildChildDocumentsUriUsingTree(inUri, mDocId);
         List<Uri> uriList = new LinkedList<>();
         uriList.add(uri);
+        final Pair<String[], Integer> result = cFFPathBuilder(clientPath);
+        String[] userPathEachDir = result.first;
+        final int userPathMax = result.second;
+        if (userPathEachDir.length == 0) {
+            // If there's nothing to do, return success.
+            uri2 = inUri;
+            df = FileUtil.getDocumentFileFromUri(inUri);
+            contId = DocumentsContract.getTreeDocumentId(inUri);
+            contUri = DocumentsContract.buildChildDocumentsUriUsingTree(inUri, contId);
+            return new Object[]{uri2, df, contUri, contId};
+        }
+        while (!end) {
+            uri = uriList.remove(0);
+            try (Cursor c = contentResolver.query(uri, new String[]{
+                            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+                            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                            DocumentsContract.Document.COLUMN_MIME_TYPE},
+                    null, null, null)) {
+                while (c != null && c.moveToNext()) {
+                    final String docId = c.getString(0);
+                    final String name = c.getString(1);
+                    final String mime = c.getString(2);
+                    if (isDirectory(mime)) {
+                        if (isMatchFound(name, userPathEachDir[userPathLoc])) {
+                            userPathLoc++;
+                            final Uri mUri = DocumentsContract.buildChildDocumentsUriUsingTree(inUri, docId);
+                            uriList.add(mUri);
+                            if (userPathLoc >= userPathMax) {
+                                // Now we have the last dir and return that.
+                                uri2 = DocumentsContract.buildDocumentUriUsingTree(uri, docId);
+                                df = FileUtil.getDocumentFileFromUri(uri2);
+                                contUri = mUri;
+                                contId = docId;
+                                if (!c.isLast()) c.moveToLast();
+                                end = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            if (uriList.isEmpty()) end = true;
+        }
+        return new Object[]{uri2, df, contUri, contId};
+    }
+
+    /*
+     * Obtains the path info needed to do the looping.
+     * */
+    private static Pair<String[], Integer> cFFPathBuilder(String clientPath) {
         final String chroot = FsSettings.getDefaultChrootDir().getPath();
         String userPath = getScopedClientPath(clientPath, null, null);
-        if (userPath.contains(chroot)) userPath = userPath.replace(chroot, "");
-        if (userPath.contains(File.separator)) {
-            // Stop initial empty from being in the array as that messes things up
-            if (userPath.startsWith(File.separator))
-                userPath = userPath.replaceFirst(File.separator, "");
-        }
+        userPath = cFFBasePathCleanup(userPath, chroot, true);
         String[] userPathEachDir = userPath.split(File.separator);
         if (userPathEachDir.length == 1 && userPathEachDir[0].isEmpty()) {
             userPathEachDir = new String[0];
         }
         final int userPathMax = userPathEachDir.length;
-        int userPathLoc = 0;
-        boolean dirMovementFinished = userPathMax == 0 && type == TYPE.file;
+        return new Pair<>(userPathEachDir, userPathMax);
+    }
+
+    /*
+    * Cleans up the provided path so that only the required dirs are obtained.
+    * */
+    private static String cFFBasePathCleanup(final String userPath, final String chroot, boolean recursion) {
+        String s = userPath;
+        if (userPath.contains(chroot)) s = userPath.replace(chroot, "");
+        if (userPath.contains(File.separator)) {
+            // Stop initial empty from being in the array as that messes things up
+            if (userPath.startsWith(File.separator))
+                s = userPath.replaceFirst(File.separator, "");
+        }
+        // Recursion to double check as /'s or stuff can get missed on the first go at it.
+        if (recursion) s = cFFBasePathCleanup(s, chroot, false);
+        return s;
+    }
+
+    /*
+     * Checks path location obtained by the dir loop for the filename at that location as FILE.
+     * */
+    private static DocumentFile cFFFile(Uri dirUri, String dirId, @Nullable String filename) {
+        if (dirUri == null) return null;
+        ContentResolver contentResolver = App.getAppContext().getContentResolver();
+        Uri uri = DocumentsContract.buildChildDocumentsUriUsingTree(dirUri, dirId);
+        DocumentFile df = null;
+        List<Uri> uriList = new LinkedList<>();
+        uriList.add(uri);
         boolean end = false;
         while (!end) {
             uri = uriList.remove(0);
@@ -1032,43 +1089,13 @@ public abstract class FileUtil {
                             DocumentsContract.Document.COLUMN_DISPLAY_NAME,
                             DocumentsContract.Document.COLUMN_MIME_TYPE},
                     null, null, null)) {
-                while (c!= null && c.moveToNext()) {
+                while (c != null && c.moveToNext()) {
                     final String docId = c.getString(0);
                     final String name = c.getString(1);
-                    final String mime = c.getString(2);
-                    if (isDirectory(mime) && userPathLoc < userPathMax) {
-                        // Move to the target folder from the chosen dir using user supplied path
-                        if (isMatchFound(name, userPathEachDir[userPathLoc])) {
-                            // Add so it can move into on next loop
-                            userPathLoc++;
-                            final Uri mUri = DocumentsContract.buildChildDocumentsUriUsingTree(dirUri, docId);
-                            uriList.add(mUri);
-                            if (userPathLoc == userPathMax) {
-                                // If type is dir, then once path is found - including any sub
-                                // path - it should stop here. Whereas file should continue.
-                                dirMovementFinished = true;
-                                if (type == TYPE.dir) {
-                                    // Now we can find the dir and return that
-                                    Uri mUri2 = DocumentsContract.buildDocumentUriUsingTree(uri, docId);
-                                    f = FileUtil.getDocumentFileFromUri(mUri2);
-                                    end = true;
-                                    break;
-                                }
-                            } else if (!c.isLast()) {
-                                // fix: Don't continue in the dir as it can wrongly match
-                                break;
-                            }
-                        }
-                    } else if (dirMovementFinished && isMatchFound(name, filename)) {
-                        // Now we can find the file and return the Uri for that
+                    if (isMatchFound(name, filename)) {
+                        // Now we have the file and return that.
                         Uri mUri = DocumentsContract.buildDocumentUriUsingTree(uri, docId);
-                        f = FileUtil.getDocumentFileFromUri(mUri);
-                        end = true;
-                        break;
-                    } else if (type == TYPE.dir && isMatchFound(name, filename != null ? filename : userPath)) {
-                        // Now we can find the file and return the Uri for that
-                        Uri mUri = DocumentsContract.buildDocumentUriUsingTree(uri, docId);
-                        f = FileUtil.getDocumentFileFromUri(mUri);
+                        df = FileUtil.getDocumentFileFromUri(mUri);
                         end = true;
                         break;
                     }
@@ -1076,12 +1103,7 @@ public abstract class FileUtil {
             }
             if (uriList.isEmpty()) end = true;
         }
-        if (type == TYPE.file && f != null && f.isDirectory()) return null;
-        // Fix for empty folder with no user provided client path:
-        if (type == TYPE.dir && f == null) {
-            f = FileUtil.getDocumentFileFromUri(dirUri);
-        }
-        return f;
+        return df;
     }
 
     /*
