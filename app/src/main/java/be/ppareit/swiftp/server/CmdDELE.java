@@ -54,7 +54,7 @@ public class CmdDELE extends FtpCmd implements Runnable {
             } else {
                 clientPath = sfPath;
             }
-            file = new SwiftpFile(FileUtil.getDocumentFileWithParamScopedStorage(param, null, clientPath));
+            file = new SwiftpFile(FileUtil.getDocumentFileWithParamScopedStorage(File.separator + param, null, clientPath));
         }
 
         tryToDelete(file, param);
