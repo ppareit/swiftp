@@ -71,6 +71,10 @@ public class CmdRETR extends FtpCmd implements Runnable {
                     errString = "550 File does not exist\r\n";
                     break mainblock;
                 }
+                if (!docFileToRetr.exists()) {
+                    errString = "550 File does not exist\r\n";
+                    break mainblock;
+                }
             }
 
             FileUtil.Gen gen;

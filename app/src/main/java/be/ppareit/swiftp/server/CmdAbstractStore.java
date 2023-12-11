@@ -83,15 +83,10 @@ abstract public class CmdAbstractStore extends FtpCmd {
                             MediaUpdater.notifyFileDeleted(storeFile.getPath());
                         }
                     }
-                }
-
-                if (!storeFile.exists()) {
+                } else {
                     if (Util.useScopedStorage()) {
                         final String mime = "application/octet-stream";
-                        //final URI fileUri = storeFile.toURI();
-                        //final URL url = fileUri.toURL();
-                        //mime = url.openConnection().getContentType(); // sometimes makes exe's into html files
-                        docStoreFile = FileUtil.mkfile(storeFile, App.getAppContext(), mime);
+                        docStoreFile = FileUtil.mkfile(storeFile, mime);
                         if(docStoreFile == null){
                             errString = "451 Couldn't open file \"" + param + "\" aka \""
                                     + storeFile.getCanonicalPath() + "\" for writing\r\n";
