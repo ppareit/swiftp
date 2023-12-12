@@ -408,7 +408,7 @@ public abstract class FileUtil {
             final String path = file.getPath();
             DocumentFile dfile = getDocumentFile("", path.substring(0, path.lastIndexOf(File.separator)));
             if (dfile != null) {
-                return dfile.createFile(mime, filename); // very slow :(
+                return dfile.createFile(mime, filename);
             }
         } catch (Exception e) {
             e.printStackTrace();
