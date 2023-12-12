@@ -924,24 +924,35 @@ public abstract class FileUtil {
 
     private static String cFFCombine(String s1, String s2) {
         String s1Slashed = s1.replaceFirst(File.pathSeparator, File.separator);
-        String s;
-        if (s1Slashed.isEmpty()) {
-            s = s2;
-        } else if (s2.contains(s1Slashed)) {
-            s = s2;
-        } else if (s1Slashed.equals(File.separator)) {
-            s = s2;
-        } else if (!s1Slashed.endsWith(File.separator) && !s2.startsWith(File.separator)) {
-            s = s1Slashed + File.separator + s2;
-        } else if (s1Slashed.endsWith(File.separator) && s2.startsWith(File.separator)) {
-            s = s1Slashed + s2.substring(1);
-        } else {
-            s = s1Slashed + s2;
+        String mS1;
+        String mS2 = s2;
+        final String chroot = FsSettings.getDefaultChrootDir().getAbsolutePath();
+        if (s1.startsWith("primary:")) {
+            if (mS2.startsWith(chroot)) {
+                mS2 = mS2.replaceFirst(chroot, "");
+            }
+        } else if (s1.startsWith("/storage/emulated/0/")) {
+            s1Slashed = s1Slashed.replaceFirst("/storage/emulated/0", "primary");
         }
-        if (s.startsWith("/storage")) s = s.replaceFirst("/storage", "");
-        else if (s.startsWith("storage")) s = s.replaceFirst("storage", "");
-        if (s.startsWith(File.separator)) s = s.substring(1);
-        return s.replaceFirst(File.separator, File.pathSeparator);
+        if (mS2.isEmpty()) {
+            return s1;
+        } else if (s1Slashed.isEmpty()) {
+            mS1 = mS2;
+        } else if (mS2.contains(s1Slashed)) {
+            mS1 = mS2;
+        } else if (s1Slashed.equals(File.separator)) {
+            mS1 = mS2;
+        } else if (!s1Slashed.endsWith(File.separator) && !mS2.startsWith(File.separator)) {
+            mS1 = s1Slashed + File.separator + mS2;
+        } else if (s1Slashed.endsWith(File.separator) && mS2.startsWith(File.separator)) {
+            mS1 = s1Slashed + mS2.substring(1);
+        } else {
+            mS1 = s1Slashed + mS2;
+        }
+        if (mS1.startsWith("/storage")) mS1 = mS1.replaceFirst("/storage", "");
+        else if (mS1.startsWith("storage")) mS1 = mS1.replaceFirst("storage", "");
+        if (mS1.startsWith(File.separator)) mS1 = mS1.substring(1);
+        return mS1.replaceFirst(File.separator, File.pathSeparator);
     }
 
     /*
