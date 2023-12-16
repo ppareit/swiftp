@@ -21,7 +21,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 <resources>
 
     <string name="swiftp_name">FTP Server</string>
-    <string name="swiftp_name_free">FTP Server (Free)</string>
+    <string name="swiftp_name_free">FTP Server (Zdarma)</string>
     <string name="swiftp_name_demo">FTP Server (Demo)</string>
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">Přepnout stav serveru FTP</string>
@@ -64,7 +64,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="writeExternalStorage_label">Zápis na externí úložiště</string>
     <string name="extra_label">Extra</string>
     <string name="help_label">HePomoc…lp…</string>
-    <string name="about_label">O aplikaci…</string>
+    <string name="about_label">O FTP Server…</string>
     <string name="help_dlg_title">Nápověda k FTP serveru</string>
     <!--string is too long to translate, when editing, split it in logical parts, see issue #105-->
     <string name="help_dlg_message">\
@@ -106,7 +106,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="cancel">Zrušit</string>
 
     <string name="feedback">Poslat zpětnou vazbu</string>
-    <string name="about">O aplikaci</string>
+    <string name="about">O FTP Server</string>
 
     <string name="autoconnect_label">Nastavení automatického připojení…</string>
     <string name="autoconnect_summary">Vyberte sítě Wi-Fi, ke kterým se chcete automaticky připojit</string>
