@@ -156,9 +156,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
 
     <string name="app_theme">Motiv…</string>
-    <string name="dark_theme">Tmavý</string>
-    <string name="light_theme">Světlý</string>
-    <string name="mixed_theme">Smíšený</string>
+    <string name="dark_theme">Tmavý Motiv</string>
+    <string name="light_theme">Světlý Motiv</string>
+    <string name="mixed_theme">Smíšený Motiv</string>
     <string name="unable_to_start_mail_client">Nelze spustit poštovního klienta pro odeslání zpětné vazby.</string>
     <string name="use_english">Používejte prosím jasnou angličtinu!</string>
 
