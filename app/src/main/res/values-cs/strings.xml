@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+Copyright 2011-2013 Pieter Pareit
+Copyright 2009 David Revell
+
+This file is part of SwiFTP.
+
+SwiFTP is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SwiFTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="swiftp_name">FTP Server</string>
+    <string name="swiftp_name_free">FTP Server (Free)</string>
+    <string name="swiftp_name_demo">FTP Server (Demo)</string>
+    <string name="running_label">FTP Server</string>
+    <string name="running_summary_stopped">Přepnout stav serveru FTP</string>
+    <string name="running_summary_started">na %s</string>
+    <string name="running_summary_failed">
+        Nepodařilo se spustit FTP server, nejste připojeni k místní síti (Wi-Fi nebo Ethernet)?
+    </string>
+    <string name="running_summary_failed_to_get_ip_address">
+        Nepodařilo se spustit FTP server, nelze získat IP adresu
+    </string>
+
+    <string name="market_version_label">Market verze</string>
+    <string name="market_version_summary">
+        Toto je demo verze FTP serveru.
+        Podpořte vývoj získáním FTP serveru z Android Marketu.
+        Kliknutím sem přejdete na market.
+    </string>
+    <string name="settings_label">Nastavení</string>
+    <string name="user_label">Uživatel</string>
+    <string name="login_settings_label">Nastavení přihlášení…</string>
+    <string name="username_label">Uživatelské jméno</string>
+    <string name="password_label">Heslo</string>
+    <string name="show_password_label">Zobrazit heslo</string>
+    <string name="username_validation_error">
+        Uživatelské jméno se musí skládat z 1 nebo více alfanumerických znaků.
+        Žádné další znaky nejsou povoleny.
+    </string>
+    <string name="password_validation_error">
+        Heslo se musí skládat z 1 nebo více alfanumerických znaků.
+        Žádné další znaky nejsou povoleny.
+    </string>
+    <string name="allow_anonymous_label">Povolit anonymní přihlášení</string>
+    <string name="anonymous_summary">Anonymní přihlášení jsou povolena pouze pro čtení</string>
+    <string name="advanced_settings_label">Pokročilé nastavení…</string>
+    <string name="port_number_label">Číslo portu</string>
+    <string name="port_validation_error">Číslo portu musí být v rozsahu 1 až 65535.</string>
+    <string name="chroot_label">Zůstat ve složce</string>
+    <string name="accept_wifi_label">Přijmout připojení z Wifi</string>
+    <string name="wakelock_label">Udržujte zařízení vzhůru (plná rychlost CPU)</string>
+    <string name="writeExternalStorage_label">Zápis na externí úložiště</string>
+    <string name="extra_label">Extra</string>
+    <string name="help_label">HePomoc…lp…</string>
+    <string name="about_label">O aplikaci…</string>
+    <string name="help_dlg_title">Nápověda k FTP serveru</string>
+    <!--string is too long to translate, when editing, split it in logical parts, see issue #105-->
+    <string name="help_dlg_message">\
+Děkujeme, že používáte FTP Server (SwiFTP)! Zde je několik stručných pokynů k použití. Více
+informací naleznete na http://ppareit.github.com/swiftp/.\n\n\
+\
+Tento program vám umožňuje spustit ftp server na vašem zařízení Android. To znamená, že jakýkoli
+program může přistupovat k souborům na vašem zařízení, když je spuštěn ftp server. Například,
+zadáním \"ftp://...\" do adresního řádku firefoxu vám umožní procházet soubory na vašem
+zařízení ze stolního počítače nebo notebooku.\n\n
+\
+Ve výchozím nastavení jsou uživatelské jméno i heslo \"ftp\", měli byste je změnit. Použijte
+toto uživatelské jméno a heslo k přístupu na server.\n\n
+\
+Existuje možnost konfigurace (\"Udržujete zařízení vzhůru\"), která řeší problém kde
+přenosy souborů jsou pomalé nebo se úplně zastaví, když telefon spí. Pokud máte tento
+problém, zaškrtněte toto políčko a restartujte program. Váš telefon zůstane vzhůru pokud
+server běží.\n\n
+\
+Z důvodů napájení a bezpečnosti se doporučuje server po použití zastavit.\n\n\
+\
+Pokud něco nefunguje tak, jak očekáváte, nahlaste to Pieteru Pareitovi
+(pieter.pareit@gmail.com).\n\n\
+\
+Vývoj tohoto open source programu je podporován zakoupením tohoto programu prostřednictvím
+obchodu Google Play. Vývoj můžete sledovat na https://github.com/ppareit/swiftp .
+Chcete-li mít představu o funkcích, které budou implementovány, podívejte se na nástroj pro sledování problémů na adrese
+https://github.com/ppareit/swiftp/issues .\n\n
+    </string>
+
+    <string name="notification_server_starting">Spuštěn na %s</string>
+    <string name="notification_title">FTP server je spuštěn</string>
+    <string name="notification_text">na %s</string>
+    <string name="notification_stop_text">Zastavit server</string>
+
+    <string name="nsd_servername_postfix">FTP Server</string>
+
+    <string name="select">Vybrat</string>
+    <string name="cancel">Zrušit</string>
+
+    <string name="feedback">Poslat zpětnou vazbu</string>
+    <string name="about">O aplikaci</string>
+
+    <string name="autoconnect_label">Nastavení automatického připojení…</string>
+    <string name="autoconnect_summary">Vyberte sítě Wi-Fi, ke kterým se chcete automaticky připojit</string>
+    <string name="autoconnect_error_enable_wifi_for_access_points">
+        Chcete-li získat seznam přístupových bodů, povolte Wi-Fi
+    </string>
+
+    <string name="demo_while_paid_dialog_title">
+        Demo začalo, když je nainstalována placená verze
+    </string>
+    <string name="demo_while_paid_dialog_message">
+        Děkujeme za podporu rozvoje!\n\n
+        Pokoušíte se spustit demo verzi, zatímco je nainstalována 
+        placená verze. Pro zajištění optimálního provozu vás žádáme, abyste 
+        odstranili demo verzi a spustili pouze placenou verzi.
+    </string>
+
+    <string name="storage_warning">
+        Upozornění: Úložiště není k dispozici. Možná jej budete chtít odpojit.
+    </string>
+
+
+    <!-- auto added strings by AS -->
+    <string name="widget_name">FTP Server Widget</string>
+    <string name="notif_settings_text">Settings</string>
+    <string name="app_copyright">Copyright 2012 - 2017</string>
+    <string name="app_url" translatable="false">
+        https://ppareit.github.io/swiftp/
+    </string>
+    <string name="about_license_title">License</string>
+    <string name="about_license_name">GNU GPL3</string>
+    <string name="about_license_url" translatable="false">
+        https://www.gnu.org/licenses/gpl-3.0.en.html
+    </string>
+    <string name="about_description_title">Description</string>
+    <string name="about_description_text">
+        FTP Server (SwiFTP) allows you to run an FTP server on your android device.
+    </string>
+    <string name="about_libraries_title">Libraries</string>
+    <string name="about_contributor_title">Contributors</string>
+    <string name="about_contributor_list" translatable="false">
+        Dave Revell, Alexander Friesen, tescott425, Peng Fei, MadMaverick9, j3l11234,
+        Sergey Kondakov, Tianhao Wu, Lorenzo M, Naofumi Fukue, Valerio Bozzolan,
+        Thomas Löwe, Mladen Pejaković, valentind44, Ashutosh Gangwar, Nicoss, Poussinou,
+        Timotheos Constambeys, chankruze, Waldemar Stoczkowski, Terry Hooper,
+        Birgit Niemegeers
+    </string>
+
+    <string name="app_theme">Theme…</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="light_theme">Light Theme</string>
+    <string name="mixed_theme">Mixed Theme</string>
+    <string name="unable_to_start_mail_client">Unable to start mail client to send feedback.</string>
+    <string name="use_english">Please use clear English!</string>
+
+    <!-- since 2.18 -->
+    <string name="request_coarse_location_dlg_title">Request permission for location</string>
+    <string name="request_coarse_location_dlg_message">
+        An application that knows the current access point can deduce the location of the device.
+        As such the location permission is needed. This permission is only needed if you want to
+        automatically start the server if it connects to a particular Wi-Fi access point.
+        Needless to say that this application does not use the location information.\n\n
+        If you don not grant this permission, the app will still work,
+        you just won not be able to automatically connect.
+    </string>
+
+    <!-- since 2.19 -->
+    <string name="unable_to_proceed_no_permissions">Unable to proceed without the needed permissions, shutting down</string>
+    <string name="manage_users_label">Manage users…</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="user_exists_error">Another user with same username already exists!</string>
+    <string name="confirm_delete_message">Delete user \"%1$s\"?</string>
+    <string name="notice_cant_read_write">Notice that we can not read/write in this folder.</string>
+    <string name="notice_cant_write">Notice that we can not write in this folder, reading will work. Writing in sub folders might work.</string>
+    <string name="manage_users_no_users">No users available, create a user.</string>
+    <string name="manage_users_multiple_users">Multiple users available, see list.</string>
+    <string name="gui_settings_label">Appearance…</string>
+    <string name="show_notification_icon_summary">Show the notification icon while the server is running</string>
+    <string name="show_notification_icon">Show notification icon</string>
+    <string name="auto_connect_stop_server_remove_from_list">
+        Stopping FTP Server while connected to a Wi-Fi network we automatically connected to. Removing this Wi-Fi network from the preferences.
+    </string>
+    <string name="write_external_storage_old_android_version_summary">On these devices, all store is available using the file hierarchy.</string>
+
+</resources>
