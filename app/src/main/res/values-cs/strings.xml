@@ -63,7 +63,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="wakelock_label">Udržujte zařízení vzhůru (plná rychlost CPU)</string>
     <string name="writeExternalStorage_label">Zápis na externí úložiště</string>
     <string name="extra_label">Extra</string>
-    <string name="help_label">HePomoc…lp…</string>
+    <string name="help_label">Pomoc…</string>
     <string name="about_label">O FTP Server…</string>
     <string name="help_dlg_title">Nápověda k FTP serveru</string>
     <!--string is too long to translate, when editing, split it in logical parts, see issue #105-->
@@ -91,12 +91,13 @@ Pokud něco nefunguje tak, jak očekáváte, nahlaste to Pieteru Pareitovi
 \
 Vývoj tohoto open source programu je podporován zakoupením tohoto programu prostřednictvím
 obchodu Google Play. Vývoj můžete sledovat na https://github.com/ppareit/swiftp .
-Chcete-li mít představu o funkcích, které budou implementovány, podívejte se na nástroj pro sledování problémů na adrese
+Chcete-li mít představu o funkcích, které budou implementovány, 
+podívejte se na nástroj pro sledování problémů na adrese
 https://github.com/ppareit/swiftp/issues .\n\n
     </string>
 
     <string name="notification_server_starting">Spuštěn na %s</string>
-    <string name="notification_title">FTP server je spuštěn</string>
+    <string name="notification_title">FTP Server je spuštěn</string>
     <string name="notification_text">na %s</string>
     <string name="notification_stop_text">Zastavit server</string>
 
@@ -160,7 +161,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="light_theme">Světlý Motiv</string>
     <string name="mixed_theme">Smíšený Motiv</string>
     <string name="unable_to_start_mail_client">Nelze spustit poštovního klienta pro odeslání zpětné vazby.</string>
-    <string name="use_english">Používejte prosím jasnou angličtinu!</string>
+    <string name="use_english">Používejte prosím srozumitelnou angličtinu!</string>
 
     <!-- since 2.18 -->
     <string name="request_coarse_location_dlg_title">Žádáme o povolení přístupu k poloze</string>
@@ -184,7 +185,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notice_cant_read_write">Všimněte si, že v této složce nemůžeme číst ani zapisovat.</string>
     <string name="notice_cant_write">Všimněte si, že do této složky nemůžeme zapisovat, čtení bude fungovat. Zápis do podsložek může fungovat.</string>
     <string name="manage_users_no_users">Nejsou k dispozici žádní uživatelé, vytvořte uživatele.</string>
-    <string name="manage_users_multiple_users">K dispozici více uživatelů, viz seznam.</string>
+    <string name="manage_users_multiple_users">K dispozici je více uživatelů, viz seznam.</string>
     <string name="gui_settings_label">Vzhled…</string>
     <string name="show_notification_icon_summary">Zobrazovat ikonu upozornění, když je server spuštěný</string>
     <string name="show_notification_icon">Zobrazit ikonu oznámení</string>
