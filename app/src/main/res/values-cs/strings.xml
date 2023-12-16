@@ -131,22 +131,22 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <!-- auto added strings by AS -->
     <string name="widget_name">FTP Server Widget</string>
-    <string name="notif_settings_text">Settings</string>
+    <string name="notif_settings_text">Nastavení</string>
     <string name="app_copyright">Copyright 2012 - 2017</string>
     <string name="app_url" translatable="false">
         https://ppareit.github.io/swiftp/
     </string>
-    <string name="about_license_title">License</string>
+    <string name="about_license_title">Licence</string>
     <string name="about_license_name">GNU GPL3</string>
     <string name="about_license_url" translatable="false">
         https://www.gnu.org/licenses/gpl-3.0.en.html
     </string>
-    <string name="about_description_title">Description</string>
+    <string name="about_description_title">Popis</string>
     <string name="about_description_text">
-        FTP Server (SwiFTP) allows you to run an FTP server on your android device.
+        FTP Server (SwiFTP) umožňuje provozovat FTP server na vašem zařízení Android.
     </string>
-    <string name="about_libraries_title">Libraries</string>
-    <string name="about_contributor_title">Contributors</string>
+    <string name="about_libraries_title">Knihovny</string>
+    <string name="about_contributor_title">Přispěvatelé</string>
     <string name="about_contributor_list" translatable="false">
         Dave Revell, Alexander Friesen, tescott425, Peng Fei, MadMaverick9, j3l11234,
         Sergey Kondakov, Tianhao Wu, Lorenzo M, Naofumi Fukue, Valerio Bozzolan,
@@ -155,42 +155,42 @@ https://github.com/ppareit/swiftp/issues .\n\n
         Birgit Niemegeers
     </string>
 
-    <string name="app_theme">Theme…</string>
-    <string name="dark_theme">Dark Theme</string>
-    <string name="light_theme">Light Theme</string>
-    <string name="mixed_theme">Mixed Theme</string>
-    <string name="unable_to_start_mail_client">Unable to start mail client to send feedback.</string>
-    <string name="use_english">Please use clear English!</string>
+    <string name="app_theme">Motiv…</string>
+    <string name="dark_theme">Tmavý</string>
+    <string name="light_theme">Světlý</string>
+    <string name="mixed_theme">Smíšený</string>
+    <string name="unable_to_start_mail_client">Nelze spustit poštovního klienta pro odeslání zpětné vazby.</string>
+    <string name="use_english">Používejte prosím jasnou angličtinu!</string>
 
     <!-- since 2.18 -->
-    <string name="request_coarse_location_dlg_title">Request permission for location</string>
+    <string name="request_coarse_location_dlg_title">Žádáme o povolení přístupu k poloze</string>
     <string name="request_coarse_location_dlg_message">
-        An application that knows the current access point can deduce the location of the device.
-        As such the location permission is needed. This permission is only needed if you want to
-        automatically start the server if it connects to a particular Wi-Fi access point.
-        Needless to say that this application does not use the location information.\n\n
-        If you don not grant this permission, the app will still work,
-        you just won not be able to automatically connect.
+        Aplikace, která zná aktuální přístupový bod, může odvodit polohu zařízení.
+        Proto je potřeba povolení k poloze. Toto oprávnění je potřeba pouze v případě, že 
+        chcete automaticky spustit server, pokud se připojí k určitému přístupovému bodu Wi-Fi.
+        Netřeba dodávat, že tato aplikace nepoužívá informace o poloze.\n\n
+        Pokud toto oprávnění neudělíte, aplikace bude stále fungovat, 
+        jen se nebudete moci automaticky připojit.
     </string>
 
     <!-- since 2.19 -->
-    <string name="unable_to_proceed_no_permissions">Unable to proceed without the needed permissions, shutting down</string>
-    <string name="manage_users_label">Manage users…</string>
-    <string name="edit">Edit</string>
-    <string name="delete">Delete</string>
-    <string name="save">Save</string>
-    <string name="user_exists_error">Another user with same username already exists!</string>
-    <string name="confirm_delete_message">Delete user \"%1$s\"?</string>
-    <string name="notice_cant_read_write">Notice that we can not read/write in this folder.</string>
-    <string name="notice_cant_write">Notice that we can not write in this folder, reading will work. Writing in sub folders might work.</string>
-    <string name="manage_users_no_users">No users available, create a user.</string>
-    <string name="manage_users_multiple_users">Multiple users available, see list.</string>
-    <string name="gui_settings_label">Appearance…</string>
-    <string name="show_notification_icon_summary">Show the notification icon while the server is running</string>
-    <string name="show_notification_icon">Show notification icon</string>
+    <string name="unable_to_proceed_no_permissions">Bez potřebných oprávnění nelze pokračovat, vypínáme aplikaci</string>
+    <string name="manage_users_label">Spravovat uživatele…</string>
+    <string name="edit">Upravit</string>
+    <string name="delete">Smazat</string>
+    <string name="save">Uložit</string>
+    <string name="user_exists_error">Jiný uživatel se stejným uživatelským jménem již existuje!</string>
+    <string name="confirm_delete_message">Smazat uživatele \"%1$s\"?</string>
+    <string name="notice_cant_read_write">Všimněte si, že v této složce nemůžeme číst ani zapisovat.</string>
+    <string name="notice_cant_write">Všimněte si, že do této složky nemůžeme zapisovat, čtení bude fungovat. Zápis do podsložek může fungovat.</string>
+    <string name="manage_users_no_users">Nejsou k dispozici žádní uživatelé, vytvořte uživatele.</string>
+    <string name="manage_users_multiple_users">K dispozici více uživatelů, viz seznam.</string>
+    <string name="gui_settings_label">Vzhled…</string>
+    <string name="show_notification_icon_summary">Zobrazovat ikonu upozornění, když je server spuštěný</string>
+    <string name="show_notification_icon">Zobrazit ikonu oznámení</string>
     <string name="auto_connect_stop_server_remove_from_list">
-        Stopping FTP Server while connected to a Wi-Fi network we automatically connected to. Removing this Wi-Fi network from the preferences.
+        Zastavení FTP serveru při připojení k síti Wi-Fi, ke které jsme se automaticky připojili. Odebírání této sítě Wi-Fi z předvoleb.
     </string>
-    <string name="write_external_storage_old_android_version_summary">On these devices, all store is available using the file hierarchy.</string>
+    <string name="write_external_storage_old_android_version_summary">Na těchto zařízeních je veškeré úložiště dostupné pomocí hierarchie souborů.</string>
 
 </resources>
