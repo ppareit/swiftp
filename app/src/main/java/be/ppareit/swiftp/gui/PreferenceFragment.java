@@ -246,7 +246,12 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         filter.addAction(FsService.ACTION_STARTED);
         filter.addAction(FsService.ACTION_STOPPED);
         filter.addAction(FsService.ACTION_FAILEDTOSTART);
-        getActivity().registerReceiver(mFsActionsReceiver, filter);
+        if (Build.VERSION.SDK_INT >= 33) {
+            // Fix for start crash on Android 14 with target of.
+            getActivity().registerReceiver(mFsActionsReceiver, filter, FsService.RECEIVER_EXPORTED);
+        } else {
+            getActivity().registerReceiver(mFsActionsReceiver, filter);
+        }
     }
 
     @Override

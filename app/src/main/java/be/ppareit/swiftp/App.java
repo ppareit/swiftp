@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 
 import net.vrallev.android.cat.Cat;
 
@@ -42,8 +43,14 @@ public class App extends Application {
         intentFilter.addAction(FsService.ACTION_STOPPED);
         intentFilter.addAction(FsService.ACTION_FAILEDTOSTART);
 
-        registerReceiver(new NsdService.ServerActionsReceiver(), intentFilter);
-        registerReceiver(new FsWidgetProvider(), intentFilter);
+        if (Build.VERSION.SDK_INT >= 33) {
+            // Fix for start crash on Android 14 with target of.
+            registerReceiver(new NsdService.ServerActionsReceiver(), intentFilter, FsService.RECEIVER_EXPORTED);
+            registerReceiver(new FsWidgetProvider(), intentFilter, FsService.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(new NsdService.ServerActionsReceiver(), intentFilter);
+            registerReceiver(new FsWidgetProvider(), intentFilter);
+        }
     }
 
     /**
