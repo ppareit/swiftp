@@ -34,7 +34,11 @@ public class FsTileService extends TileService {
         intentFilter.addAction(FsService.ACTION_STARTED);
         intentFilter.addAction(FsService.ACTION_STOPPED);
         intentFilter.addAction(FsService.ACTION_FAILEDTOSTART);
-        registerReceiver(mFsActionsReceiver, intentFilter);
+        if (Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(mFsActionsReceiver, intentFilter, RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(mFsActionsReceiver, intentFilter);
+        }
         updateTileState();
     }
 

@@ -44,7 +44,6 @@ public class App extends Application {
         intentFilter.addAction(FsService.ACTION_FAILEDTOSTART);
 
         if (Build.VERSION.SDK_INT >= 33) {
-            // Fix for start crash on Android 14 with target of.
             registerReceiver(new NsdService.ServerActionsReceiver(), intentFilter, FsService.RECEIVER_EXPORTED);
             registerReceiver(new FsWidgetProvider(), intentFilter, FsService.RECEIVER_EXPORTED);
         } else {
