@@ -66,8 +66,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
             if (param.equals("")) {
                 fileToList = sessionThread.getWorkingDir();
                 if (Util.useScopedStorage()) {
-                    final String clientPath = fileToList.getPath();
-                    docFileToList = FileUtil.getDocumentFile("", clientPath);
+                    docFileToList = FileUtil.getDocumentFile(fileToList.getPath());
                 }
             } else {
                 if (param.contains("*")) {
@@ -76,8 +75,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
                 }
                 fileToList = new File(sessionThread.getWorkingDir(), param);
                 if (Util.useScopedStorage()) {
-                    final String clientPath = fileToList.getPath();
-                    docFileToList = FileUtil.getDocumentFileWithParamScopedStorage(param, "", clientPath);
+                    docFileToList = FileUtil.getDocumentFile(fileToList.getPath());
                 }
                 if (violatesChroot(fileToList)) {
                     // sd card should be eg /storage/xxx/

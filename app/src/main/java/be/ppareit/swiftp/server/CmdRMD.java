@@ -48,9 +48,9 @@ public class CmdRMD extends FtpCmd implements Runnable {
         String errString = null;
 
         if (Util.useScopedStorage()) {
-            final String clientPath = sessionThread.getWorkingDir().getPath();
-            DocumentFile docFileToRemove = FileUtil.getDocumentFileWithParamScopedStorage(param,
-                    File.separator + param, clientPath);
+            final String path = sessionThread.getWorkingDir().getPath();
+            final String finalParam = paramCheck(param, path);
+            DocumentFile docFileToRemove = FileUtil.getDocumentFile(path + File.separator + finalParam);
 
             mainblock:
             {
@@ -62,7 +62,7 @@ public class CmdRMD extends FtpCmd implements Runnable {
                     errString = "550 Invalid argument\r\n";
                     break mainblock;
                 }
-                if (violatesChroot(docFileToRemove, param)) {
+                if (violatesChroot(docFileToRemove)) {
                     errString = "550 Invalid name or chroot violation\r\n";
                     break mainblock;
                 }
@@ -116,6 +116,32 @@ public class CmdRMD extends FtpCmd implements Runnable {
             sessionThread.writeString("250 Removed directory\r\n");
         }
         Log.d(TAG, "RMD finished");
+    }
+
+    /*
+    * In certain occasions (such as WinSCP dir delete) while under a sub path in the chroot, the
+    * param here contains a duplication of that sub path and causes an issue. Other times (such as with
+    * FileZilla), this doesn't happen. Seen with multiple clients so it is not being regarded as a bug.
+    *
+    * Discarding shows no ill effects nor conflicts. All paths seen as correct after this check.
+    * CWD /a/a/a/b
+    * 250 CWD successful
+    * CWD /a/a/a
+    * 250 CWD successful    (client knows)
+    * RMD /a/a/a/b          (yet param is "/a/a/a/b" while getWorkingDir() is ".../a/a/a")
+    * Only good part of the param is the last section "b"
+    * Param is coming from the client directly with no changes.
+    * If this continued without being changed then the path would wrongly become "/a/a/a/a/a/a/b"
+    * */
+    private String paramCheck(String param, String path) {
+        String s = param;
+        if (s.startsWith(File.separator)) s = s.substring(1);
+        if (s.endsWith(File.separator)) s = s.substring(s.length() - 1);
+        if (s.contains(File.separator)) {
+            String s1 = s.substring(0, s.lastIndexOf(File.separator));
+            if (path.contains(s1)) return s.substring(s.lastIndexOf(File.separator) + 1);
+        }
+        return s;
     }
 
     /**

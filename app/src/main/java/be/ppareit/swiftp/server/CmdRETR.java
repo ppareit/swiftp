@@ -59,14 +59,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
 
             DocumentFile docFileToRetr = null;
             if (Util.useScopedStorage()) {
-                String clientPath;
-                final String ftrPath = fileToRetr.getPath();
-                if (ftrPath.contains(File.separator)) {
-                    clientPath = ftrPath.substring(0, ftrPath.lastIndexOf(File.separator));
-                } else {
-                    clientPath = ftrPath;
-                }
-                docFileToRetr = FileUtil.getDocumentFileWithParamScopedStorage(param, null, clientPath);
+                docFileToRetr = FileUtil.getDocumentFile(fileToRetr.getPath());
                 if (docFileToRetr == null) {
                     errString = "550 File does not exist\r\n";
                     break mainblock;
@@ -118,7 +111,8 @@ public class CmdRETR extends FtpCmd implements Runnable {
                     long bytesToRead = endPosition - offset + 1;
                     if (Util.useScopedStorage()) is.skip(offset);
                     else in.skip(offset);
-                    while ((bytesRead = (Util.useScopedStorage() ? is.read(buffer) : in.read(buffer))) != -1) {
+                    final boolean scoped = Util.useScopedStorage();
+                    while ((bytesRead = (scoped ? is.read(buffer) : in.read(buffer))) != -1) {
                         boolean success;
                         if (bytesRead > bytesToRead) {
                             success = sessionThread.sendViaDataSocket(buffer, 0, (int) bytesToRead);
@@ -142,7 +136,8 @@ public class CmdRETR extends FtpCmd implements Runnable {
                     }
                     // We have to convert all solitary \n to \r\n
                     boolean lastBufEndedWithCR = false;
-                    while ((bytesRead = (Util.useScopedStorage() ? is.read(buffer) : in.read(buffer))) != -1) {
+                    final boolean scoped = Util.useScopedStorage();
+                    while ((bytesRead = (scoped ? is.read(buffer) : in.read(buffer))) != -1) {
                         int startPos = 0, endPos = 0;
                         byte[] crnBuf = {'\r', '\n'};
                         for (endPos = 0; endPos < bytesRead; endPos++) {
@@ -211,16 +206,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
         final boolean isDocumentFile = fileToRetr.getOb() instanceof DocumentFile;
         final boolean isFile = !isDocumentFile;
 
-        String clientPath;
-        String path = null;
-        if (isDocumentFile) {
-            clientPath = param;
-            if (!param.contains(File.separator)) clientPath = "";
-            else if (!param.endsWith(File.separator)) clientPath = param.substring(0, param
-                    .lastIndexOf(File.separator));
-            path = FileUtil.getScopedClientPath(clientPath, null, null);
-        }
-        if ((isDocumentFile && violatesChroot((DocumentFile) fileToRetr.getOb(), path))
+        if ((isDocumentFile && violatesChroot((DocumentFile) fileToRetr.getOb()))
                 || (isFile && violatesChroot((File) fileToRetr.getOb()))) {
             errString = "550 Invalid name or chroot violation\r\n";
         } else if (fileToRetr.isDirectory()) {
