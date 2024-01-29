@@ -77,6 +77,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:defaultValue="@string/writeExternalStorage_default"
                 android:key="writeExternalStorage"
                 android:title="@string/writeExternalStorage_label" />
+
+            <CheckBoxPreference
+                android:defaultValue="@string/writeNewExternalStorage_default"
+                android:key="newScopedStorage"
+                android:drawableLeft="@drawable/ic_shared_dir"
+                android:drawableStart="@drawable/ic_shared_dir"
+                android:title="@string/writeExternalStorage_label" />
         </PreferenceScreen>
 
     </PreferenceCategory>

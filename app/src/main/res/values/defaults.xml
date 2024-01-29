@@ -28,4 +28,5 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="acceptwifi_default" translatable="false">true</string>
     <string name="wakelock_default" translatable="false">true</string>
     <string name="writeExternalStorage_default" translatable="false">true</string>
+    <string name="writeNewExternalStorage_default" translatable="false">false</string>
 </resources>

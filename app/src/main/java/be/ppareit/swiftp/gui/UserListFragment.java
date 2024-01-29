@@ -80,7 +80,7 @@ public class UserListFragment extends Fragment {
                 .setMessage(getString(R.string.confirm_delete_message, item.getUsername()))
                 .setNegativeButton(android.R.string.no, null)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, whichButton) -> {
-                    FsSettings.removeUser(item.getUsername());
+                    FsSettings.removeUser(item.getUsername(), true);
                     refreshUserList();
                 })
                 .create();
