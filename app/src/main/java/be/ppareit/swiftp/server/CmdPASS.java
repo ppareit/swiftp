@@ -59,6 +59,9 @@ public class CmdPASS extends FtpCmd implements Runnable {
             sessionThread.writeString("230 Access granted\r\n");
             sessionThread.authAttempt(true);
             sessionThread.setChrootDir(user.getChroot());
+            if (Util.useScopedStorage()) {
+                SessionThread.putUriString(Thread.currentThread().getName(), user.getUriString());
+            }
         } else {
             Log.i(TAG, "Failed authentication, incorrect password");
             Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
