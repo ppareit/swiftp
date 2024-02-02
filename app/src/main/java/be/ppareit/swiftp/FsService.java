@@ -146,7 +146,7 @@ public class FsService extends Service implements Runnable {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (Build.VERSION.SDK_INT >= 34) {
-            startForeground(FsNotification.NOTIFICATION_ID, FsNotification.setupNotification(getApplicationContext()), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+            startForeground(FsNotification.NOTIFICATION_ID, FsNotification.setupNotification(getApplicationContext()), ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE);
         } else {
             startForeground(FsNotification.NOTIFICATION_ID, FsNotification.setupNotification(getApplicationContext()));
         }

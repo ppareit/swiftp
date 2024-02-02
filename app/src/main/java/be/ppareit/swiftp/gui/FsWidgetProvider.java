@@ -104,7 +104,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
                     .setChannelId(channelId)
                     .build();
             if (Build.VERSION.SDK_INT >= 34) {
-                startForeground(33, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+                startForeground(33, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE);
             } else {
                 startForeground(33, notification);
 
