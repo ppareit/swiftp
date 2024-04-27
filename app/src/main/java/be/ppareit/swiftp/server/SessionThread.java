@@ -34,6 +34,7 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 
 public class SessionThread extends Thread {
@@ -256,6 +257,7 @@ public class SessionThread extends Thread {
             Cat.i("Connection was dropped");
         }
         closeSocket();
+        FsService.connWakelockEndHandler();
     }
 
     public void closeSocket() {
