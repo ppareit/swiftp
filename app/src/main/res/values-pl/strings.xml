@@ -192,4 +192,5 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="write_external_storage_old_android_version_summary">Na tych urządzeniach cały sklep jest dostępny przy użyciu hierarchii plików.</string>
 
+    <string name="shortcut_on">Szybko</string>
 </resources>

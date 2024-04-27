@@ -108,4 +108,5 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Смешанная тема</string>
     <string name="app_theme">Тема...</string>
 
+    <string name="shortcut_on">Быстро</string>
 </resources>

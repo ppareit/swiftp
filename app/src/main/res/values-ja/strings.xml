@@ -127,4 +127,5 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="mixed_theme">混合テーマ</string>
     <string name="app_theme">テーマ...</string>
 
+    <string name="shortcut_on">早速</string>
 </resources>

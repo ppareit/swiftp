@@ -93,4 +93,5 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Tema misto</string>
     <string name="app_theme">Tema...</string>
 
+    <string name="shortcut_on">Presto</string>
 </resources>

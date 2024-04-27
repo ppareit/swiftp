@@ -148,4 +148,5 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Thème mixte</string>
     <string name="app_theme">Thème...</string>
 
+    <string name="shortcut_on">Rapidement</string>
 </resources>

@@ -143,5 +143,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="light_theme">Φωτεινό Θέμα</string>
     <string name="mixed_theme">Ανάμεικτο Θέμα</string>
 
+    <string name="shortcut_on">Γρήγορη ενεργοποίηση</string>
 </resources>
 

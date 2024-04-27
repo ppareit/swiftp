@@ -165,5 +165,5 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="write_external_storage_old_android_version_summary">На цих пристроях вся пам\'ять доступна за допомогою ієрархії файлів.</string>
 
-
+    <string name="shortcut_on">Швидко</string>
 </resources>

@@ -89,4 +89,5 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
     <string name="mixed_theme">Gemischtes Thema</string>
     <string name="app_theme">Thema...</string>
 
+    <string name="shortcut_on">Schnell weiter</string>
 </resources>
