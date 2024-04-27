@@ -93,4 +93,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Tema misto</string>
     <string name="app_theme">Tema...</string>
 
+    <string name="anon_max_conn">Numero massimo di connessioni simultanee</string>
+    <string name="manage_anon_label">Gestisci anonimo…</string>
 </resources>

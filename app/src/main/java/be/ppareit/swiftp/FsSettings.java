@@ -138,6 +138,14 @@ public class FsSettings {
         return port;
     }
 
+    public static int getAnonMaxConNumber() {
+        final SharedPreferences sp = getSharedPreferences();
+        String s = sp.getString("anon_max", "1");
+        int i = Integer.parseInt(s);
+        Log.v(TAG, "Using anon max connections: " + i);
+        return i;
+    }
+
     public static boolean shouldTakeFullWakeLock() {
         final SharedPreferences sp = getSharedPreferences();
         return sp.getBoolean("stayAwake", false);

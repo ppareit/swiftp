@@ -143,5 +143,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="light_theme">Φωτεινό Θέμα</string>
     <string name="mixed_theme">Ανάμεικτο Θέμα</string>
 
+    <string name="anon_max_conn">Μέγιστες ταυτόχρονες συνδέσεις</string>
+    <string name="manage_anon_label">Διαχείριση ανώνυμων…</string>
 </resources>
 

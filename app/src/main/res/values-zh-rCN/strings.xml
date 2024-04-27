@@ -82,4 +82,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建议。\n\n
     <string name="storage_warning">警告：当前存储暂不可用，您可能需要取消挂载。</string>
     <string name="widget_name">FTP Server Widget</string>
 
+    <string name="anon_max_conn">最大同时连接数</string>
+    <string name="manage_anon_label">管理匿名…</string>
 </resources>

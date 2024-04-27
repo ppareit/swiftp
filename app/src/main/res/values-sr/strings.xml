@@ -127,4 +127,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">микед Тема</string>
     <string name="app_theme">Тема...</string>
 
+    <string name="anon_max_conn">Максимално истовремене везе</string>
+    <string name="manage_anon_label">Управљајте анонимно…</string>
 </resources>

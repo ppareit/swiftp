@@ -127,4 +127,6 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="mixed_theme">混合テーマ</string>
     <string name="app_theme">テーマ...</string>
 
+    <string name="anon_max_conn">最大同時接続数</string>
+    <string name="manage_anon_label">匿名で管理する…</string>
 </resources>

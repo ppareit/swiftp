@@ -38,11 +38,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:key="manage_users"
             android:title="@string/manage_users_label" />
 
-        <CheckBoxPreference
-            android:defaultValue="@string/allow_anonymous_default"
-            android:key="allow_anonymous"
-            android:summary="@string/anonymous_summary"
-            android:title="@string/allow_anonymous_label" />
+        <Preference
+            android:key="manage_anon"
+            android:title="@string/manage_anon_label" />
 
         <PreferenceScreen
             android:key="appearance_screen"

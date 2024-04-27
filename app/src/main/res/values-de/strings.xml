@@ -89,4 +89,6 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
     <string name="mixed_theme">Gemischtes Thema</string>
     <string name="app_theme">Thema...</string>
 
+    <string name="anon_max_conn">Max. gleichzeitige Verbindungen</string>
+    <string name="manage_anon_label">Anonym verwalten…</string>
 </resources>

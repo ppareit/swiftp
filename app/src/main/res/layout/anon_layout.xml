@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/allow_anonymous_label"
+                android:textColor="#ffffff"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:text="@string/anonymous_summary" />
+
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/anon_enable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:defaultValue="@string/allow_anonymous_default"
+            android:key="allow_anonymous"
+            android:paddingTop="10dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/anon_chroot"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/ic_shared_dir"
+        android:drawableLeft="@drawable/ic_shared_dir"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/anon_max_conn"
+            android:textColor="#ffffff"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/anon_max"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="4"
+            android:paddingTop="10dp" />
+    </LinearLayout>
+
+</LinearLayout>

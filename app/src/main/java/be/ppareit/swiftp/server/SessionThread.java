@@ -35,6 +35,7 @@ import java.nio.ByteBuffer;
 
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsSettings;
+import be.ppareit.swiftp.utils.AnonymousLimit;
 
 public class SessionThread extends Thread {
 
@@ -256,6 +257,7 @@ public class SessionThread extends Thread {
             Cat.i("Connection was dropped");
         }
         closeSocket();
+        AnonymousLimit.decrement();
     }
 
     public void closeSocket() {

@@ -110,6 +110,12 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
+        Preference manageAnonPref = findPref("manage_anon");
+        manageAnonPref.setOnPreferenceClickListener((preference) -> {
+            startActivity(new Intent(getActivity(), ManageAnonActivity.class));
+            return true;
+        });
+
         EditTextPreference portNumberPref = findPref("portNum");
         portNumberPref.setSummary(String.valueOf(FsSettings.getPortNumber()));
         portNumberPref.setOnPreferenceChangeListener((preference, newValue) -> {

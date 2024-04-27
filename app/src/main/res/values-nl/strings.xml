@@ -95,4 +95,6 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Gemengd thema</string>
     <string name="app_theme">Thema...</string>
 
+    <string name="anon_max_conn">Maximaal gelijktijdige verbindingen</string>
+    <string name="manage_anon_label">Beheer anoniem…</string>
 </resources>
