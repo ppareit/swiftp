@@ -95,4 +95,6 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Gemengd thema</string>
     <string name="app_theme">Thema...</string>
 
+    <string name="enable_logging">Logboekregistratie inschakelen</string>
+    <string name="manage_log_label">Logboek…</string>
 </resources>

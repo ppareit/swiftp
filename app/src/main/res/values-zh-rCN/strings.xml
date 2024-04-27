@@ -82,4 +82,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建议。\n\n
     <string name="storage_warning">警告：当前存储暂不可用，您可能需要取消挂载。</string>
     <string name="widget_name">FTP Server Widget</string>
 
+    <string name="enable_logging">启用日志记录</string>
+    <string name="manage_log_label">日志…</string>
 </resources>

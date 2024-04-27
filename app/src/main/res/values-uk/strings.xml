@@ -165,5 +165,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="write_external_storage_old_android_version_summary">На цих пристроях вся пам\'ять доступна за допомогою ієрархії файлів.</string>
 
-
+    <string name="enable_logging">Увімкнути журналювання</string>
+    <string name="manage_log_label">Журнал…</string>
 </resources>

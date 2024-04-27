@@ -127,4 +127,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">микед Тема</string>
     <string name="app_theme">Тема...</string>
 
+    <string name="enable_logging">Омогући пријаву</string>
+    <string name="manage_log_label">Пријава…</string>
 </resources>

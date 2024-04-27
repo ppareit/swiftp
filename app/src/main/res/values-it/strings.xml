@@ -93,4 +93,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Tema misto</string>
     <string name="app_theme">Tema...</string>
 
+    <string name="enable_logging">Abilita la registrazione</string>
+    <string name="manage_log_label">Tronco d\'albero…</string>
 </resources>

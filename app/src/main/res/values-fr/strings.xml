@@ -148,4 +148,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Thème mixte</string>
     <string name="app_theme">Thème...</string>
 
+    <string name="enable_logging">Enable logging</string>
+    <string name="manage_log_label">Log…</string>
 </resources>

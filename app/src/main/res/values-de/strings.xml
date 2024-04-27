@@ -89,4 +89,6 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
     <string name="mixed_theme">Gemischtes Thema</string>
     <string name="app_theme">Thema...</string>
 
+    <string name="enable_logging">Aktiviere das Logging</string>
+    <string name="manage_log_label">Protokoll…</string>
 </resources>

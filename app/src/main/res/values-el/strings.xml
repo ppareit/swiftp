@@ -143,5 +143,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="light_theme">Φωτεινό Θέμα</string>
     <string name="mixed_theme">Ανάμεικτο Θέμα</string>
 
+    <string name="enable_logging">Enable logging</string>
+    <string name="manage_log_label">Log…</string>
 </resources>
 

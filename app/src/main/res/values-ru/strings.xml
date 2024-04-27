@@ -108,4 +108,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Смешанная тема</string>
     <string name="app_theme">Тема...</string>
 
+    <string name="enable_logging">Включить ведение журнала</string>
+    <string name="manage_log_label">Бревно…</string>
 </resources>

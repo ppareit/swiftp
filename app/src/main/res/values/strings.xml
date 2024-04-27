@@ -193,4 +193,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="write_external_storage_old_android_version_summary">On these devices, all store is available using the file hierarchy.</string>
 
+    <!-- since 3.1 -->
+    <string name="enable_logging">Enable logging</string>
+    <string name="manage_log_label">Log…</string>
 </resources>

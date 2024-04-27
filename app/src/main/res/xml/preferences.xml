@@ -90,6 +90,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <Preference
             android:key="about"
             android:title="@string/about_label" />
+        <Preference
+            android:key="logs"
+            android:title="@string/manage_log_label" />
     </PreferenceCategory>
 
 </PreferenceScreen>

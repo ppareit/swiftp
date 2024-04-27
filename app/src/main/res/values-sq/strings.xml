@@ -194,4 +194,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="write_external_storage_old_android_version_summary">Në këto pajisje, e gjithë dyqani është në dispozicion duke përdorur hierarkinë e skedarit.</string>
 
+    <string name="enable_logging">Aktivizo regjistrimin</string>
+    <string name="manage_log_label">Regjistrohu…</string>
 </resources>

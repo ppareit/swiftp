@@ -166,5 +166,7 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     </string>
     <string name="write_external_storage_old_android_version_summary">En estos dispositivos, toda lo guardado está disponible utilizando la jerarquía de archivos.</string>
 
+    <string name="enable_logging">Enable logging</string>
+    <string name="manage_log_label">Log…</string>
 </resources>
 
