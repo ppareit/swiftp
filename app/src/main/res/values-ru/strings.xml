@@ -108,4 +108,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Смешанная тема</string>
     <string name="app_theme">Тема...</string>
 
+    <string name="battery_saver_setting_title">Экономия заряда батареи</string>
+    <string name="battery_saver_desc">ПРИМЕЧАНИЕ. После внесения изменений вы *должны* вручную перезапустить сервер.</string>
+    <string name="bs_high">ВЫСОКИЙ</string>
+    <string name="bs_low">НИЗКИЙ</string>
+    <string name="bs_deep">ГЛУБОКИЙ</string>
 </resources>

@@ -126,5 +126,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="light_theme">лигхт Тема</string>
     <string name="mixed_theme">микед Тема</string>
     <string name="app_theme">Тема...</string>
-
+    <string name="battery_saver_setting_title">Уштеда батерије</string>
+    <string name="battery_saver_desc">НАПОМЕНА: *морате* ручно поново покренути сервер након промене.</string>
+    <string name="bs_high">ХИГХ</string>
+    <string name="bs_low">ЛОВ</string>
+    <string name="bs_deep">ДУБОКО</string>
 </resources>

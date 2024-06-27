@@ -148,4 +148,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Thème mixte</string>
     <string name="app_theme">Thème...</string>
 
+    <string name="battery_saver_setting_title">Économiseur de batterie</string>
+    <string name="battery_saver_desc">REMARQUE : Vous *devez* redémarrer manuellement le serveur après la modification.</string>
+    <string name="bs_high">HAUT</string>
+    <string name="bs_low">FAIBLE</string>
+    <string name="bs_deep">PROFOND</string>
 </resources>

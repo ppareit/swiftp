@@ -77,6 +77,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:defaultValue="@string/writeExternalStorage_default"
                 android:key="writeExternalStorage"
                 android:title="@string/writeExternalStorage_label" />
+
+            <ListPreference
+                android:defaultValue="0"
+                android:entries="@array/pref_list_battery_saver_titles"
+                android:entryValues="@array/pref_list_battery_saver_values"
+                android:key="battery_saver"
+                android:dialogTitle="@string/battery_saver_setting_title"
+                android:title="@string/battery_saver_setting_title"
+                android:summary="@string/battery_saver_desc"/>
+
         </PreferenceScreen>
 
     </PreferenceCategory>

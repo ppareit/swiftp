@@ -165,5 +165,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="write_external_storage_old_android_version_summary">На цих пристроях вся пам\'ять доступна за допомогою ієрархії файлів.</string>
 
-
+    <string name="battery_saver_setting_title">Економія батареї</string>
+    <string name="battery_saver_desc">ПРИМІТКА. Ви *потрібно* вручну перезапустити сервер після зміни.</string>
+    <string name="bs_high">ВИСОКА</string>
+    <string name="bs_low">НИЗЬКИЙ</string>
+    <string name="bs_deep">ГЛИБОКИЙ</string>
 </resources>

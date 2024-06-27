@@ -193,4 +193,10 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="write_external_storage_old_android_version_summary">On these devices, all store is available using the file hierarchy.</string>
 
+    <!-- since 3.1 -->
+    <string name="battery_saver_setting_title">Battery Saver</string>
+    <string name="battery_saver_desc">NOTE: You *must* manually restart server after changing.</string>
+    <string name="bs_high">HIGH</string>
+    <string name="bs_low">LOW</string>
+    <string name="bs_deep">DEEP</string>
 </resources>
