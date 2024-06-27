@@ -165,17 +165,9 @@ public class FsService extends Service implements Runnable {
         warnIfNoExternalStorage();
 
         shouldExit = false;
-        int attempts = 10;
-        // The previous server thread may still be cleaning up, wait for it to finish.
-        while (serverThread != null) {
-            Log.w(TAG, "Won't start, server thread exists");
-            if (attempts > 0) {
-                attempts--;
-                Util.sleepIgnoreInterrupt(1000);
-            } else {
-                Log.w(TAG, "Server thread already exists");
-                return START_STICKY;
-            }
+        if (serverThread != null) {
+            Log.e(TAG, "Server thread already exists: just start");
+            return START_STICKY;
         }
         Log.d(TAG, "Creating server thread");
         serverThread = new Thread(this);
