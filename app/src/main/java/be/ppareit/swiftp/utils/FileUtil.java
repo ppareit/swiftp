@@ -1046,6 +1046,13 @@ public abstract class FileUtil {
             if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).getUri().getPath();
             else return ((File) ob).getCanonicalPath();
         }
+
+        public String getAbsolutePath() {
+            Object ob = getOb();
+            if (ob == null) return "";
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).getUri().getPath();
+            else return ((File) ob).getAbsolutePath();
+        }
     }
 
     public static Gen convertDocumentFileToGen(DocumentFile f) {
