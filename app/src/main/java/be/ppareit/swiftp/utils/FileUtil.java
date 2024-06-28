@@ -985,53 +985,66 @@ public abstract class FileUtil {
         }
 
         public boolean exists() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).exists();
-            else return ((File) getOb()).exists();
+            Object ob = getOb();
+            if (ob == null) return false;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).exists();
+            else return ((File) ob).exists();
         }
 
         public String getName() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).getName();
-            else return ((File) getOb()).getName();
+            Object ob = getOb();
+            if (ob == null) return "";
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).getName();
+            else return ((File) ob).getName();
         }
 
         public boolean isDirectory() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).isDirectory();
-            else return ((File) getOb()).isDirectory();
+            Object ob = getOb();
+            if (ob == null) return false;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).isDirectory();
+            else return ((File) ob).isDirectory();
         }
 
         public long length() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).length();
-            else return ((File) getOb()).length();
+            Object ob = getOb();
+            if (ob == null) return 0;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).length();
+            else return ((File) ob).length();
         }
 
         public long lastModified() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).lastModified();
-            else return ((File) getOb()).lastModified();
+            Object ob = getOb();
+            if (ob == null) return 0;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).lastModified();
+            else return ((File) ob).lastModified();
         }
 
         public boolean isFile() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).isFile();
-            else return ((File) getOb()).isFile();
+            Object ob = getOb();
+            if (ob == null) return false;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).isFile();
+            else return ((File) ob).isFile();
         }
 
         public boolean canRead() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).canRead();
-            else return ((File) getOb()).canRead();
+            Object ob = getOb();
+            if (ob == null) return false;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).canRead();
+            else return ((File) ob).canRead();
         }
 
         public boolean canWrite() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).canWrite();
-            else return ((File) getOb()).canWrite();
+            Object ob = getOb();
+            if (ob == null) return false;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).canWrite();
+            else return ((File) ob).canWrite();
         }
 
         public String getCanonicalPath() throws IOException {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).getUri().getPath();
-            else return ((File) getOb()).getCanonicalPath();
-        }
-
-        public String getAbsolutePath() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).getUri().getPath();
-            else return ((File) getOb()).getAbsolutePath();
+            Object ob = getOb();
+            if (ob == null) return "";
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).getUri().getPath();
+            else return ((File) ob).getCanonicalPath();
         }
     }
 
