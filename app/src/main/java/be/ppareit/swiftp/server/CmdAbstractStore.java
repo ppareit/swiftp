@@ -87,7 +87,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
 
                 if (Util.useScopedStorage()) {
                     final String mime = "application/octet-stream";
-                    if (!append) {
+                    if (!append && sessionThread.offset < 0) { // Affected by REST command)
                         if (storeFile.exists()) {
                             errString = "451 Couldn't truncate file\r\n";
                             break storing;
