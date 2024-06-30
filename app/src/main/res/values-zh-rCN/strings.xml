@@ -82,4 +82,9 @@ https://github.com/ppareit/swiftp/issues 提交您的建议。\n\n
     <string name="storage_warning">警告：当前存储暂不可用，您可能需要取消挂载。</string>
     <string name="widget_name">FTP Server Widget</string>
 
+    <string name="battery_saver_setting_title">省电</string>
+    <string name="battery_saver_desc">注意：更改后您*必须*手动重新启动服务器。</string>
+    <string name="bs_high">高的</string>
+    <string name="bs_low">低的</string>
+    <string name="bs_deep">深的</string>
 </resources>

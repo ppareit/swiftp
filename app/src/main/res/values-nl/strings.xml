@@ -95,4 +95,9 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Gemengd thema</string>
     <string name="app_theme">Thema...</string>
 
+    <string name="battery_saver_setting_title">Batterij bespaarder</string>
+    <string name="battery_saver_desc">OPMERKING: U *moet* de server handmatig opnieuw opstarten na het wijzigen.</string>
+    <string name="bs_high">HOOG</string>
+    <string name="bs_low">LAAG</string>
+    <string name="bs_deep">DIEP</string>
 </resources>

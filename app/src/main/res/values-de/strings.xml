@@ -89,4 +89,9 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
     <string name="mixed_theme">Gemischtes Thema</string>
     <string name="app_theme">Thema...</string>
 
+    <string name="battery_saver_setting_title">Batteriesparmodus</string>
+    <string name="battery_saver_desc">HINWEIS: Sie *müssen* den Server nach der Änderung manuell neu starten.</string>
+    <string name="bs_high">HOCH</string>
+    <string name="bs_low">NIEDRIG</string>
+    <string name="bs_deep">TIEF</string>
 </resources>

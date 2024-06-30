@@ -48,15 +48,29 @@ public class TcpListener extends Thread {
     @Override
     public void run() {
         try {
+            Socket clientSocket;
             while (true) {
-                Socket clientSocket = listenSocket.accept();
+                try {
+                    clientSocket = listenSocket.accept(); // blocks loop until next connection
+                } catch (Exception e) {
+                    // call to close() on server off causes SocketException here with "Socket closed"
+                    final String msg = e.getMessage();
+                    if (msg != null && msg.contains("Socket closed")) {
+                        if (ftpServerService.isConnWakelockRunning()) ftpServerService.releaseWakelocks();
+                        return;
+                    }
+                    // Simple retry and fail back to next catch or continue on success
+                    clientSocket = listenSocket.accept();
+                }
                 Log.i(TAG, "New connection, spawned thread");
+                ftpServerService.createConnWakeLock();
                 SessionThread newSession = new SessionThread(clientSocket, new LocalDataSocket());
                 newSession.start();
                 ftpServerService.registerSessionThread(newSession);
             }
         } catch (Exception e) {
             Log.d(TAG, "Exception in TcpListener");
+            if (ftpServerService.isConnWakelockRunning()) ftpServerService.releaseWakelocks();
         }
     }
 }
