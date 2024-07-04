@@ -87,7 +87,10 @@ abstract public class CmdAbstractStore extends FtpCmd {
 
                 if (Util.useScopedStorage()) {
                     final String mime = "application/octet-stream";
-                    if (!append && sessionThread.offset < 0) { // Affected by REST command)
+                    // Fix: REST needs check of exists here. sessionThread.offset must be checked
+                    // as correct before using it as it can be wrong during connection issues. As
+                    // it is not at this time, do not use it here.
+                    if (!append && !storeFile.exists()) {
                         if (storeFile.exists()) {
                             errString = "451 Couldn't truncate file\r\n";
                             break storing;
@@ -99,6 +102,11 @@ abstract public class CmdAbstractStore extends FtpCmd {
                     if (docStoreFile == null || !docStoreFile.exists()) {
                         errString = "451 Couldn't open file \"" + param + "\" aka \""
                                 + storeFile.getCanonicalPath() + "\" for writing\r\n";
+                        break storing;
+                    }
+                    // Fix: Do not allow this situation to pass.
+                    if (sessionThread.offset > 0 && docStoreFile.length() == 0) {
+                        errString = "554 restart failure: bad offset\r\n";
                         break storing;
                     }
                 } else {
