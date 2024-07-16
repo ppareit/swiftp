@@ -174,6 +174,9 @@ public abstract class FtpCmd implements Runnable {
         // todo: trailing whitespace may be significant, just remove \r\n
         retString = retString.replaceAll("\\s+$", "");
 
+        // Fix: WinSCP synchronize with checksum reproduces a bad path here because of quotes.
+        retString = retString.replaceAll("\"", "");
+
         if (!silent) {
             Log.d(TAG, "Parsed argument: " + retString);
         }
