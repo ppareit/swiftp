@@ -313,7 +313,7 @@ public class FsService extends Service implements Runnable {
             if (FsSettings.shouldTakeFullWakeLock()) {
                 Log.d(TAG, "takeWakeLock: Taking full wake lock");
                 // Note: FULL_WAKE_LOCK is deprecated, officially not recommended, and is actually worse.
-                wakeLock = pm.newWakeLock(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, TAG);
+                wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, TAG);
             } else {
                 Log.d(TAG, "maybeTakeWakeLock: Taking partial wake lock");
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
