@@ -235,6 +235,18 @@ public class SessionThread extends Thread {
         closeSocket();
     }
 
+    /**
+     * Sanitize the logged commands so we don't leak username or password.
+     */
+    private String sanitizeCommand(String cmd) {
+        if (cmd.trim().startsWith("PASS")) {
+            return "PASS [hidden]";
+        } else if (cmd.trim().startsWith("USER")) {
+            return "USER [hidden]";
+        }
+        return cmd;
+    }
+
     @Override
     public void run() {
         Cat.i("SessionThread started");
@@ -250,7 +262,7 @@ public class SessionThread extends Thread {
                 String line;
                 line = in.readLine(); // will accept \r\n or \n for terminator
                 if (line != null) {
-                    Cat.d("Received line from client: " + line);
+                    Cat.d("Received line from client: " + sanitizeCommand(line));
                     FtpCmd.dispatchCommand(this, line);
                 } else {
                     Cat.i("readLine gave null, quitting");
