@@ -22,6 +22,11 @@ public class FsTileService extends TileService {
 
     @Override
     public void onClick() {
+        if (isSecure()) unlockAndRun(this::clicked);
+        else clicked();
+    }
+
+    private void clicked() {
         if (getQsTile().getState() == Tile.STATE_INACTIVE)
             FsService.start();
         else if (getQsTile().getState() == Tile.STATE_ACTIVE)

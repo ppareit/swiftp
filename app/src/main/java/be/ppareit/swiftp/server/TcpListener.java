@@ -70,7 +70,7 @@ public class TcpListener extends Thread {
             }
         } catch (Exception e) {
             Log.d(TAG, "Exception in TcpListener");
-            ftpServerService.releaseWakelocks();
+            if (ftpServerService.isConnWakelockRunning()) ftpServerService.releaseWakelocks();
         }
     }
 }
