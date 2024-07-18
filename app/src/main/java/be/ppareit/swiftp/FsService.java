@@ -410,11 +410,12 @@ public class FsService extends Service implements Runnable {
             ArrayList<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface networkInterface : networkInterfaces) {
                 // only check network interfaces that give local connection
-                if (!networkInterface.getName().matches("^(eth|wlan).*"))
+                if (!networkInterface.getName().matches("^(eth|wlan|tun).*"))
                     continue;
                 for (InetAddress address : Collections.list(networkInterface.getInetAddresses())) {
                     if (!address.isLoopbackAddress()
                             && !address.isLinkLocalAddress()
+                            && address.isSiteLocalAddress()
                             && address instanceof Inet4Address) {
                         if (returnAddress != null) {
                             Cat.w("Found more than one valid address local inet address, why???");
@@ -439,9 +440,7 @@ public class FsService extends Service implements Runnable {
         Context context = App.getAppContext();
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
-        connected = ni != null
-                && ni.isConnected()
-                && (ni.getType() & (ConnectivityManager.TYPE_WIFI | ConnectivityManager.TYPE_ETHERNET)) != 0;
+        connected = ni != null && ni.isConnected();
         if (!connected) {
             Log.d(TAG, "isConnectedToLocalNetwork: see if it is an WIFI AP");
             WifiManager wm = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
