@@ -166,5 +166,10 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     </string>
     <string name="write_external_storage_old_android_version_summary">En estos dispositivos, toda lo guardado está disponible utilizando la jerarquía de archivos.</string>
 
+    <string name="battery_saver_setting_title">Ahorro de batería</string>
+    <string name="battery_saver_desc">NOTA: *Debe* reiniciar manualmente el servidor después de realizar el cambio.</string>
+    <string name="bs_high">ALTO</string>
+    <string name="bs_low">BAJO</string>
+    <string name="bs_deep">PROFUNDO</string>
 </resources>
 

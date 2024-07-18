@@ -127,4 +127,9 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="mixed_theme">混合テーマ</string>
     <string name="app_theme">テーマ...</string>
 
+    <string name="battery_saver_setting_title">バッテリーセーバー</string>
+    <string name="battery_saver_desc">注: 変更後はサーバーを手動で再起動する必要があります。</string>
+    <string name="bs_high">高い</string>
+    <string name="bs_low">低い</string>
+    <string name="bs_deep">深い</string>
 </resources>
