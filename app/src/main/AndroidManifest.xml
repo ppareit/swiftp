@@ -29,7 +29,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <uses-feature
@@ -69,7 +70,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:parentActivityName=".gui.MainActivity"
             android:theme="@style/AppThemeDark" />
 
-        <service android:name="be.ppareit.swiftp.FsService" />
+        <service
+            android:name="be.ppareit.swiftp.FsService"
+            android:foregroundServiceType="connectedDevice" />
 
         <service android:name="be.ppareit.swiftp.NsdService" />
 
@@ -88,7 +91,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:resource="@xml/widget_info" />
         </receiver>
 
-        <service android:name="be.ppareit.swiftp.gui.FsWidgetProvider$UpdateService" />
+        <service
+            android:name="be.ppareit.swiftp.gui.FsWidgetProvider$UpdateService"
+            android:foregroundServiceType="connectedDevice" />
 
         <!-- Tasker/Locale integration -->
         <activity
