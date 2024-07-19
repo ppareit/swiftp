@@ -143,5 +143,10 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="light_theme">Φωτεινό Θέμα</string>
     <string name="mixed_theme">Ανάμεικτο Θέμα</string>
 
+    <string name="battery_saver_setting_title">Εξοικονόμηση μπαταρίας</string>
+    <string name="battery_saver_desc">ΣΗΜΕΙΩΣΗ: *Πρέπει* να κάνετε μη αυτόματη επανεκκίνηση του διακομιστή μετά την αλλαγή.</string>
+    <string name="bs_high">ΥΨΗΛΟΣ</string>
+    <string name="bs_low">ΧΑΜΗΛΟΣ</string>
+    <string name="bs_deep">ΒΑΘΥΣ</string>
 </resources>
 

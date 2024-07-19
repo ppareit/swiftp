@@ -971,7 +971,12 @@ public abstract class FileUtil {
                         s = param.substring(0, param.lastIndexOf(File.separator));
                     }
                     String[] split = s.split(File.separator);
-                    String lastSubDir = split[split.length - 1];
+                    String lastSubDir;
+                    try {
+                        lastSubDir = split[split.length - 1];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        lastSubDir = File.separator;
+                    }
                     final String path = cwdUri.getPath();
                     if (path != null && !path.contains(lastSubDir)) {
                         // Fix: eg DCIM folder as target where pushing a file to it then makes the

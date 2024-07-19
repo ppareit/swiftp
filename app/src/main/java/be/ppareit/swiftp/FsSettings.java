@@ -172,6 +172,15 @@ public class FsSettings {
         return port;
     }
 
+    public static String getBatterySaverChoice(String val) {
+        final SharedPreferences sp = getSharedPreferences();
+        String s = sp.getString("battery_saver", "1");
+        if (val != null) s = val;
+        if (s.equals("0")) return  App.getAppContext().getString(R.string.bs_high);
+        if (s.equals("1")) return App.getAppContext().getString(R.string.bs_low);
+        return App.getAppContext().getString(R.string.bs_deep);
+    }
+
     public static boolean shouldTakeFullWakeLock() {
         final SharedPreferences sp = getSharedPreferences();
         return sp.getBoolean("stayAwake", false);

@@ -22,6 +22,11 @@ public class FsTileService extends TileService {
 
     @Override
     public void onClick() {
+        if (isSecure()) unlockAndRun(this::clicked);
+        else clicked();
+    }
+
+    private void clicked() {
         if (getQsTile().getState() == Tile.STATE_INACTIVE)
             FsService.start();
         else if (getQsTile().getState() == Tile.STATE_ACTIVE)
@@ -34,7 +39,11 @@ public class FsTileService extends TileService {
         intentFilter.addAction(FsService.ACTION_STARTED);
         intentFilter.addAction(FsService.ACTION_STOPPED);
         intentFilter.addAction(FsService.ACTION_FAILEDTOSTART);
-        registerReceiver(mFsActionsReceiver, intentFilter);
+        if (Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(mFsActionsReceiver, intentFilter, RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(mFsActionsReceiver, intentFilter);
+        }
         updateTileState();
     }
 
