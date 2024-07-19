@@ -33,6 +33,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -41,12 +42,14 @@ import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
+import android.provider.Settings;
 import android.text.util.Linkify;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.documentfile.provider.DocumentFile;
 
 import net.vrallev.android.cat.Cat;
@@ -70,10 +73,8 @@ import be.ppareit.swiftp.utils.FileUtil;
  */
 public class PreferenceFragment extends android.preference.PreferenceFragment {
 
-    private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
-    private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
+    private static final int STORAGE_PERMISSION_CODE = 100;
 
-    private DynamicMultiSelectListPreference mAutoconnectListPref;
     private Handler mHandler = new Handler();
 
     @Override
@@ -85,12 +86,6 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         updateRunningState();
         runningPref.setOnPreferenceChangeListener((preference, newValue) -> {
             if ((Boolean) newValue) {
-                if (Util.useScopedStorage() && FsSettings.getExternalStorageUri() == null) {
-                    // Seems like we are on a system that requires scoped storage,
-                    // but scoped storage has not yet been configured, force it now
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                    startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
-                }
                 FsService.start();
             } else {
                 FsService.stop();
@@ -160,8 +155,18 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             }
             writeExternalStoragePref.setOnPreferenceChangeListener((preference, newValue) -> {
                 if ((boolean) newValue) {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                    startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        //Android is 11(R) or above
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                        Uri uri = Uri.fromParts("package", this.getActivity().getPackageName(), null);
+                        intent.setData(uri);
+                        startActivityForResult(intent, STORAGE_PERMISSION_CODE);
+                    } else {
+                        //Android is below 11(R)
+                        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+                        requestPermissions(permissions, STORAGE_PERMISSION_CODE);
+                    }
+
                     return false;
                 } else {
                     FsSettings.setExternalStorageUri(null);
@@ -244,23 +249,29 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void requestAccessCoarseLocationPermission() {
-        String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION};
-        requestPermissions(permissions, ACCESS_COARSE_LOCATION_REQUEST_CODE);
-    }
 
-    @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (requestCode == ACCESS_COARSE_LOCATION_REQUEST_CODE) {
-            if (permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION)
-                    && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                mAutoconnectListPref.getDialog().cancel();
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.length >= 2) {
+                //check each permission if granted or not
+                boolean write = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                boolean read = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                if (write && read) {
+                    //External Storage Permission granted
+                    final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
+                    writeExternalStoragePref.setEnabled(false);
+                    writeExternalStoragePref.setChecked(true);
+                } else {
+                    //External Storage Permission denied...
+                    Toast.makeText(this.getContext(), "Something went wrong !", Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
+
 
     @Override
     public void onResume() {
@@ -291,121 +302,26 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-        Cat.d("onActivityResult called");
-        if (requestCode == ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
-            if (resultData == null) return;
-            Uri treeUri = resultData.getData();
-            if (treeUri == null) return;
-            String path = treeUri.getPath();
-            Cat.d("Action Open Document Tree on path " + path);
-            // *************************************
-            // The order following here is critical. They must stay ordered as they are.
-            setPermissionToUseExternalStorage(treeUri);
-            tryToUpgradeToScopedStorage(treeUri);
-            scopedStorageChrootOverride(treeUri);
-        }
-    }
 
-    private void setPermissionToUseExternalStorage(Uri treeUri) {
-        final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
-        if (isNotExternalStorage(treeUri)) {
-            writeExternalStoragePref.setChecked(false);
-        } else {
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    if (removeAllUriPermissions(treeUri)) {
-                        FsSettings.setExternalStorageUri(treeUri.toString());
-                        getActivity().getContentResolver()
-                                .takePersistableUriPermission(treeUri,
-                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    }
-                }
+        //here we will handle the result of our intent
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            //Android is 11(R) or above
+            if (Environment.isExternalStorageManager()){
+                //Manage External Storage Permission is granted
+                final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
+                writeExternalStoragePref.setEnabled(false);
                 writeExternalStoragePref.setChecked(true);
-            } catch (SecurityException e) {
-                // Harden code against crash: May reach here by adding exact same picker location but
-                // being removed at same time.
             }
+            else{
+                //Manage External Storage Permission is denied....
+                Toast.makeText(this.getContext(), "Something went wrong !", Toast.LENGTH_LONG).show();
+            }
+        }
+        else{
+            //Android is below 11(R)
         }
     }
 
-    private boolean isNotExternalStorage(Uri treeUri) {
-        String folder = FileUtil.cleanupUriStoragePath(treeUri);
-        if (folder != null && folder.contains(":")) {
-            // Just get rid of the "primary:" part to get what we want (the user selected path/folder)
-            try {
-                folder = folder.substring(folder.indexOf(":") + 1);
-            } catch (IndexOutOfBoundsException e) {
-                folder = "";
-            }
-        }
-        return folder == null || folder.isEmpty();
-    }
-
-    /*
-     * If user is on older SDK, check if File can rw and if not then move to newer storage use.
-     * As we don't know what older SDK will have a problem where or not.
-     * Could just assume with this use but a check is fast.
-     * */
-    private void tryToUpgradeToScopedStorage(Uri treeUri) {
-        if (!Util.useScopedStorage()) {
-            DocumentFile df = FileUtil.getDocumentFileFromUri(treeUri);
-            if (df == null) return;
-            final String a11Path = FileUtil.getUriStoragePathFullFromDocumentFile(df, "");
-            if (a11Path == null) return;
-            File root = new File(a11Path);
-            if (!root.canRead() || !root.canWrite()) {
-                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-                // Fix: Use commit; override in next method using useScopedStorage() needs it.
-                sp.edit().putBoolean("OverrideScopedStorageMinimum", true).commit();
-            }
-        }
-    }
-
-    /*
-     * Override all and put path as chroot. Previously user chosen. On Android 11+ it is only
-     * decided now by the picker if its to be allowed on the Play Store unless allowance was made.
-     * */
-    private void scopedStorageChrootOverride(Uri treeUri) {
-        if (Util.useScopedStorage()) {
-            DocumentFile df = FileUtil.getDocumentFileFromUri(treeUri);
-            if (df == null) return;
-            final String scopedStoragePath = FileUtil.getUriStoragePathFullFromDocumentFile(df, "");
-            if (scopedStoragePath == null) return;
-            List<FtpUser> userList = FsSettings.getUsers();
-            for (int i = 0; i < userList.size(); i++) {
-                if (userList.get(i) == null) continue;
-                FtpUser entry = new FtpUser(userList.get(i).getUsername(), userList.get(i).getPassword(), scopedStoragePath);
-                FsSettings.modifyUser(userList.get(i).getUsername(), entry);
-            }
-        }
-    }
-
-    /*
-     * Clean up URI list since there's only one folder. They have a way of collecting on changes
-     * which causes an issue. More so only can use one.
-     * */
-    private boolean removeAllUriPermissions(Uri treeUri) {
-        List<UriPermission> oldList = App.getAppContext().getContentResolver().getPersistedUriPermissions();
-        if (oldList.size() == 0) return true;
-        // check against current and don't remove if only and same as it won't re-give same.
-        if (oldList.size() == 1) {
-            Uri uri = oldList.get(0).getUri();
-            if (uri != null) {
-                final String path = uri.getPath();
-                if (path != null) if (path.equals(treeUri.getPath())) return false;
-            }
-        }
-        // Release all
-        for (UriPermission uriToRemove : oldList) {
-            if (uriToRemove == null) continue;
-            getActivity().getContentResolver()
-                    .releasePersistableUriPermission(uriToRemove.getUri(),
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        }
-        return true;
-    }
 
     /**
      * Update the summary for the users. When there are no users, ask to add at least one user.
