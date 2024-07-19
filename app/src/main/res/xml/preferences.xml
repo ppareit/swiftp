@@ -78,6 +78,15 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:key="writeExternalStorage"
                 android:title="@string/writeExternalStorage_label" />
 
+            <CheckBoxPreference
+                android:defaultValue="@string/useScopedStorage_default"
+                android:key="useScopedStorage"
+                android:drawableLeft="@drawable/ic_shared_dir"
+                android:drawableStart="@drawable/ic_shared_dir"
+                android:title="@string/use_scoped_storage_label"
+                android:summary="@string/use_scope_storage_summary"
+                />
+
             <ListPreference
                 android:defaultValue="0"
                 android:entries="@array/pref_list_battery_saver_titles"

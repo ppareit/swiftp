@@ -28,6 +28,7 @@ import java.util.List;
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.server.SessionThread;
 
 
 public abstract class FileUtil {
@@ -873,14 +874,22 @@ public abstract class FileUtil {
     }
 
     /*
-     * Retrieves the Uri required to use scoped storage.
+     * Retrieves the URI assigned to a user upon connection that is required to use scoped storage
+     * and get the correct URI to work with.
      * */
     public static Uri getTreeUri() {
-        // Does not change unless user uses the picker again
+        String threadName = Thread.currentThread().getName();
+        String userUriString = SessionThread.getUriString(threadName);
+        if (userUriString == null || userUriString.isEmpty()) return null;
         List<UriPermission> list = App.getAppContext().getContentResolver().getPersistedUriPermissions();
         if (list.size() > 0 && list.get(0) != null) {
-            // Get the picker path and then tack on any user provided path in the client.
-            return list.get(0).getUri();
+            for (UriPermission perm : list) {
+                String uriString = perm.getUri().getPath();
+                if (uriString == null) continue;
+                if (uriString.equals(userUriString)) {
+                    return perm.getUri();
+                }
+            }
         }
         return null;
     }
