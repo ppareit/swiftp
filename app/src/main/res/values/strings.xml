@@ -199,4 +199,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="bs_high">HIGH</string>
     <string name="bs_low">LOW</string>
     <string name="bs_deep">DEEP</string>
+
+    <string name="use_scoped_storage_label">Use scoped storage</string>
+    <string name="use_scope_storage_summary">Make use of scoped storage, this is needed for recent Android devices. Choose the folders to which you want read/write access in Manage Users…</string>
 </resources>

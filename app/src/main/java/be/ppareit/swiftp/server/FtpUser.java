@@ -11,14 +11,15 @@ public class FtpUser {
     final private String mUsername;
     final private String mPassword;
     final private String mChroot;
+    final private String mUriString;
 
-    public FtpUser(@NonNull String username, @NonNull String password, @NonNull String chroot) {
+    public FtpUser(@NonNull String username, @NonNull String password, @NonNull String chroot, String uriString) {
         mUsername = username;
         mPassword = password;
 
         final File rootPath = new File(chroot);
         mChroot = rootPath.isDirectory() ? chroot : FsSettings.getDefaultChrootDir().getPath();
-
+        mUriString = uriString;
     }
 
     public String getUsername() {
@@ -31,5 +32,9 @@ public class FtpUser {
 
     public String getChroot() {
         return mChroot;
+    }
+
+    public String getUriString() {
+        return mUriString;
     }
 }

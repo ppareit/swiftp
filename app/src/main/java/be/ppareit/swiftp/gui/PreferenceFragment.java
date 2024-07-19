@@ -85,12 +85,6 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         updateRunningState();
         runningPref.setOnPreferenceChangeListener((preference, newValue) -> {
             if ((Boolean) newValue) {
-                if (Util.useScopedStorage() && FsSettings.getExternalStorageUri() == null) {
-                    // Seems like we are on a system that requires scoped storage,
-                    // but scoped storage has not yet been configured, force it now
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                    startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
-                }
                 FsService.start();
             } else {
                 FsService.stop();
@@ -203,6 +197,37 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
+        final CheckBoxPreference useScopedStorage = findPref("useScopedStorage");
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+        if (sp.getBoolean("NewScopedStorageUpgradeCheck", true)) {
+            // Don't break use if "write external storage" was used before the app update as the original
+            // code it now fully uses isn't compat with the newer one and would see major issues.
+            // Runs one time only on update as pref won't be checked after clean install / wipe.
+            // Code is executed on app start which happens automatically after app update.
+            if (writeExternalStoragePref.isChecked()) { // needs to be true to not break use
+                sp.edit().putBoolean("UseScopedStorage", true).apply();
+                sp.edit().putBoolean("NewScopedStorageUpgradeCheck", false).apply();
+                writeExtMultiUserUpgradePath();
+            }
+        }
+
+        if (Util.useScopedStorage()) {
+            // Do not allow mixing of old setting with the new one!
+            useScopedStorage.setChecked(true);
+            writeExternalStoragePref.setChecked(false);
+            writeExternalStoragePref.setEnabled(false);
+        } else {
+            useScopedStorage.setChecked(false);
+        }
+        useScopedStorage.setOnPreferenceChangeListener((preference, newValue) -> {
+            writeExternalStoragePref.setChecked(false);
+            writeExternalStoragePref.setEnabled(!((boolean) newValue));
+            sp.edit().putBoolean("UseScopedStorage", (boolean) newValue).apply();
+            Util.resetScoped();
+
+            return true;
+        });
+
         ListPreference themePref = findPref("theme");
         themePref.setSummary(themePref.getEntry());
         themePref.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -242,6 +267,27 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
+    }
+
+    /*
+    * Multi user:
+    * Upgrade path for previous "write external storage" use so that it doesn't break on update.
+    * Populates the new uriString use of each user.
+    * */
+    private void writeExtMultiUserUpgradePath() {
+        List<UriPermission> oldList = App.getAppContext().getContentResolver().getPersistedUriPermissions();
+        if (oldList.size() == 0) return;
+        Uri uri = oldList.get(0).getUri();
+        if (uri == null) return;
+        List<FtpUser> userList = FsSettings.getUsers();
+        for (int i = 0; i < userList.size(); i++) {
+            if (userList.get(i) == null) continue;
+            FtpUser entry = new FtpUser(userList.get(i).getUsername(),
+                    userList.get(i).getPassword(),
+                    userList.get(i).getChroot(),
+                    uri.getPath());
+            FsSettings.modifyUser(userList.get(i).getUsername(), entry);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -293,118 +339,24 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
         Cat.d("onActivityResult called");
         if (requestCode == ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
-            if (resultData == null) return;
             Uri treeUri = resultData.getData();
-            if (treeUri == null) return;
             String path = treeUri.getPath();
             Cat.d("Action Open Document Tree on path " + path);
-            // *************************************
-            // The order following here is critical. They must stay ordered as they are.
-            setPermissionToUseExternalStorage(treeUri);
-            tryToUpgradeToScopedStorage(treeUri);
-            scopedStorageChrootOverride(treeUri);
-        }
-    }
 
-    private void setPermissionToUseExternalStorage(Uri treeUri) {
-        final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
-        if (isNotExternalStorage(treeUri)) {
-            writeExternalStoragePref.setChecked(false);
-        } else {
-            try {
+            final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
+            if (path.contains("primary:")) {
+                writeExternalStoragePref.setChecked(false);
+            } else {
+                FsSettings.setExternalStorageUri(treeUri.toString());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    if (removeAllUriPermissions(treeUri)) {
-                        FsSettings.setExternalStorageUri(treeUri.toString());
-                        getActivity().getContentResolver()
-                                .takePersistableUriPermission(treeUri,
-                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    }
+                    getActivity().getContentResolver()
+                            .takePersistableUriPermission(treeUri,
+                                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 }
                 writeExternalStoragePref.setChecked(true);
-            } catch (SecurityException e) {
-                // Harden code against crash: May reach here by adding exact same picker location but
-                // being removed at same time.
             }
         }
-    }
-
-    private boolean isNotExternalStorage(Uri treeUri) {
-        String folder = FileUtil.cleanupUriStoragePath(treeUri);
-        if (folder != null && folder.contains(":")) {
-            // Just get rid of the "primary:" part to get what we want (the user selected path/folder)
-            try {
-                folder = folder.substring(folder.indexOf(":") + 1);
-            } catch (IndexOutOfBoundsException e) {
-                folder = "";
-            }
-        }
-        return folder == null || folder.isEmpty();
-    }
-
-    /*
-     * If user is on older SDK, check if File can rw and if not then move to newer storage use.
-     * As we don't know what older SDK will have a problem where or not.
-     * Could just assume with this use but a check is fast.
-     * */
-    private void tryToUpgradeToScopedStorage(Uri treeUri) {
-        if (!Util.useScopedStorage()) {
-            DocumentFile df = FileUtil.getDocumentFileFromUri(treeUri);
-            if (df == null) return;
-            final String a11Path = FileUtil.getFileTypePathFromDocumentFile(df);
-            if (a11Path == null) return;
-            File root = new File(a11Path);
-            if (!root.canRead() || !root.canWrite()) {
-                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-                // Fix: Use commit; override in next method using useScopedStorage() needs it.
-                sp.edit().putBoolean("OverrideScopedStorageMinimum", true).commit();
-            }
-        }
-    }
-
-    /*
-     * Override all and put path as chroot. Previously user chosen. On Android 11+ it is only
-     * decided now by the picker if its to be allowed on the Play Store unless allowance was made.
-     * */
-    private void scopedStorageChrootOverride(Uri treeUri) {
-        if (Util.useScopedStorage()) {
-            DocumentFile df = FileUtil.getDocumentFileFromUri(treeUri);
-            if (df == null) return;
-            final String scopedStoragePath = FileUtil.getFileTypePathFromDocumentFile(df);
-            if (scopedStoragePath == null) return;
-            List<FtpUser> userList = FsSettings.getUsers();
-            for (int i = 0; i < userList.size(); i++) {
-                if (userList.get(i) == null) continue;
-                FtpUser entry = new FtpUser(userList.get(i).getUsername(), userList.get(i).getPassword(), scopedStoragePath);
-                FsSettings.modifyUser(userList.get(i).getUsername(), entry);
-            }
-        }
-    }
-
-    /*
-     * Clean up URI list since there's only one folder. They have a way of collecting on changes
-     * which causes an issue. More so only can use one.
-     * */
-    private boolean removeAllUriPermissions(Uri treeUri) {
-        List<UriPermission> oldList = App.getAppContext().getContentResolver().getPersistedUriPermissions();
-        if (oldList.size() == 0) return true;
-        // check against current and don't remove if only and same as it won't re-give same.
-        if (oldList.size() == 1) {
-            Uri uri = oldList.get(0).getUri();
-            if (uri != null) {
-                final String path = uri.getPath();
-                if (path != null) if (path.equals(treeUri.getPath())) return false;
-            }
-        }
-        // Release all
-        for (UriPermission uriToRemove : oldList) {
-            if (uriToRemove == null) continue;
-            getActivity().getContentResolver()
-                    .releasePersistableUriPermission(uriToRemove.getUri(),
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        }
-        return true;
     }
 
     /**

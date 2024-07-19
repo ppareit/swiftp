@@ -36,7 +36,7 @@ import java.util.TimeZone;
 abstract public class Util {
     final static String TAG = Util.class.getSimpleName();
     private static SharedPreferences sp = null;
-    private static boolean overrideSDKVer = false;
+    private static int useScoped = -1;
 
     public static byte byteOfInt(int value, int which) {
         int shift = which * 8;
@@ -117,12 +117,14 @@ abstract public class Util {
      * Uses an override for when File fails to work during a test as the user sets up the app.
      * */
     public static boolean useScopedStorage() {
+        if (useScoped != -1) return useScoped == 1; // gets used a lot so speed it up a little
         if (sp == null) sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-        overrideSDKVer = sp.getBoolean("OverrideScopedStorageMinimum", false);
-        return Build.VERSION.SDK_INT >= 30 || overrideSDKVer;
+        final boolean choice = sp.getBoolean("AllowNewScopedStorage", false);
+        useScoped = choice ? 1 : 0;
+        return choice;
     }
 
-    public static void reGetStorageOverride() {
-        sp = null;
+    public static void resetScoped() {
+        useScoped = -1; // reset on pref change
     }
 }

@@ -500,6 +500,12 @@ public class FsService extends Service implements Runnable {
                 }
             }
             for (SessionThread removeThread : toBeRemoved) {
+                if (Util.useScopedStorage()) {
+                    // Clean up for scoped multi user
+                    if (SessionThread.getUriString(removeThread.getName()) != null) {
+                        SessionThread.removeUriString(removeThread.getName());
+                    }
+                }
                 sessionThreads.remove(removeThread);
             }
 
