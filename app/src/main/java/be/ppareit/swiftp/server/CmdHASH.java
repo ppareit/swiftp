@@ -1,13 +1,19 @@
 package be.ppareit.swiftp.server;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import net.vrallev.android.cat.Cat;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.utils.FileUtil;
 
 
 /**
@@ -34,36 +40,45 @@ public class CmdHASH extends FtpCmd implements Runnable {
         {
             fileToHash = inputPathToChrootedFile(sessionThread.getChrootDir(),
                     sessionThread.getWorkingDir(), param);
-            if (violatesChroot(fileToHash)) {
+
+            FileUtil.Gen gen = FileUtil.createGenFromFile(fileToHash);
+            final boolean isDocumentFile = gen.getOb() instanceof DocumentFile;
+            final boolean isFile = !isDocumentFile;
+
+            if (isFile && violatesChroot((File) gen.getOb())
+                    || isDocumentFile && violatesChroot((DocumentFile) gen.getOb())) {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;
-            } else if (fileToHash.isDirectory()) {
+            } else if (gen.isDirectory()) {
                 Cat.d("Ignoring HASH for directory");
                 errString = "553 Can't HASH a directory\r\n";
                 break mainblock;
-            } else if (!fileToHash.exists()) {
-                Cat.d("Can't HASH nonexistent file: " + fileToHash.getAbsolutePath());
+            } else if (!gen.exists()) {
+                Cat.d("Can't HASH nonexistent file: " + gen.getAbsolutePath());
                 errString = "550 File does not exist\r\n";
                 break mainblock;
-            } else if (!fileToHash.canRead()) {
+            } else if (!gen.canRead()) {
                 Cat.i("Failed HASH permission (canRead() is false)");
                 errString = "556 No read permissions\r\n";
                 break mainblock;
             }
 
             FileInputStream in = null;
+            InputStream is = null;
             try {
                 String algorithm = sessionThread.getHashingAlgorithm();
                 MessageDigest md = MessageDigest.getInstance(algorithm);
                 byte[] buffer = new byte[SessionThread.DATA_CHUNK_SIZE];
-                in = new FileInputStream(fileToHash);
+                if (isFile) in = new FileInputStream((File) gen.getOb());
+                else
+                    is = App.getAppContext().getContentResolver().openInputStream(((DocumentFile) gen.getOb()).getUri());
 
                 long offset = 0L;
-                long endPosition = fileToHash.length() - 1;
+                long endPosition = gen.length() - 1;
                 if (sessionThread.offset >= 0) {
                     offset = sessionThread.offset;
                     if (offset <= sessionThread.endPosition
-                            && sessionThread.endPosition <= fileToHash.length() - 1) {
+                            && sessionThread.endPosition <= gen.length() - 1) {
                         endPosition = sessionThread.endPosition;
                     }
                 }
@@ -71,8 +86,9 @@ public class CmdHASH extends FtpCmd implements Runnable {
                 // This is not a range but length (Range 0-0 would still read 0th byte), so +1
                 long bytesToRead = endPosition - offset + 1;
                 int bytesRead;
-                in.skip(offset);
-                while ((bytesRead = in.read(buffer)) != -1) {
+                if (isFile) in.skip(offset);
+                else is.skip(offset);
+                while ((bytesRead = isFile ? in.read(buffer) : is.read(buffer)) != -1) {
                     if (bytesRead > bytesToRead) {
                         md.update(buffer, 0, (int) bytesToRead);
                         break;
@@ -101,8 +117,11 @@ public class CmdHASH extends FtpCmd implements Runnable {
                 break mainblock;
             } finally {
                 try {
-                    if (in != null)
-                        in.close();
+                    if (in != null) in.close();
+                } catch (IOException ignore) {
+                }
+                try {
+                    if (is != null) is.close();
                 } catch (IOException ignore) {
                 }
             }

@@ -19,16 +19,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import java.io.File;
+
 import android.util.Log;
 
 import androidx.documentfile.provider.DocumentFile;
 
-import java.io.File;
-
 import be.ppareit.swiftp.App;
-import be.ppareit.swiftp.MediaUpdater;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
+import be.ppareit.swiftp.MediaUpdater;
 
 public class CmdDELE extends FtpCmd implements Runnable {
     private static final String TAG = CmdDELE.class.getSimpleName();
@@ -48,31 +48,22 @@ public class CmdDELE extends FtpCmd implements Runnable {
                 sessionThread.getWorkingDir(), param);
 
         if (Util.useScopedStorage()) {
-            String clientPath;
-            final String sfPath = storeFile.getPath();
-            if (sfPath.contains(File.separator)) {
-                clientPath = sfPath.substring(0, sfPath.lastIndexOf(File.separator));
-            } else {
-                clientPath = sfPath;
-            }
-            DocumentFile docStoreFile = FileUtil.getDocumentFileWithParamScopedStorage(File.separator +
-                    param, null, clientPath);
-            tryToDelete(new FileUtil.Gen(docStoreFile), clientPath);
+            DocumentFile docStoreFile = FileUtil.getDocumentFile(storeFile.getPath());
+            tryToDelete(new FileUtil.Gen(docStoreFile));
             return;
         }
 
-        tryToDelete(new FileUtil.Gen(storeFile), param);
+        tryToDelete(new FileUtil.Gen(storeFile));
     }
 
-    private void tryToDelete(FileUtil.Gen storeFile, String param) {
+    private void tryToDelete(FileUtil.Gen storeFile) {
         String errString = null;
         if (storeFile == null || storeFile.getOb() == null) {
             errString = "550 Invalid name or chroot violation\r\n";
         } else {
             final boolean isDocumentFile = storeFile.getOb() instanceof DocumentFile;
             final boolean isFile = !isDocumentFile;
-            final String path = FileUtil.getScopedClientPath(param, null, null);
-            if ((isDocumentFile && violatesChroot((DocumentFile) storeFile.getOb(), path))
+            if ((isDocumentFile && violatesChroot((DocumentFile) storeFile.getOb()))
                     || (isFile && violatesChroot((File) storeFile.getOb()))) {
                 errString = "550 Invalid name or chroot violation\r\n";
             } else if (storeFile.isDirectory()) {

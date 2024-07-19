@@ -26,16 +26,14 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
-import android.net.Uri;
-
-import androidx.documentfile.provider.DocumentFile;
-
-import net.vrallev.android.cat.Cat;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import androidx.documentfile.provider.DocumentFile;
+
+import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
@@ -68,9 +66,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
             if (param.equals("")) {
                 fileToList = sessionThread.getWorkingDir();
                 if (Util.useScopedStorage()) {
-                    final String clientPath = fileToList.getPath();
-                    Uri uri = FileUtil.getFullCWDUri("", clientPath);
-                    docFileToList = FileUtil.getDocumentFileFromUri(uri);
+                    docFileToList = FileUtil.getDocumentFile(fileToList.getPath());
                 }
             } else {
                 if (param.contains("*")) {
@@ -79,8 +75,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
                 }
                 fileToList = new File(sessionThread.getWorkingDir(), param);
                 if (Util.useScopedStorage()) {
-                    final String clientPath = fileToList.getPath();
-                    docFileToList = FileUtil.getDocumentFileWithParamScopedStorage(param, "", clientPath);
+                    docFileToList = FileUtil.getDocumentFile(fileToList.getPath());
                 }
                 if (violatesChroot(fileToList)) {
                     // sd card should be eg /storage/xxx/

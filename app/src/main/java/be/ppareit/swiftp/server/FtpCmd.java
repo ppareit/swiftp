@@ -174,6 +174,9 @@ public abstract class FtpCmd implements Runnable {
         // todo: trailing whitespace may be significant, just remove \r\n
         retString = retString.replaceAll("\\s+$", "");
 
+        // Fix: WinSCP synchronize with checksum reproduces a bad path here because of quotes.
+        retString = retString.replaceAll("\"", "");
+
         if (!silent) {
             Log.d(TAG, "Parsed argument: " + retString);
         }
@@ -221,15 +224,13 @@ public abstract class FtpCmd implements Runnable {
         }
     }
 
-    public boolean violatesChroot(DocumentFile file, String param) {
+    public boolean violatesChroot(DocumentFile file) {
         try {
             // Get the full path to the chosen Android 11 dir and compare with that of the file
             File chroot = sessionThread.getChrootDir();
             String canonicalChroot = chroot.getCanonicalPath();
-            final String path = FileUtil.getScopedClientPath(param, null, null);
-            String canonicalPath = FileUtil.getUriStoragePathFullFromDocumentFile(file, path);
-
-            if (canonicalPath == null || !canonicalPath.startsWith(canonicalChroot)) {
+            String canonicalPath = FileUtil.getFileTypePathFromDocumentFile(file);
+            if (!canonicalPath.startsWith(canonicalChroot)) {
                 Log.i(TAG, "Path violated folder restriction, denying");
                 Log.d(TAG, "path: " + canonicalPath);
                 Log.d(TAG, "chroot: " + chroot.toString());

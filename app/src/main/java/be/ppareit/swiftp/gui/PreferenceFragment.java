@@ -351,7 +351,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         if (!Util.useScopedStorage()) {
             DocumentFile df = FileUtil.getDocumentFileFromUri(treeUri);
             if (df == null) return;
-            final String a11Path = FileUtil.getUriStoragePathFullFromDocumentFile(df, "");
+            final String a11Path = FileUtil.getFileTypePathFromDocumentFile(df);
             if (a11Path == null) return;
             File root = new File(a11Path);
             if (!root.canRead() || !root.canWrite()) {
@@ -370,7 +370,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         if (Util.useScopedStorage()) {
             DocumentFile df = FileUtil.getDocumentFileFromUri(treeUri);
             if (df == null) return;
-            final String scopedStoragePath = FileUtil.getUriStoragePathFullFromDocumentFile(df, "");
+            final String scopedStoragePath = FileUtil.getFileTypePathFromDocumentFile(df);
             if (scopedStoragePath == null) return;
             List<FtpUser> userList = FsSettings.getUsers();
             for (int i = 0; i < userList.size(); i++) {

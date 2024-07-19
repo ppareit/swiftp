@@ -5,20 +5,15 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriPermission;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.util.Pair;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
-
-import org.jetbrains.annotations.Nullable;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,7 +23,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import be.ppareit.swiftp.App;
@@ -39,11 +33,6 @@ import be.ppareit.swiftp.Util;
 public abstract class FileUtil {
 
     private static final String LOG = "FileUtil";
-
-    public enum TYPE {
-        file,
-        dir
-    }
 
     /**
      * Copy a file. The target file may even be on external SD card for Kitkat.
@@ -155,6 +144,14 @@ public abstract class FileUtil {
         // First try the normal deletion.
         if (file == null) return true;
 
+        if (Util.useScopedStorage()) {
+            // Fix: Store overwrite failure happening with internal Android 13 via the old code.
+            // Failure happening with new multi user changes happening on sd card not compat with old.
+            // Fix: Must move above File to make sure its deleted without incident.
+            final DocumentFile df = getDocumentFile(file.getPath());
+            if (df != null) return df.delete();
+        }
+
         boolean fileDelete = false;
         if (file.isDirectory()) {
             fileDelete = rmdir(file, context);
@@ -202,6 +199,22 @@ public abstract class FileUtil {
      */
     public static boolean moveFile(@NonNull final File source, @NonNull final File target, Context context) {
 
+        if (Util.useScopedStorage()) {
+            // Fix: Block is fix for rename file causing app to crash with latest DocumentFile changes.
+            // Fix: Must move above File to make sure it happens without incident, as on Android 8,
+            // File was successful but always returns false thus causing various issues.
+            DocumentFile df = getDocumentFile(source.getPath());
+            if (df != null) {
+                try {
+                    if (DocumentsContract.renameDocument(context.getContentResolver(), df.getUri(), target.getName()) != null) {
+                        return true;
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         if (target.exists()) {
             return false;
         }
@@ -243,6 +256,24 @@ public abstract class FileUtil {
      * @return true if the renaming was successful.
      */
     public static boolean renameFolder(@NonNull final File source, @NonNull final File target, Context context) {
+
+        if (Util.useScopedStorage()) {
+            // Fix: File rename is having random and odd results here with scoped storage. So,
+            // need to move above File.
+            // Fix: Store overwrite failure happening with internal Android 13 via the old code.
+            // Fix: Failure happening with new multi user changes happening on sd card not compat with old.
+            DocumentFile df = getDocumentFile(source.getPath());
+            if (df != null) {
+                try {
+                    if (DocumentsContract.renameDocument(context.getContentResolver(), df.getUri(), target.getName()) != null) {
+                        return true;
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         // First try the normal rename.
         if (rename(source, target)) {
             return true;
@@ -307,6 +338,24 @@ public abstract class FileUtil {
     public static boolean mkdir(final File file, Context context) {
         if (file == null)
             return false;
+
+        if (Util.useScopedStorage()) {
+            // Fix: The original code below in the next block is having some failures during Android
+            // 13 tests. This works around that and has no more failures.
+            // Fix: error on File use in logcat by moving above.
+            final String filename = file.getName();
+            String parent = file.getPath();
+            DocumentFile child = getDocumentFile(file.getPath());
+            if (child != null && child.exists()) return false;
+            parent = parent.substring(0, parent.length() - filename.length());
+            DocumentFile documentFile = getDocumentFile(parent);
+            if (documentFile != null) {
+                if (documentFile.createDirectory(filename) != null) {
+                    return documentFile.exists();
+                }
+            }
+        }
+
         if (file.exists()) {
             // nothing to create.
             return file.isDirectory();
@@ -317,13 +366,7 @@ public abstract class FileUtil {
             return true;
         }
 
-        if (Util.useScopedStorage()) {
-            // The original code below is having some random failures on Android 13 internal tests.
-            // This works around that and has no more failures.
-            DocumentFile documentFile = getDocumentFileFromFileScopedStorage(file, file.getPath());
-            if (documentFile == null) return false;
-            return documentFile.exists();
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (FileUtil.isOnExtSdCard(file, context))) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (FileUtil.isOnExtSdCard(file, context))) {
             // Try with Storage Access Framework.
             DocumentFile document = getDocumentFile(file, true, context);
             if (document == null) {
@@ -395,19 +438,17 @@ public abstract class FileUtil {
         return false;
     }
 
-    // Performance improvement with DocumentFile. As we can avoid a finding of the file this way since
-    // create will far more quickly create it and give it along with that. Thus, needed a way to return
-    // DocumentFile at creation time.
-    public static DocumentFile mkfile(final File file, Context context, String mime) throws IOException {
+    /*
+    * File creation for DocumentFile from File.
+    * */
+    public static DocumentFile mkfile(final File file, String mime) throws IOException {
         try {
+            // May not be able to create a file in dirs that have eg "?". However, can create a
+            // file in a dir that has the # symbol.
             final String filename = file.getName();
-            // Travel only to the dir for where the file goes:
-            Uri uri = getFullCWDUri("", file.getPath().substring(0, file.getPath().lastIndexOf(File.separator)));
-            // Can't create a file in dirs that have eg the symbol "?".
-            //  Can create a folder with it.
-            //  Can even create a file in a dirs that have # symbol.
-            DocumentFile dfile = FileUtil.getDocumentFileFromUri(uri).createFile(mime, filename);
-            if (dfile != null) return dfile;
+            final String path = file.getPath();
+            DocumentFile parent = getDocumentFile(path.substring(0, path.lastIndexOf(File.separator)));
+            if (parent != null) return parent.createFile(mime, filename);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -727,27 +768,29 @@ public abstract class FileUtil {
     public static DocumentFile getDocumentFile(final File file, final boolean isDirectory, Context context) {
         String baseFolder = getExtSdCardFolder(new Gen<>(file), context);
         boolean originalDirectory = false;
-        String relativePath;
         if (baseFolder == null) {
             return null;
         }
 
-        Pair<String, Boolean> pair = getRelativePath(context, file, baseFolder);
-        if (pair == null) return null;
-        relativePath = pair.first;
-        originalDirectory = pair.second;
-
+        String relativePath = null;
+        try {
+            String fullPath = file.getCanonicalPath();
+            if (!baseFolder.equals(fullPath))
+                relativePath = fullPath.substring(baseFolder.length() + 1);
+            else originalDirectory = true;
+        } catch (IOException e) {
+            return null;
+        } catch (Exception f) {
+            originalDirectory = true;
+            //continue
+        }
         String as = FsSettings.getExternalStorageUri();
 
         Uri treeUri = null;
         if (as != null) treeUri = Uri.parse(as);
-        if (Util.useScopedStorage() && treeUri == null) {
-            // Fix Android 8.0 sd card having null with FsSettings.getExternalStorageUri()
-            // The rest works fine after this
-            treeUri = getTreeUri();
+        if (treeUri == null) {
+            return null;
         }
-        if (treeUri == null) return null;
-
         if (file.exists()) {
             Uri documentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, DocumentsContract.getTreeDocumentId(treeUri) + relativePath);
             DocumentFile document = DocumentFile.fromSingleUri(context, documentUri);
@@ -757,7 +800,7 @@ public abstract class FileUtil {
         }
 
         // start with root of SD card and then parse through document tree.
-        DocumentFile document = FileUtil.getDocumentFileFromUri(treeUri);
+        DocumentFile document = DocumentFile.fromTreeUri(context, treeUri);
         if (originalDirectory) return document;
         String[] parts = relativePath.split("\\/");
         for (int i = 0; i < parts.length; i++) {
@@ -765,11 +808,7 @@ public abstract class FileUtil {
 
             if (nextDocument == null) {
                 if ((i < parts.length - 1) || isDirectory) {
-                    if (!parts[i].isEmpty()) {
-                        nextDocument = document.createDirectory(parts[i]);
-                    } else {
-                        continue; // quick fix for an empty part causing major problems.
-                    }
+                    nextDocument = document.createDirectory(parts[i]);
                 } else {
                     nextDocument = document.createFile(DocumentsContract.Document.COLUMN_MIME_TYPE, parts[i]);
                 }
@@ -780,88 +819,13 @@ public abstract class FileUtil {
         return document;
     }
 
-    private static Pair<String, Boolean> getRelativePath(Context context, File file, String baseFolder) {
-        String relativePath = "";
-        boolean originalDirectory = false;
-        if (Util.useScopedStorage()) {
-            // Currently, relativePath needs to be "/file" for file or "" if no file is in
-            // fullPath for the following code to work right.
-            try {
-                Uri uri = getTreeUri();
-                if (uri != null) {
-                    DocumentFile dir = DocumentFile.fromSingleUri(context, uri);
-                    if (dir != null) {
-                        final String fullPath = file.getCanonicalPath();
-                        String clientPath = getScopedClientPath(file.getPath(), null, null);
-                        final String DocumentFilePath = getUriStoragePathFullFromDocumentFile(dir, clientPath);
-                        if (DocumentFilePath != null) {
-                            relativePath = fullPath.replace(DocumentFilePath, "");
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                return null;
-            } catch (Exception f) {
-                originalDirectory = true;
-                //continue
-            }
-        } else {
-            // This following code isn't working right on Android 8.0 sd card use. Bypassed with
-            // override of Android 11+ new storage use which has tested successfully as backward
-            // compatible with 8.0 sd card.
-            try {
-                String fullPath = file.getCanonicalPath();
-                if (!baseFolder.equals(fullPath))
-                    relativePath = fullPath.substring(baseFolder.length() + 1);
-                else originalDirectory = true;
-            } catch (IOException e) {
-                return null;
-            } catch (Exception f) {
-                originalDirectory = true;
-                //continue
-            }
-        }
-        return new Pair<>(relativePath, originalDirectory);
-    }
-
-    /*
-     * The param is tangled with the paths at times so that is necessary to include at specific times.
-     * The meaning can change depending on slash or no slash since the param contains files or just dirs.
-     * */
-    public static DocumentFile getDocumentFileWithParamScopedStorage(String param, @Nullable String cwd, String clientPath) {
-        DocumentFile f = null;
-        // affected by param having slash or not; empty or not
-        Uri uri = FileUtil.getFullCWDUri(cwd != null ? cwd : param, clientPath);
-        if (uri != null) {
-            try {
-                // Get the file
-                String mParam = param;
-                if (param.contains(File.separator)) {
-                    try {
-                        mParam = param.substring(param.lastIndexOf(File.separator) + 1);
-                    } catch (NullPointerException e) {
-                        mParam = null;
-                    }
-                }
-                // param affects above but down there its file only:
-                f = FileUtil.customFindFile(uri, (mParam != null ? mParam : param), FileUtil.TYPE.file, clientPath);
-                if (f == null)
-                    f = FileUtil.getDocumentFileFromUri(uri).findFile((mParam != null ? mParam : param));
-            } catch (NullPointerException e) {
-                //
-            }
-        }
-        return f;
-    }
-
     /*
      * Basic switch out of File to DocumentFile. Can't always be used as the File Uri isn't compatible
      * with scoped storage. But, won't cause security failure for specific uses.
      * */
-    public static DocumentFile getDocumentFileFromFileScopedStorage(File f, String clientPath) {
+    public static DocumentFile getDocumentFileFromFileScopedStorage(File f) {
         if (Util.useScopedStorage()) {
-            Uri uri = FileUtil.getFullCWDUri(f.getPath(), clientPath);
-            if (uri != null) return FileUtil.getDocumentFileFromUri(uri);
+            return FileUtil.getDocumentFile(f.getPath());
         }
         return null;
     }
@@ -922,182 +886,37 @@ public abstract class FileUtil {
     }
 
     /*
-     * Uses DocumentFile.findFile() to get the Uri for the target dir but does it the slow way as
-     * findFile() has a major performance issue.
-     */
-    public static Uri getFullCWDUriSlow(String param) {
-        Uri uri = getTreeUri();
-        if (uri != null) {
-            try {
-                String s = getScopedClientPath(param, null, null);
-                if (s.isEmpty() && param.contains(File.separator)) {
-                    s = param.substring(0, param.lastIndexOf(File.separator));
-                }
-                String[] split = s.split(File.separator);
-                for (String value : split) {
-                    if (value.isEmpty()) continue;
-                    String part = value.replaceAll(File.separator, "");
-                    DocumentFile dFile = FileUtil.getDocumentFileFromUri(uri).findFile(part);
-                    if (dFile != null) uri = dFile.getUri();
-                }
-                return uri;
-            } catch (NullPointerException e) {
-                //
-            }
-        }
-        return null;
-    }
-
-    /*
-     * Mainly uses DocumentsContract to move through the dir's and files for speed.
-     * On an issue - should the faster but complex code fail - falls back to the incredibly slower
-     * DocumentFile.findFile() to get it.
-     */
-    public static Uri getFullCWDUri(String param, String clientPath) {
-        Uri uri = getTreeUri();
-        if (uri != null) {
-            try {
-                final int paramDirCount = param.split(File.separator).length;
-                final boolean makeParamNull = param.isEmpty() || paramDirCount > 1;
-                final String mParam = makeParamNull ? null : param;
-                final boolean isDir = param.contains(File.separator) || param.isEmpty();
-                final TYPE type = isDir ? TYPE.dir : TYPE.file;
-                final DocumentFile result = customFindFile(uri, mParam, type, clientPath);
-                if (result != null) {
-                    Uri cwdUri = result.getUri();
-                    // Double check and do the slow way if needed
-                    String s = getScopedClientPath(clientPath, null, null);
-                    if (s.isEmpty() && param.contains(File.separator)) {
-                        s = param.substring(0, param.lastIndexOf(File.separator));
-                    }
-                    String[] split = s.split(File.separator);
-                    String lastSubDir;
-                    try {
-                        lastSubDir = split[split.length - 1];
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        lastSubDir = File.separator;
-                    }
-                    final String path = cwdUri.getPath();
-                    if (path != null && !path.contains(lastSubDir)) {
-                        // Fix: eg DCIM folder as target where pushing a file to it then makes the
-                        // listing empty from using this as fallback here. Shouldn't fallback anyway
-                        // as the faster custom way does have it correct.
-                        String chroot = getUriStoragePathFullFromDocumentFile(result, "");
-                        if (chroot == null || !chroot.contains(s)) {
-                            return getFullCWDUriSlow(param);
-                        }
-                    }
-                    return result.getUri();
-                }
-            } catch (NullPointerException e) {
-                //
-            }
-        }
-        return null;
-    }
-
-    /*
-     * https://stackoverflow.com/questions/41096332/issues-traversing-through-directory-hierarchy-with-android-storage-access-framew
-     * Thanks to spring.ace for providing an example.
      * HUGE performance improvement over DocumentFile.findFile().
      * Use at least until Google fixes DocumentFile.findFile() performance (should it ever happen).
      */
-    public static DocumentFile customFindFile(Uri dirUri, @Nullable String filename, TYPE type, String clientPath) {
-        ContentResolver contentResolver = App.getAppContext().getContentResolver();
-        Uri uri = DocumentsContract.buildChildDocumentsUriUsingTree(dirUri,DocumentsContract
-                .getTreeDocumentId(dirUri));
-        DocumentFile f = null;
-        List<Uri> uriList = new LinkedList<>();
-        uriList.add(uri);
-        final String chroot = FsSettings.getDefaultChrootDir().getPath();
-        String userPath = getScopedClientPath(clientPath, null, null);
-        if (userPath.contains(chroot)) userPath = userPath.replace(chroot, "");
-        if (userPath.contains(File.separator)) {
-            // Stop initial empty from being in the array as that messes things up
-            if (userPath.startsWith(File.separator))
-                userPath = userPath.replaceFirst(File.separator, "");
-        }
-        String[] userPathEachDir = userPath.split(File.separator);
-        if (userPathEachDir.length == 1 && userPathEachDir[0].isEmpty()) {
-            userPathEachDir = new String[0];
-        }
-        final int userPathMax = userPathEachDir.length;
-        int userPathLoc = 0;
-        boolean dirMovementFinished = userPathMax == 0 && type == TYPE.file;
-        boolean end = false;
-        while (!end) {
-            uri = uriList.remove(0);
-            try (Cursor c = contentResolver.query(uri, new String[]{
-                            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
-                            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                            DocumentsContract.Document.COLUMN_MIME_TYPE},
-                    null, null, null)) {
-                while (c!= null && c.moveToNext()) {
-                    final String docId = c.getString(0);
-                    final String name = c.getString(1);
-                    final String mime = c.getString(2);
-                    if (isDirectory(mime) && userPathLoc < userPathMax) {
-                        // Move to the target folder from the chosen dir using user supplied path
-                        if (isMatchFound(name, userPathEachDir[userPathLoc])) {
-                            // Add so it can move into on next loop
-                            userPathLoc++;
-                            final Uri mUri = DocumentsContract.buildChildDocumentsUriUsingTree(dirUri, docId);
-                            uriList.add(mUri);
-                            if (userPathLoc == userPathMax) {
-                                // If type is dir, then once path is found - including any sub
-                                // path - it should stop here. Whereas file should continue.
-                                dirMovementFinished = true;
-                                if (type == TYPE.dir) {
-                                    // Now we can find the dir and return that
-                                    Uri mUri2 = DocumentsContract.buildDocumentUriUsingTree(uri, docId);
-                                    f = FileUtil.getDocumentFileFromUri(mUri2);
-                                    end = true;
-                                    break;
-                                }
-                            } else if (!c.isLast()) {
-                                // fix: Don't continue in the dir as it can wrongly match
-                                break;
-                            }
-                        }
-                    } else if (dirMovementFinished && isMatchFound(name, filename)) {
-                        // Now we can find the file and return the Uri for that
-                        Uri mUri = DocumentsContract.buildDocumentUriUsingTree(uri, docId);
-                        f = FileUtil.getDocumentFileFromUri(mUri);
-                        end = true;
-                        break;
-                    } else if (type == TYPE.dir && isMatchFound(name, filename != null ? filename : userPath)) {
-                        // Now we can find the file and return the Uri for that
-                        Uri mUri = DocumentsContract.buildDocumentUriUsingTree(uri, docId);
-                        f = FileUtil.getDocumentFileFromUri(mUri);
-                        end = true;
-                        break;
-                    }
-                }
-            }
-            if (uriList.isEmpty()) end = true;
-        }
-        if (type == TYPE.file && f != null && f.isDirectory()) return null;
-        // Fix for empty folder with no user provided client path:
-        if (type == TYPE.dir && f == null) {
-            f = FileUtil.getDocumentFileFromUri(dirUri);
-        }
-        return f;
+    public static DocumentFile getDocumentFile(String filename) {
+        final Uri uri = getTreeUri();
+        if (uri == null) return null;
+        final String uriString = uri.getPath();
+        if (uriString == null) return null;
+        final String s = filename.contains(File.pathSeparator)
+                ? filename
+                : convertFilePathToUriString(uriString, filename);
+        if (s == null) return null;
+        final Uri finalUri = DocumentsContract.buildDocumentUriUsingTree(uri, s);
+        return getDocumentFileFromUri(finalUri);
     }
 
     /*
-     * Checks if DocumentsContract entry is a dir or not
-     */
-    private static boolean isDirectory(String mimeType) {
-        // As DocumentsContract.buildChildDocumentsUriUsingTree() states:
-        // "Must be a directory with MIME type of DocumentsContract.Document.MIME_TYPE_DIR."
-        return DocumentsContract.Document.MIME_TYPE_DIR.equals(mimeType);
-    }
+    * Helper method to switch File path type to uriString.
+    * */
+    private static String convertFilePathToUriString(String mTree, String oldPath) {
 
-    /*
-     * Compares two Strings to see if they match
-     */
-    public static boolean isMatchFound(String s1, String s2) {
-        return s1.equals(s2);
+        String tree = mTree.contains("/tree/") ? mTree.replaceFirst("/tree/", "") : mTree;
+        if (tree.contains("primary:")) tree = tree.replaceFirst("primary:", "/storage/emulated/0/");
+        else tree = tree.replaceFirst(File.pathSeparator, File.separator);
+        if (oldPath.contains(tree)) {
+            final String s = oldPath.substring(oldPath.indexOf(tree) + tree.length());
+            if (tree.contains("/storage/emulated/0/")) tree = tree.replaceFirst("/storage/emulated/0/", "primary:");
+            else tree = tree.replaceFirst(File.separator, File.pathSeparator);
+            return tree + s;
+        }
+        return null;
     }
 
     /*
@@ -1139,64 +958,15 @@ public abstract class FileUtil {
     }
 
     /*
-     * Gets the full path using the DocumentFile including eg "/storage/ and all the way to the picker folder
+     * Gets the full File type path using the DocumentFile including eg "/storage/ and all the way
+     * to the picker folder.
      */
-    public static String getUriStoragePathFullFromDocumentFile(DocumentFile file, String param) {
-        String partial = getTreeUriStoragePath(file);
-        if (partial != null) {
-            String chrootPath = FsSettings.getDefaultChrootDir().getPath();
-            // Fix an issue with older Android versions using the new code getting the path wrong
-            // here because of using Manage users chroot field. Chroot will contain the whole path.
-            String preLastDir = partial;
-            String lastDir = partial;
-            if (partial.contains(File.separator)) {
-                preLastDir = partial.substring(0, partial.lastIndexOf(File.separator));
-                lastDir = partial.substring(partial.lastIndexOf(File.separator));
-            }
-            if (chrootPath.contains(preLastDir) && !chrootPath.endsWith(lastDir)) {
-                // Moving up or file
-                return chrootPath + lastDir;
-            } else if (chrootPath.endsWith(partial) && partial.split(File.separator).length > 1) {
-                // Don't duplicate
-                return chrootPath;
-            }
-            // Need eg /storage/emulated/0/TestMain/TestSub/ or /storage/3abc-sdcard/Test/
-            final boolean isSDCard = getSdCardNameScopedStorage() != null;
-            if (isSDCard) return chrootPath + File.separator + partial;
-            else {
-                // Includes various checks & fixes for variances as seen on one device and internal
-                if (!chrootPath.endsWith(File.separator)) chrootPath += File.separator;
-                if (!param.contains(File.separator)) {
-                    return chrootPath; // file (dirs only here.) or empty
-                }
-                final String clientPath = getScopedClientPath(param, null, null);
-                if (clientPath.startsWith(File.separator) && chrootPath.endsWith(File.separator)) {
-                    chrootPath = chrootPath.substring(0, chrootPath.length() - 1);
-                }
-                return chrootPath + clientPath;
-            }
+    public static String getFileTypePathFromDocumentFile(DocumentFile file) {
+        String cleaned = cleanupUriStoragePath(file.getUri());
+        if (cleaned.contains("primary:")) {
+            return cleaned.replaceFirst("primary:", "/storage/emulated/0/");
         }
-        return null;
-    }
-
-    /**
-     * Returns the client path or empty if at chroot from any of the supplied values.
-     * At the very least:
-     * @param s must be supplied which is the full path of the current dir.
-     * */
-    public static String getScopedClientPath(String s, @Nullable File f, @Nullable String t) {
-        if (s == null || s.isEmpty()) return ""; // at root
-        String tree;
-        if (t != null) tree = t;
-        else tree = FileUtil.cleanupUriStoragePath(FileUtil.getTreeUri());
-        if (tree.contains(File.pathSeparator)) tree = tree.substring(tree.indexOf(File.pathSeparator) + 1);
-        String param;
-        if (f != null) param = f.toString();
-        else param = s;
-        if (param.contains(tree)) param = param.substring(param.indexOf(tree) + tree.length());
-        // Fix for keeping path separators correct
-        if (!param.isEmpty() && !param.endsWith(File.separator)) param += File.separator;
-        return param;
+        return "/storage/" + cleaned.replaceFirst(File.pathSeparator, File.separator);
     }
 
     /**
@@ -1215,48 +985,73 @@ public abstract class FileUtil {
         }
 
         public boolean exists() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).exists();
-            else return ((File) getOb()).exists();
+            Object ob = getOb();
+            if (ob == null) return false;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).exists();
+            else return ((File) ob).exists();
         }
 
         public String getName() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).getName();
-            else return ((File) getOb()).getName();
+            Object ob = getOb();
+            if (ob == null) return "";
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).getName();
+            else return ((File) ob).getName();
         }
 
         public boolean isDirectory() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).isDirectory();
-            else return ((File) getOb()).isDirectory();
+            Object ob = getOb();
+            if (ob == null) return false;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).isDirectory();
+            else return ((File) ob).isDirectory();
         }
 
         public long length() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).length();
-            else return ((File) getOb()).length();
+            Object ob = getOb();
+            if (ob == null) return 0;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).length();
+            else return ((File) ob).length();
         }
 
         public long lastModified() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).lastModified();
-            else return ((File) getOb()).lastModified();
+            Object ob = getOb();
+            if (ob == null) return 0;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).lastModified();
+            else return ((File) ob).lastModified();
         }
 
         public boolean isFile() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).isFile();
-            else return ((File) getOb()).isFile();
+            Object ob = getOb();
+            if (ob == null) return false;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).isFile();
+            else return ((File) ob).isFile();
         }
 
         public boolean canRead() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).canRead();
-            else return ((File) getOb()).canRead();
+            Object ob = getOb();
+            if (ob == null) return false;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).canRead();
+            else return ((File) ob).canRead();
         }
 
         public boolean canWrite() {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).canWrite();
-            else return ((File) getOb()).canWrite();
+            Object ob = getOb();
+            if (ob == null) return false;
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).canWrite();
+            else return ((File) ob).canWrite();
         }
 
         public String getCanonicalPath() throws IOException {
-            if (getOb() instanceof DocumentFile) return ((DocumentFile) getOb()).getUri().getPath();
-            else return ((File) getOb()).getCanonicalPath();
+            Object ob = getOb();
+            if (ob == null) return "";
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).getUri().getPath();
+            else return ((File) ob).getCanonicalPath();
+        }
+
+        public String getAbsolutePath() {
+            Object ob = getOb();
+            if (ob == null) return "";
+            if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).getUri().getPath();
+            else return ((File) ob).getAbsolutePath();
         }
     }
 
@@ -1274,7 +1069,7 @@ public abstract class FileUtil {
      * */
     public static Gen createGenFromFile(File f) {
         if (Util.useScopedStorage()) {
-            return FileUtil.convertDocumentFileToGen(FileUtil.getDocumentFileFromFileScopedStorage(f, f.getPath()));
+            return FileUtil.convertDocumentFileToGen(FileUtil.getDocumentFileFromFileScopedStorage(f));
         } else {
             return FileUtil.convertFileToGen(f);
         }

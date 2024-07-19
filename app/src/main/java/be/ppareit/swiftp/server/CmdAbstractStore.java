@@ -85,21 +85,32 @@ abstract public class CmdAbstractStore extends FtpCmd {
                     }
                 }
 
-                if (!storeFile.exists()) {
-                    if (Util.useScopedStorage()) {
-                        final String mime = "application/octet-stream";
-                        //final URI fileUri = storeFile.toURI();
-                        //final URL url = fileUri.toURL();
-                        //mime = url.openConnection().getContentType(); // sometimes makes exe's into html files
-                        docStoreFile = FileUtil.mkfile(storeFile, App.getAppContext(), mime);
-                        if(docStoreFile == null){
-                            errString = "451 Couldn't open file \"" + param + "\" aka \""
-                                    + storeFile.getCanonicalPath() + "\" for writing\r\n";
+                if (Util.useScopedStorage()) {
+                    final String mime = "application/octet-stream";
+                    // Fix: REST needs check of exists here. sessionThread.offset must be checked
+                    // as correct before using it as it can be wrong during connection issues. As
+                    // it is not at this time, do not use it here.
+                    if (!append && !storeFile.exists()) {
+                        if (storeFile.exists()) {
+                            errString = "451 Couldn't truncate file\r\n";
                             break storing;
                         }
+                        docStoreFile = FileUtil.mkfile(storeFile, mime);
                     } else {
-                        FileUtil.mkfile(storeFile, App.getAppContext());
+                        docStoreFile = FileUtil.getDocumentFile(storeFile.getPath());
                     }
+                    if (docStoreFile == null || !docStoreFile.exists()) {
+                        errString = "451 Couldn't open file \"" + param + "\" aka \""
+                                + storeFile.getCanonicalPath() + "\" for writing\r\n";
+                        break storing;
+                    }
+                    // Fix: Do not allow this situation to pass.
+                    if (sessionThread.offset > 0 && docStoreFile.length() == 0) {
+                        errString = "554 restart failure: bad offset\r\n";
+                        break storing;
+                    }
+                } else {
+                    FileUtil.mkfile(storeFile, App.getAppContext());
                 }
 
                 if (docStoreFile != null) {
@@ -200,11 +211,14 @@ abstract public class CmdAbstractStore extends FtpCmd {
             }
         }
         try {
-            if (out != null) {
-                out.close();
-            }
             if (os != null) {
                 os.close();
+            }
+        } catch (IOException ignored) {
+        }
+        try {
+            if (out != null) {
+                out.close();
             }
         } catch (IOException ignored) {
         }
