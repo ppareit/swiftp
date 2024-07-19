@@ -93,4 +93,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="mixed_theme">Tema misto</string>
     <string name="app_theme">Tema...</string>
 
+    <string name="battery_saver_setting_title">Risparmio batteria</string>
+    <string name="battery_saver_desc">NOTA: *è necessario* riavviare manualmente il server dopo la modifica.</string>
+    <string name="bs_high">ALTO</string>
+    <string name="bs_low">BASSO</string>
+    <string name="bs_deep">PROFONDO</string>
 </resources>

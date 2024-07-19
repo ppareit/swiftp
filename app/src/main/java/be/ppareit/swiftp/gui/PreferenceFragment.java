@@ -174,6 +174,34 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             writeExternalStoragePref.setSummary(getString(R.string.write_external_storage_old_android_version_summary));
         }
 
+        final ListPreference batterySaver = findPref("battery_saver");
+        // val 0 HIGH is always on wake locks + wake lock setting enabled (high battery, smooth)
+        // val 1 LOW is wake locks run only during client connection (low battery, some of both)
+        // val 2 DEEP is wake locks disabled (lowest battery use, a bit choppy)
+        final String s = batterySaver.getValue();
+        if (Integer.parseInt(s) > 1) {
+            wakelockPref.setChecked(false);
+            wakelockPref.setEnabled(false);
+        } else {
+            wakelockPref.setEnabled(true);
+        }
+        batterySaver.setTitle("Battery saver");
+        final String bSumSelection = FsSettings.getBatterySaverChoice(null) + '\n';
+        final String bSum = bSumSelection + getString(R.string.battery_saver_desc);
+        batterySaver.setSummary(bSum);
+        batterySaver.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (Integer.parseInt((String) newValue) > 1) {
+                wakelockPref.setChecked(false);
+                wakelockPref.setEnabled(false);
+            } else {
+                wakelockPref.setEnabled(true);
+            }
+            final String bSumSelection2 = FsSettings.getBatterySaverChoice(
+                    (String) newValue) + '\n';
+            final String bSum2 = bSumSelection2 + getString(R.string.battery_saver_desc);
+            batterySaver.setSummary(bSum2);
+            return true;
+        });
 
         ListPreference themePref = findPref("theme");
         themePref.setSummary(themePref.getEntry());
@@ -246,7 +274,11 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         filter.addAction(FsService.ACTION_STARTED);
         filter.addAction(FsService.ACTION_STOPPED);
         filter.addAction(FsService.ACTION_FAILEDTOSTART);
-        getActivity().registerReceiver(mFsActionsReceiver, filter);
+        if (Build.VERSION.SDK_INT >= 33) {
+            getActivity().registerReceiver(mFsActionsReceiver, filter, FsService.RECEIVER_EXPORTED);
+        } else {
+            getActivity().registerReceiver(mFsActionsReceiver, filter);
+        }
     }
 
     @Override

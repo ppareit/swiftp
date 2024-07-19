@@ -11,4 +11,16 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+
+    <string-array name="pref_list_battery_saver_titles">
+    <item>@string/bs_high</item>
+    <item>@string/bs_low</item>
+    <item>@string/bs_deep</item>
+    </string-array>
+
+    <string-array name="pref_list_battery_saver_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>
