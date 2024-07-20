@@ -96,6 +96,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:title="@string/battery_saver_setting_title"
                 android:summary="@string/battery_saver_desc"/>
 
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="enableLogging"
+                android:drawableLeft="@drawable/ic_shared_dir"
+                android:drawableStart="@drawable/ic_shared_dir"
+                android:title="@string/enable_logging" />
+
         </PreferenceScreen>
 
     </PreferenceCategory>
@@ -109,6 +116,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <Preference
             android:key="about"
             android:title="@string/about_label" />
+        <Preference
+            android:key="logs"
+            android:title="@string/manage_log_label" />
     </PreferenceCategory>
 
 </PreferenceScreen>

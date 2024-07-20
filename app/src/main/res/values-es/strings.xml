@@ -171,5 +171,9 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="bs_high">ALTO</string>
     <string name="bs_low">BAJO</string>
     <string name="bs_deep">PROFUNDO</string>
+
+    <string name="enable_logging">Habilitar el registro</string>
+    <string name="manage_log_label">Registro…</string>
+
 </resources>
 

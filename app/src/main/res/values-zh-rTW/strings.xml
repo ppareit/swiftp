@@ -187,4 +187,8 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     <string name="bs_high">高的</string>
     <string name="bs_low">低的</string>
     <string name="bs_deep">深的</string>
+
+    <string name="enable_logging">啟用日誌記錄</string>
+    <string name="manage_log_label">紀錄…</string>
+
 </resources>

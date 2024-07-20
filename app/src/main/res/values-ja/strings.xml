@@ -132,4 +132,8 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="bs_high">高い</string>
     <string name="bs_low">低い</string>
     <string name="bs_deep">深い</string>
+
+    <string name="enable_logging">ロギングを有効にします</string>
+    <string name="manage_log_label">ログ…</string>
+
 </resources>

@@ -98,4 +98,8 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="bs_high">ALTO</string>
     <string name="bs_low">BASSO</string>
     <string name="bs_deep">PROFONDO</string>
+
+    <string name="enable_logging">Abilita la registrazione</string>
+    <string name="manage_log_label">Tronco d\'albero…</string>
+
 </resources>

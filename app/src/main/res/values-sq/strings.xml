@@ -199,4 +199,8 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="bs_high">I LARTË</string>
     <string name="bs_low">I ULËT</string>
     <string name="bs_deep">THELLË</string>
+
+    <string name="enable_logging">Aktivizo regjistrimin</string>
+    <string name="manage_log_label">Regjistrohu…</string>
+
 </resources>
