@@ -39,6 +39,7 @@ import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
+import be.ppareit.swiftp.utils.Logging;
 
 public class SessionThread extends Thread {
 
@@ -69,11 +70,13 @@ public class SessionThread extends Thread {
     private String[] formatTypes = {"Size", "Modify", "Type", "Perm"}; // types option of MLST/MLSD
     private int authFails = 0;
     private String hashingAlgorithm = "SHA-1";
+    private final String connIP;
 
     public SessionThread(Socket socket, LocalDataSocket dataSocket) {
         cmdSocket = socket;
         localDataSocket = dataSocket;
         sendWelcomeBanner = true;
+        connIP = cmdSocket.getInetAddress().toString();
     }
 
     /**
@@ -256,6 +259,9 @@ public class SessionThread extends Thread {
         if (sendWelcomeBanner) {
             writeString("220 SwiFTP " + App.getVersion() + " ready\r\n");
         }
+        Logging logging = new Logging();
+        logging.appendLog("\n\n\nSession started");
+        logging.appendLog("Connected IP: " + connIP);
         // Main loop: read an incoming line and process it
         try {
             final Reader reader = new InputStreamReader(cmdSocket.getInputStream());
@@ -264,9 +270,11 @@ public class SessionThread extends Thread {
                 String line;
                 line = in.readLine(); // will accept \r\n or \n for terminator
                 if (line != null) {
+                    logging.appendLog(sanitizeCommand(line));
                     Cat.d("Received line from client: " + sanitizeCommand(line));
                     FtpCmd.dispatchCommand(this, line);
                 } else {
+                    logging.appendLog("quitting...");
                     Cat.i("readLine gave null, quitting");
                     break;
                 }

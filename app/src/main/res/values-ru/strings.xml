@@ -113,4 +113,8 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="bs_high">ВЫСОКИЙ</string>
     <string name="bs_low">НИЗКИЙ</string>
     <string name="bs_deep">ГЛУБОКИЙ</string>
+
+    <string name="enable_logging">Включить ведение журнала</string>
+    <string name="manage_log_label">Бревно…</string>
+
 </resources>

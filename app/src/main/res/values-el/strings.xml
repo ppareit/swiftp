@@ -148,5 +148,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="bs_high">ΥΨΗΛΟΣ</string>
     <string name="bs_low">ΧΑΜΗΛΟΣ</string>
     <string name="bs_deep">ΒΑΘΥΣ</string>
+
+    <string name="enable_logging">Επιτρέπω την σύνδεση</string>
+    <string name="manage_log_label">Κούτσουρο…</string>
+
 </resources>
 

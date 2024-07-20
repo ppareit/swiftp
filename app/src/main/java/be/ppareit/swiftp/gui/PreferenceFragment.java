@@ -51,7 +51,6 @@ import androidx.documentfile.provider.DocumentFile;
 
 import net.vrallev.android.cat.Cat;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -62,7 +61,8 @@ import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.server.FtpUser;
-import be.ppareit.swiftp.utils.FileUtil;
+
+import be.ppareit.swiftp.utils.Logging;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -264,6 +264,18 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         Preference aboutPref = findPref("about");
         aboutPref.setOnPreferenceClickListener(preference -> {
             startActivity(new Intent(getActivity(), AboutActivity.class));
+            return true;
+        });
+
+        Preference logsPref = findPref("logs");
+        logsPref.setOnPreferenceClickListener(preference -> {
+            startActivity(new Intent(getActivity(), LogActivity.class));
+            return true;
+        });
+
+        Preference logCheckbox = findPref("enableLogging");
+        logCheckbox.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!(boolean) newValue) new Logging().clearLog();
             return true;
         });
 

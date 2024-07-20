@@ -66,6 +66,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:theme="@style/AppThemeDark" />
 
         <activity
+            android:name=".gui.LogActivity"
+            android:parentActivityName=".gui.MainActivity"
+            android:theme="@style/AppThemeDark" />
+
+        <activity
             android:name=".gui.ManageUsersActivity"
             android:parentActivityName=".gui.MainActivity"
             android:theme="@style/AppThemeDark" />

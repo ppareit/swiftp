@@ -100,4 +100,8 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="bs_high">HOOG</string>
     <string name="bs_low">LAAG</string>
     <string name="bs_deep">DIEP</string>
+
+    <string name="enable_logging">Logboekregistratie inschakelen</string>
+    <string name="manage_log_label">Logboek…</string>
+
 </resources>

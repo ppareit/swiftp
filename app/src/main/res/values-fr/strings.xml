@@ -153,4 +153,8 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="bs_high">HAUT</string>
     <string name="bs_low">FAIBLE</string>
     <string name="bs_deep">PROFOND</string>
+
+    <string name="enable_logging">Activer la journalisation</string>
+    <string name="manage_log_label">Enregistrer…</string>
+
 </resources>

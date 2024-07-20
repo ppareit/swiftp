@@ -197,4 +197,8 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="bs_high">WYSOKI</string>
     <string name="bs_low">NISKI</string>
     <string name="bs_deep">GŁĘBOKO</string>
+
+    <string name="enable_logging">Włącz logowanie</string>
+    <string name="manage_log_label">Dziennik…</string>
+
 </resources>
