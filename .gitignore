@@ -42,7 +42,6 @@ captures/
 
 # Allow specific files to be tracked
 !.idea/codeStyles/
-!.idea/misc.xml
 !.idea/modules.xml
 !.idea/vcs.xml
 
