@@ -203,4 +203,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="enable_logging">Aktivizo regjistrimin</string>
     <string name="manage_log_label">Regjistrohu…</string>
 
+    <string name="anon_max_conn">Lidhjet maksimale të njëkohshme</string>
+    <string name="manage_anon_label">Menaxho anonim…</string>
 </resources>

@@ -175,5 +175,7 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="enable_logging">Habilitar el registro</string>
     <string name="manage_log_label">Registro…</string>
 
+    <string name="anon_max_conn">Conexiones simultáneas máximas</string>
+    <string name="manage_anon_label">Administrar anónimo…</string>
 </resources>
 

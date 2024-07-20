@@ -19,9 +19,15 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp.server;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
+
+import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AnonymousLimit;
+import be.ppareit.swiftp.utils.Logging;
 
 public class CmdPASS extends FtpCmd implements Runnable {
     private static final String TAG = CmdPASS.class.getSimpleName();
@@ -44,8 +50,35 @@ public class CmdPASS extends FtpCmd implements Runnable {
             return;
         }
         if (attemptUsername.equals("anonymous") && FsSettings.allowAnonymous()) {
-            Log.i(TAG, "Guest logged in with email: " + attemptPassword);
-            sessionThread.writeString("230 Guest login ok, read only access.\r\n");
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+            final int anonMaxCon = Integer.parseInt(sp.getString("anon_max", "1"));
+            Logging logging = new Logging();
+            final int newCount = AnonymousLimit.incrementAndGet();
+            logging.appendLog("anon CURRENT client conn count: " + (newCount - 1));
+            logging.appendLog("anon MAX conn count: " + anonMaxCon);
+            if (newCount > anonMaxCon) {
+                Log.i(TAG, "Failed authentication, too many anonymous users connected.");
+                Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
+                sessionThread.writeString("421 too many anonymous users connected.\r\n");
+                sessionThread.authAttempt(false);
+            } else {
+                Log.i(TAG, "Guest logged in with email: " + attemptPassword);
+                sessionThread.writeString("230 Guest login ok, read only access.\r\n");
+                final String anonChroot = sp.getString("anonChroot", "/storage/emulated/0" /*backwards compat*/);
+                final String anonUriString = sp.getString("anonUriString", "");
+                if (!anonChroot.isEmpty()) {
+                    sessionThread.setChrootDir(anonChroot);
+                    if (!anonUriString.isEmpty()) {
+                        SessionThread.putUriString(Thread.currentThread().getName(), anonUriString);
+                    } else if (Util.useScopedStorage()) {
+                        // Protect against app crashes/problems
+                        Log.i(TAG, "Failed authentication, too many anonymous users connected.");
+                        Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
+                        sessionThread.writeString("421 too many anonymous users connected.\r\n");
+                        sessionThread.authAttempt(false);
+                    }
+                }
+            }
             return;
         }
         FtpUser user = FsSettings.getUser(attemptUsername);

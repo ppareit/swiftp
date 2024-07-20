@@ -102,4 +102,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="enable_logging">Abilita la registrazione</string>
     <string name="manage_log_label">Tronco d\'albero…</string>
 
+    <string name="anon_max_conn">Numero massimo di connessioni simultanee</string>
+    <string name="manage_anon_label">Gestisci anonimo…</string>
 </resources>

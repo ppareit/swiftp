@@ -97,4 +97,7 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
 
     <string name="enable_logging">Aktiviere das Logging</string>
     <string name="manage_log_label">Protokoll…</string>
+
+    <string name="anon_max_conn">Max. gleichzeitige Verbindungen</string>
+    <string name="manage_anon_label">Anonym verwalten…</string>
 </resources>
