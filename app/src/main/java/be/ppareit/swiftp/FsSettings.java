@@ -193,9 +193,17 @@ public class FsSettings {
         final SharedPreferences sp = getSharedPreferences();
         String s = sp.getString("battery_saver", "1");
         if (val != null) s = val;
-        if (s.equals("0")) return  App.getAppContext().getString(R.string.bs_high);
+        if (s.equals("0")) return App.getAppContext().getString(R.string.bs_high);
         if (s.equals("1")) return App.getAppContext().getString(R.string.bs_low);
         return App.getAppContext().getString(R.string.bs_deep);
+    }
+
+    public static int getAnonMaxConNumber() {
+        final SharedPreferences sp = getSharedPreferences();
+        String s = sp.getString("anon_max", "1");
+        int i = Integer.parseInt(s);
+        Log.v(TAG, "Using anon max connections: " + i);
+        return i;
     }
 
     public static boolean shouldTakeFullWakeLock() {

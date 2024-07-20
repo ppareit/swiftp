@@ -117,4 +117,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="enable_logging">Включить ведение журнала</string>
     <string name="manage_log_label">Бревно…</string>
 
+    <string name="anon_max_conn">Максимальное количество одновременных подключений</string>
+    <string name="manage_anon_label">Управление анонимностью…</string>
 </resources>

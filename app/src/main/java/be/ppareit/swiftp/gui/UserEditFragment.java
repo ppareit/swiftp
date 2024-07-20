@@ -1,17 +1,13 @@
 package be.ppareit.swiftp.gui;
 
-
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.documentfile.provider.DocumentFile;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,13 +18,10 @@ import android.widget.Toast;
 
 import net.vrallev.android.cat.Cat;
 
-import java.io.File;
-
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
-import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.server.FtpUser;
-import be.ppareit.swiftp.utils.FileUtil;
+import be.ppareit.swiftp.utils.ChrootPicker;
 
 public class UserEditFragment extends Fragment {
 
@@ -36,9 +29,9 @@ public class UserEditFragment extends Fragment {
 
     private FtpUser item;
     private OnEditFinishedListener editFinishedListener;
-    private boolean isShowingFolderPicker = false;
     private TextView chroot = null;
     private String uriString = "";
+    private ChrootPicker chrootPicker = null;
 
     public static UserEditFragment newInstance(@Nullable FtpUser item, @NonNull OnEditFinishedListener listener) {
         UserEditFragment fragment = new UserEditFragment();
@@ -54,14 +47,20 @@ public class UserEditFragment extends Fragment {
         View root = inflater.inflate(R.layout.user_edit_layout, container, false);
         EditText username = (EditText) root.findViewById(R.id.user_edit_name);
         EditText password = (EditText) root.findViewById(R.id.user_edit_password);
+        chrootPicker = new ChrootPicker();
         chroot = (TextView) root.findViewById(R.id.user_edit_chroot);
         chroot.setText(FsSettings.getDefaultChrootDir().getPath());
         chroot.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) return;
-            showFolderPicker(chroot);
+            chrootPicker.showFolderPicker(chroot.getText().toString(), null, getContext());
         });
         chroot.setOnClickListener(v -> {
-            showFolderPicker(chroot);
+            chrootPicker.showFolderPicker(chroot.getText().toString(), null, getContext());
+        });
+        chrootPicker.setOnTextEventListener(s -> chroot.setText(s));
+        chrootPicker.setOnActionTreeEventListener(() -> {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
         });
 
         if (item != null) {
@@ -94,73 +93,9 @@ public class UserEditFragment extends Fragment {
             Cat.d("Action Open Document Tree on path " + path);
             // *************************************
             // The order following here is critical. They must stay ordered as they are.
-            setPermissionToUseExternalStorage(treeUri);
-            scopedStorageChrootOverride(treeUri);
+            chrootPicker.save(this.getContext(), treeUri);
             uriString = treeUri.getPath();
         }
-    }
-
-    private void setPermissionToUseExternalStorage(Uri treeUri) {
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        FsSettings.setExternalStorageUri(treeUri.toString());
-                        getActivity().getContentResolver()
-                                .takePersistableUriPermission(treeUri,
-                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                }
-            } catch (SecurityException e) {
-                // Harden code against crash: May reach here by adding exact same picker location but
-                // being removed at same time.
-            }
-    }
-
-    private void scopedStorageChrootOverride(Uri treeUri) {
-        if (Util.useScopedStorage()) {
-            DocumentFile df = FileUtil.getDocumentFileFromUri(treeUri);
-            if (df == null) return;
-            String newPath = "/storage/emulated/0/";
-            String treePath = treeUri.getPath();
-            if (treePath.contains("primary:")) treePath = treePath.substring(treePath.indexOf(":") + 1);
-            else if (treePath.contains(":")) {
-                newPath = "/storage/";
-                treePath = treePath.replace("/tree/", "");
-                treePath = treePath.replace(":", "/");
-            }
-            newPath += treePath;
-            if (chroot != null) chroot.setText(newPath);
-        }
-    }
-
-    private void showFolderPicker(TextView chrootView) {
-        if (Util.useScopedStorage()) {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
-            return;
-        }
-        if (isShowingFolderPicker)
-            return;
-        isShowingFolderPicker = true;
-        final File startDir;
-        if (chrootView.getText().toString().isEmpty()) {
-            startDir = Environment.getExternalStorageDirectory();
-        } else {
-            startDir = new File((chrootView.getText().toString()));
-        }
-        AlertDialog folderPicker = new FolderPickerDialogBuilder(getActivity(), startDir)
-                .setSelectedButton(R.string.select, path -> {
-                    final File root = new File(path);
-                    if (!root.canRead()) {
-                        showToast(R.string.notice_cant_read_write);
-                    } else if (!root.canWrite()) {
-                        showToast(R.string.notice_cant_write);
-                    }
-                    chrootView.setText(path);
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .create();
-        folderPicker.setOnDismissListener(dialog -> isShowingFolderPicker = false);
-        folderPicker.show();
     }
 
     private boolean validateInput(String username, String password) {

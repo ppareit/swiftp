@@ -152,5 +152,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="enable_logging">Επιτρέπω την σύνδεση</string>
     <string name="manage_log_label">Κούτσουρο…</string>
 
+    <string name="anon_max_conn">Μέγιστες ταυτόχρονες συνδέσεις</string>
+    <string name="manage_anon_label">Διαχείριση ανώνυμων…</string>
 </resources>
 

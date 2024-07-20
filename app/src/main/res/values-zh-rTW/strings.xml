@@ -191,4 +191,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     <string name="enable_logging">啟用日誌記錄</string>
     <string name="manage_log_label">紀錄…</string>
 
+    <string name="anon_max_conn">最大同時連線數</string>
+    <string name="manage_anon_label">管理匿名…</string>
 </resources>

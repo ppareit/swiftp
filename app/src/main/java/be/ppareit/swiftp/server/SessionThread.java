@@ -40,6 +40,7 @@ import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.utils.Logging;
+import be.ppareit.swiftp.utils.AnonymousLimit;
 
 public class SessionThread extends Thread {
 
@@ -283,6 +284,7 @@ public class SessionThread extends Thread {
             Cat.i("Connection was dropped");
         }
         closeSocket();
+        AnonymousLimit.decrement();
         FsService.connWakelockEndHandler();
     }
 

@@ -136,4 +136,6 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="enable_logging">ロギングを有効にします</string>
     <string name="manage_log_label">ログ…</string>
 
+    <string name="anon_max_conn">最大同時接続数</string>
+    <string name="manage_anon_label">匿名で管理する…</string>
 </resources>

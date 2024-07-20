@@ -174,4 +174,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="enable_logging">Увімкнути журналювання</string>
     <string name="manage_log_label">Журнал…</string>
 
+    <string name="anon_max_conn">Максимальна кількість одночасних підключень</string>
+    <string name="manage_anon_label">Керувати анонімно…</string>
 </resources>
