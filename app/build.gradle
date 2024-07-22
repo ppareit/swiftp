@@ -18,12 +18,11 @@ android {
     productFlavors {
         playstore_paid {
             applicationId "be.ppareit.swiftp"
-        }
-        playstore_demo {
-            applicationId "be.ppareit.swiftp_free"
+            dimension "default"
         }
         fdroid_free {
             applicationId "be.ppareit.swiftp_free"
+            dimension "default"
         }
     }
     buildTypes {
@@ -45,14 +44,14 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'net.vrallev.android:cat:1.0.5'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.documentfile:documentfile:1.0.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3'
-    implementation 'com.google.code.gson:gson:2.8.9'
-    implementation 'org.jetbrains:annotations:15.0'
-    implementation 'androidx.work:work-runtime:2.8.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'androidx.work:work-runtime:2.9.0'
 }
 
 android {
