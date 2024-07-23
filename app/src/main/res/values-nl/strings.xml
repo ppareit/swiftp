@@ -101,9 +101,12 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="bs_low">LAAG</string>
     <string name="bs_deep">DIEP</string>
 
+    <string name="logging">Logboek</string>
     <string name="enable_logging">Logboekregistratie inschakelen</string>
-    <string name="manage_log_label">Logboek…</string>
+    <string name="manage_log_label">Toon logboek…</string>
 
+    <string name="clear">Wis logboek</string>
+    <string name="display_logcat">Toon logcat</string>
     <string name="anon_max_conn">Maximaal gelijktijdige verbindingen</string>
     <string name="manage_anon_label">Beheer anoniem…</string>
 </resources>

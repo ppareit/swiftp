@@ -35,6 +35,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
@@ -245,6 +246,11 @@ public class SessionThread extends Thread {
      * Sanitize the logged commands so we don't leak username or password.
      */
     private String sanitizeCommand(String cmd) {
+        // Don't sanitize in debug build
+        if (BuildConfig.DEBUG) {
+            return cmd;
+        }
+        // Running in release
         if (cmd.trim().startsWith("PASS")) {
             return "PASS [hidden]";
         } else if (cmd.trim().startsWith("USER")) {

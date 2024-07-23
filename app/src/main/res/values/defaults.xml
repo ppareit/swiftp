@@ -29,4 +29,5 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="wakelock_default" translatable="false">true</string>
     <string name="writeExternalStorage_default" translatable="false">true</string>
     <string name="useScopedStorage_default" translatable="false">false</string>
+    <string name="enableLogging_default" translatable="false">false</string>"
 </resources>

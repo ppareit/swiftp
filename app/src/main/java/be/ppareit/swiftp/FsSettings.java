@@ -254,4 +254,9 @@ public class FsSettings {
         sp.edit().putString("externalStorageUri", externalStorageUri).apply();
     }
 
+    public static boolean isLoggingEnabled() {
+        final SharedPreferences sp = getSharedPreferences();
+        return sp.getBoolean("enable_logging", false);
+    }
+
 }

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import net.vrallev.android.cat.Cat;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,19 +19,20 @@ import java.util.Date;
 import java.util.Locale;
 
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.FsSettings;
 
 public class Logging {
 
-    private SimpleDateFormat sdf = null;
-    private boolean logging = false;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("dd:hh:mm:ss.SSS", Locale.getDefault());
+    private boolean logging = true;
 
     public Logging() {
         initializeLogging();
     }
 
     public void initializeLogging() {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-        logging = sp.getBoolean("enableLogging", false);
+        logging = FsSettings.isLoggingEnabled();
+        Cat.d("Logging enabled: " + logging);
     }
 
     public boolean isLoggingEnabled() {
@@ -52,7 +55,6 @@ public class Logging {
 
     public void appendLog(String s) {
         if (isLoggingEnabled()) {
-            if (sdf == null) sdf = new SimpleDateFormat("dd:hh:mm:ss.SSS", Locale.getDefault());
             saveLogging(sdf.format(new Date()) + ": " + s + '\n');
         }
     }
@@ -93,7 +95,7 @@ public class Logging {
     }
 
     /* // todo keep some amount of the old log?
-    * Don't all the log to keep growing or get too large.
+    * Don't allow the log to keep growing or get too large.
     * */
     private void controlSize() {
         final File file = new File(App.getAppContext().getFilesDir(), "connLog");

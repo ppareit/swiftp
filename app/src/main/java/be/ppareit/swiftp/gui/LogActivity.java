@@ -1,11 +1,5 @@
 package be.ppareit.swiftp.gui;
 
-
-import android.animation.Animator;
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.core.app.NavUtils;
@@ -14,8 +8,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.text.PrecomputedTextCompat;
 import androidx.core.widget.TextViewCompat;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
+import android.view.ViewTreeObserver;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -28,7 +26,9 @@ import be.ppareit.swiftp.utils.Logging;
 
 public class LogActivity extends AppCompatActivity {
 
-    private ObjectAnimator anim = null;
+    private boolean isDisplayingLogcat = false;
+    private Handler handler;
+    private Runnable updateViewRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,18 +44,55 @@ public class LogActivity extends AppCompatActivity {
         }
 
         final TextView tv = findViewById(R.id.logs_textview);
-        tv.setText("...");
-        final ObjectAnimator loading = ObjectAnimator.ofObject(tv, "textColor",
-                new ArgbEvaluator(), Color.BLACK, Color.LTGRAY).setDuration(100);
-        loading.setRepeatCount(ValueAnimator.INFINITE);
-        loading.start();
+        final ScrollView scrollView = findViewById(R.id.logs_scrollview);
 
-        //showLogcat(tv, loading);
-        Logging logging = new Logging();
-        showLog(tv, logging, loading);
+        // here we update the textview with the new message,
+        // this updates every second, not nice
+        // todo watch the files and only update on change
+        handler = new Handler(Looper.getMainLooper());
+        updateViewRunnable = new Runnable() {
+            @Override
+            public void run() {
+                updateView(tv);
+                handler.postDelayed(this, 1000); // Update every second
+            }
+        };
+        handler.post(updateViewRunnable);
 
-        clear(tv, logging);
-        refresh(tv, logging);
+        ViewTreeObserver viewTreeObserver = tv.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(() -> {
+            scrollView.scrollTo(0, tv.getBottom());
+        });
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        handler.removeCallbacks(updateViewRunnable);
+        super.onDestroy();
+    }
+
+    private void updateView(TextView tv) {
+
+        if (isDisplayingLogcat) {
+            showLogcat(tv);
+        } else {
+            showLog(tv);
+        }
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.logs_menu, menu);
+
+        MenuItem displayLogcatItem = menu.findItem(R.id.action_display_logcat);
+        MenuItem clearItem = menu.findItem(R.id.action_clear);
+
+        displayLogcatItem.setChecked(isDisplayingLogcat);
+        clearItem.setVisible(!isDisplayingLogcat);
+
+        return true;
     }
 
     private String getLogcat() {
@@ -81,73 +118,49 @@ public class LogActivity extends AppCompatActivity {
         return PrecomputedTextCompat.create(s, params);
     }
 
-    private void showLogcat(TextView v, ObjectAnimator loading) {
+    private void showLogcat(TextView v) {
         new Thread(() -> {
             PrecomputedTextCompat ptc = getPrecomputedText(v, getLogcat());
             LogActivity.this.runOnUiThread(() -> {
                 TextViewCompat.setPrecomputedText(v, ptc);
-                loading.end();
             });
         }).start();
     }
 
-    private void showLog(TextView v, Logging logging, ObjectAnimator loading) {
+    private void showLog(TextView v) {
+        Logging logging = new Logging();
         new Thread(() -> {
             PrecomputedTextCompat ptc = getPrecomputedText(v, logging.readLogFile());
             LogActivity.this.runOnUiThread(() -> {
                 TextViewCompat.setPrecomputedText(v, ptc);
-                if (loading != null) loading.end();
             });
         }).start();
     }
 
-    private void refresh(TextView tv, Logging logging) {
-        ImageView refresh = findViewById(R.id.logs_refresh_button);
-        refresh.setOnClickListener(v -> {
-            if (anim != null && anim.isRunning()) {
-                anim.end();
-                return;
-            }
-            anim = ObjectAnimator.ofFloat(v, "rotation", 0.0f, 360.0f);
-            anim.setDuration(500);
-            anim.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    showLog(tv, logging, null);
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-                }
-            });
-            anim.setStartDelay(500);
-            anim.start();
-        });
-    }
-
-    private void clear(TextView tv, Logging logging) {
-        ImageView clear = findViewById(R.id.logs_clear_button);
-        clear.setOnClickListener(v -> {
-            if (tv.getText().toString().isEmpty()) return;
-            logging.clearLog();
-            tv.setText("");
-        });
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
+
+        int id = item.getItemId();
+        TextView tv = findViewById(R.id.logs_textview);
+        Logging logging = new Logging();
+
+        if (id == android.R.id.home) {
             NavUtils.navigateUpFromSameTask(this);
             return true;
+        } else if (id == R.id.action_clear) {
+            if (tv.getText().toString().isEmpty())
+                return true;
+            logging.clearLog();
+            return true;
+        } else if (id == R.id.action_display_logcat) {
+            item.setChecked(!item.isChecked());
+            isDisplayingLogcat = item.isChecked();
+            updateView(tv);
+            invalidateOptionsMenu();
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 }

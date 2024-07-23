@@ -279,7 +279,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
-        Preference logCheckbox = findPref("enableLogging");
+        Preference logCheckbox = findPref("enable_logging");
         logCheckbox.setOnPreferenceChangeListener((preference, newValue) -> {
             if (!(boolean) newValue) new Logging().clearLog();
             return true;

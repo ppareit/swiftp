@@ -203,8 +203,11 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="use_scoped_storage_label">Use scoped storage</string>
     <string name="use_scope_storage_summary">Make use of scoped storage, this is needed for recent Android devices. Choose the folders to which you want read/write access in Manage Users…</string>
 
+    <string name="logging">Logging</string>
     <string name="enable_logging">Enable logging</string>
-    <string name="manage_log_label">Log…</string>
+    <string name="manage_log_label">Show logs…</string>
+    <string name="clear">Clear log</string>
+    <string name="display_logcat">Display Logcat</string>
 
     <string name="anon_max_conn">Max simultaneous connections</string>
     <string name="manage_anon_label">Manage anonymous…</string>
