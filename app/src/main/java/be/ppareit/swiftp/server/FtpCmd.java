@@ -26,6 +26,7 @@ import androidx.documentfile.provider.DocumentFile;
 import java.io.File;
 import java.lang.reflect.Constructor;
 
+import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.utils.FileUtil;
 
 public abstract class FtpCmd implements Runnable {
@@ -56,14 +57,22 @@ public abstract class FtpCmd implements Runnable {
             new CmdMap("MLST", CmdMLST.class), //
             new CmdMap("MLSD", CmdMLSD.class), //
             new CmdMap("HASH", CmdHASH.class),
-            new CmdMap("RANG", CmdRANG.class)
+            new CmdMap("RANG", CmdRANG.class),
+            new CmdMap("AUTH", CmdAUTH.class),
+            new CmdMap("PROT", CmdPROT.class),
+            new CmdMap("PBSZ", CmdPBSZ.class),
+            new CmdMap("EPRT", CmdEPRT.class),
+            new CmdMap("EPSV", CmdEPSV.class)
     };
 
     private static Class<?>[] allowedCmdsWhileAnonymous = { CmdUSER.class, CmdPASS.class, //
             CmdCWD.class, CmdLIST.class, CmdMDTM.class, CmdNLST.class, CmdPASV.class, //
             CmdPWD.class, CmdQUIT.class, CmdRETR.class, CmdSIZE.class, CmdTYPE.class, //
             CmdCDUP.class, CmdNOOP.class, CmdSYST.class, CmdPORT.class, //
-            CmdMLST.class, CmdMLSD.class, CmdHASH.class, CmdRANG.class //
+            CmdMLST.class, CmdMLSD.class, CmdHASH.class, CmdRANG.class, CmdAUTH.class, //
+            CmdPROT.class, CmdPBSZ.class, //
+            CmdMLST.class, CmdMLSD.class, CmdHASH.class, CmdRANG.class, //
+            CmdEPRT.class, CmdEPSV.class //
     };
 
     public FtpCmd(SessionThread sessionThread) {
@@ -128,6 +137,17 @@ public abstract class FtpCmd implements Runnable {
             return;
         }
 
+        // Used for FTPS encryption only setting.
+        // Only affects explicit connection.
+        final boolean forceAUTHTLS = FsSettings.isEncryptionOnlyEnabled();
+        final boolean socketNotEncrypted = session.getIsPlainSocket();
+        if (forceAUTHTLS && socketNotEncrypted) {
+            // When enabled, client has to use AUTH command and make the connection encrypted.
+            if (cmdInstance.getClass().equals(CmdAUTH.class)) cmdInstance.run();
+            else session.writeString("530 Login first with AUTH, or QUIT\r\n");
+            return;
+        }
+
         if (session.isUserLoggedIn()) {
             cmdInstance.run();
         } else if (session.isAnonymouslyLoggedIn() == true) {
@@ -145,10 +165,15 @@ public abstract class FtpCmd implements Runnable {
             }
         } else if (cmdInstance.getClass().equals(CmdUSER.class)
                 || cmdInstance.getClass().equals(CmdPASS.class)
-                || cmdInstance.getClass().equals(CmdQUIT.class)) {
+                || cmdInstance.getClass().equals(CmdQUIT.class)
+                || cmdInstance.getClass().equals(CmdAUTH.class)
+                || cmdInstance.getClass().equals(CmdPROT.class)
+                || cmdInstance.getClass().equals(CmdPBSZ.class)
+                || cmdInstance.getClass().equals(CmdEPRT.class)
+                || cmdInstance.getClass().equals(CmdEPSV.class)) {
             cmdInstance.run();
         } else {
-            session.writeString("530 Login first with USER and PASS, or QUIT\r\n");
+            session.writeString("530 Login first with USER, PASS, AUTH, or QUIT\r\n");
         }
     }
 

@@ -94,7 +94,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="app_theme">Tema...</string>
 
     <string name="battery_saver_setting_title">Risparmio batteria</string>
-    <string name="battery_saver_desc">NOTA: *è necessario* riavviare manualmente il server dopo la modifica.</string>
     <string name="bs_high">ALTO</string>
     <string name="bs_low">BASSO</string>
     <string name="bs_deep">PROFONDO</string>
@@ -104,4 +103,37 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="anon_max_conn">Numero massimo di connessioni simultanee</string>
     <string name="manage_anon_label">Gestisci anonimo…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">Porti…</string>
+    <string name="general_title">Generale…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">Miglioramenti della sicurezza…</string>
+    <string name="port_number_label_data_low">Intervallo numero porta dati basso</string>
+    <string name="port_number_label_data_high">Intervallo numero porta dati alto</string>
+    <string name="port_number_label_implicit">Numero di porta implicita FTPS</string>
+    <string name="enable_tls">Abilita TLS</string>
+    <string name="enable_tls_implicit">Abilita implicito</string>
+    <string name="enable_ssl">Abilita SSL</string>
+    <string name="disable_plain_port">Utilizzare solo implicito</string>
+    <string name="disable_plain_not_explicit">Utilizzare solo implicito ed esplicito</string>
+    <string name="cert_keystore">Certificato: importa archivio chiavi (jks)</string>
+    <string name="cert_trust_store">Certificato: importa archivio attendibile (bks)</string>
+    <string name="cert_pass">Certificato: password</string>
+    <string name="cert_show_pass">Certificato: mostra la password</string>
+    <string name="cert_use_client">Richiedi certificato client</string>
+    <string name="early_150_response">Soluzione alternativa per la risposta iniziale 150</string>
+    <string name="ip_list_title">Consenti/nega IP</string>
+    <string name="deny_until_allowed">Negare fino al permesso</string>
+    <string name="manually_add_ip">Aggiungi manualmente l\'IP</string>
+    <string name="deny_on_failed_logins">Nega su 3 accessi non riusciti</string>
+    <string name="clear_unused_ips">Cancella gli IP non utilizzati</string>
+    <string name="implicit_only_summary">Disabilita la porta normale</string>
+    <string name="implicit_explicit_only_summary">Abilita solo la crittografia</string>
+    <string name="disable_banner_title">Disabilita banner</string>
+    <string name="disable_feat_title">Disabilita FEAT</string>
+    <string name="disable_syst_title">Disabilita SIST</string>
+    <string name="tls_limit_protocols_title">Limitare i protocolli</string>
 </resources>

@@ -193,7 +193,6 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="write_external_storage_old_android_version_summary">Na tych urządzeniach cały sklep jest dostępny przy użyciu hierarchii plików.</string>
 
     <string name="battery_saver_setting_title">Program oszczędzający baterię</string>
-    <string name="battery_saver_desc">UWAGA: *musisz* ręcznie zrestartować serwer po zmianie.</string>
     <string name="bs_high">WYSOKI</string>
     <string name="bs_low">NISKI</string>
     <string name="bs_deep">GŁĘBOKO</string>
@@ -203,4 +202,37 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="anon_max_conn">Maksymalna liczba jednoczesnych połączeń</string>
     <string name="manage_anon_label">Zarządzaj anonimowo…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">Porty…</string>
+    <string name="general_title">Ogólny…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">Ulepszenia zabezpieczeń…</string>
+    <string name="port_number_label_data_low">Niski zakres numerów portów danych</string>
+    <string name="port_number_label_data_high">Wysoki zakres numerów portów danych</string>
+    <string name="port_number_label_implicit">Niejawny numer portu FTPS</string>
+    <string name="enable_tls">Włącz TLS</string>
+    <string name="enable_tls_implicit">Włącz niejawnie</string>
+    <string name="enable_ssl">Włącz protokół SSL</string>
+    <string name="disable_plain_port">Używaj tylko niejawnie</string>
+    <string name="disable_plain_not_explicit">Używaj tylko ukrytych i jawnych</string>
+    <string name="cert_keystore">Certyfikat: importuj magazyn kluczy (jks)</string>
+    <string name="cert_trust_store">Certyfikat: import zaufanego magazynu (bks)</string>
+    <string name="cert_pass">Certyfikat: hasło</string>
+    <string name="cert_show_pass">Certyfikat: pokaż hasło</string>
+    <string name="cert_use_client">Wymagaj certyfikatu klienta</string>
+    <string name="early_150_response">Obejście problemu z wcześniejszą odpowiedzią 150</string>
+    <string name="ip_list_title">Zezwalaj/odmawiaj adresów IP</string>
+    <string name="deny_until_allowed">Odmawiaj, dopóki nie zostanie to dozwolone</string>
+    <string name="manually_add_ip">Ręcznie dodaj adres IP</string>
+    <string name="deny_on_failed_logins">Odmów w przypadku 3 nieudanych logowań</string>
+    <string name="clear_unused_ips">Usuń nieużywane adresy IP</string>
+    <string name="implicit_only_summary">Wyłącza zwykły port</string>
+    <string name="implicit_explicit_only_summary">Włącza tylko szyfrowanie</string>
+    <string name="disable_banner_title">Wyłącz baner</string>
+    <string name="disable_feat_title">Wyłącz FEAT</string>
+    <string name="disable_syst_title">Wyłącz SYST</string>
+    <string name="tls_limit_protocols_title">Ogranicz protokoły</string>
 </resources>

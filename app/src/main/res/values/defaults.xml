@@ -25,6 +25,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="show_password_default" translatable="false">false</string>
     <string name="allow_anonymous_default" translatable="false">false</string>
     <string name="portnumber_default" translatable="false">2121</string>
+    <string name="portnumber_default_implicit" translatable="false">2122</string>
+    <string name="portnumber_default_pasv_low" translatable="false">0</string>
+    <string name="portnumber_default_pasv_high" translatable="false">0</string>
     <string name="acceptwifi_default" translatable="false">true</string>
     <string name="wakelock_default" translatable="false">true</string>
     <string name="writeExternalStorage_default" translatable="false">true</string>

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.MediaUpdater;
@@ -154,12 +155,16 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 errString = "451 Unable to seek in file to append\r\n";
                 break storing;
             }
+            final boolean early150 = FsSettings.isEarly150Enabled();
+            if (early150) {
+                sessionThread.writeString("150 Data socket ready\r\n");
+            }
             if (!sessionThread.openDataSocket()) {
                 errString = "425 Couldn't open data socket\r\n";
                 break storing;
             }
             Cat.d("Data socket ready");
-            sessionThread.writeString("150 Data socket ready\r\n");
+            if (!early150) sessionThread.writeString("150 Data socket ready\r\n");
             byte[] buffer = new byte[SessionThread.DATA_CHUNK_SIZE];
 
             int numRead;

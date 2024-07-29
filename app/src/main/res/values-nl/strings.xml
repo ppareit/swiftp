@@ -96,7 +96,6 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="app_theme">Thema...</string>
 
     <string name="battery_saver_setting_title">Batterij bespaarder</string>
-    <string name="battery_saver_desc">OPMERKING: U *moet* de server handmatig opnieuw opstarten na het wijzigen.</string>
     <string name="bs_high">HOOG</string>
     <string name="bs_low">LAAG</string>
     <string name="bs_deep">DIEP</string>
@@ -109,4 +108,37 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="display_logcat">Toon logcat</string>
     <string name="anon_max_conn">Maximaal gelijktijdige verbindingen</string>
     <string name="manage_anon_label">Beheer anoniem…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">Poorten…</string>
+    <string name="general_title">Algemeen…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">Beveiligingsverbeteringen…</string>
+    <string name="port_number_label_data_low">Datapoortnummerbereik laag</string>
+    <string name="port_number_label_data_high">Datapoortnummerbereik hoog</string>
+    <string name="port_number_label_implicit">FTPS impliciet poortnummer</string>
+    <string name="enable_tls">Schakel TLS in</string>
+    <string name="enable_tls_implicit">Schakel impliciet in</string>
+    <string name="enable_ssl">Schakel SSL in</string>
+    <string name="disable_plain_port">Gebruik alleen impliciet</string>
+    <string name="disable_plain_not_explicit">Gebruik alleen impliciet en expliciet</string>
+    <string name="cert_keystore">Certificaat: sleutelarchief importeren (jks)</string>
+    <string name="cert_trust_store">Certificaat: import trust store (bks)</string>
+    <string name="cert_pass">Certificaat: wachtwoord</string>
+    <string name="cert_show_pass">Certificaat: toon wachtwoord</string>
+    <string name="cert_use_client">Vereist clientcertificaat</string>
+    <string name="early_150_response">Tijdelijke oplossing voor vroege 150-reacties</string>
+    <string name="ip_list_title">IP\'s toestaan/weigeren</string>
+    <string name="deny_until_allowed">Weigeren totdat het is toegestaan</string>
+    <string name="manually_add_ip">Handmatig IP toevoegen</string>
+    <string name="deny_on_failed_logins">Weigeren bij 3 mislukte aanmeldingen</string>
+    <string name="clear_unused_ips">Wis ongebruikte IP\'s</string>
+    <string name="implicit_only_summary">Schakelt gewone poort uit</string>
+    <string name="implicit_explicit_only_summary">Schakelt alleen codering in</string>
+    <string name="disable_banner_title">Schakel banner uit</string>
+    <string name="disable_feat_title">Schakel FUNCTIE uit</string>
+    <string name="disable_syst_title">Schakel SYST uit</string>
+    <string name="tls_limit_protocols_title">Beperk protocollen</string>
 </resources>

@@ -43,10 +43,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <application
         android:name="be.ppareit.swiftp.App"
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
         android:banner="@drawable/banner"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/swiftp_name">
+        android:label="@string/swiftp_name"
+        android:dataExtractionRules="@xml/data_extraction_rules">
 
         <activity
             android:name="be.ppareit.swiftp.gui.MainActivity"

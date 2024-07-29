@@ -211,4 +211,37 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="anon_max_conn">Max simultaneous connections</string>
     <string name="manage_anon_label">Manage anonymous…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">Ports…</string>
+    <string name="general_title">General…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">Security enhancements…</string>
+    <string name="port_number_label_data_low">Data port number range low</string>
+    <string name="port_number_label_data_high">Data port number range high</string>
+    <string name="port_number_label_implicit">FTPS implicit port number</string>
+    <string name="enable_tls">Enable TLS</string>
+    <string name="enable_tls_implicit">Enable implicit</string>
+    <string name="enable_ssl">Enable SSL</string>
+    <string name="disable_plain_port">Use implicit only</string>
+    <string name="disable_plain_not_explicit">Use implicit and explicit only</string>
+    <string name="cert_keystore">Certificate: import keystore (jks)</string>
+    <string name="cert_trust_store">Certificate: import trust store (bks)</string>
+    <string name="cert_pass">Certificate: password</string>
+    <string name="cert_show_pass">Certificate: show password</string>
+    <string name="cert_use_client">Require client certificate</string>
+    <string name="early_150_response">Early 150 response workaround</string>
+    <string name="ip_list_title">Allow/deny IPs</string>
+    <string name="deny_until_allowed">Deny until allowed</string>
+    <string name="manually_add_ip">Manually add IP</string>
+    <string name="deny_on_failed_logins">Deny on 3 failed logins</string>
+    <string name="clear_unused_ips">Clear unused IPs</string>
+    <string name="implicit_only_summary">Disables plain port</string>
+    <string name="implicit_explicit_only_summary">Enables encryption only</string>
+    <string name="disable_banner_title">Disable banner</string>
+    <string name="disable_feat_title">Disable FEAT</string>
+    <string name="disable_syst_title">Disable SYST</string>
+    <string name="tls_limit_protocols_title">Limit protocols</string>
 </resources>
