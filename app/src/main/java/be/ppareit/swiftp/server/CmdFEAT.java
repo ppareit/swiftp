@@ -21,6 +21,9 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
+import be.ppareit.swiftp.FsSettings;
+import be.ppareit.swiftp.utils.Logging;
+
 public class CmdFEAT extends FtpCmd implements Runnable {
     private static final String TAG = CmdFEAT.class.getSimpleName();
 
@@ -30,6 +33,13 @@ public class CmdFEAT extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
+
+        if (FsSettings.isFeatDisabled()) {
+            new Logging().appendLog("FEAT is disabled");
+            sessionThread.writeString("502 Command not implemented\r\n");
+            return;
+        }
+
         Log.d(TAG, "run: Giving FEAT");
         sessionThread.writeString("211-Features supported by FTP Server\r\n");
         sessionThread.writeString(" UTF8\r\n");
@@ -44,6 +54,9 @@ public class CmdFEAT extends FtpCmd implements Runnable {
         sessionThread.writeString(" HASH MD5;SHA-1;SHA-256;SHA-384;SHA-512\r\n");
         sessionThread.writeString(" REST STREAM\r\n");
         sessionThread.writeString(" RANG STREAM\r\n");
+        sessionThread.writeString(" AUTH TLS\r\n");
+        sessionThread.writeString(" PBSZ\r\n");
+        sessionThread.writeString(" PROT\r\n");
         sessionThread.writeString("211 End\r\n");
         Log.d(TAG, "run: Gave FEAT");
     }

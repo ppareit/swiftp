@@ -149,7 +149,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="app_theme">Thème...</string>
 
     <string name="battery_saver_setting_title">Économiseur de batterie</string>
-    <string name="battery_saver_desc">REMARQUE : Vous *devez* redémarrer manuellement le serveur après la modification.</string>
     <string name="bs_high">HAUT</string>
     <string name="bs_low">FAIBLE</string>
     <string name="bs_deep">PROFOND</string>
@@ -159,4 +158,37 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="anon_max_conn">Nombre maximum de connexions simultanées</string>
     <string name="manage_anon_label">Gérer les anonymes…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">Port…</string>
+    <string name="general_title">Général…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">Améliorations de la sécurité…</string>
+    <string name="port_number_label_data_low">Plage de numéros de port de données faible</string>
+    <string name="port_number_label_data_high">Plage de numéros de port de données élevée</string>
+    <string name="port_number_label_implicit">Numéro de port implicite FTPS</string>
+    <string name="enable_tls">Activer TLS</string>
+    <string name="enable_tls_implicit">Activer l\'implicite</string>
+    <string name="enable_ssl">Activer SSL</string>
+    <string name="disable_plain_port">Utiliser implicitement uniquement</string>
+    <string name="disable_plain_not_explicit">Utiliser uniquement implicite et explicite</string>
+    <string name="cert_keystore">Certificat : importer un magasin de clés (jks)</string>
+    <string name="cert_trust_store">Certificat : importer un magasin de confiance (bks)</string>
+    <string name="cert_pass">Certificat : mot de passe</string>
+    <string name="cert_show_pass">Certificat : afficher le mot de passe</string>
+    <string name="cert_use_client">Exiger un certificat client</string>
+    <string name="early_150_response">Solution de contournement de réponse précoce 150</string>
+    <string name="ip_list_title">Autoriser/refuser les IP</string>
+    <string name="deny_until_allowed">Refuser jusqu\'à autorisation</string>
+    <string name="manually_add_ip">Ajouter manuellement une adresse IP</string>
+    <string name="deny_on_failed_logins">Refuser sur 3 échecs de connexion</string>
+    <string name="clear_unused_ips">Effacer les IP inutilisées</string>
+    <string name="implicit_only_summary">Désactive le port simple</string>
+    <string name="implicit_explicit_only_summary">Active le cryptage uniquement</string>
+    <string name="disable_banner_title">Désactiver la bannière</string>
+    <string name="disable_feat_title">Désactiver FEAT</string>
+    <string name="disable_syst_title">Désactiver SYST</string>
+    <string name="tls_limit_protocols_title">Limiter les protocoles</string>
 </resources>

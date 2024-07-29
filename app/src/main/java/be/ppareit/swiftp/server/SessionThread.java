@@ -29,10 +29,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.net.ssl.SSLSocket;
 
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.BuildConfig;
@@ -50,7 +53,9 @@ public class SessionThread extends Thread {
 
     private static boolean[] selectedTypesCached = null;
 
-    private Socket cmdSocket;
+    SSLSocket cmdSSLAuthSocket = null; // explicit tls socket
+    SSLSocket cmdSSLSocket; // implicit tls socket
+    Socket cmdSocket; // plain unencrypted socket
     private boolean pasvMode = false;
     private boolean binaryMode = false;
     private String userName = null;  // username that the client sends
@@ -58,7 +63,8 @@ public class SessionThread extends Thread {
     private File workingDir = FsSettings.getDefaultChrootDir();
     private File chrootDir = workingDir;
     private static ConcurrentHashMap<String, String> uriString = null; // scoped match user to perm
-    private Socket dataSocket = null;
+    private Socket dataSocket = null; // PASV plain data socket
+    private SSLSocket sslDataSocket = null; // PASV secure data socket
     private File renameFrom = null;
     private LocalDataSocket localDataSocket;
     private InputStream dataInputStream = null;
@@ -72,13 +78,16 @@ public class SessionThread extends Thread {
     private String[] formatTypes = {"Size", "Modify", "Type", "Perm"}; // types option of MLST/MLSD
     private int authFails = 0;
     private String hashingAlgorithm = "SHA-1";
-    private final String connIP;
+    private final Logging logging = new Logging();
+    private boolean pbszEnabled = false;
+    private boolean epsvEnabled = false;
+    private boolean eprtEnabled = false;
 
-    public SessionThread(Socket socket, LocalDataSocket dataSocket) {
+    public SessionThread(Socket socket, LocalDataSocket dataSocket, SSLSocket sslSocket) {
         cmdSocket = socket;
-        localDataSocket = dataSocket;
+        cmdSSLSocket = sslSocket;
+        localDataSocket = dataSocket; // not an actual socket itself so name is misleading
         sendWelcomeBanner = true;
-        connIP = cmdSocket.getInetAddress().toString();
     }
 
     /**
@@ -139,6 +148,23 @@ public class SessionThread extends Thread {
     public int receiveFromDataSocket(byte[] buf) {
         int bytesRead;
 
+        if (sslDataSocket != null && dataSocket == null) {
+            if (!sslDataSocket.isConnected()) {
+                Cat.i("Can't receive from unconnected socket");
+                return -2;
+            }
+
+            try {
+                do {
+                    bytesRead = dataInputStream.read(buf, 0, buf.length);
+                } while (bytesRead == 0);
+            } catch (IOException e) {
+                Cat.i("Error reading data socket");
+                return 0;
+            }
+            return bytesRead;
+        }
+
         if (dataSocket == null) {
             Cat.i("Can't receive from null dataSocket");
             return -2;
@@ -165,7 +191,23 @@ public class SessionThread extends Thread {
      * @return Whether the necessary initialization was successful.
      */
     public int onPasv() {
-        return localDataSocket.onPasv();
+        return localDataSocket.onPasv(cmdSSLSocket != null || cmdSSLAuthSocket != null);
+    }
+
+    /*
+    * Called when we receive a EPSV command.
+    *
+    * */
+    public int onEpsv(InetAddress address) {
+        return localDataSocket.onEpsv(address, cmdSSLSocket != null || cmdSSLAuthSocket != null);
+    }
+
+    /*
+    * Called when we receive a EPRT commant.
+    *
+    * */
+    public void onEprt(Inet6Address address, int port) {
+        localDataSocket.onEprt(address, port);
     }
 
     /**
@@ -177,11 +219,46 @@ public class SessionThread extends Thread {
         return localDataSocket.onPort(dest, port);
     }
 
+    /*
+    * Returns IP of the device running Swiftp.
+    * */
     public InetAddress getDataSocketPasvIp() {
         // When the client sends PASV, our reply will contain the address and port
         // of the data connection that the client should connect to. For this purpose
         // we always use the same IP address that the command socket is using.
+        if (cmdSSLSocket != null) return cmdSSLSocket.getLocalAddress();
+        if (cmdSSLAuthSocket != null) return cmdSSLAuthSocket.getLocalAddress();
         return cmdSocket.getLocalAddress();
+    }
+
+    public int getDataSocketPasvPort() {
+        // When the client sends PASV, our reply will contain the address and port
+        // of the data connection that the client should connect to. For this purpose
+        // we always use the same IP address that the command socket is using.
+        if (cmdSSLSocket != null) return cmdSSLSocket.getPort();
+        if (cmdSSLAuthSocket != null) return cmdSSLAuthSocket.getPort();
+        return cmdSocket.getPort();
+    }
+
+    /*
+    * Returns IPv4 or IPv6 of client device.
+    * IPv6 is returned as link local IP + network interface, when on same network.
+    * */
+    public String getRemoteAddress() {
+        if (cmdSocket != null) return cmdSocket.getInetAddress().toString();
+        else if (cmdSSLSocket != null) return cmdSSLSocket.getInetAddress().toString();
+        else if (cmdSSLAuthSocket != null) return cmdSSLAuthSocket.getInetAddress().toString();
+        return "";
+    }
+
+    /*
+    * Returns true if the plain/explicit port is used or false if the implicit port is used.
+    * */
+    public boolean getIsPlainSocket() {
+        if (cmdSSLAuthSocket != null) return false;
+        else if (cmdSocket != null) return true;
+        else if (cmdSSLSocket != null) return false;
+        return false;
     }
 
     /**
@@ -193,6 +270,23 @@ public class SessionThread extends Thread {
      * @return true if successful
      */
     public boolean openDataSocket() {
+        if (cmdSSLSocket != null || cmdSSLAuthSocket != null) {
+            try {
+                sslDataSocket = localDataSocket.onTransferSSL();
+                if (sslDataSocket == null) {
+                    Cat.i("dataSocketFactory.onTransfer() returned null");
+                    return false;
+                }
+                dataInputStream = sslDataSocket.getInputStream();
+                dataOutputStream = sslDataSocket.getOutputStream();
+                return true;
+            } catch (IOException e) {
+                Cat.i("IOException getting OutputStream for data socket");
+                sslDataSocket = null;
+                return false;
+            }
+        }
+
         try {
             dataSocket = localDataSocket.onTransfer();
             if (dataSocket == null) {
@@ -233,8 +327,15 @@ public class SessionThread extends Thread {
                 dataSocket.close();
             } catch (IOException ignore) {
             }
+            dataSocket = null;
         }
-        dataSocket = null;
+        if (sslDataSocket != null) {
+            try {
+                sslDataSocket.close();
+            } catch (IOException ignore) {
+            }
+            sslDataSocket = null;
+        }
     }
 
     public void quit() {
@@ -264,18 +365,39 @@ public class SessionThread extends Thread {
         Cat.i("SessionThread started");
         // Give client a welcome
         if (sendWelcomeBanner) {
-            writeString("220 SwiFTP " + App.getVersion() + " ready\r\n");
+            if (FsSettings.isBannerDisabled()) {
+                new Logging().appendLog("Banner is disabled");
+                writeString("220 ready\r\n");
+            }
+            else writeString("220 SwiFTP " + App.getVersion() + " ready\r\n");
         }
-        Logging logging = new Logging();
-        logging.appendLog("\n\n\nSession started");
-        logging.appendLog("Connected IP: " + connIP);
+        logging.appendLog("Session started");
         // Main loop: read an incoming line and process it
         try {
-            final Reader reader = new InputStreamReader(cmdSocket.getInputStream());
+            final Reader reader;
+            Reader readerSSL = null;
+            BufferedReader inSSL = null;
+            if (cmdSSLSocket != null) reader = new InputStreamReader(cmdSSLSocket.getInputStream());
+            else reader = new InputStreamReader(cmdSocket.getInputStream());
             final BufferedReader in = new BufferedReader(reader, 8192); // use 8k buffer
+            final String ftps = "[ FTPS ] ";
             while (true) {
                 String line;
-                line = in.readLine(); // will accept \r\n or \n for terminator
+                if (cmdSSLSocket != null) {
+                    line = in.readLine();
+                    logging.appendLog(ftps + line);
+                } else if (cmdSSLAuthSocket != null) {
+                    if (readerSSL == null) {
+                        logging.appendLog("readerSSL is null *****");
+                        readerSSL = new InputStreamReader(cmdSSLAuthSocket.getInputStream());
+                        inSSL = new BufferedReader(readerSSL, 8192); // use 8k buffer
+                    }
+                    line = inSSL.readLine();
+                    logging.appendLog(ftps + line);
+                } else {
+                    line = in.readLine(); // will accept \r\n or \n for terminator
+                    logging.appendLog(line);
+                }
                 if (line != null) {
                     logging.appendLog(sanitizeCommand(line));
                     Cat.d("Received line from client: " + sanitizeCommand(line));
@@ -287,6 +409,7 @@ public class SessionThread extends Thread {
                 }
             }
         } catch (IOException e) {
+            logging.appendLog("Connection was dropped: " + e.getMessage());
             Cat.i("Connection was dropped");
         }
         closeSocket();
@@ -295,24 +418,68 @@ public class SessionThread extends Thread {
     }
 
     public void closeSocket() {
-        if (cmdSocket == null) {
+        logging.appendLog("Closing sockets...");
+        if (cmdSocket == null && cmdSSLAuthSocket == null && cmdSSLSocket == null) {
             return;
         }
         try {
-            cmdSocket.close();
-        } catch (IOException ignore) {
+            if (cmdSocket != null) {
+                cmdSocket.close();
+            }
+        } catch (Exception ignore) {
+        }
+
+        try {
+            if (cmdSSLAuthSocket != null) {
+                cmdSSLAuthSocket.close();
+            }
+        } catch (Exception ignore) {
+        }
+
+        try {
+            if (cmdSSLSocket != null) {
+                cmdSSLSocket.close();
+            }
+        } catch (Exception ignore) {
         }
     }
 
     public void writeBytes(byte[] bytes) {
-        try {
-            OutputStream outputStream = cmdSocket.getOutputStream();
-            outputStream.write(bytes);
-            outputStream.flush();
-            localDataSocket.reportTraffic(bytes.length);
-        } catch (IOException e) {
-            Cat.i("Exception writing socket");
-            closeSocket();
+        if (cmdSSLSocket != null) {
+            try {
+                OutputStream outputStream = cmdSSLSocket.getOutputStream();
+                outputStream.write(bytes);
+                outputStream.flush();
+                localDataSocket.reportTraffic(bytes.length);
+            } catch (IOException e) {
+                Cat.i("Exception writing socket");
+                closeSocket();
+            }
+            return;
+        }
+        if (cmdSSLAuthSocket != null) {
+            try {
+                OutputStream outputStream = cmdSSLAuthSocket.getOutputStream();
+                outputStream.write(bytes);
+                outputStream.flush();
+                localDataSocket.reportTraffic(bytes.length);
+            } catch (IOException e) {
+                logging.appendLog("Error on auth socket output");
+                Cat.i("Exception writing socket");
+                closeSocket();
+            }
+            return;
+        }
+        if (cmdSocket != null) {
+            try {
+                OutputStream outputStream = cmdSocket.getOutputStream();
+                outputStream.write(bytes);
+                outputStream.flush();
+                localDataSocket.reportTraffic(bytes.length);
+            } catch (IOException e) {
+                Cat.i("Exception writing socket");
+                closeSocket();
+            }
         }
     }
 
@@ -470,6 +637,30 @@ public class SessionThread extends Thread {
     public static void removeUriString(String threadName) {
         if (uriString == null) return;
         uriString.remove(threadName);
+    }
+
+    public boolean isPbszEnabled() {
+        return pbszEnabled;
+    }
+
+    public void setPbszEnabled(boolean pbszEnabled) {
+        this.pbszEnabled = pbszEnabled;
+    }
+
+    public boolean isEpsvEnabled() {
+        return epsvEnabled;
+    }
+
+    public void setEpsvEnabled(boolean epsvEnabled) {
+        this.epsvEnabled = epsvEnabled;
+    }
+
+    public boolean isEprtEnabled() {
+        return eprtEnabled;
+    }
+
+    public void setEprtEnabled(boolean eprtEnabled) {
+        this.eprtEnabled = eprtEnabled;
     }
 
     public String makeSelectedTypesResponse(FileUtil.Gen gen) {

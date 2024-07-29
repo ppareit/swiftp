@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
 
@@ -87,6 +88,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 }
                 byte[] buffer = new byte[SessionThread.DATA_CHUNK_SIZE];
                 int bytesRead;
+                if (FsSettings.isEarly150Enabled()) sessionThread.writeString("150 Sending file\r\n");
                 if (sessionThread.openDataSocket()) {
                     Cat.d("RETR opened data socket");
                 } else {
@@ -94,7 +96,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
                     Cat.i("Error in initDataSocket()");
                     break mainblock;
                 }
-                sessionThread.writeString("150 Sending file\r\n");
+                if (!FsSettings.isEarly150Enabled()) sessionThread.writeString("150 Sending file\r\n");
                 if (sessionThread.isBinaryMode()) { // RANG is supported only in binary mode.
                     Cat.d("Transferring in binary mode");
                     long offset = 0L;

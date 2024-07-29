@@ -167,7 +167,6 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="write_external_storage_old_android_version_summary">En estos dispositivos, toda lo guardado está disponible utilizando la jerarquía de archivos.</string>
 
     <string name="battery_saver_setting_title">Ahorro de batería</string>
-    <string name="battery_saver_desc">NOTA: *Debe* reiniciar manualmente el servidor después de realizar el cambio.</string>
     <string name="bs_high">ALTO</string>
     <string name="bs_low">BAJO</string>
     <string name="bs_deep">PROFUNDO</string>
@@ -177,5 +176,38 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
 
     <string name="anon_max_conn">Conexiones simultáneas máximas</string>
     <string name="manage_anon_label">Administrar anónimo…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">Puertos…</string>
+    <string name="general_title">General…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">Mejoras de seguridad…</string>
+    <string name="port_number_label_data_low">Rango de número de puerto de datos bajo</string>
+    <string name="port_number_label_data_high">Rango de número de puerto de datos alto</string>
+    <string name="port_number_label_implicit">Número de puerto implícito FTPS</string>
+    <string name="enable_tls">Habilitar TLS</string>
+    <string name="enable_tls_implicit">Habilitar implícito</string>
+    <string name="enable_ssl">Habilitar SSL</string>
+    <string name="disable_plain_port">Usar solo implícito</string>
+    <string name="disable_plain_not_explicit">Utilice sólo implícito y explícito</string>
+    <string name="cert_keystore">Certificado: importar almacén de claves (jks)</string>
+    <string name="cert_trust_store">Certificado: importar almacén de confianza (bks)</string>
+    <string name="cert_pass">Certificado: contraseña</string>
+    <string name="cert_show_pass">Certificado: mostrar contraseña</string>
+    <string name="cert_use_client">Requerir certificado de cliente</string>
+    <string name="early_150_response">Solución alternativa de respuesta temprana 150</string>
+    <string name="ip_list_title">Permitir/denegar IP</string>
+    <string name="deny_until_allowed">Negar hasta que se permita</string>
+    <string name="manually_add_ip">Agregar IP manualmente</string>
+    <string name="deny_on_failed_logins">Denegar en 3 inicios de sesión fallidos</string>
+    <string name="clear_unused_ips">Borrar IP no utilizadas</string>
+    <string name="implicit_only_summary">Deshabilita el puerto simple</string>
+    <string name="implicit_explicit_only_summary">Solo habilita el cifrado</string>
+    <string name="disable_banner_title">Desactivar banner</string>
+    <string name="disable_feat_title">Deshabilitar FUNCIÓN</string>
+    <string name="disable_syst_title">Deshabilitar SISTEMA</string>
+    <string name="tls_limit_protocols_title">Limitar protocolos</string>
 </resources>
 

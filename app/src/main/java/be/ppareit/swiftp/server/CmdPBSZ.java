@@ -21,31 +21,25 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
-import be.ppareit.swiftp.FsSettings;
-import be.ppareit.swiftp.utils.Logging;
+public class CmdPBSZ extends FtpCmd implements Runnable {
+    private static final String TAG = CmdPBSZ.class.getSimpleName();
+    protected String input;
 
-public class CmdSYST extends FtpCmd implements Runnable {
-    private static final String TAG = CmdSYST.class.getSimpleName();
-
-    // This is considered a safe response to the SYST command, see
-    // http://cr.yp.to/ftp/syst.html
-    public static final String response = "215 UNIX Type: L8\r\n";
-
-    public CmdSYST(SessionThread sessionThread, String input) {
+    public CmdPBSZ(SessionThread sessionThread, String input) {
         super(sessionThread);
+        this.input = input;
     }
 
     @Override
     public void run() {
+        Log.d(TAG, "PBSZ executing");
+        String param = getParameter(input);
 
-        if (FsSettings.isSystDisabled()) {
-            new Logging().appendLog("SYST is disabled");
-            sessionThread.writeString("502 Command not implemented\r\n");
-            return;
-        }
+        if (!param.equals("0")) sessionThread.writeString("500 Invalid command\r\n");
 
-        Log.d(TAG, "SYST executing");
-        sessionThread.writeString(response);
-        Log.d(TAG, "SYST finished");
+        sessionThread.setPbszEnabled(true);
+        sessionThread.writeString("200 PBSZ command OK\r\n");
+
+        Log.d(TAG, "PBSZ success");
     }
 }

@@ -51,12 +51,10 @@ public class FsNotification {
         // get ip address
         InetAddress address = FsService.getLocalInetAddress();
         String ipText;
-        if (address == null) {
-            ipText = "-";
-        } else {
-            ipText = "ftp://" + address.getHostAddress() + ":"
-                    + FsSettings.getPortNumber() + "/";
-        }
+        if (address == null) ipText = "-";
+        else ipText = "ftp://" + address.getHostAddress() + ":" + FsSettings.getPortNumber();
+        if (FsSettings.isImplicitUsed()) ipText += ", " + FsSettings.getPortNumberImplicit();
+        ipText += "/";
 
         // Instantiate a Notification
         int icon = R.mipmap.notification;

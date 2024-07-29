@@ -195,7 +195,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="write_external_storage_old_android_version_summary">Në këto pajisje, e gjithë dyqani është në dispozicion duke përdorur hierarkinë e skedarit.</string>
 
     <string name="battery_saver_setting_title">Kursuesi i baterisë</string>
-    <string name="battery_saver_desc">SHËNIM: *Duhet* të rinisni manualisht serverin pas ndryshimit.</string>
     <string name="bs_high">I LARTË</string>
     <string name="bs_low">I ULËT</string>
     <string name="bs_deep">THELLË</string>
@@ -205,4 +204,37 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="anon_max_conn">Lidhjet maksimale të njëkohshme</string>
     <string name="manage_anon_label">Menaxho anonim…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">Portet…</string>
+    <string name="general_title">Gjenerali…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">Përmirësimet e sigurisë…</string>
+    <string name="port_number_label_data_low">Gama e numrit të portës së të dhënave është e ulët</string>
+    <string name="port_number_label_data_high">Gama e numrit të portës së të dhënave është e lartë</string>
+    <string name="port_number_label_implicit">Numri i portit të nënkuptuar FTPS</string>
+    <string name="enable_tls">Aktivizo TLS</string>
+    <string name="enable_tls_implicit">Aktivizo të nënkuptuar</string>
+    <string name="enable_ssl">Aktivizo SSL</string>
+    <string name="disable_plain_port">Përdorni vetëm të nënkuptuar</string>
+    <string name="disable_plain_not_explicit">Përdorni vetëm të nënkuptuar dhe të qartë</string>
+    <string name="cert_keystore">Certifikata: importo dyqan çelësash (jks)</string>
+    <string name="cert_trust_store">Certifikata: dyqani i besimit të importit (bks)</string>
+    <string name="cert_pass">Certifikata: fjalëkalimi</string>
+    <string name="cert_show_pass">Certifikata: tregoni fjalëkalimin</string>
+    <string name="cert_use_client">Kërkohet certifikata e klientit</string>
+    <string name="early_150_response">Zgjidhja e hershme e përgjigjes 150</string>
+    <string name="ip_list_title">Lejo/refuzo IP-të</string>
+    <string name="deny_until_allowed">Moho deri sa të lejohet</string>
+    <string name="manually_add_ip">Shtoni manualisht IP</string>
+    <string name="deny_on_failed_logins">Refuzoni 3 hyrje të dështuara</string>
+    <string name="clear_unused_ips">Pastro IP-të e papërdorura</string>
+    <string name="implicit_only_summary">Çaktivizon portin e thjeshtë</string>
+    <string name="implicit_explicit_only_summary">Aktivizon vetëm enkriptimin</string>
+    <string name="disable_banner_title">Çaktivizo bannerin</string>
+    <string name="disable_feat_title">Çaktivizo FEAT</string>
+    <string name="disable_syst_title">Çaktivizo SYST</string>
+    <string name="tls_limit_protocols_title">Limit protokollet</string>
 </resources>

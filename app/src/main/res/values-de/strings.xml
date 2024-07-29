@@ -90,7 +90,6 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
     <string name="app_theme">Thema...</string>
 
     <string name="battery_saver_setting_title">Batteriesparmodus</string>
-    <string name="battery_saver_desc">HINWEIS: Sie *müssen* den Server nach der Änderung manuell neu starten.</string>
     <string name="bs_high">HOCH</string>
     <string name="bs_low">NIEDRIG</string>
     <string name="bs_deep">TIEF</string>
@@ -100,4 +99,37 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
 
     <string name="anon_max_conn">Max. gleichzeitige Verbindungen</string>
     <string name="manage_anon_label">Anonym verwalten…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">Ports…</string>
+    <string name="general_title">Allgemein…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">Sicherheitsverbesserungen…</string>
+    <string name="port_number_label_data_low">Datenportnummernbereich niedrig</string>
+    <string name="port_number_label_data_high">Datenportnummernbereich hoch</string>
+    <string name="port_number_label_implicit">Implizite FTP-Portnummer</string>
+    <string name="enable_tls">TLS aktivieren</string>
+    <string name="enable_tls_implicit">Implizit aktivieren</string>
+    <string name="enable_ssl">SSL aktivieren</string>
+    <string name="disable_plain_port">Nur implizit verwenden</string>
+    <string name="disable_plain_not_explicit">Nur implizit und explizit verwenden</string>
+    <string name="cert_keystore">Zertifikat: Keystore importieren (jks)</string>
+    <string name="cert_trust_store">Zertifikat: Trust Store importieren (bks)</string>
+    <string name="cert_pass">Zertifikat: Passwort</string>
+    <string name="cert_show_pass">Zertifikat: Passwort anzeigen</string>
+    <string name="cert_use_client">Client-Zertifikat erforderlich</string>
+    <string name="early_150_response">Workaround für frühe 150-Antwort</string>
+    <string name="ip_list_title">IPs zulassen/verweigern</string>
+    <string name="deny_until_allowed">Verweigern bis erlaubt</string>
+    <string name="manually_add_ip">IP manuell hinzufügen</string>
+    <string name="deny_on_failed_logins">Verweigern bei 3 fehlgeschlagenen Anmeldungen</string>
+    <string name="clear_unused_ips">Nicht verwendete IPs löschen</string>
+    <string name="implicit_only_summary">Deaktiviert einfachen Port</string>
+    <string name="implicit_explicit_only_summary">Aktiviert nur Verschlüsselung</string>
+    <string name="disable_banner_title">Banner deaktivieren</string>
+    <string name="disable_feat_title">FEAT deaktivieren</string>
+    <string name="disable_syst_title">SYST deaktivieren</string>
+    <string name="tls_limit_protocols_title">Protokolle begrenzen</string>
 </resources>

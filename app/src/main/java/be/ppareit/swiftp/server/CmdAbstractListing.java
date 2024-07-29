@@ -36,6 +36,7 @@ import java.util.Comparator;
 
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
+import be.ppareit.swiftp.FsSettings;
 
 public abstract class CmdAbstractListing extends FtpCmd {
     // TODO: .class.getSimpleName() from abstract class?
@@ -274,16 +275,15 @@ public abstract class CmdAbstractListing extends FtpCmd {
     // Send the directory listing over the data socket. Used by CmdLIST and CmdNLST.
     // Returns an error string on failure, or returns null if successful.
     protected String sendListing(String listing) {
+        final boolean early150 = FsSettings.isEarly150Enabled();
+        if (early150) send150Response();
         if (sessionThread.openDataSocket()) {
             Log.d(TAG, "LIST/NLST done making socket");
         } else {
             sessionThread.closeDataSocket();
             return "425 Error opening data socket\r\n";
         }
-        String mode = sessionThread.isBinaryMode() ? "BINARY" : "ASCII";
-        sessionThread.writeString("150 Opening " + mode
-                + " mode data connection for file list\r\n");
-        Log.d(TAG, "Sent code 150, sending listing string now");
+        if (!early150) send150Response();
         if (!sessionThread.sendViaDataSocket(listing)) {
             Log.d(TAG, "sendViaDataSocket failure");
             sessionThread.closeDataSocket();
@@ -293,6 +293,13 @@ public abstract class CmdAbstractListing extends FtpCmd {
         Log.d(TAG, "Listing sendViaDataSocket success");
         sessionThread.writeString("226 Data transmission OK\r\n");
         return null;
+    }
+
+    private void send150Response() {
+        String mode = sessionThread.isBinaryMode() ? "BINARY" : "ASCII";
+        sessionThread.writeString("150 Opening " + mode
+                + " mode data connection for file list\r\n");
+        Log.d(TAG, "Sent code 150, sending listing string now");
     }
 
     /**

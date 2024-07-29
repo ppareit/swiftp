@@ -166,7 +166,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="write_external_storage_old_android_version_summary">На цих пристроях вся пам\'ять доступна за допомогою ієрархії файлів.</string>
 
     <string name="battery_saver_setting_title">Економія батареї</string>
-    <string name="battery_saver_desc">ПРИМІТКА. Ви *потрібно* вручну перезапустити сервер після зміни.</string>
     <string name="bs_high">ВИСОКА</string>
     <string name="bs_low">НИЗЬКИЙ</string>
     <string name="bs_deep">ГЛИБОКИЙ</string>
@@ -176,4 +175,37 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="anon_max_conn">Максимальна кількість одночасних підключень</string>
     <string name="manage_anon_label">Керувати анонімно…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">Порти…</string>
+    <string name="general_title">Загальні…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">Покращення безпеки…</string>
+    <string name="port_number_label_data_low">Низький діапазон номерів портів даних</string>
+    <string name="port_number_label_data_high">Високий діапазон номерів портів даних</string>
+    <string name="port_number_label_implicit">Неявний номер порту FTPS</string>
+    <string name="enable_tls">Увімкнути TLS</string>
+    <string name="enable_tls_implicit">Увімкнути неявний</string>
+    <string name="enable_ssl">Увімкніть SSL</string>
+    <string name="disable_plain_port">Використовуйте лише неявні</string>
+    <string name="disable_plain_not_explicit">Використовуйте лише неявні та явні</string>
+    <string name="cert_keystore">Сертифікат: імпортувати сховище ключів (jks)</string>
+    <string name="cert_trust_store">Сертифікат: імпорт довіреного сховища (bks)</string>
+    <string name="cert_pass">Сертифікат: пароль</string>
+    <string name="cert_show_pass">Сертифікат: показати пароль</string>
+    <string name="cert_use_client">Вимагати сертифікат клієнта</string>
+    <string name="early_150_response">Обхідний шлях ранньої відповіді 150</string>
+    <string name="ip_list_title">Дозволити/заборонити IP-адреси</string>
+    <string name="deny_until_allowed">Відмовляти, поки не дозволено</string>
+    <string name="manually_add_ip">Додайте IP вручну</string>
+    <string name="deny_on_failed_logins">Заборонити 3 невдалих входу</string>
+    <string name="clear_unused_ips">Очистити невикористані IP-адреси</string>
+    <string name="implicit_only_summary">Відключає простий порт</string>
+    <string name="implicit_explicit_only_summary">Вмикає лише шифрування</string>
+    <string name="disable_banner_title">Вимкнути банер</string>
+    <string name="disable_feat_title">Вимкнути FEAT</string>
+    <string name="disable_syst_title">Вимкнути SYST</string>
+    <string name="tls_limit_protocols_title">Лімітні протоколи</string>
 </resources>

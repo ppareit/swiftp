@@ -56,6 +56,11 @@ public class CmdPORT extends FtpCmd implements Runnable {
                     break mainBlock;
                 }
             }
+            if (sessionThread.isEprtEnabled()) {
+                Log.e(TAG, "Failed to use PORT: EPRT already in use.");
+                sessionThread.writeString("500 EPRT already in use.\r\n");
+                break mainBlock;
+            }
             byte[] ipBytes = new byte[4];
             for (int i = 0; i < 4; i++) {
                 try {

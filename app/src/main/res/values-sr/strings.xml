@@ -128,7 +128,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="app_theme">Тема...</string>
 
     <string name="battery_saver_setting_title">Уштеда батерије</string>
-    <string name="battery_saver_desc">НАПОМЕНА: *морате* ручно поново покренути сервер након промене.</string>
     <string name="bs_high">ХИГХ</string>
     <string name="bs_low">ЛОВ</string>
     <string name="bs_deep">ДУБОКО</string>
@@ -138,4 +137,37 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="anon_max_conn">Максимално истовремене везе</string>
     <string name="manage_anon_label">Управљајте анонимно…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">Луке…</string>
+    <string name="general_title">Генерал…</string>
+    <string name="ftps_title">ФТПС…</string>
+    <string name="security_section_title">Сигурносна побољшања…</string>
+    <string name="port_number_label_data_low">Низак опсег броја портова података</string>
+    <string name="port_number_label_data_high">Висок опсег броја портова података</string>
+    <string name="port_number_label_implicit">ФТПС имплицитни број порта</string>
+    <string name="enable_tls">Омогући ТЛС</string>
+    <string name="enable_tls_implicit">Омогући имплицитно</string>
+    <string name="enable_ssl">Омогући ССЛ</string>
+    <string name="disable_plain_port">Користите само имплицитно</string>
+    <string name="disable_plain_not_explicit">Користите само имплицитно и експлицитно</string>
+    <string name="cert_keystore">Сертификат: увоз кључева (јкс)</string>
+    <string name="cert_trust_store">Сертификат: увозна продавница поверења (бкс)</string>
+    <string name="cert_pass">Сертификат: лозинка</string>
+    <string name="cert_show_pass">Сертификат: прикажи лозинку</string>
+    <string name="cert_use_client">Захтевајте сертификат клијента</string>
+    <string name="early_150_response">Заобилазно решење за ране 150 одговора</string>
+    <string name="ip_list_title">Дозволи/одбиј ИП-ове</string>
+    <string name="deny_until_allowed">Одбити док се не дозволи</string>
+    <string name="manually_add_ip">Ручно додајте ИП</string>
+    <string name="deny_on_failed_logins">Одбиј на 3 неуспела пријављивања</string>
+    <string name="clear_unused_ips">Обришите неискоришћене ИП адресе</string>
+    <string name="implicit_only_summary">Онемогућава обичан порт</string>
+    <string name="implicit_explicit_only_summary">Омогућава само шифровање</string>
+    <string name="disable_banner_title">Онемогући банер</string>
+    <string name="disable_feat_title">Онемогући ФЕАТ</string>
+    <string name="disable_syst_title">Онемогући СИСТ</string>
+    <string name="tls_limit_protocols_title">Лимит протоколи</string>
 </resources>
