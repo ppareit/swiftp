@@ -302,9 +302,12 @@ public class FsService extends Service implements Runnable {
             // @TODO: when using ethernet, is it needed to take wifi lock?
             takeWifiLock();
             takeWakeLock();
+            useConnWakeLocks = false;
         } else if (batterySaver == 1) {
             useConnWakeLocks = true;
             initializeConnWakeLocks();
+        } else {
+            useConnWakeLocks = false;
         }
 
         // A socket is open now, so the FTP server is started, notify rest of world
