@@ -37,22 +37,33 @@ import android.os.Handler;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
+import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.TwoStatePreference;
+import android.text.InputType;
 import android.text.util.Linkify;
+import android.util.ArraySet;
+import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.documentfile.provider.DocumentFile;
 
 import net.vrallev.android.cat.Cat;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import be.ppareit.android.DynamicMultiSelectListPreference;
 import be.ppareit.swiftp.App;
@@ -61,6 +72,7 @@ import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.server.FtpUser;
+import be.ppareit.swiftp.utils.FTPSSockets;
 
 import be.ppareit.swiftp.utils.Logging;
 
@@ -72,6 +84,10 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
 
     private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
     private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
+    private static final int PICK_CERT_FILE_JKS = 84;
+    private static final int PICK_CERT_FILE_BKS = 85;
+
+    private static final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
 
     private DynamicMultiSelectListPreference mAutoconnectListPref;
     private Handler mHandler = new Handler();
@@ -142,13 +158,13 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                 return false;
             }
             preference.setSummary(newPortNumberString);
-            FsService.stop();
+            FsService.restart();
             return true;
         });
 
         final CheckBoxPreference wakelockPref = findPref("stayAwake");
         wakelockPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            FsService.stop();
+            FsService.restart();
             return true;
         });
 
@@ -187,7 +203,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
         }
         batterySaver.setTitle("Battery saver");
         final String bSumSelection = FsSettings.getBatterySaverChoice(null) + '\n';
-        final String bSum = bSumSelection + getString(R.string.battery_saver_desc);
+        final String bSum = bSumSelection;
         batterySaver.setSummary(bSum);
         batterySaver.setOnPreferenceChangeListener((preference, newValue) -> {
             if (Integer.parseInt((String) newValue) > 1) {
@@ -198,8 +214,9 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             }
             final String bSumSelection2 = FsSettings.getBatterySaverChoice(
                     (String) newValue) + '\n';
-            final String bSum2 = bSumSelection2 + getString(R.string.battery_saver_desc);
+            final String bSum2 = bSumSelection2;
             batterySaver.setSummary(bSum2);
+            FsService.restart();
             return true;
         });
 
@@ -285,6 +302,404 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
             return true;
         });
 
+        // Used to set the low side of the port range for data connections.
+        // Set both low and high to empty or 0 to use random.
+        EditTextPreference pasvRangeLow = findPref("portRangePasvLow");
+        pasvRangeLow.setOnPreferenceChangeListener((preference, newValue) -> {
+            String lowDefault = getContext().getString(R.string.portnumber_default_pasv_low);
+            preference.setSummary(checkNewPortValue((String) newValue, lowDefault));
+            return true;
+        });
+        pasvRangeLow.setSummary(FsSettings.getPortRangeLowString());
+
+        // Used to set the high side of the port range for data connections.
+        // Set both low and high to empty or 0 to use random.
+        EditTextPreference pasvRangeHigh = findPref("portRangePasvHigh");
+        pasvRangeHigh.setOnPreferenceChangeListener((preference, newValue) -> {
+            String highDefault = getContext().getString(R.string.portnumber_default_pasv_high);
+            preference.setSummary(checkNewPortValue((String) newValue, highDefault));
+            return true;
+        });
+        pasvRangeHigh.setSummary(FsSettings.getPortRangeHighString());
+
+        // Allows user to choos the TLS implicit port
+        EditTextPreference impicitPort = findPref("portNumImplicit");
+        String implicitPortDefault = getContext().getString(R.string.portnumber_default_implicit);
+        impicitPort.setOnPreferenceChangeListener((preference, newValue) -> {
+            String iport = (String) newValue;
+            if (iport.isEmpty()) iport = implicitPortDefault;
+            preference.setSummary(iport);
+            CheckBoxPreference enableImplicit = findPref("enableImplicitPort");
+            if (enableImplicit.isChecked()) enableImplicit.setSummary((String) newValue);
+            FsService.restart();
+            return true;
+        });
+        impicitPort.setSummary(FsSettings.getImplicitPortString());
+
+        // Enables use of the TLS implicit port so that users can keep this port disabled if not using it.
+        CheckBoxPreference enableImplicit = findPref("enableImplicitPort");
+        enableImplicit.setOnPreferenceChangeListener((preference, newValue) -> {
+            if ((boolean) newValue) {
+                String pni = FsSettings.getImplicitPortString();
+                preference.setSummary(pni);
+            } else {
+                preference.setSummary("Use explicit");
+            }
+            FsService.restart();
+            return true;
+        });
+        String enableImplicitSum = FsSettings.getImplicitPortString();
+        if (enableImplicitSum.isEmpty()) enableImplicitSum = "Use explicit";
+        else enableImplicit.setSummary(enableImplicitSum);
+        enableImplicit.setSummary(enableImplicitSum);
+
+        // Allows the user to import the keystore certificate
+        CheckBoxPreference certKeystore = findPref("certKeyStore");
+        certKeystore.setOnPreferenceChangeListener((preference, newValue) -> {
+            if ((boolean) newValue) {
+                startIntentForCertificateFile(PICK_CERT_FILE_JKS);
+            } else {
+                FTPSSockets.deleteKeyStore();
+                certKeystore.setSummary(getString(R.string.found_x));
+                EditTextPreference certPass = findPref("certPassword");
+                String passSum = certPass.getSummary().toString();
+                if (passSum.contains(getString(R.string.found_check_green))) {
+                    passSum = passSum.replace(getString(R.string.found_check_green),
+                            getString(R.string.found_check));
+                }
+                certPass.setSummary(passSum);
+                FsService.restart();
+            }
+            return true;
+        });
+        if (isCertFileFound("storej.jks")) {
+            certKeystore.setSummary(getString(R.string.found_check));
+        } else {
+            certKeystore.setChecked(false);
+            certKeystore.setSummary(getString(R.string.found_x));
+        }
+
+        // Allows the user to import the trust store certificate
+        CheckBoxPreference certTrustStore = findPref("certTrustStore");
+        certTrustStore.setOnPreferenceChangeListener((preference, newValue) -> {
+            if ((boolean) newValue) {
+                startIntentForCertificateFile(PICK_CERT_FILE_BKS);
+            } else {
+                FTPSSockets.deleteTrustStore();
+                certTrustStore.setSummary(getString(R.string.found_x));
+                FsService.restart();
+            }
+            return true;
+        });
+        if (isCertFileFound("storeb.bks")) {
+            certTrustStore.setSummary(getString(R.string.found_check));
+        } else {
+            certTrustStore.setChecked(false);
+            certTrustStore.setSummary(getString(R.string.found_x));
+        }
+
+        // Allows user to input the certificate password
+        boolean keyCertGood = FTPSSockets.checkKeyStore();
+        boolean trustCertGood = FTPSSockets.checkTrustStore();
+        String certCheckS = getString(R.string.found_check_green);
+        EditTextPreference certPass = findPref("certPassword");
+        certPass.setSummary(sp.getString("certPassStar", ""));
+        certPass.setOnPreferenceChangeListener((preference, newValue) -> {
+            String pass = (String) newValue;
+            FTPSSockets.putCertPass(pass);
+
+            boolean keyCertGood2 = FTPSSockets.checkKeyStore();
+            boolean trustCertGood2 = FTPSSockets.checkTrustStore();
+            if (keyCertGood2) certKeystore.setSummary(certCheckS);
+            if (trustCertGood2) certTrustStore.setSummary(certCheckS);
+            else certTrustStore.setSummary(getString(R.string.found_check));
+
+            StringBuilder sHidden = new StringBuilder();
+            for (int i = 0; i < pass.length(); i++) {
+                sHidden.append("*");
+            }
+            sp.edit().putString("certPassStar", sHidden.toString()).apply();
+            certPass.setText(""); // Don't keep here. It goes to encrypted pref. Show can add back.
+            if (keyCertGood2) {
+                certPass.setSummary(certCheckS + " " + sHidden);
+            } else {
+                certPass.setSummary(getString(R.string.found_check) + " " + sHidden);
+                certKeystore.setSummary(getString(R.string.found_check));
+            }
+            FsService.restart();
+            return true;
+        });
+        if (keyCertGood) {
+            certKeystore.setSummary(certCheckS);
+            String currentCertPassS = "";
+            if (certPass.getSummary() != null) currentCertPassS = certPass.getSummary().toString();
+            certPass.setSummary(certCheckS + " " + currentCertPassS);
+        } else {
+            certPass.setSummary(getString(R.string.found_check) + " " + sp.getString("certPassStar", ""));
+        }
+        if (trustCertGood) {
+            certTrustStore.setSummary(certCheckS);
+        }
+
+        // Shows and hides the certificate password in the UI as well as scrubbing from plain text.
+        CheckBoxPreference certShowPass = findPref("certShowPassword");
+        certShowPass.setOnPreferenceChangeListener((preference, newValue) -> {
+            String checkMark;
+            if (FTPSSockets.checkKeyStore()) checkMark = certCheckS;
+            else if (FTPSSockets.getCertPass().length > 0)
+                checkMark = getString(R.string.found_check);
+            else checkMark = getString(R.string.found_x);
+            if ((boolean) newValue) {
+                certPass.setSummary(checkMark + " " + new String(FTPSSockets.getCertPass()));
+                certPass.setText(new String(FTPSSockets.getCertPass()));
+                certPass.getEditText().setInputType(EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            } else {
+                certPass.setSummary(checkMark + " " + sp.getString("certPassStar", ""));
+                certPass.setText("");
+                certPass.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            }
+            return true;
+        });
+        certShowPass.setChecked(false); // Default is hidden so keep it correctly checked.
+
+        // Enables need of the client certificate.
+        CheckBoxPreference useClientCert = findPref("useClientCert");
+        if (Build.VERSION.SDK_INT <= 23) {
+            // Don't enable on Android 6 to avoid confusion there.
+            useClientCert.setChecked(false);
+            useClientCert.setEnabled(false);
+        }
+        useClientCert.setOnPreferenceChangeListener((preference, newValue) -> {
+            FsService.restart();
+            return true;
+        });
+
+        // The allow/deny list where users can select to allow or deny IPs.
+        MultiSelectListPreference ipList = findPref("ip_list");
+        Set<String> list = FsSettings.getIPList();
+        Set<String> allowList = FsSettings.getAllowList();
+        CharSequence[] cs = new CharSequence[0];
+        cs = list.toArray(cs);
+        Arrays.sort(cs);
+        ipList.setEntries(cs);
+        ipList.setEntryValues(cs);
+        ipList.setDefaultValue(allowList);
+        ipList.setOnPreferenceChangeListener((preference, newValue) -> {
+            HashSet<CharSequence> csNew = (HashSet<CharSequence>) newValue;
+            Set<String> failList = FsSettings.getFailList();
+            Set<String> newList = new ArraySet<>();
+            newList.addAll(failList);
+            boolean failListSave = false;
+            ArraySet<String> allows = new ArraySet<>();
+            for (CharSequence newValueCS : csNew) {
+                String newValueS = newValueCS.toString();
+                allows.add(newValueS);
+                if (!failList.isEmpty() && failList.contains(newValueS)) {
+                    // Its being allowed so remove from fail list
+                    newList.remove(newValueS);
+                    failListSave = true;
+                }
+            }
+            if (failListSave) FsSettings.putFailList(newList);
+            putAllowList(allows);
+            return true;
+        });
+
+        // Helps the list to get updated without recreating the UI.
+        PreferenceScreen prefScreenAdvanced = findPref("preference_screen_advanced");
+        prefScreenAdvanced.setOnPreferenceClickListener(preference -> {
+            updateIPListWithChangesFromOtherSettings();
+            return true;
+        });
+
+        // Allows user to manually add an IP or a small to large group of IPs using *.
+        EditTextPreference manualAddIP = findPref("manuallyAddIP");
+        manualAddIP.setOnPreferenceChangeListener((preference, newValue) -> {
+            Set<String> list2 = FsSettings.getIPList();
+            Set<String> newList = new ArraySet<>();
+            String address = (String) newValue;
+            if (address.isEmpty()) return true; // don't allow empty
+            if (!list2.contains(address)) {
+                char c = address.charAt(0);
+                if (Character.isLetterOrDigit(c)) address = File.separator + address;
+                newList.add(address);
+                newList.addAll(list2);
+                FsSettings.putIPList(newList);
+                updateIPListWithChangesFromOtherSettings();
+            }
+            return true;
+        });
+
+        // Clears all IPs from the allow/deny list that are not selected as allowed.
+        CheckBoxPreference clearUnusedIPs = findPref("clearUnusedIPs");
+        clearUnusedIPs.setOnPreferenceChangeListener((preference, newValue) -> {
+            if ((boolean) newValue) {
+                // Can simply replace with the allow list as that's all that will be left
+                Set<String> allowList1 = FsSettings.getAllowList();
+                FsSettings.putIPList(allowList1);
+                updateIPListWithChangesFromOtherSettings();
+            }
+            new Handler().postDelayed(() -> clearUnusedIPs.setChecked(false), 1000);
+            return true;
+        });
+
+        // Deny all IPs except for ones that are user selected as allowed.
+        CheckBoxPreference denyUntil = findPref("denyUntilAllowed");
+        denyUntil.setOnPreferenceChangeListener((preference, newValue) -> {
+            CheckBoxPreference denyOnFailed = findPref("denyOnFailedLogins");
+            if ((boolean) newValue) {
+                denyOnFailed.setChecked(false);
+                denyOnFailed.setEnabled(false);
+            } else {
+                denyOnFailed.setChecked(false);
+                denyOnFailed.setEnabled(true);
+            }
+            return true;
+        });
+        if (denyUntil.isChecked()) {
+            CheckBoxPreference denyOnFailed = findPref("denyOnFailedLogins");
+            denyOnFailed.setChecked(false);
+            denyOnFailed.setEnabled(false);
+        }
+
+        // Deny IPs when they fail on username or password too many times.
+        CheckBoxPreference denyOnFailed = findPref("denyOnFailedLogins");
+        denyOnFailed.setOnPreferenceChangeListener((preference, newValue) -> {
+            if ((boolean) newValue) {
+                denyUntil.setChecked(false);
+                denyUntil.setEnabled(false);
+            } else {
+                denyUntil.setChecked(false);
+                denyUntil.setEnabled(true);
+            }
+            return true;
+        });
+        if (denyOnFailed.isChecked()) {
+            denyUntil.setChecked(false);
+            denyUntil.setEnabled(false);
+        }
+
+        // Used to require TLS implicit only
+        CheckBoxPreference disablePlainPort = findPref("disablePlainPort");
+        disablePlainPort.setOnPreferenceChangeListener((preference, newValue) -> {
+            CheckBoxPreference disablePlainNotExplicit = findPref("disablePlainNotExplicit");
+            if ((boolean) newValue) {
+                disablePlainNotExplicit.setChecked(false);
+                disablePlainNotExplicit.setEnabled(false);
+            } else {
+                disablePlainNotExplicit.setChecked(false);
+                disablePlainNotExplicit.setEnabled(true);
+            }
+            FsService.restart();
+            return true;
+        });
+        if (disablePlainPort.isChecked()) {
+            CheckBoxPreference disablePlainNotExplicit = findPref("disablePlainNotExplicit");
+            disablePlainNotExplicit.setChecked(false);
+            disablePlainNotExplicit.setEnabled(false);
+        }
+
+        // Used to disable plain connections but allow TLS explicit connections. Explicit starts off
+        // as a plain connection.
+        CheckBoxPreference disablePlainNotExplicit = findPref("disablePlainNotExplicit");
+        disablePlainNotExplicit.setOnPreferenceChangeListener((preference, newValue) -> {
+            if ((boolean) newValue) {
+                disablePlainPort.setChecked(false);
+                disablePlainPort.setEnabled(false);
+            } else {
+                disablePlainPort.setChecked(false);
+                disablePlainPort.setEnabled(true);
+            }
+            FsService.restart();
+            return true;
+        });
+        if (disablePlainNotExplicit.isChecked()) {
+            disablePlainPort.setChecked(false);
+            disablePlainPort.setEnabled(false);
+        }
+
+        MultiSelectListPreference limitTLSProtocols = findPref("limitTLSProtocols");
+        final CharSequence[] tlsProtocols = FTPSSockets.getSupportedProtocols();
+        limitTLSProtocols.setEntries(tlsProtocols);
+        limitTLSProtocols.setEntryValues(tlsProtocols);
+        limitTLSProtocols.setOnPreferenceChangeListener((preference, newValue) -> {
+            HashSet<CharSequence> csNew = (HashSet<CharSequence>) newValue;
+            Set<String> newList = new ArraySet<>();
+            for (CharSequence newValueCS : csNew) {
+                String newValueS = newValueCS.toString();
+                newList.add(newValueS);
+            }
+            putProtocolList(newList);
+            FsService.restart();
+            return true;
+        });
+    }
+
+    /*
+     * Checks if the internal copy of the TLS certificate is found.
+     * */
+    private boolean isCertFileFound(String filename) {
+        try {
+            File cacheFile = new File(App.getAppContext().getCacheDir(), filename);
+            long fileSize = cacheFile.length();
+            return fileSize != 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /*
+     * Basically a validation of the port.
+     * 0 value can be used to return back to random.
+     * */
+    private String checkNewPortValue(String newValue, String defaultPortValue) {
+        String port = newValue;
+        if (port.isEmpty()) port = defaultPortValue;
+        int high = Integer.parseInt(port);
+        if (high < 0) port = "0"; // Negatives are not ever valid.
+        return port;
+    }
+
+    /*
+    * Keeping private.
+    * Puts reworked set to FTPS allow deny list.
+    * */
+    private void putAllowList(Set<String> newList) {
+        sp.edit().putStringSet("AllowIPs", newList).apply();
+    }
+
+    /*
+     * Keeping private.
+     * Puts reworked set to FTPS protocol list.
+     * */
+    private void putProtocolList(Set<String> newList) {
+        sp.edit().putStringSet("FTPSProtocolList", newList).apply();
+    }
+
+    /*
+     * Updates the allow/deny list pref. For use after other settings have made changes.
+     * Eg Manually add an IP to the list from another setting. Have to then upload the list pref here.
+     * */
+    private void updateIPListWithChangesFromOtherSettings() {
+        MultiSelectListPreference ipList1 = findPref("ip_list");
+        Set<String> list1 = FsSettings.getIPList();
+        Set<String> allowList1 = FsSettings.getAllowList();
+        CharSequence[] cs1 = new CharSequence[0];
+        cs1 = list1.toArray(cs1);
+        Arrays.sort(cs1);
+        ipList1.setEntries(cs1);
+        ipList1.setEntryValues(cs1);
+        ipList1.setDefaultValue(allowList1);
+    }
+
+    /*
+     * Opens the Android file picker for importing the user provided TLS certificate.
+     * */
+    private void startIntentForCertificateFile(int requestCode) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        startActivityForResult(intent, requestCode);
     }
 
     /*
@@ -374,6 +789,77 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                 }
                 writeExternalStoragePref.setChecked(true);
             }
+        } else if (requestCode == PICK_CERT_FILE_JKS && resultCode == Activity.RESULT_OK) {
+            Uri uri = resultData.getData();
+            if (uri == null) return;
+            importCertFromIntentResult(uri, "storej.jks", "certKeyStore");
+        } else if (requestCode == PICK_CERT_FILE_BKS && resultCode == Activity.RESULT_OK) {
+            Uri uri = resultData.getData();
+            if (uri == null) return;
+            importCertFromIntentResult(uri, "storeb.bks", "certTrustStore");
+        }
+    }
+
+    /*
+     * Imports the user provided certificate file, tests it, and provides visual working state.
+     * */
+    private void importCertFromIntentResult(Uri uri, String certFilename, String certPrefKey) {
+        importCertFile(uri, certFilename);
+        CheckBoxPreference certPref = findPref(certPrefKey);
+        if (isCertFileFound(certFilename)) {
+            certPref.setSummary(getString(R.string.found_check));
+            if (FTPSSockets.getCertPass().length > 0) {
+                if (FTPSSockets.checkTrustStore()) {
+                    certPref.setSummary(getString(R.string.found_check_green));
+                    if (FTPSSockets.checkKeyStore()) {
+                        EditTextPreference certPass = findPref("certPassword");
+                        String s = certPass.getSummary().toString();
+                        s = getString(R.string.found_check_green) + s.substring(1);
+                        certPass.setSummary(s);
+                    }
+                }
+            }
+            FsService.restart();
+        } else {
+            certPref.setChecked(false);
+            certPref.setSummary(getString(R.string.found_x));
+        }
+    }
+
+    /*
+     * Copies the user provided certificate file to app cache
+     * Just going to do on UI thread as responsiveness is great. Only a small amount of kb.
+     * */
+    private void importCertFile(Uri uri, String filename) {
+        FileOutputStream fos = null;
+        BufferedInputStream br = null;
+        try (InputStream is = App.getAppContext().getContentResolver().openInputStream(uri)) {
+            br = new BufferedInputStream(is);
+            File cacheFile = new File(App.getAppContext().getCacheDir(), filename);
+            fos = new FileOutputStream(cacheFile);
+            byte[] buffer = new byte[1024];
+            int count;
+            while ((count = br.read(buffer)) != -1) {
+                fos.write(buffer, 0, count);
+            }
+            br.close();
+        } catch (Exception e) {
+            //
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    //
+                }
+            }
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    //
+                }
+            }
         }
     }
 
@@ -415,8 +901,9 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
                 runningPref.setSummary(R.string.running_summary_failed_to_get_ip_address);
                 return;
             }
-            String ipText = "ftp://" + address.getHostAddress() + ":"
-                    + FsSettings.getPortNumber() + "/";
+            String ipText = "ftp://" + address.getHostAddress() + ":" + FsSettings.getPortNumber();
+            if (FsSettings.isImplicitUsed()) ipText += ", " + FsSettings.getPortNumberImplicit();
+            ipText += "/";
             String summary = res.getString(R.string.running_summary_started, ipText);
             runningPref.setSummary(summary);
         } else {

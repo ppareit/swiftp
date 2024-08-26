@@ -34,6 +34,11 @@ public class CmdPASV extends FtpCmd implements Runnable {
     public void run() {
         String cantOpen = "502 Couldn't open a port\r\n";
         Log.d(TAG, "PASV running");
+        if (sessionThread.isEpsvEnabled()) {
+            Log.e(TAG, "EPSV already in use.");
+            sessionThread.writeString("500 EPSV already in use.\r\n");
+            return;
+        }
         int port;
         if ((port = sessionThread.onPasv()) == 0) {
             // There was a problem opening a port

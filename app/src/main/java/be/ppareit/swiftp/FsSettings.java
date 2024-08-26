@@ -26,6 +26,7 @@ import android.content.SharedPreferences;
 import android.content.UriPermission;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.util.ArraySet;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -36,6 +37,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import be.ppareit.swiftp.server.FtpUser;
 import be.ppareit.swiftp.utils.FileUtil;
@@ -43,10 +45,10 @@ import be.ppareit.swiftp.utils.FileUtil;
 public class FsSettings {
 
     private final static String TAG = FsSettings.class.getSimpleName();
+    private static final SharedPreferences sp = getSharedPreferences();
 
     public static List<FtpUser> getUsers() {
         final Context context = App.getAppContext();
-        final SharedPreferences sp = getSharedPreferences();
         if (sp.contains("users")) {
             Gson gson = new Gson();
             Type listType = new TypeToken<List<FtpUser>>() {
@@ -82,7 +84,6 @@ public class FsSettings {
         if (getUser(user.getUsername()) != null) {
             throw new IllegalArgumentException("User already exists");
         }
-        SharedPreferences sp = getSharedPreferences();
         Gson gson = new Gson();
         List<FtpUser> userList = getUsers();
         userList.add(user);
@@ -90,7 +91,6 @@ public class FsSettings {
     }
 
     public static void removeUser(String username, boolean actualDelete) {
-        SharedPreferences sp = getSharedPreferences();
         Gson gson = new Gson();
         List<FtpUser> users = getUsers();
         ArrayList<FtpUser> found = new ArrayList<>();
@@ -130,7 +130,6 @@ public class FsSettings {
     }
 
     public static boolean allowAnonymous() {
-        final SharedPreferences sp = getSharedPreferences();
         return sp.getBoolean("allow_anonymous", false);
     }
 
@@ -178,7 +177,6 @@ public class FsSettings {
     }
 
     public static int getPortNumber() {
-        final SharedPreferences sp = getSharedPreferences();
         // TODO: port is always an number, so store this accordingly
         String portString = sp.getString("portNum", "2121");
         if (portString == null) {
@@ -189,8 +187,16 @@ public class FsSettings {
         return port;
     }
 
+    public static int getPortNumberImplicit() {
+        // TODO: port is always an number, so store this accordingly
+        String portString = sp.getString("portNumImplicit",
+                App.getAppContext().getString(R.string.portnumber_default_implicit));
+        int port = Integer.parseInt(portString);
+        Log.v(TAG, "Using port implicit: " + port);
+        return port;
+    }
+
     public static String getBatterySaverChoice(String val) {
-        final SharedPreferences sp = getSharedPreferences();
         String s = sp.getString("battery_saver", "1");
         if (val != null) s = val;
         if (s.equals("0")) return App.getAppContext().getString(R.string.bs_high);
@@ -199,7 +205,6 @@ public class FsSettings {
     }
 
     public static int getAnonMaxConNumber() {
-        final SharedPreferences sp = getSharedPreferences();
         String s = sp.getString("anon_max", "1");
         int i = Integer.parseInt(s);
         Log.v(TAG, "Using anon max connections: " + i);
@@ -207,12 +212,10 @@ public class FsSettings {
     }
 
     public static boolean shouldTakeFullWakeLock() {
-        final SharedPreferences sp = getSharedPreferences();
         return sp.getBoolean("stayAwake", false);
     }
 
     public static int getTheme() {
-        SharedPreferences sp = getSharedPreferences();
         String theme = sp.getString("theme", "0");
         if (theme == null) {
             return R.style.AppThemeDark;
@@ -232,7 +235,6 @@ public class FsSettings {
     }
 
     public static boolean showNotificationIcon() {
-        SharedPreferences sp = getSharedPreferences();
         return sp.getBoolean("show_notification_icon_preference", true);
     }
 
@@ -245,13 +247,175 @@ public class FsSettings {
     }
 
     public static String getExternalStorageUri() {
-        final SharedPreferences sp = getSharedPreferences();
         return sp.getString("externalStorageUri", null);
     }
 
     public static void setExternalStorageUri(String externalStorageUri) {
-        final SharedPreferences sp = getSharedPreferences();
         sp.edit().putString("externalStorageUri", externalStorageUri).apply();
+    }
+
+    /*
+     * Returns whether the FTPS implicit port is enabled or not.
+     * */
+    public static boolean isImplicitUsed() {
+        return sp.getBoolean("enableImplicitPort", false);
+    }
+
+    /*
+     * Returns whether the plain port is disabled for FTPS implicit only use.
+     * */
+    public static boolean isImplicitOnly() {
+        return sp.getBoolean("disablePlainPort", false);
+    }
+
+    /*
+     * Returns the FTPS implicit port.
+     * */
+    public static int getImplicitPort() {
+        return Integer.parseInt(getImplicitPortString());
+    }
+
+    /*
+     * Returns the FTPS implicit port.
+     * */
+    public static String getImplicitPortString() {
+        String implicitPortDefault = App.getAppContext().getString(R.string.portnumber_default_implicit);
+        return sp.getString("portNumImplicit", implicitPortDefault);
+    }
+
+    /*
+     * Returns whether the client early 150 workaround is enabled or not.
+     * */
+    public static boolean isEarly150Enabled() {
+        return sp.getBoolean("early150Response", false);
+    }
+
+    /*
+     * Returns whether the FTPS implicit port is enabled or not.
+     * */
+    public static boolean isFeatDisabled() {
+        return sp.getBoolean("disableFeat", false);
+    }
+
+    /*
+     * Returns whether to require a client certificate.
+     * */
+    public static boolean useClientCert() {
+        return sp.getBoolean("useClientCert", false);
+    }
+
+    /*
+     * Returns the data connection range low port;
+     * */
+    public static int getPortRangeLow() {
+        return Integer.parseInt(getPortRangeLowString());
+    }
+
+    /*
+     * Returns the data connection range low port as a String;
+     * */
+    public static String getPortRangeLowString() {
+        final String def = App.getAppContext().getString(R.string.portnumber_default_pasv_low);
+        return sp.getString("portRangePasvLow", def);
+    }
+
+    /*
+     * Returns the data connection range high port;
+     * */
+    public static int getPortRangeHigh() {
+        return Integer.parseInt(getPortRangeHighString());
+    }
+
+    /*
+     * Returns the data connection range high port as a String;
+     * */
+    public static String getPortRangeHighString() {
+        final String def = App.getAppContext().getString(R.string.portnumber_default_pasv_high);
+        return sp.getString("portRangePasvHigh", def);
+    }
+
+    /*
+     * Returns whether FTPS SSL is enabled or not.
+     * */
+    public static boolean useSSL() {
+        return sp.getBoolean("enableSsl", false);
+    }
+
+    /*
+     * Returns whether SYST is disabled.
+     * */
+    public static boolean isSystDisabled() {
+        return sp.getBoolean("disableSyst", false);
+    }
+
+    /*
+     * Returns whether the banner text is disabled.
+     * */
+    public static boolean isBannerDisabled() {
+        return sp.getBoolean("disableBanner", false);
+    }
+
+    /*
+     * Returns whether user enabled encryption only (FTPS implicit and explicit only).
+     * */
+    public static boolean isEncryptionOnlyEnabled() {
+        return sp.getBoolean("disablePlainNotExplicit", false);
+    }
+
+    /*
+    * Returns the list of all IPs that have connected.
+    * */
+    public static Set<String> getIPList() {
+        return sp.getStringSet("IPList", new ArraySet<>());
+    }
+
+    /*
+    * Returns the list of IPs that have been allowed.
+    * */
+    public static Set<String> getAllowList() {
+        return sp.getStringSet("AllowIPs", new ArraySet<>());
+    }
+
+    /*
+    * Returns the list of IPs that are denied by failure.
+    * */
+    public static Set<String> getFailList() {
+        return sp.getStringSet("FailIPs", new ArraySet<>());
+    }
+
+    /*
+    * Puts reworked set of IPs to the all connected IPs list.
+    * */
+    public static void putIPList(Set<String> newList) {
+        sp.edit().putStringSet("IPList", newList).apply();
+    }
+
+    /*
+    * Puts reworked set of IPs to the denied by failure list.
+    * */
+    public static void putFailList(Set<String> newList) {
+        sp.edit().putStringSet("FailIPs", newList).apply();
+    }
+
+    /*
+    * Returns whether IP list deny until allowed is enabled.
+    * */
+    public static boolean isDenyUntilAllowed() {
+        return sp.getBoolean("denyUntilAllowed", false);
+    }
+
+    /*
+    * Returns whether IP list deny on failure is enabled.
+    * */
+    public static boolean isDenyOnFailedLogins() {
+        return sp.getBoolean("denyOnFailedLogins", false);
+    }
+
+    /*
+     * Returns the FTPS protocols selected by the user.
+     * */
+    public static Set<String> getAllowedProtocols() {
+        return sp.getStringSet("FTPSProtocolList", new ArraySet<>());
     }
 
     public static boolean isLoggingEnabled() {

@@ -109,7 +109,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="app_theme">Тема...</string>
 
     <string name="battery_saver_setting_title">Экономия заряда батареи</string>
-    <string name="battery_saver_desc">ПРИМЕЧАНИЕ. После внесения изменений вы *должны* вручную перезапустить сервер.</string>
     <string name="bs_high">ВЫСОКИЙ</string>
     <string name="bs_low">НИЗКИЙ</string>
     <string name="bs_deep">ГЛУБОКИЙ</string>
@@ -119,4 +118,37 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="anon_max_conn">Максимальное количество одновременных подключений</string>
     <string name="manage_anon_label">Управление анонимностью…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">Порты…</string>
+    <string name="general_title">Общий…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">Улучшения безопасности…</string>
+    <string name="port_number_label_data_low">Низкий диапазон номеров портов данных</string>
+    <string name="port_number_label_data_high">Диапазон номеров портов данных слишком высок</string>
+    <string name="port_number_label_implicit">Неявный номер порта FTPS</string>
+    <string name="enable_tls">Включить TLS</string>
+    <string name="enable_tls_implicit">Включить неявное</string>
+    <string name="enable_ssl">Включить SSL</string>
+    <string name="disable_plain_port">Используйте только неявное</string>
+    <string name="disable_plain_not_explicit">Используйте только неявное и явное</string>
+    <string name="cert_keystore">Сертификат: хранилище ключей импорта (jks)</string>
+    <string name="cert_trust_store">Сертификат: хранилище доверенных сертификатов импорта (bks)</string>
+    <string name="cert_pass">Сертификат: пароль</string>
+    <string name="cert_show_pass">Сертификат: показать пароль</string>
+    <string name="cert_use_client">Требовать сертификат клиента</string>
+    <string name="early_150_response">Обходной путь раннего ответа 150</string>
+    <string name="ip_list_title">Разрешить/запретить IP-адреса</string>
+    <string name="deny_until_allowed">Запретить, пока не разрешено</string>
+    <string name="manually_add_ip">Добавить IP вручную</string>
+    <string name="deny_on_failed_logins">Запретить 3 неудачных входа в систему</string>
+    <string name="clear_unused_ips">Очистить неиспользуемые IP-адреса</string>
+    <string name="implicit_only_summary">Отключает простой порт</string>
+    <string name="implicit_explicit_only_summary">Включает только шифрование</string>
+    <string name="disable_banner_title">Отключить баннер</string>
+    <string name="disable_feat_title">Отключить ФЕАТ</string>
+    <string name="disable_syst_title">Отключить систему</string>
+    <string name="tls_limit_protocols_title">Ограничительные протоколы</string>
 </resources>

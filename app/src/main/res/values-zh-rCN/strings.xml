@@ -83,7 +83,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建议。\n\n
     <string name="widget_name">FTP Server Widget</string>
 
     <string name="battery_saver_setting_title">省电</string>
-    <string name="battery_saver_desc">注意：更改后您*必须*手动重新启动服务器。</string>
     <string name="bs_high">高的</string>
     <string name="bs_low">低的</string>
     <string name="bs_deep">深的</string>
@@ -93,4 +92,37 @@ https://github.com/ppareit/swiftp/issues 提交您的建议。\n\n
 
     <string name="anon_max_conn">最大同时连接数</string>
     <string name="manage_anon_label">管理匿名…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">端口…</string>
+    <string name="general_title">常规…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">安全增强…</string>
+    <string name="port_number_label_data_low">数据端口号范围低</string>
+    <string name="port_number_label_data_high">数据端口号范围高</string>
+    <string name="port_number_label_implicit">FTPS 隐式端口号</string>
+    <string name="enable_tls">启用 TLS</string>
+    <string name="enable_tls_implicit">启用隐式</string>
+    <string name="enable_ssl">启用 SSL</string>
+    <string name="disable_plain_port">仅使用隐式</string>
+    <string name="disable_plain_not_explicit">仅使用隐式和显式</string>
+    <string name="cert_keystore">证书：导入密钥库 (jks)</string>
+    <string name="cert_trust_store">证书：导入信任库 (bks)</string>
+    <string name="cert_pass">证书：密码</string>
+    <string name="cert_show_pass">证书：显示密码</string>
+    <string name="cert_use_client">需要客户端证书</string>
+    <string name="early_150_response">早期 150 响应解决方法</string>
+    <string name="ip_list_title">允许/拒绝 IP</string>
+    <string name="deny_until_allowed">拒绝直到允许</string>
+    <string name="manually_add_ip">手动添加 IP</string>
+    <string name="deny_on_failed_logins">拒绝 3 次登录失败</string>
+    <string name="clear_unused_ips">清除未使用的 IP</string>
+    <string name="implicit_only_summary">禁用纯端口</string>
+    <string name="implicit_explicit_only_summary">仅启用加密</string>
+    <string name="disable_banner_title">禁用横幅</string>
+    <string name="disable_feat_title">禁用 FEAT</string>
+    <string name="disable_syst_title">禁用 SYST</string>
+    <string name="tls_limit_protocols_title">限制协议</string>
 </resources>

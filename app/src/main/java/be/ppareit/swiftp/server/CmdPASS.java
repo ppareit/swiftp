@@ -27,6 +27,7 @@ import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AnonymousLimit;
+import be.ppareit.swiftp.utils.IPSecurity;
 import be.ppareit.swiftp.utils.Logging;
 
 public class CmdPASS extends FtpCmd implements Runnable {
@@ -87,6 +88,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
             Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
             sessionThread.writeString("500 Login incorrect.\r\n");
             sessionThread.authAttempt( false);
+            IPSecurity.putIPFail(sessionThread.getRemoteAddress());
         } else if (user.getPassword().equals(attemptPassword)) {
             Log.i(TAG, "User " + user.getUsername() + " password verified");
             sessionThread.writeString("230 Access granted\r\n");
@@ -100,6 +102,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
             Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
             sessionThread.writeString("530 Login incorrect.\r\n");
             sessionThread.authAttempt(false);
+            IPSecurity.putIPFail(sessionThread.getRemoteAddress());
         }
     }
 }

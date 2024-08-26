@@ -59,54 +59,223 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         </PreferenceScreen>
 
 
-        <PreferenceScreen
-            android:title="@string/advanced_settings_label">
-            <EditTextPreference
-                android:defaultValue="@string/portnumber_default"
-                android:key="portNum"
-                android:title="@string/port_number_label" />
+        <PreferenceScreen android:title="@string/advanced_settings_label"
+            android:key="preference_screen_advanced">
 
-            <CheckBoxPreference
-                android:defaultValue="@string/wakelock_default"
-                android:key="stayAwake"
-                android:title="@string/wakelock_label" />
+            <PreferenceCategory android:title="@string/ports_title">
 
-            <CheckBoxPreference
-                android:defaultValue="@string/writeExternalStorage_default"
-                android:key="writeExternalStorage"
-                android:title="@string/writeExternalStorage_label" />
+                <EditTextPreference
+                    android:defaultValue="@string/portnumber_default"
+                    android:key="portNum"
+                    android:inputType="number"
+                    android:title="@string/port_number_label" />
 
-            <CheckBoxPreference
-                android:defaultValue="@string/useScopedStorage_default"
-                android:key="useScopedStorage"
-                android:drawableLeft="@drawable/ic_shared_dir"
-                android:drawableStart="@drawable/ic_shared_dir"
-                android:title="@string/use_scoped_storage_label"
-                android:summary="@string/use_scope_storage_summary"
-                />
+                <EditTextPreference
+                    android:defaultValue="@string/portnumber_default_pasv_low"
+                    android:key="portRangePasvLow"
+                    android:inputType="number"
+                    android:title="@string/port_number_label_data_low" />
 
-            <ListPreference
-                android:defaultValue="0"
-                android:entries="@array/pref_list_battery_saver_titles"
-                android:entryValues="@array/pref_list_battery_saver_values"
-                android:key="battery_saver"
-                android:dialogTitle="@string/battery_saver_setting_title"
-                android:title="@string/battery_saver_setting_title"
-                android:summary="@string/battery_saver_desc"/>
+                <EditTextPreference
+                    android:defaultValue="@string/portnumber_default_pasv_high"
+                    android:key="portRangePasvHigh"
+                    android:inputType="number"
+                    android:title="@string/port_number_label_data_high" />
+
+                <EditTextPreference
+                    android:defaultValue="@string/portnumber_default_implicit"
+                    android:key="portNumImplicit"
+                    android:inputType="number"
+                    android:dependency="enableImplicitPort"
+                    android:title="@string/port_number_label_implicit" />
+
+            </PreferenceCategory>
+
+            <PreferenceCategory android:title="@string/general_title">
+
+                <CheckBoxPreference
+                    android:defaultValue="@string/wakelock_default"
+                    android:key="stayAwake"
+                    android:title="@string/wakelock_label" />
+
+                <CheckBoxPreference
+                    android:defaultValue="@string/writeExternalStorage_default"
+                    android:key="writeExternalStorage"
+                    android:title="@string/writeExternalStorage_label" />
+
+                <CheckBoxPreference
+                    android:defaultValue="@string/useScopedStorage_default"
+                    android:key="useScopedStorage"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:title="@string/use_scoped_storage_label"
+                    android:summary="@string/use_scope_storage_summary"
+                    />
+
+                <ListPreference
+                    android:defaultValue="0"
+                    android:entries="@array/pref_list_battery_saver_titles"
+                    android:entryValues="@array/pref_list_battery_saver_values"
+                    android:key="battery_saver"
+                    android:dialogTitle="@string/battery_saver_setting_title"
+                    android:title="@string/battery_saver_setting_title"
+                    android:summary="@string/battery_saver_desc"/>
+
+            </PreferenceCategory>
 
             <PreferenceCategory
                 android:key="settings"
                 android:title="@string/logging">
-            <CheckBoxPreference
-                android:defaultValue="@string/enableLogging_default"
-                android:key="enable_logging"
-                android:title="@string/enable_logging" />
+                <CheckBoxPreference
+                    android:defaultValue="@string/enableLogging_default"
+                    android:key="enable_logging"
+                    android:title="@string/enable_logging" />
 
-            <Preference
-                android:key="logs"
-                android:title="@string/manage_log_label" />
+                <Preference
+                    android:key="logs"
+                    android:title="@string/manage_log_label" />
 
             </PreferenceCategory>
+
+            <PreferenceCategory android:title="@string/ftps_title">
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="enableImplicitPort"
+                    android:title="@string/enable_tls_implicit" />
+
+                <!-- SSL not tested at all so leaving commented and fully disabled -->
+                <!-- <CheckBoxPreference
+                     android:defaultValue="false"
+                     android:drawableStart="@drawable/ic_shared_dir"
+                     android:drawableLeft="@drawable/ic_shared_dir"
+                     android:key="enableSsl"
+                     android:title="@string/enable_ssl" />-->
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="disablePlainPort"
+                    android:summary="@string/implicit_only_summary"
+                    android:title="@string/disable_plain_port" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="disablePlainNotExplicit"
+                    android:summary="@string/implicit_explicit_only_summary"
+                    android:title="@string/disable_plain_not_explicit" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="certKeyStore"
+                    android:title="@string/cert_keystore" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="certTrustStore"
+                    android:title="@string/cert_trust_store" />
+
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:inputType="textPassword"
+                    android:key="certPassword"
+                    android:title="@string/cert_pass" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="certShowPassword"
+                    android:title="@string/cert_show_pass" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="useClientCert"
+                    android:title="@string/cert_use_client" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="early150Response"
+                    android:title="@string/early_150_response" />
+
+                <MultiSelectListPreference
+                    android:dialogTitle="@string/tls_limit_protocols_title"
+                    android:key="limitTLSProtocols"
+                    android:title="@string/tls_limit_protocols_title" />
+
+            </PreferenceCategory>
+
+            <PreferenceCategory android:title="@string/security_section_title">
+
+                <MultiSelectListPreference
+                    android:dialogTitle="@string/ip_list_title"
+                    android:key="ip_list"
+                    android:title="@string/ip_list_title" />
+
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:inputType="text"
+                    android:key="manuallyAddIP"
+                    android:hint="000.111.0.*"
+                    android:title="@string/manually_add_ip" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="clearUnusedIPs"
+                    android:title="@string/clear_unused_ips" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="denyUntilAllowed"
+                    android:title="@string/deny_until_allowed" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="denyOnFailedLogins"
+                    android:title="@string/deny_on_failed_logins" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="disableBanner"
+                    android:title="@string/disable_banner_title" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="disableFeat"
+                    android:title="@string/disable_feat_title" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:drawableStart="@drawable/ic_shared_dir"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="disableSyst"
+                    android:title="@string/disable_syst_title" />
+
+            </PreferenceCategory>
+
         </PreferenceScreen>
 
     </PreferenceCategory>

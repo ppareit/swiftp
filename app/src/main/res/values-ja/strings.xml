@@ -128,7 +128,6 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="app_theme">テーマ...</string>
 
     <string name="battery_saver_setting_title">バッテリーセーバー</string>
-    <string name="battery_saver_desc">注: 変更後はサーバーを手動で再起動する必要があります。</string>
     <string name="bs_high">高い</string>
     <string name="bs_low">低い</string>
     <string name="bs_deep">深い</string>
@@ -138,4 +137,37 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
 
     <string name="anon_max_conn">最大同時接続数</string>
     <string name="manage_anon_label">匿名で管理する…</string>
+
+    <string name="found_check">&#10004;</string>
+    <string name="found_check_green">&#9989;</string>
+    <string name="found_x">&#10007;</string>
+    <string name="ports_title">ポート…</string>
+    <string name="general_title">全般…</string>
+    <string name="ftps_title">FTPS…</string>
+    <string name="security_section_title">セキュリティ強化…</string>
+    <string name="port_number_label_data_low">データ ポート番号範囲の下限</string>
+    <string name="port_number_label_data_high">データ ポート番号範囲の上限</string>
+    <string name="port_number_label_implicit">FTPS 暗黙のポート番号</string>
+    <string name="enable_tls">TLS を有効にする</string>
+    <string name="enable_tls_implicit">暗黙を有効にする</string>
+    <string name="enable_ssl">SSL を有効にする</string>
+    <string name="disable_plain_port">暗黙のみを使用する</string>
+    <string name="disable_plain_not_explicit">暗黙と明示のみを使用する</string>
+    <string name="cert_keystore">証明書: キーストア (jks) をインポート</string>
+    <string name="cert_trust_store">証明書: トラスト ストア (bks) をインポート</string>
+    <string name="cert_pass">証明書: パスワード</string>
+    <string name="cert_show_pass">証明書: パスワードを表示</string>
+    <string name="cert_use_client">クライアント証明書が必要</string>
+    <string name="early_150_response">早期 150 応答の回避策</string>
+    <string name="ip_list_title">IP を許可/拒否</string>
+    <string name="deny_until_allowed">許可されるまで拒否</string>
+    <string name="manually_add_ip">IP を手動で追加</string>
+    <string name="deny_on_failed_logins">ログインに 3 回失敗すると拒否</string>
+    <string name="clear_unused_ips">未使用の IP をクリア</string>
+    <string name="implicit_only_summary">プレーン ポートを無効にする</string>
+    <string name="implicit_explicit_only_summary">暗号化のみを有効にする</string>
+    <string name="disable_banner_title">バナーを無効にする</string>
+    <string name="disable_feat_title">FEAT を無効にする</string>
+    <string name="disable_syst_title">SYST を無効にする</string>
+    <string name="tls_limit_protocols_title">プロトコルを制限する</string>
 </resources>

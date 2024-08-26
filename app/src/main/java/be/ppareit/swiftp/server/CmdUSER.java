@@ -21,6 +21,8 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
+import be.ppareit.swiftp.utils.IPSecurity;
+
 public class CmdUSER extends FtpCmd implements Runnable {
     private static final String TAG = CmdUSER.class.getSimpleName();
 
@@ -38,6 +40,7 @@ public class CmdUSER extends FtpCmd implements Runnable {
         String userName = FtpCmd.getParameter(input);
         if (!userName.matches("[A-Za-z0-9]+")) {
             sessionThread.writeString("530 Invalid username\r\n");
+            IPSecurity.putIPFail(sessionThread.getRemoteAddress());
             return;
         }
         sessionThread.writeString("331 Send password\r\n");
