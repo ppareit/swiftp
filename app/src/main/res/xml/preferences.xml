@@ -18,63 +18,78 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    android:key="preference_screen">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:key="preference_screen"
+    app:iconSpaceReserved="false">
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="running_switch"
         android:summary="@string/running_summary_stopped"
-        android:title="@string/running_label" />
+        android:title="@string/running_label"
+        app:iconSpaceReserved="false" />
     <Preference
         android:key="market_version"
         android:summary="@string/market_version_summary"
-        android:title="@string/market_version_label" />
+        android:title="@string/market_version_label"
+        app:iconSpaceReserved="false" />
 
     <PreferenceCategory
         android:key="settings"
-        android:title="@string/settings_label">
+        android:title="@string/settings_label"
+        app:iconSpaceReserved="false">
 
         <Preference
             android:key="manage_users"
-            android:title="@string/manage_users_label" />
+            android:title="@string/manage_users_label"
+            app:iconSpaceReserved="false" />
 
         <Preference
             android:key="manage_anon"
-            android:title="@string/manage_anon_label" />
+            android:title="@string/manage_anon_label"
+            app:iconSpaceReserved="false"/>
 
         <PreferenceScreen
             android:key="appearance_screen"
-            android:title="@string/gui_settings_label">
+            android:title="@string/gui_settings_label"
+            app:iconSpaceReserved="false">
             <ListPreference
                 android:defaultValue="0"
                 android:entries="@array/pref_list_themes"
                 android:entryValues="@array/pref_list_themes_values"
                 android:key="theme"
-                android:title="@string/app_theme" />
+                android:title="@string/app_theme"
+                app:iconSpaceReserved="false" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_notification_icon_preference"
                 android:summary="@string/show_notification_icon_summary"
-                android:title="@string/show_notification_icon" />
+                android:title="@string/show_notification_icon"
+                app:iconSpaceReserved="false" />
         </PreferenceScreen>
 
 
         <PreferenceScreen
-            android:title="@string/advanced_settings_label">
+            android:key="preference_screen_advanced"
+            android:title="@string/advanced_settings_label"
+            app:iconSpaceReserved="false" >
             <EditTextPreference
                 android:defaultValue="@string/portnumber_default"
                 android:key="portNum"
-                android:title="@string/port_number_label" />
+                android:title="@string/port_number_label"
+                app:iconSpaceReserved="false" />
 
             <CheckBoxPreference
                 android:defaultValue="@string/wakelock_default"
                 android:key="stayAwake"
-                android:title="@string/wakelock_label" />
+                android:title="@string/wakelock_label"
+                app:iconSpaceReserved="false" />
 
             <CheckBoxPreference
                 android:defaultValue="@string/writeExternalStorage_default"
                 android:key="writeExternalStorage"
-                android:title="@string/writeExternalStorage_label" />
+                android:title="@string/writeExternalStorage_label"
+                app:iconSpaceReserved="false" />
 
             <CheckBoxPreference
                 android:defaultValue="@string/useScopedStorage_default"
@@ -83,7 +98,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:drawableStart="@drawable/ic_shared_dir"
                 android:title="@string/use_scoped_storage_label"
                 android:summary="@string/use_scope_storage_summary"
-                />
+                app:iconSpaceReserved="false" />
 
             <ListPreference
                 android:defaultValue="0"
@@ -92,19 +107,23 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:key="battery_saver"
                 android:dialogTitle="@string/battery_saver_setting_title"
                 android:title="@string/battery_saver_setting_title"
-                android:summary="@string/battery_saver_desc"/>
+                android:summary="@string/battery_saver_desc"
+                app:iconSpaceReserved="false" />
 
             <PreferenceCategory
                 android:key="settings"
-                android:title="@string/logging">
+                android:title="@string/logging"
+                app:iconSpaceReserved="false" >
             <CheckBoxPreference
                 android:defaultValue="@string/enableLogging_default"
                 android:key="enable_logging"
-                android:title="@string/enable_logging" />
+                android:title="@string/enable_logging"
+                app:iconSpaceReserved="false" />
 
             <Preference
                 android:key="logs"
-                android:title="@string/manage_log_label" />
+                android:title="@string/manage_log_label"
+                app:iconSpaceReserved="false" />
 
             </PreferenceCategory>
         </PreferenceScreen>
@@ -113,13 +132,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <PreferenceCategory
         android:key="extra_category"
-        android:title="@string/extra_label">
+        android:title="@string/extra_label"
+        app:iconSpaceReserved="false" >
         <Preference
             android:key="help"
-            android:title="@string/help_label" />
+            android:title="@string/help_label"
+            app:iconSpaceReserved="false" />
         <Preference
             android:key="about"
-            android:title="@string/about_label" />
+            android:title="@string/about_label"
+            app:iconSpaceReserved="false"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

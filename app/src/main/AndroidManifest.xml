@@ -50,6 +50,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <activity
             android:name="be.ppareit.swiftp.gui.MainActivity"
+            android:configChanges="screenSize|orientation"
             android:theme="@style/AppThemeDark"
             android:exported="true">
             <intent-filter>
@@ -72,6 +73,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <activity
             android:name=".gui.ManageUsersActivity"
+            android:configChanges="screenSize|orientation"
             android:parentActivityName=".gui.MainActivity"
             android:theme="@style/AppThemeDark" />
 

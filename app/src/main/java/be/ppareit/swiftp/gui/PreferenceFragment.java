@@ -34,20 +34,24 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
-import android.preference.TwoStatePreference;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.viewmodel.CreationExtras;
+import androidx.preference.EditTextPreference;
+import androidx.preference.Preference;
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.ListPreference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.TwoStatePreference;
+
 import android.text.util.Linkify;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.documentfile.provider.DocumentFile;
 
 import net.vrallev.android.cat.Cat;
 
@@ -68,7 +72,7 @@ import be.ppareit.swiftp.utils.Logging;
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
  */
-public class PreferenceFragment extends android.preference.PreferenceFragment {
+public class PreferenceFragment extends PreferenceFragmentCompat {
 
     private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
     private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
@@ -76,214 +80,293 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
     private DynamicMultiSelectListPreference mAutoconnectListPref;
     private Handler mHandler = new Handler();
 
+    private static int showScreen = 0;
+    private static final int SHOW_ADVANCED_SCREEN = 1;
+    private static final int SHOW_APPEARANCE_SCREEN = 2;
+
+    @Override
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+        switch (showScreen) {
+            case SHOW_ADVANCED_SCREEN -> setPreferencesFromResource(R.xml.preferences, "preference_screen_advanced");
+            case SHOW_APPEARANCE_SCREEN -> setPreferencesFromResource(R.xml.preferences, "appearance_screen");
+            default -> setPreferencesFromResource(R.xml.preferences, rootKey);
+        }
+        showScreen = 0;
+    }
+
+    @NonNull
+    @Override
+    public CreationExtras getDefaultViewModelCreationExtras() {
+        return super.getDefaultViewModelCreationExtras();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
+
+        // Helps the list to get updated without recreating the UI.
+        PreferenceScreen prefScreenAdvanced = findPref("preference_screen_advanced");
+        if (prefScreenAdvanced != null) {
+            prefScreenAdvanced.setOnPreferenceClickListener(preference -> {
+                showScreen = SHOW_ADVANCED_SCREEN;
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(android.R.id.content, new PreferenceFragment(), "preference_screen_advanced")
+                        .addToBackStack("default")
+                        .commit();
+                return true;
+            });
+        }
+
+        // Helps the list to get updated without recreating the UI.
+        PreferenceScreen prefScreenAppearance = findPref("appearance_screen");
+        if (prefScreenAppearance != null) {
+            prefScreenAppearance.setOnPreferenceClickListener(preference -> {
+                showScreen = SHOW_APPEARANCE_SCREEN;
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(android.R.id.content, new PreferenceFragment(), "appearance_screen")
+                        .addToBackStack("default")
+                        .commit();
+                return true;
+            });
+        }
 
         TwoStatePreference runningPref = findPref("running_switch");
-        updateRunningState();
-        runningPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            if ((Boolean) newValue) {
-                FsService.start();
-            } else {
-                FsService.stop();
-            }
-            return true;
-        });
+        if (runningPref != null) {
+            updateRunningState();
+            runningPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                if ((Boolean) newValue) {
+                    FsService.start();
+                } else {
+                    FsService.stop();
+                }
+                return true;
+            });
+        }
 
         PreferenceScreen prefScreen = findPref("preference_screen");
         Preference marketVersionPref = findPref("market_version");
-        if (!App.isFreeVersion()) {
-            prefScreen.removePreference(marketVersionPref);
+        if (prefScreen != null) {
+            if (!App.isFreeVersion()) {
+                prefScreen.removePreference(marketVersionPref);
+            }
+            if (!(App.isPackageInstalled("com.android.vending") ||
+                    App.isPackageInstalled("com.google.market"))) {
+                prefScreen.removePreference(marketVersionPref);
+            }
         }
-        if (!(App.isPackageInstalled("com.android.vending") ||
-                App.isPackageInstalled("com.google.market"))) {
-            prefScreen.removePreference(marketVersionPref);
+        if (marketVersionPref != null) {
+            marketVersionPref.setOnPreferenceClickListener(preference -> {
+                // start the market at our application
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse("market://details?id=be.ppareit.swiftp"));
+                startActivity(intent);
+                return false;
+            });
         }
-        marketVersionPref.setOnPreferenceClickListener(preference -> {
-            // start the market at our application
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse("market://details?id=be.ppareit.swiftp"));
-            startActivity(intent);
-            return false;
-        });
 
         Preference manageUsersPref = findPref("manage_users");
-        updateUsersPref();
-        manageUsersPref.setOnPreferenceClickListener((preference) -> {
-            startActivity(new Intent(getActivity(), ManageUsersActivity.class));
-            return true;
-        });
+        if (manageUsersPref != null) {
+            updateUsersPref();
+            manageUsersPref.setOnPreferenceClickListener((preference) -> {
+                startActivity(new Intent(getActivity(), ManageUsersActivity.class));
+                return true;
+            });
+        }
 
         Preference manageAnonPref = findPref("manage_anon");
-        manageAnonPref.setOnPreferenceClickListener((preference) -> {
-            startActivity(new Intent(getActivity(), ManageAnonActivity.class));
-            return true;
-        });
+        if (manageAnonPref != null) {
+            manageAnonPref.setOnPreferenceClickListener((preference) -> {
+                startActivity(new Intent(getActivity(), ManageAnonActivity.class));
+                return true;
+            });
+        }
 
         EditTextPreference portNumberPref = findPref("portNum");
-        portNumberPref.setSummary(String.valueOf(FsSettings.getPortNumber()));
-        portNumberPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            String newPortNumberString = (String) newValue;
-            if (preference.getSummary().equals(newPortNumberString))
-                return false;
-            int portNumber = 0;
-            try {
-                portNumber = Integer.parseInt(newPortNumberString);
-            } catch (Exception e) {
-                Cat.d("Error parsing port number! Moving on...");
-            }
-            if (portNumber <= 0 || 65535 < portNumber) {
-                Toast.makeText(getActivity(),
-                        R.string.port_validation_error,
-                        Toast.LENGTH_LONG).show();
-                return false;
-            }
-            preference.setSummary(newPortNumberString);
-            FsService.stop();
-            return true;
-        });
+        if (portNumberPref != null) {
+            portNumberPref.setSummary(String.valueOf(FsSettings.getPortNumber()));
+            portNumberPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                String newPortNumberString = (String) newValue;
+                if (preference.getSummary().equals(newPortNumberString))
+                    return false;
+                int portNumber = 0;
+                try {
+                    portNumber = Integer.parseInt(newPortNumberString);
+                } catch (Exception e) {
+                    Cat.d("Error parsing port number! Moving on...");
+                }
+                if (portNumber <= 0 || 65535 < portNumber) {
+                    Toast.makeText(getActivity(),
+                            R.string.port_validation_error,
+                            Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                preference.setSummary(newPortNumberString);
+                FsService.stop();
+                return true;
+            });
+        }
 
         final CheckBoxPreference wakelockPref = findPref("stayAwake");
-        wakelockPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            FsService.stop();
-            return true;
-        });
+        if (wakelockPref != null) {
+            wakelockPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                FsService.stop();
+                return true;
+            });
+        }
 
         final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            String externalStorageUri = FsSettings.getExternalStorageUri();
-            if (externalStorageUri == null) {
-                writeExternalStoragePref.setChecked(false);
-            }
-            writeExternalStoragePref.setOnPreferenceChangeListener((preference, newValue) -> {
-                if ((boolean) newValue) {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                    startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
-                    return false;
-                } else {
-                    FsSettings.setExternalStorageUri(null);
-                    return true;
+        if (writeExternalStoragePref != null) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                String externalStorageUri = FsSettings.getExternalStorageUri();
+                if (externalStorageUri == null) {
+                    writeExternalStoragePref.setChecked(false);
                 }
-            });
-        } else {
-            writeExternalStoragePref.setEnabled(false);
-            writeExternalStoragePref.setChecked(true);
-            writeExternalStoragePref.setSummary(getString(R.string.write_external_storage_old_android_version_summary));
+                writeExternalStoragePref.setOnPreferenceChangeListener((preference, newValue) -> {
+                    if ((boolean) newValue) {
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                        startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
+                        return false;
+                    } else {
+                        FsSettings.setExternalStorageUri(null);
+                        return true;
+                    }
+                });
+            } else {
+                writeExternalStoragePref.setEnabled(false);
+                writeExternalStoragePref.setChecked(true);
+                writeExternalStoragePref.setSummary(getString(R.string.write_external_storage_old_android_version_summary));
+            }
         }
 
         final ListPreference batterySaver = findPref("battery_saver");
-        // val 0 HIGH is always on wake locks + wake lock setting enabled (high battery, smooth)
-        // val 1 LOW is wake locks run only during client connection (low battery, some of both)
-        // val 2 DEEP is wake locks disabled (lowest battery use, a bit choppy)
-        final String s = batterySaver.getValue();
-        if (Integer.parseInt(s) > 1) {
-            wakelockPref.setChecked(false);
-            wakelockPref.setEnabled(false);
-        } else {
-            wakelockPref.setEnabled(true);
-        }
-        batterySaver.setTitle("Battery saver");
-        final String bSumSelection = FsSettings.getBatterySaverChoice(null) + '\n';
-        final String bSum = bSumSelection + getString(R.string.battery_saver_desc);
-        batterySaver.setSummary(bSum);
-        batterySaver.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (Integer.parseInt((String) newValue) > 1) {
+        if (batterySaver != null && wakelockPref != null) {
+            // val 0 HIGH is always on wake locks + wake lock setting enabled (high battery, smooth)
+            // val 1 LOW is wake locks run only during client connection (low battery, some of both)
+            // val 2 DEEP is wake locks disabled (lowest battery use, a bit choppy)
+            final String s = batterySaver.getValue();
+            if (Integer.parseInt(s) > 1) {
                 wakelockPref.setChecked(false);
                 wakelockPref.setEnabled(false);
             } else {
                 wakelockPref.setEnabled(true);
             }
-            final String bSumSelection2 = FsSettings.getBatterySaverChoice(
-                    (String) newValue) + '\n';
-            final String bSum2 = bSumSelection2 + getString(R.string.battery_saver_desc);
-            batterySaver.setSummary(bSum2);
-            return true;
-        });
+            batterySaver.setTitle("Battery saver");
+            final String bSumSelection = FsSettings.getBatterySaverChoice(null) + '\n';
+            final String bSum = bSumSelection + getString(R.string.battery_saver_desc);
+            batterySaver.setSummary(bSum);
+            batterySaver.setOnPreferenceChangeListener((preference, newValue) -> {
+                if (Integer.parseInt((String) newValue) > 1) {
+                    wakelockPref.setChecked(false);
+                    wakelockPref.setEnabled(false);
+                } else {
+                    wakelockPref.setEnabled(true);
+                }
+                final String bSumSelection2 = FsSettings.getBatterySaverChoice(
+                        (String) newValue) + '\n';
+                final String bSum2 = bSumSelection2 + getString(R.string.battery_saver_desc);
+                batterySaver.setSummary(bSum2);
+                return true;
+            });
+        }
 
         final CheckBoxPreference useScopedStorage = findPref("useScopedStorage");
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-        if (sp.getBoolean("NewScopedStorageUpgradeCheck", true)) {
-            // Don't break use if "write external storage" was used before the app update as the original
-            // code it now fully uses isn't compat with the newer one and would see major issues.
-            // Runs one time only on update as pref won't be checked after clean install / wipe.
-            // Code is executed on app start which happens automatically after app update.
-            if (writeExternalStoragePref.isChecked()) { // needs to be true to not break use
-                sp.edit().putBoolean("UseScopedStorage", true).apply();
-                sp.edit().putBoolean("NewScopedStorageUpgradeCheck", false).apply();
-                writeExtMultiUserUpgradePath();
+        if (useScopedStorage != null && writeExternalStoragePref != null) {
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+            if (sp.getBoolean("NewScopedStorageUpgradeCheck", true)) {
+                // Don't break use if "write external storage" was used before the app update as the original
+                // code it now fully uses isn't compat with the newer one and would see major issues.
+                // Runs one time only on update as pref won't be checked after clean install / wipe.
+                // Code is executed on app start which happens automatically after app update.
+                if (writeExternalStoragePref.isChecked()) { // needs to be true to not break use
+                    sp.edit().putBoolean("UseScopedStorage", true).apply();
+                    sp.edit().putBoolean("NewScopedStorageUpgradeCheck", false).apply();
+                    writeExtMultiUserUpgradePath();
+                }
             }
-        }
 
-        if (Util.useScopedStorage()) {
-            // Do not allow mixing of old setting with the new one!
-            useScopedStorage.setChecked(true);
-            writeExternalStoragePref.setChecked(false);
-            writeExternalStoragePref.setEnabled(false);
-        } else {
-            useScopedStorage.setChecked(false);
-        }
-        useScopedStorage.setOnPreferenceChangeListener((preference, newValue) -> {
-            writeExternalStoragePref.setChecked(false);
-            writeExternalStoragePref.setEnabled(!((boolean) newValue));
-            sp.edit().putBoolean("UseScopedStorage", (boolean) newValue).apply();
-            Util.resetScoped();
+            if (Util.useScopedStorage()) {
+                // Do not allow mixing of old setting with the new one!
+                useScopedStorage.setChecked(true);
+                writeExternalStoragePref.setChecked(false);
+                writeExternalStoragePref.setEnabled(false);
+            } else {
+                useScopedStorage.setChecked(false);
+            }
+            useScopedStorage.setOnPreferenceChangeListener((preference, newValue) -> {
+                writeExternalStoragePref.setChecked(false);
+                writeExternalStoragePref.setEnabled(!((boolean) newValue));
+                sp.edit().putBoolean("UseScopedStorage", (boolean) newValue).apply();
+                Util.resetScoped();
 
-            return true;
-        });
+                return true;
+            });
+        }
 
         ListPreference themePref = findPref("theme");
-        themePref.setSummary(themePref.getEntry());
-        themePref.setOnPreferenceChangeListener((preference, newValue) -> {
+        if (themePref != null) {
             themePref.setSummary(themePref.getEntry());
-            getActivity().recreate();
-            return true;
-        });
+            themePref.setOnPreferenceChangeListener((preference, newValue) -> {
+                themePref.setSummary(themePref.getEntry());
+                getActivity().recreate();
+                return true;
+            });
+        }
 
         Preference showNotificationIconPref = findPref("show_notification_icon_preference");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PreferenceScreen appearanceScreen = (PreferenceScreen) findPreference("appearance_screen");
-            appearanceScreen.removePreference(showNotificationIconPref);
+        if (showNotificationIconPref != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                PreferenceScreen appearanceScreen = (PreferenceScreen) findPreference("appearance_screen");
+                if (appearanceScreen != null) {
+                    appearanceScreen.removePreference(showNotificationIconPref);
+                }
+            }
+            showNotificationIconPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                FsService.stop();
+                return true;
+            });
         }
-        showNotificationIconPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            FsService.stop();
-            return true;
-        });
 
         Preference helpPref = findPref("help");
-        helpPref.setOnPreferenceClickListener(preference -> {
-            Cat.v("On preference help clicked");
-            Context context = getActivity();
-            AlertDialog ad = new AlertDialog.Builder(context)
-                    .setTitle(R.string.help_dlg_title)
-                    .setMessage(R.string.help_dlg_message)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .create();
-            ad.show();
-            Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
-                    Linkify.ALL);
-            return true;
-        });
+        if (helpPref != null) {
+            helpPref.setOnPreferenceClickListener(preference -> {
+                Cat.v("On preference help clicked");
+                Context context = getActivity();
+                AlertDialog ad = new AlertDialog.Builder(context)
+                        .setTitle(R.string.help_dlg_title)
+                        .setMessage(R.string.help_dlg_message)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .create();
+                ad.show();
+                Linkify.addLinks((TextView) ad.findViewById(android.R.id.message),
+                        Linkify.ALL);
+                return true;
+            });
+        }
 
         Preference aboutPref = findPref("about");
-        aboutPref.setOnPreferenceClickListener(preference -> {
-            startActivity(new Intent(getActivity(), AboutActivity.class));
-            return true;
-        });
+        if (aboutPref != null) {
+            aboutPref.setOnPreferenceClickListener(preference -> {
+                startActivity(new Intent(getActivity(), AboutActivity.class));
+                return true;
+            });
+        }
 
         Preference logsPref = findPref("logs");
-        logsPref.setOnPreferenceClickListener(preference -> {
-            startActivity(new Intent(getActivity(), LogActivity.class));
-            return true;
-        });
+        if (logsPref != null) {
+            logsPref.setOnPreferenceClickListener(preference -> {
+                startActivity(new Intent(getActivity(), LogActivity.class));
+                return true;
+            });
+        }
 
         Preference logCheckbox = findPref("enable_logging");
-        logCheckbox.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (!(boolean) newValue) new Logging().clearLog();
-            return true;
-        });
+        if (logCheckbox != null) {
+            logCheckbox.setOnPreferenceChangeListener((preference, newValue) -> {
+                if (!(boolean) newValue) new Logging().clearLog();
+                return true;
+            });
+        }
 
     }
 
@@ -384,6 +467,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
      */
     private void updateUsersPref() {
         Preference manageUsersPref = findPref("manage_users");
+        if (manageUsersPref == null) return;
         List<FtpUser> users = FsSettings.getUsers();
         switch (users.size()) {
             case 0:
@@ -406,6 +490,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment {
     private void updateRunningState() {
         Resources res = getResources();
         TwoStatePreference runningPref = findPref("running_switch");
+        if (runningPref == null) return;
         if (FsService.isRunning()) {
             runningPref.setChecked(true);
             // Fill in the FTP server address
