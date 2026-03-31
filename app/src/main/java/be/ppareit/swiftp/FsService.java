@@ -448,17 +448,23 @@ public class FsService extends Service implements Runnable {
             ArrayList<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface networkInterface : networkInterfaces) {
                 // only check network interfaces that give local connection
-                if (!networkInterface.getName().matches("^(eth|wlan|tun).*"))
+                // Include ap0 for WiFi hotspot and rndis for USB tethering
+                if (!networkInterface.getName().matches("^(eth|wlan|ap|rndis|tun).*"))
                     continue;
                 for (InetAddress address : Collections.list(networkInterface.getInetAddresses())) {
+                    // Accept site-local addresses (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+                    // Also accept private addresses even if not classified as site-local
                     if (!address.isLoopbackAddress()
                             && !address.isLinkLocalAddress()
-                            && address.isSiteLocalAddress()
                             && address instanceof Inet4Address) {
-                        if (returnAddress != null) {
-                            Cat.w("Found more than one valid address local inet address, why???");
+                        String addressStr = address.getHostAddress();
+                        // Check if it's a private IP range (RFC 1918)
+                        if (isPrivateIpAddress(addressStr) || address.isSiteLocalAddress()) {
+                            if (returnAddress != null) {
+                                Cat.w("Found more than one valid address local inet address, why???");
+                            }
+                            returnAddress = address;
                         }
-                        returnAddress = address;
                     }
                 }
             }
@@ -466,6 +472,34 @@ public class FsService extends Service implements Runnable {
             e.printStackTrace();
         }
         return returnAddress;
+    }
+
+    /**
+     * Check if an IP address is in a private range (RFC 1918)
+     * @param ipAddress IP address as string
+     * @return true if address is in private range
+     */
+    private static boolean isPrivateIpAddress(String ipAddress) {
+        try {
+            String[] parts = ipAddress.split("\\.");
+            if (parts.length != 4) return false;
+            
+            int firstOctet = Integer.parseInt(parts[0]);
+            int secondOctet = Integer.parseInt(parts[1]);
+            
+            // 10.0.0.0 - 10.255.255.255
+            if (firstOctet == 10) return true;
+            
+            // 172.16.0.0 - 172.31.255.255
+            if (firstOctet == 172 && secondOctet >= 16 && secondOctet <= 31) return true;
+            
+            // 192.168.0.0 - 192.168.255.255
+            if (firstOctet == 192 && secondOctet == 168) return true;
+            
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -483,10 +517,35 @@ public class FsService extends Service implements Runnable {
             Log.d(TAG, "isConnectedToLocalNetwork: see if it is an WIFI AP");
             WifiManager wm = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             try {
+                // Try the reflection method first (works on older Android versions)
                 Method method = wm.getClass().getDeclaredMethod("isWifiApEnabled");
                 connected = (Boolean) method.invoke(wm);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.v(TAG, "isWifiApEnabled reflection failed, will check network interfaces");
+            }
+        }
+        if (!connected) {
+            // Fallback: check for WiFi hotspot by looking for ap0 interface
+            Log.d(TAG, "isConnectedToLocalNetwork: checking for WiFi hotspot interface");
+            try {
+                ArrayList<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+                for (NetworkInterface netInterface : networkInterfaces) {
+                    String ifname = netInterface.getName();
+                    // ap0 is used for WiFi hotspot, check if it has valid IPv4 addresses
+                    if (ifname.startsWith("ap")) {
+                        ArrayList<InetAddress> addresses = Collections.list(netInterface.getInetAddresses());
+                        for (InetAddress addr : addresses) {
+                            if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+                                connected = true;
+                                Log.d(TAG, "Found WiFi hotspot interface: " + ifname);
+                                break;
+                            }
+                        }
+                        if (connected) break;
+                    }
+                }
+            } catch (SocketException e) {
+                Log.v(TAG, "Exception checking for ap0 interface: " + e);
             }
         }
         if (!connected) {
@@ -494,12 +553,51 @@ public class FsService extends Service implements Runnable {
             try {
                 ArrayList<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
                 for (NetworkInterface netInterface : networkInterfaces) {
-                    if (netInterface.getDisplayName().startsWith("rndis")) {
-                        connected = true;
+                    String ifname = netInterface.getName();
+                    // rndis is used for USB tethering
+                    if (ifname.startsWith("rndis")) {
+                        ArrayList<InetAddress> addresses = Collections.list(netInterface.getInetAddresses());
+                        for (InetAddress addr : addresses) {
+                            if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+                                connected = true;
+                                Log.d(TAG, "Found USB tethering interface: " + ifname);
+                                break;
+                            }
+                        }
+                        if (connected) break;
                     }
                 }
             } catch (SocketException e) {
                 e.printStackTrace();
+            }
+        }
+        if (!connected) {
+            // Final fallback: check if any non-loopback interfaces have valid local addresses
+            Log.d(TAG, "isConnectedToLocalNetwork: checking all network interfaces for local addresses");
+            try {
+                ArrayList<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+                for (NetworkInterface netInterface : networkInterfaces) {
+                    String ifname = netInterface.getName();
+                    // Skip loopback and certain system interfaces
+                    if (ifname.startsWith("lo") || ifname.startsWith("dummy")) {
+                        continue;
+                    }
+                    ArrayList<InetAddress> addresses = Collections.list(netInterface.getInetAddresses());
+                    for (InetAddress addr : addresses) {
+                        if (addr instanceof Inet4Address && !addr.isLoopbackAddress() && !addr.isLinkLocalAddress()) {
+                            String addressStr = addr.getHostAddress();
+                            // Check if it's a private IP
+                            if (isPrivateIpAddress(addressStr)) {
+                                connected = true;
+                                Log.d(TAG, "Found private IP on interface " + ifname + ": " + addressStr);
+                                break;
+                            }
+                        }
+                    }
+                    if (connected) break;
+                }
+            } catch (SocketException e) {
+                Log.v(TAG, "Exception during final network interface check: " + e);
             }
         }
         return connected;
