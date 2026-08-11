@@ -1,1 +1,7 @@
+// Lets Gradle download a matching JDK when the build machine has none,
+// so the toolchain pinned in app/build.gradle works on a fresh clone.
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
 include ':app'

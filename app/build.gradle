@@ -41,6 +41,14 @@ android {
     }
 }
 
+// Pin the compiler rather than inheriting whatever JDK happens to be on PATH.
+// Gradle locates a matching JDK, or downloads one via the resolver in settings.gradle.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'net.vrallev.android:cat:1.0.5'
