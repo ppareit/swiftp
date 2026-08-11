@@ -63,6 +63,16 @@ dependencies {
     implementation 'androidx.security:security-crypto:1.1.0-alpha06' // Used for EncryptedSharedPreferences
 }
 
+// The Locale SDK declares ranges that exclude the current Maven Central
+// releases of these support libraries. Pin the available compatible artifacts
+// so dependency resolution works with current repository metadata.
+configurations.configureEach {
+    resolutionStrategy.force(
+            'com.twofortyfouram:android-annotation:3.0.0',
+            'com.twofortyfouram:android-assertion:2.0.0'
+    )
+}
+
 android {
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
