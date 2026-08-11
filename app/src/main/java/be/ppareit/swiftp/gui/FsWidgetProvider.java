@@ -137,7 +137,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
                         startIntent, PendingIntent.FLAG_IMMUTABLE);
             } else {
                 pendingIntent = PendingIntent.getService(this, 0,
-                        startIntent, 0);
+                        startIntent, PendingIntent.FLAG_IMMUTABLE);
             }
             RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_layout);
             // setup the info on the widget
