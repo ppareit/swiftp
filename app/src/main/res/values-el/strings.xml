@@ -186,5 +186,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="disable_feat_title">Απενεργοποιήστε το FEAT</string>
     <string name="disable_syst_title">Απενεργοποιήστε το SYST</string>
     <string name="tls_limit_protocols_title">Περιορίστε τα πρωτόκολλα</string>
+    <string name="shortcut_on">Γρήγορη ενεργοποίηση</string>
 </resources>
 

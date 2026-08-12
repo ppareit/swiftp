@@ -38,6 +38,9 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.pm.ShortcutInfoCompat;
+import androidx.core.content.pm.ShortcutManagerCompat;
+import androidx.core.graphics.drawable.IconCompat;
 
 import net.vrallev.android.cat.Cat;
 
@@ -88,6 +91,19 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_activity_fragment, new PreferenceFragment(), null)
                 .commit();
+
+        if (VERSION.SDK_INT >= 25) {
+            Intent intent = new Intent("Intent.QuickOn", null, MainActivity.this, MainActivity.class);
+            ShortcutInfoCompat shortcut = new ShortcutInfoCompat.Builder(getApplicationContext(), "id1forever")
+                    .setShortLabel(getString(R.string.shortcut_on))
+                    .setIcon(IconCompat.createWithResource(getApplicationContext(), R.drawable.widget_on))
+                    .setIntent(intent)
+                    .build();
+            ShortcutManagerCompat.pushDynamicShortcut(getApplicationContext(), shortcut);
+            if (getIntent().getAction() != null && getIntent().getAction().equals("Intent.QuickOn")) {
+                FsService.start();
+            }
+        }
     }
 
     private boolean haveReadWritePermissions() {

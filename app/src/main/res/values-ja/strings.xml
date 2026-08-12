@@ -170,4 +170,5 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="disable_feat_title">FEAT を無効にする</string>
     <string name="disable_syst_title">SYST を無効にする</string>
     <string name="tls_limit_protocols_title">プロトコルを制限する</string>
+    <string name="shortcut_on">早速</string>
 </resources>

@@ -125,4 +125,5 @@ https://github.com/ppareit/swiftp/issues 提交您的建议。\n\n
     <string name="disable_feat_title">禁用 FEAT</string>
     <string name="disable_syst_title">禁用 SYST</string>
     <string name="tls_limit_protocols_title">限制协议</string>
+    <string name="shortcut_on">快速启动</string>
 </resources>

@@ -136,4 +136,5 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="disable_feat_title">Disabilita FEAT</string>
     <string name="disable_syst_title">Disabilita SIST</string>
     <string name="tls_limit_protocols_title">Limitare i protocolli</string>
+    <string name="shortcut_on">Presto</string>
 </resources>

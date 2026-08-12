@@ -141,4 +141,5 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="disable_feat_title">Schakel FUNCTIE uit</string>
     <string name="disable_syst_title">Schakel SYST uit</string>
     <string name="tls_limit_protocols_title">Beperk protocollen</string>
+    <string name="shortcut_on">Snel aan</string>
 </resources>
