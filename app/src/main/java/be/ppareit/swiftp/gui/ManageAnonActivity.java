@@ -11,13 +11,15 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.core.app.NavUtils;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.CheckBox;
@@ -43,6 +45,8 @@ public class ManageAnonActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.anon_layout);
+
+        setSupportActionBar(findViewById(R.id.my_toolbar));
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -126,11 +130,19 @@ public class ManageAnonActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             NavUtils.navigateUpFromSameTask(this);
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        new be.ppareit.swiftp.gui.Menu().init(item, this);
+        return true;
     }
 }

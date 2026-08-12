@@ -71,7 +71,7 @@ public class UserListFragment extends Fragment {
             refreshUserList();
         });
         getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(android.R.id.content, editFragment)
+                .replace(R.id.manage_users_activity_fragment, editFragment)
                 .addToBackStack("default")
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();

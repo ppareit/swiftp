@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/manage_users_activity_fragment"
+        android:paddingTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="be.ppareit.swiftp.gui.PreferenceFragment"
+        tools:layout="@android:layout/activity_list_item" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
