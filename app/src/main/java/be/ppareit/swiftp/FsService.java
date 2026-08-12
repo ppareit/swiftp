@@ -129,7 +129,7 @@ public class FsService extends Service implements Runnable {
                 try {
                     ContextCompat.startForegroundService(context, serviceIntent);
                 } catch (ForegroundServiceStartNotAllowedException e) {
-                    //
+                    Log.e(TAG, "Not allowed to start the server in the foreground", e);
                 }
             } else {
                 ContextCompat.startForegroundService(context, serviceIntent);

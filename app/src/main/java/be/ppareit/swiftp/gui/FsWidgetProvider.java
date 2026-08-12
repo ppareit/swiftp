@@ -76,7 +76,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
             try {
                 ContextCompat.startForegroundService(context, updateIntent);
             } catch (ForegroundServiceStartNotAllowedException e) {
-                //
+                Cat.e("Not allowed to start the widget update service in the foreground");
             }
         } else {
             ContextCompat.startForegroundService(context, updateIntent);
