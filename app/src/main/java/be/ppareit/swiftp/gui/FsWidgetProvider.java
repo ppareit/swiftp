@@ -18,6 +18,7 @@
  ******************************************************************************/
 package be.ppareit.swiftp.gui;
 
+import android.app.ForegroundServiceStartNotAllowedException;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -57,8 +58,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
         // watch for the broadcasts by the ftp server and update the widget if needed
         final String action = intent.getAction();
         if (FsService.ACTION_STARTED.equals(action) || FsService.ACTION_STOPPED.equals(action)) {
-            Intent updateIntent = new Intent(context, UpdateService.class);
-            ContextCompat.startForegroundService(context, updateIntent);
+            startService(context, new Intent(context, UpdateService.class));
         }
         super.onReceive(context, intent);
     }
@@ -68,8 +68,19 @@ public class FsWidgetProvider extends AppWidgetProvider {
                          int[] appWidgetIds) {
         Cat.d("onUpdated called");
         // let the updating happen by a service
-        Intent updateIntent = new Intent(context, UpdateService.class);
-        ContextCompat.startForegroundService(context, updateIntent);
+        startService(context, new Intent(context, UpdateService.class));
+    }
+
+    private void startService(Context context, Intent updateIntent) {
+        if (Build.VERSION.SDK_INT >= 31) {
+            try {
+                ContextCompat.startForegroundService(context, updateIntent);
+            } catch (ForegroundServiceStartNotAllowedException e) {
+                //
+            }
+        } else {
+            ContextCompat.startForegroundService(context, updateIntent);
+        }
     }
 
     public static class UpdateService extends Service {

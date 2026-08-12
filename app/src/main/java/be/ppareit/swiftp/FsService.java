@@ -21,6 +21,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package be.ppareit.swiftp;
 
 import android.app.AlarmManager;
+import android.app.ForegroundServiceStartNotAllowedException;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -123,7 +124,16 @@ public class FsService extends Service implements Runnable {
         Context context = App.getAppContext();
         Intent serviceIntent = new Intent(context, FsService.class);
         if (!FsService.isRunning()) {
-            ContextCompat.startForegroundService(context, serviceIntent);
+
+            if (Build.VERSION.SDK_INT >= 31) {
+                try {
+                    ContextCompat.startForegroundService(context, serviceIntent);
+                } catch (ForegroundServiceStartNotAllowedException e) {
+                    //
+                }
+            } else {
+                ContextCompat.startForegroundService(context, serviceIntent);
+            }
         }
     }
 
