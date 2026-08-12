@@ -206,6 +206,7 @@ public class FsSettings {
 
     public static int getAnonMaxConNumber() {
         String s = sp.getString("anon_max", "1");
+        if (s.isEmpty()) s = "1";
         int i = Integer.parseInt(s);
         Log.v(TAG, "Using anon max connections: " + i);
         return i;
