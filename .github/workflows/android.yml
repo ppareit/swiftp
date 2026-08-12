@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout SwiFTP repo
+        uses: actions/checkout@v7
 
       # 17 matches the toolchain pinned in app/build.gradle
       - name: Set up JDK 17
@@ -27,9 +28,3 @@ jobs:
       # assemble rather than build
       - name: Build
         run: ./gradlew assemble
-
-      - name: Upload APKs
-        uses: actions/upload-artifact@v7
-        with:
-          name: apks
-          path: app/build/outputs/apk/**/*.apk
