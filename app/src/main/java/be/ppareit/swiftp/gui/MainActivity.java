@@ -79,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
             ad.show();
         }
 
-        getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new PreferenceFragment())
+        getSupportFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new PreferenceFragment(), null)
                 .commit();
     }
 

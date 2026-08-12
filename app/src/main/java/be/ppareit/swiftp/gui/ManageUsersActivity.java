@@ -12,7 +12,7 @@ public class ManageUsersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(FsSettings.getTheme());
         super.onCreate(savedInstanceState);
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .replace(android.R.id.content, UserListFragment.newInstance())
                 .commit();
     }
