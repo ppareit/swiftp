@@ -119,7 +119,7 @@ abstract public class Util {
     public static boolean useScopedStorage() {
         if (useScoped != -1) return useScoped == 1; // gets used a lot so speed it up a little
         if (sp == null) sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-        final boolean choice = sp.getBoolean("AllowNewScopedStorage", false);
+        final boolean choice = sp.getBoolean("UseScopedStorage", false);
         useScoped = choice ? 1 : 0;
         return choice;
     }
