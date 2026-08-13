@@ -260,7 +260,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             }
         }
 
-        final CheckBoxPreference newScoped = findPref("newScopedStorage");
+        final CheckBoxPreference newScoped = findPref("useScopedStorage");
         if (newScoped != null && writeExternalStoragePref != null) {
             if (sp.getBoolean("NewScopedStorageUpgradeCheck", true)) {
                 // Don't break use if "write external storage" was used before the app update as the original
@@ -268,7 +268,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
                 // Runs one time only on update as pref won't be checked after clean install / wipe.
                 // Code is executed on app start which happens automatically after app update.
                 if (writeExternalStoragePref.isChecked()) { // needs to be true to not break use
-                    sp.edit().putBoolean("AllowNewScopedStorage", true).apply();
+                    sp.edit().putBoolean("useScopedStorage", true).apply();
                     sp.edit().putBoolean("NewScopedStorageUpgradeCheck", false).apply();
                     writeExtMultiUserUpgradePath();
                 }
@@ -286,7 +286,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             newScoped.setOnPreferenceChangeListener((preference, newValue) -> {
                 writeExternalStoragePref.setChecked(false);
                 writeExternalStoragePref.setEnabled(!((boolean) newValue));
-                sp.edit().putBoolean("AllowNewScopedStorage", (boolean) newValue).apply();
+                sp.edit().putBoolean("useScopedStorage", (boolean) newValue).apply();
                 Util.resetScoped();
                 return true;
             });
