@@ -275,10 +275,17 @@ public class FsService extends Service implements Runnable {
     // This opens a listening socket on all interfaces.
     void setupListener() throws IOException {
         initServerSocket();
+        // Without this the FTPS setup runs on every start, fails for want of a
+        // certificate nobody configured, and reports it as a caught exception.
+        if (!FsSettings.isImplicitUsed()) return;
         try {
             listenSocketSecure = new FTPSSockets().initServerSocket();
-        } catch (Exception e) {
-            Log.e(TAG, "Unable to open FTPS implicit port, bailing out: " + e.getLocalizedMessage());
+        } catch (IOException e) {
+            // Expected when FTPS is on but the certificate is missing or unusable.
+            Log.e(TAG, "Unable to open FTPS implicit port: " + e.getMessage());
+        } catch (RuntimeException e) {
+            // Not expected. Plain FTP still comes up, but say so plainly.
+            Log.e(TAG, "Unexpected failure opening the FTPS implicit port", e);
         }
     }
 

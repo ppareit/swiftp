@@ -121,7 +121,7 @@ public class TcpListener extends Thread {
     }
 
     private void listenSSLSocket() {
-        if (listenSocket == null) return;
+        if (listenSSLSocket == null) return;
         if (!FsSettings.isImplicitUsed()) return;
 
         new Thread(() -> {

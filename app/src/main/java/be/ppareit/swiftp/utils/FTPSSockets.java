@@ -109,18 +109,28 @@ public class FTPSSockets {
     /*
      * Sets up the context.
      * */
-    private void setContext() {
+    private void setContext() throws IOException {
         try {
             KeyManagerFactory kmFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             KeyStore ks = getKeyStore(KEYSTORE_CERT_FILENAME);
-            if (ks == null) return;
+            if (ks == null) {
+                throw new IOException("no keystore: " + KEYSTORE_CERT_FILENAME
+                        + " is missing or empty, so no certificate is configured");
+            }
             kmFactory.init(ks, getCertPass());
             TrustManager[] tm = getTrustManager();
-            if (tm == null) return;
-            putContext(SSLContext.getInstance("TLS"));
-            getContext().init(kmFactory.getKeyManagers(), tm, new SecureRandom());
-        } catch (Exception e) {
-            //
+            if (tm == null) {
+                throw new IOException("no trust manager: " + TRUST_STORE_CERT_FILENAME
+                        + " could not be loaded");
+            }
+            // Built here and published only once initialized, so a caller can never
+            // reach a context that exists but has no key manager behind it.
+            SSLContext newContext = SSLContext.getInstance("TLS");
+            newContext.init(kmFactory.getKeyManagers(), tm, new SecureRandom());
+            putContext(newContext);
+        } catch (GeneralSecurityException e) {
+            throw new IOException("could not build the FTPS context from the keystore: "
+                    + e.getMessage(), e);
         }
     }
 
