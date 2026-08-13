@@ -22,6 +22,7 @@ package be.ppareit.swiftp.gui;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -34,9 +35,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.viewmodel.CreationExtras;
 import androidx.preference.EditTextPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -89,6 +92,7 @@ import be.ppareit.swiftp.utils.Logging;
 public class PreferenceFragment extends PreferenceFragmentCompat {
 
     private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
+    private static final int POST_NOTIFICATIONS_REQUEST_CODE = 15;
     private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
     private static final int PICK_CERT_FILE_JKS = 84;
     private static final int PICK_CERT_FILE_BKS = 85;
@@ -335,6 +339,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             });
         }
 
+        // Notification setting for old devices
         Preference showNotificationIconPref = findPref("show_notification_icon_preference");
         if (showNotificationIconPref != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -347,6 +352,22 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
                 FsService.stop();
                 return true;
             });
+        }
+
+        // Notification setting for recent devices
+        TwoStatePreference serverNotificationPref = findPref("show_server_notification");
+        if (serverNotificationPref != null) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                if (serverNotificationPref.getParent() != null) {
+                    serverNotificationPref.getParent().removePreference(serverNotificationPref);
+                }
+            } else {
+                serverNotificationPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                    onServerNotificationToggled();
+                    // Never flip on the tap alone, the system decides and onResume shows it
+                    return false;
+                });
+            }
         }
 
         Preference helpPref = findPref("help");
@@ -855,6 +876,67 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         }
     }
 
+    /**
+     * The switch shows whether Android will really display our notification, so switching it
+     * on means asking the system, and switching it off means sending the user to the system
+     * settings: an app can neither revoke its own permission nor hide the notification of a
+     * running foreground service.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void onServerNotificationToggled() {
+        final Context context = getActivity();
+        if (context == null) return;
+        if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+            openNotificationSettings(context);
+        } else if (Build.VERSION.SDK_INT >= 33 && canRequestPostNotifications()) {
+            sp.edit().putBoolean("post_notifications_requested", true).apply();
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    POST_NOTIFICATIONS_REQUEST_CODE);
+        } else {
+            openNotificationSettings(context);
+        }
+    }
+
+    /**
+     * The system shows its dialog once, after that requestPermissions is silently ignored.
+     * shouldShowRequestPermissionRationale can not tell "never asked" from "denied for
+     * good", both are false, hence the stored flag.
+     */
+    @RequiresApi(api = 33)
+    private boolean canRequestPostNotifications() {
+        if (!sp.getBoolean("post_notifications_requested", false)) return true;
+        return shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void openNotificationSettings(Context context) {
+        try {
+            startActivity(new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                    .putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName()));
+        } catch (ActivityNotFoundException e) {
+            Cat.e("No notification settings screen, falling back on the app details");
+            startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", context.getPackageName(), null)));
+        }
+    }
+
+    /**
+     * Read the state of the switch from the system, the only place it is kept.
+     */
+    private void updateServerNotificationPref() {
+        TwoStatePreference serverNotificationPref = findPref("show_server_notification");
+        if (serverNotificationPref == null) return;
+        final Context context = serverNotificationPref.getContext();
+        final boolean enabled = NotificationManagerCompat.from(context).areNotificationsEnabled();
+        // Android suppressed our notification while it was not allowed and does not bring it
+        // back on its own, so post it again now that it may be shown.
+        if (enabled && !serverNotificationPref.isChecked() && FsService.isRunning()) {
+            NotificationManagerCompat.from(context).notify(FsNotification.NOTIFICATION_ID,
+                    FsNotification.setupNotification(context));
+        }
+        serverNotificationPref.setChecked(enabled);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestAccessCoarseLocationPermission() {
         String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -870,6 +952,9 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
                     && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 mAutoconnectListPref.getDialog().cancel();
             }
+        } else if (requestCode == POST_NOTIFICATIONS_REQUEST_CODE) {
+            // Denying is fine, the server runs either way
+            updateServerNotificationPref();
         }
     }
 
@@ -879,6 +964,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
 
         updateRunningState();
         updateUsersPref();
+        updateServerNotificationPref();
 
         Cat.d("onResume: Registering the FTP server actions");
         IntentFilter filter = new IntentFilter();

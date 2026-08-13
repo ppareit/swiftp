@@ -129,6 +129,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                     android:title="@string/battery_saver_setting_title"
                     android:summary="@string/battery_saver_desc"/>
 
+                <!-- Not persisted, the checked state is read from the system -->
+                <CheckBoxPreference
+                    android:key="show_server_notification"
+                    android:persistent="false"
+                    android:summary="@string/show_server_notification_summary"
+                    android:title="@string/show_server_notification" />
+
             </PreferenceCategory>
 
             <PreferenceCategory
