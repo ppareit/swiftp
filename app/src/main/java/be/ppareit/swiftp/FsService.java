@@ -29,6 +29,9 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.net.LinkProperties;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
@@ -283,6 +286,7 @@ public class FsService extends Service implements Runnable {
         listenSocket = new ServerSocket();
         listenSocket.setReuseAddress(true);
         listenSocket.bind(new InetSocketAddress(FsSettings.getPortNumber()));
+        Log.i(TAG, "FTP listener bound to " + listenSocket.getLocalSocketAddress());
     }
 
     @Override
@@ -295,6 +299,8 @@ public class FsService extends Service implements Runnable {
             sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
             return;
         }
+
+        logNetworkConfiguration();
 
         // Initialization of wifi, set up the socket
         try {
@@ -476,6 +482,44 @@ public class FsService extends Service implements Runnable {
             e.printStackTrace();
         }
         return returnAddress;
+    }
+
+    private static void logNetworkConfiguration() {
+        Context context = App.getAppContext();
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Network activeNetwork = cm.getActiveNetwork();
+        NetworkCapabilities capabilities = activeNetwork == null ? null : cm.getNetworkCapabilities(activeNetwork);
+        LinkProperties linkProperties = activeNetwork == null ? null : cm.getLinkProperties(activeNetwork);
+
+        Log.i(TAG, "Active network=" + activeNetwork
+                + ", capabilities=" + capabilities
+                + ", linkProperties=" + linkProperties);
+
+        try {
+            for (NetworkInterface networkInterface
+                    : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                Log.i(TAG, "Interface " + networkInterface.getName()
+                        + ": displayName=" + networkInterface.getDisplayName()
+                        + ", up=" + networkInterface.isUp()
+                        + ", loopback=" + networkInterface.isLoopback()
+                        + ", virtual=" + networkInterface.isVirtual()
+                        + ", multicast=" + networkInterface.supportsMulticast());
+                for (InetAddress address
+                        : Collections.list(networkInterface.getInetAddresses())) {
+                    Log.i(TAG, "Interface " + networkInterface.getName()
+                            + " address=" + address.getHostAddress()
+                            + ", siteLocal=" + address.isSiteLocalAddress()
+                            + ", linkLocal=" + address.isLinkLocalAddress()
+                            + ", loopback=" + address.isLoopbackAddress());
+                }
+            }
+        } catch (SocketException e) {
+            Log.w(TAG, "Unable to enumerate network interfaces", e);
+        }
+
+        InetAddress selectedAddress = getLocalInetAddress();
+        Log.i(TAG, "Selected local FTP address="
+                + (selectedAddress == null ? "none" : selectedAddress.getHostAddress()));
     }
 
     /**
