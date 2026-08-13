@@ -74,7 +74,8 @@ public class CmdRETR extends FtpCmd implements Runnable {
             FileUtil.Gen gen;
             if (docFileToRetr != null) gen = FileUtil.convertDocumentFileToGen(docFileToRetr);
             else gen = FileUtil.convertFileToGen(fileToRetr);
-            if (validate(gen, param) != null) break mainblock;
+            errString = validate(gen, param);
+            if (errString != null) break mainblock;
 
             FileInputStream in = null;
             InputStream is = null;
