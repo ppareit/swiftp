@@ -45,7 +45,7 @@ android {
 // Gradle locates a matching JDK, or downloads one via the resolver in settings.gradle.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
