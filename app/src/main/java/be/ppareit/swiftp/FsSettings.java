@@ -309,7 +309,7 @@ public class FsSettings {
      * Returns the data connection range low port;
      * */
     public static int getPortRangeLow() {
-        return Integer.parseInt(getPortRangeLowString());
+        return parseRangePort(getPortRangeLowString());
     }
 
     /*
@@ -324,7 +324,17 @@ public class FsSettings {
      * Returns the data connection range high port;
      * */
     public static int getPortRangeHigh() {
-        return Integer.parseInt(getPortRangeHighString());
+        return parseRangePort(getPortRangeHighString());
+    }
+
+    private static int parseRangePort(String value) {
+        // null when preference screen is empty
+        if (value == null) return 0;
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     /*
