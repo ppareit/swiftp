@@ -33,12 +33,12 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.net.ssl.SSLSocket;
 
 import be.ppareit.swiftp.App;
-import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
@@ -346,16 +346,10 @@ public class SessionThread extends Thread {
     /**
      * Sanitize the logged commands so we don't leak username or password.
      */
-    private String sanitizeCommand(String cmd) {
-        // Don't sanitize in debug build
-        if (BuildConfig.DEBUG) {
-            return cmd;
-        }
-        // Running in release
-        if (cmd.trim().startsWith("PASS")) {
-            return "PASS [hidden]";
-        } else if (cmd.trim().startsWith("USER")) {
-            return "USER [hidden]";
+    static String sanitizeCommand(String cmd) {
+        final String verb = cmd.trim().split(" ")[0].toUpperCase();
+        if (verb.equals("PASS") || verb.equals("USER")) {
+            return verb + " [hidden]";
         }
         return cmd;
     }
@@ -380,12 +374,12 @@ public class SessionThread extends Thread {
             if (cmdSSLSocket != null) reader = new InputStreamReader(cmdSSLSocket.getInputStream());
             else reader = new InputStreamReader(cmdSocket.getInputStream());
             final BufferedReader in = new BufferedReader(reader, 8192); // use 8k buffer
-            final String ftps = "[ FTPS ] ";
             while (true) {
                 String line;
+                final String prefix; // only in log
                 if (cmdSSLSocket != null) {
                     line = in.readLine();
-                    logging.appendLog(ftps + line);
+                    prefix = "[ FTPS ] ";
                 } else if (cmdSSLAuthSocket != null) {
                     if (readerSSL == null) {
                         logging.appendLog("readerSSL is null *****");
@@ -393,14 +387,15 @@ public class SessionThread extends Thread {
                         inSSL = new BufferedReader(readerSSL, 8192); // use 8k buffer
                     }
                     line = inSSL.readLine();
-                    logging.appendLog(ftps + line);
+                    prefix = "[ FTPS ] ";
                 } else {
                     line = in.readLine(); // will accept \r\n or \n for terminator
-                    logging.appendLog(line);
+                    prefix = "[ FTP ] ";
                 }
                 if (line != null) {
-                    logging.appendLog(sanitizeCommand(line));
-                    Cat.d("Received line from client: " + sanitizeCommand(line));
+                    final String logLine = prefix + sanitizeCommand(line);
+                    logging.appendLog(logLine);
+                    Cat.d("Received line from client: " + logLine);
                     FtpCmd.dispatchCommand(this, line);
                 } else {
                     logging.appendLog("quitting...");
