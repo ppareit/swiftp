@@ -25,15 +25,18 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:defaultValue="false"
         android:key="running_switch"
         android:summary="@string/running_summary_stopped"
-        android:title="@string/running_label" />
+        android:title="@string/running_label"
+        app:iconSpaceReserved="false" />
     <Preference
         android:key="market_version"
         android:summary="@string/market_version_summary"
-        android:title="@string/market_version_label" />
+        android:title="@string/market_version_label"
+        app:iconSpaceReserved="false" />
 
     <PreferenceCategory
         android:key="settings"
-        android:title="@string/settings_label">
+        android:title="@string/settings_label"
+        app:iconSpaceReserved="false">
 
         <Preference
             android:key="manage_users"
@@ -60,8 +63,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         </PreferenceScreen>
 
 
-        <PreferenceScreen android:title="@string/advanced_settings_label"
-            android:key="preference_screen_advanced">
+        <PreferenceScreen
+            android:key="preference_screen_advanced"
+            android:title="@string/advanced_settings_label">
 
             <PreferenceCategory
                 android:title="@string/ports_title"
@@ -69,31 +73,28 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
                 <EditTextPreference
                     android:defaultValue="@string/portnumber_default"
-                    android:key="portNum"
                     android:inputType="number"
+                    android:key="portNum"
                     android:title="@string/port_number_label" />
 
                 <EditTextPreference
                     android:defaultValue="@string/portnumber_default_pasv_low"
                     android:inputType="number"
                     android:key="portRangePasvLow"
-                    android:title="@string/port_number_label_data_low"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/port_number_label_data_low" />
 
                 <EditTextPreference
                     android:defaultValue="@string/portnumber_default_pasv_high"
                     android:inputType="number"
                     android:key="portRangePasvHigh"
-                    android:title="@string/port_number_label_data_high"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/port_number_label_data_high" />
 
                 <EditTextPreference
                     android:defaultValue="@string/portnumber_default_implicit"
                     android:dependency="enableImplicitPort"
                     android:inputType="number"
                     android:key="portNumImplicit"
-                    android:title="@string/port_number_label_implicit"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/port_number_label_implicit" />
 
             </PreferenceCategory>
 
@@ -113,21 +114,20 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
                 <CheckBoxPreference
                     android:defaultValue="@string/useScopedStorage_default"
-                    android:key="useScopedStorage"
-                    android:drawableLeft="@drawable/ic_shared_dir"
                     android:drawableStart="@drawable/ic_shared_dir"
-                    android:title="@string/use_scoped_storage_label"
+                    android:drawableLeft="@drawable/ic_shared_dir"
+                    android:key="useScopedStorage"
                     android:summary="@string/use_scope_storage_summary"
-                    />
+                    android:title="@string/use_scoped_storage_label" />
 
                 <ListPreference
                     android:defaultValue="0"
+                    android:dialogTitle="@string/battery_saver_setting_title"
                     android:entries="@array/pref_list_battery_saver_titles"
                     android:entryValues="@array/pref_list_battery_saver_values"
                     android:key="battery_saver"
-                    android:dialogTitle="@string/battery_saver_setting_title"
-                    android:title="@string/battery_saver_setting_title"
-                    android:summary="@string/battery_saver_desc"/>
+                    android:summary="@string/battery_saver_desc"
+                    android:title="@string/battery_saver_setting_title" />
 
                 <!-- Not persisted, the checked state is read from the system -->
                 <CheckBoxPreference
@@ -140,7 +140,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
             <PreferenceCategory
                 android:key="settings"
-                android:title="@string/logging">
+                android:title="@string/logging"
+                app:iconSpaceReserved="false">
                 <CheckBoxPreference
                     android:defaultValue="@string/enableLogging_default"
                     android:key="enable_logging"
@@ -152,16 +153,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
             </PreferenceCategory>
 
-            <PreferenceCategory android:title="@string/ftps_title"
-                app:iconSpaceReserved="false" >
+            <PreferenceCategory
+                android:title="@string/ftps_title"
+                app:iconSpaceReserved="false">
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="enableImplicitPort"
-                    android:title="@string/enable_tls_implicit"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/enable_tls_implicit" />
 
                 <!-- SSL not tested at all so leaving commented and fully disabled -->
                 <!-- <CheckBoxPreference
@@ -169,8 +170,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                      android:drawableStart="@drawable/ic_shared_dir"
                      android:drawableLeft="@drawable/ic_shared_dir"
                      android:key="enableSsl"
-                     android:title="@string/enable_ssl"
-                     app:iconSpaceReserved="false" />-->
+                     android:title="@string/enable_ssl" />-->
 
                 <CheckBoxPreference
                     android:defaultValue="false"
@@ -178,8 +178,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="disablePlainPort"
                     android:summary="@string/implicit_only_summary"
-                    android:title="@string/disable_plain_port"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/disable_plain_port" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
@@ -187,128 +186,113 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="disablePlainNotExplicit"
                     android:summary="@string/implicit_explicit_only_summary"
-                    android:title="@string/disable_plain_not_explicit"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/disable_plain_not_explicit" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="certKeyStore"
-                    android:title="@string/cert_keystore"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/cert_keystore" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="certTrustStore"
-                    android:title="@string/cert_trust_store"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/cert_trust_store" />
 
                 <EditTextPreference
                     android:defaultValue=""
                     android:inputType="textPassword"
                     android:key="certPassword"
-                    android:title="@string/cert_pass"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/cert_pass" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="certShowPassword"
-                    android:title="@string/cert_show_pass"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/cert_show_pass" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="useClientCert"
-                    android:title="@string/cert_use_client"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/cert_use_client" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="early150Response"
-                    android:title="@string/early_150_response"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/early_150_response" />
 
                 <MultiSelectListPreference
                     android:dialogTitle="@string/tls_limit_protocols_title"
                     android:key="limitTLSProtocols"
-                    android:title="@string/tls_limit_protocols_title"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/tls_limit_protocols_title" />
 
             </PreferenceCategory>
 
-            <PreferenceCategory android:title="@string/security_section_title"
-                app:iconSpaceReserved="false" >
+            <PreferenceCategory
+                android:title="@string/security_section_title"
+                app:iconSpaceReserved="false">
 
                 <MultiSelectListPreference
                     android:dialogTitle="@string/ip_list_title"
                     android:key="ip_list"
-                    android:title="@string/ip_list_title"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/ip_list_title" />
 
                 <EditTextPreference
                     android:defaultValue=""
+                    android:hint="000.111.0.*"
                     android:inputType="text"
                     android:key="manuallyAddIP"
-                    android:hint="000.111.0.*"
-                    android:title="@string/manually_add_ip"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/manually_add_ip" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="clearUnusedIPs"
-                    android:title="@string/clear_unused_ips"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/clear_unused_ips" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="denyUntilAllowed"
-                    android:title="@string/deny_until_allowed"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/deny_until_allowed" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="denyOnFailedLogins"
-                    android:title="@string/deny_on_failed_logins"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/deny_on_failed_logins" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="disableBanner"
-                    android:title="@string/disable_banner_title"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/disable_banner_title" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="disableFeat"
-                    android:title="@string/disable_feat_title"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/disable_feat_title" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:drawableStart="@drawable/ic_shared_dir"
                     android:drawableLeft="@drawable/ic_shared_dir"
                     android:key="disableSyst"
-                    android:title="@string/disable_syst_title"
-                    app:iconSpaceReserved="false" />
+                    android:title="@string/disable_syst_title" />
 
             </PreferenceCategory>
 
@@ -318,7 +302,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <PreferenceCategory
         android:key="extra_category"
-        android:title="@string/extra_label">
+        android:title="@string/extra_label"
+        app:iconSpaceReserved="false">
         <Preference
             android:key="help"
             android:title="@string/help_label" />
