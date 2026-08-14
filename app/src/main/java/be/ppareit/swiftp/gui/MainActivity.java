@@ -34,12 +34,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import net.vrallev.android.cat.Cat;
 
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.main_layout);
         setSupportActionBar(findViewById(R.id.my_toolbar));
-        onBackPressedListener();
+        syncUpArrowWithBackStack();
 
         if (!haveReadWritePermissions()) {
             requestReadWritePermissions();
@@ -164,17 +165,19 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void onBackPressedListener() {
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-                    MainActivity.this.finish();
-                } else {
-                    getSupportFragmentManager().popBackStack();
-                    if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                }
-            }
-        });
+    private void syncUpArrowWithBackStack() {
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(
+                new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
+                        showUpArrow(f.getTag() != null);
+                    }
+                }, false);
+        showUpArrow(false);
+    }
+
+    private void showUpArrow(boolean show) {
+        if (getSupportActionBar() == null) return;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(show);
     }
 }

@@ -38,7 +38,6 @@ import android.os.Handler;
 import android.provider.Settings;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.viewmodel.CreationExtras;
 import androidx.preference.EditTextPreference;
@@ -136,7 +135,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
                         .replace(R.id.main_activity_fragment, new PreferenceFragment(), "preference_screen_advanced")
                         .addToBackStack("default")
                         .commit();
-                ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 return true;
             });
         }
@@ -150,7 +148,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
                         .replace(R.id.main_activity_fragment, new PreferenceFragment(), "appearance_screen")
                         .addToBackStack("default")
                         .commit();
-                ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 return true;
             });
         }

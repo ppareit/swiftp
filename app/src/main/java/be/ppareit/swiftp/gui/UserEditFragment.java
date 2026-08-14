@@ -75,11 +75,15 @@ public class UserEditFragment extends Fragment {
             String newChroot = chroot.getText().toString();
             if (validateInput(newUsername, newPassword)) {
                 editFinishedListener.onEditActionFinished(item, new FtpUser(newUsername, newPassword, newChroot, uriString));
-                getActivity().onBackPressed();
+                goBack();
             }
         });
-        root.findViewById(R.id.user_cancel_btn).setOnClickListener((buttonView) -> getActivity().onBackPressed());
+        root.findViewById(R.id.user_cancel_btn).setOnClickListener((buttonView) -> goBack());
         return root;
+    }
+
+    private void goBack() {
+        requireActivity().getOnBackPressedDispatcher().onBackPressed();
     }
 
     @Override
