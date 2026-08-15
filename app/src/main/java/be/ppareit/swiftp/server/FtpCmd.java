@@ -244,6 +244,22 @@ public abstract class FtpCmd implements Runnable {
         return canonicalPath.startsWith(canonicalChroot + File.separator);
     }
 
+    /**
+     * The path as the client should see it, rooted at the chroot, or null when the path
+     * lies outside the chroot and there is nothing sensible to report.
+     */
+    static String chrootRelativePath(String canonicalChroot, String canonicalPath) {
+        if (!isWithinChroot(canonicalChroot, canonicalPath)) {
+            return null;
+        }
+        // the filesystem root carries a separator that the visible path has to keep
+        int prefix = canonicalChroot.endsWith(File.separator)
+                ? canonicalChroot.length() - 1
+                : canonicalChroot.length();
+        String relative = canonicalPath.substring(prefix);
+        return relative.isEmpty() ? File.separator : relative;
+    }
+
     public boolean violatesChroot(File file) {
         try {
             // taking the canonical path as new devices have sdcard symbolic linked

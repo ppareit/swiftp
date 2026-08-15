@@ -44,23 +44,24 @@ public class CmdPWD extends FtpCmd implements Runnable {
     @Override
     public void run() {
         Log.d(TAG, "PWD executing");
-        // We assume that the chroot restriction has been applied, and that
-        // therefore the current directory is located somewhere within the
-        // chroot directory. Therefore, we can just slice of the chroot
-        // part of the current directory path in order to get the
-        // user-visible path (inside the chroot directory).
+        // The chroot restriction has been applied when the working directory was set, so
+        // the user-visible path is the current directory with the chroot part taken off
+        // the front. It cannot simply be sliced off by length: a chroot of "/" would lose
+        // the leading slash, and getChrootDir() falls back to another directory entirely
+        // once the session's own chroot stops existing, which can leave the working
+        // directory outside it.
         try {
             String currentDir = sessionThread.getWorkingDir().getCanonicalPath();
             File chrootDir = sessionThread.getChrootDir();
+            String visibleDir = "/";
             if (chrootDir != null) {
-                currentDir = currentDir.substring(chrootDir.getCanonicalPath().length());
+                visibleDir = chrootRelativePath(chrootDir.getCanonicalPath(), currentDir);
+                if (visibleDir == null) {
+                    Log.i(TAG, "Working dir lies outside the chroot, reporting the root");
+                    visibleDir = "/";
+                }
             }
-            // The root directory requires special handling to restore its
-            // leading slash
-            if (currentDir.length() == 0) {
-                currentDir = "/";
-            }
-            sessionThread.writeString("257 \"" + currentDir + "\"\r\n");
+            sessionThread.writeString("257 \"" + visibleDir + "\"\r\n");
         } catch (IOException e) {
             // This shouldn't happen unless our input validation has failed
             Log.e(TAG, "PWD canonicalize");
