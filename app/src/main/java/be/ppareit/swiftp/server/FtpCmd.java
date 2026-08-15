@@ -228,6 +228,22 @@ public abstract class FtpCmd implements Runnable {
         return new File(existingPrefix, param);
     }
 
+    /**
+     * True when the path is the chroot itself, or something below it.
+     */
+    private static boolean isWithinChroot(String canonicalChroot, String canonicalPath) {
+        if (canonicalPath.equals(canonicalChroot)) {
+            return true;
+        }
+        if (canonicalChroot.endsWith(File.separator)) {
+            // the filesystem root, which already carries its separator
+            return canonicalPath.startsWith(canonicalChroot);
+        }
+        // the separator has to take part: a bare startsWith accepts every sibling whose
+        // name merely begins with the chroot's, eg /sdcard/Sharefolder for /sdcard/Share
+        return canonicalPath.startsWith(canonicalChroot + File.separator);
+    }
+
     public boolean violatesChroot(File file) {
         try {
             // taking the canonical path as new devices have sdcard symbolic linked
@@ -235,11 +251,11 @@ public abstract class FtpCmd implements Runnable {
             File chroot = sessionThread.getChrootDir();
             String canonicalChroot = chroot.getCanonicalPath();
             String canonicalPath = file.getCanonicalPath();
-            if (!canonicalPath.startsWith(canonicalChroot)) {
+            if (!isWithinChroot(canonicalChroot, canonicalPath)) {
                 Log.i(TAG, "Path violated folder restriction, denying");
                 Log.d(TAG, "path: " + canonicalPath);
                 Log.d(TAG, "chroot: " + chroot.toString());
-                return true; // the path must begin with the chroot path
+                return true; // the path must be the chroot or below it
             }
             return false;
         } catch (Exception e) {
@@ -255,11 +271,11 @@ public abstract class FtpCmd implements Runnable {
             File chroot = sessionThread.getChrootDir();
             String canonicalChroot = chroot.getCanonicalPath();
             String canonicalPath = FileUtil.getFileTypePathFromDocumentFile(file);
-            if (!canonicalPath.startsWith(canonicalChroot)) {
+            if (!isWithinChroot(canonicalChroot, canonicalPath)) {
                 Log.i(TAG, "Path violated folder restriction, denying");
                 Log.d(TAG, "path: " + canonicalPath);
                 Log.d(TAG, "chroot: " + chroot.toString());
-                return true; // the path must begin with the chroot path
+                return true; // the path must be the chroot or below it
             }
             return false;
         } catch (Exception e) {
