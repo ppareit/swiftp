@@ -34,6 +34,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
+    <!-- Tasker/Locale integration, Tell tasker we start/stop -->
+    <queries>
+        <intent>
+            <action android:name="com.twofortyfouram.locale.intent.action.REQUEST_QUERY" />
+        </intent>
+    </queries>
+
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
@@ -109,6 +116,43 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <service
             android:name="be.ppareit.swiftp.gui.FsWidgetProvider$UpdateService"
             android:foregroundServiceType="connectedDevice" />
+
+        <!-- Tasker/Locale integration, Action: the host tells us to start or stop the server. -->
+        <activity
+            android:name="be.ppareit.swiftp.tasker.ActionConfigSetServerState"
+            android:exported="true"
+            android:icon="@drawable/widget_on"
+            android:label="@string/tasker_action_set_state"
+            android:theme="@style/AppThemeDark"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
+            </intent-filter>
+        </activity>
+
+        <!-- Tasker/Locale integration, State: host asks whether the server is currently running. -->
+        <activity
+            android:name="be.ppareit.swiftp.tasker.StateConfigServerRunning"
+            android:exported="true"
+            android:icon="@drawable/widget_on"
+            android:label="@string/tasker_state_running"
+            android:theme="@style/AppThemeDark">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_CONDITION" />
+            </intent-filter>
+        </activity>
+
+        <!-- Tasker/Locale integration, Event: we tell the host the server started or stopped. -->
+        <activity
+            android:name="be.ppareit.swiftp.tasker.EventConfigServerStateChanged"
+            android:exported="true"
+            android:icon="@drawable/widget_on"
+            android:label="@string/tasker_event_state_changed"
+            android:theme="@style/AppThemeDark">
+            <intent-filter>
+                <action android:name="net.dinglisch.android.tasker.ACTION_EDIT_EVENT" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".gui.FsTileService"

@@ -23,11 +23,13 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;
+
+import androidx.core.content.ContextCompat;
 
 import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.gui.FsWidgetProvider;
+import be.ppareit.swiftp.tasker.ServerStateBroadcastReceiver;
 
 public class App extends Application {
 
@@ -43,13 +45,12 @@ public class App extends Application {
         intentFilter.addAction(FsService.ACTION_STOPPED);
         intentFilter.addAction(FsService.ACTION_FAILEDTOSTART);
 
-        if (Build.VERSION.SDK_INT >= 33) {
-            registerReceiver(new NsdService.ServerActionsReceiver(), intentFilter, FsService.RECEIVER_EXPORTED);
-            registerReceiver(new FsWidgetProvider(), intentFilter, FsService.RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(new NsdService.ServerActionsReceiver(), intentFilter);
-            registerReceiver(new FsWidgetProvider(), intentFilter);
-        }
+        ContextCompat.registerReceiver(this, new NsdService.ServerActionsReceiver(),
+                intentFilter, ContextCompat.RECEIVER_EXPORTED);
+        ContextCompat.registerReceiver(this, new FsWidgetProvider(),
+                intentFilter, ContextCompat.RECEIVER_EXPORTED);
+        ContextCompat.registerReceiver(this, new ServerStateBroadcastReceiver(),
+                intentFilter, ContextCompat.RECEIVER_EXPORTED);
     }
 
     /**

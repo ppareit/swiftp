@@ -247,4 +247,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="disable_syst_title">Disable SYST</string>
     <string name="tls_limit_protocols_title">Limit protocols</string>
     <string name="shortcut_on">Quick on</string>
+
+    <!-- Shown in Tasker's plugin list, so these read as product names. -->
+    <string name="tasker_action_set_state">FTP Server: start or stop</string>
+    <string name="tasker_state_running">FTP Server: is running</string>
+    <string name="tasker_event_state_changed">FTP Server: started or stopped</string>
 </resources>

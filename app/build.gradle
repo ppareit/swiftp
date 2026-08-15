@@ -1,4 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
 
@@ -49,6 +52,12 @@ java {
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+    }
+}
+
 dependencies {
     implementation 'net.vrallev.android:cat:1.0.5'
     implementation 'androidx.appcompat:appcompat:1.7.1'
@@ -59,6 +68,9 @@ dependencies {
     implementation 'androidx.security:security-crypto:1.1.0'
     implementation 'androidx.preference:preference:1.2.1'
     implementation 'androidx.fragment:fragment:1.8.9'
+
+    // Tasker/Locale plugin support, Tasker install is optional
+    implementation 'com.joaomgcd:taskerpluginlibrary:0.4.10'
 }
 
 android {
