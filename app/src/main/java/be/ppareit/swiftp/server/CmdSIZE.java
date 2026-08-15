@@ -1,9 +1,10 @@
 package be.ppareit.swiftp.server;
 
 import java.io.File;
-import java.io.IOException;
 
 import android.util.Log;
+
+import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdSIZE extends FtpCmd {
     private static final String TAG = CmdSIZE.class.getSimpleName();
@@ -22,31 +23,24 @@ public class CmdSIZE extends FtpCmd {
         String param = getParameter(input);
         long size = 0;
         mainblock: {
-            File currentDir = sessionThread.getWorkingDir();
-            if (param.contains(File.separator)) {
-                errString = "550 No directory traversal allowed in SIZE param\r\n";
-                break mainblock;
-            }
-            File target = new File(currentDir, param);
-            // We should have caught any invalid location access before now, but
-            // here we check again, just to be explicitly sure.
+            File target = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                    sessionThread.getWorkingDir(), param);
             if (violatesChroot(target)) {
                 errString = "550 SIZE target violates chroot\r\n";
                 break mainblock;
             }
-            if (!target.exists()) {
+            // Under scoped storage the plain File cannot be read and would report 0
+            FileUtil.Gen gen = FileUtil.createGenFromFile(target);
+            if (!gen.exists()) {
                 errString = "550 Cannot get the SIZE of nonexistent object\r\n";
-                try {
-                    Log.i(TAG, "Failed getting size of: " + target.getCanonicalPath());
-                } catch (IOException e) {
-                }
+                Log.d(TAG, "Failed getting size of: " + target.getAbsolutePath());
                 break mainblock;
             }
-            if (!target.isFile()) {
+            if (!gen.isFile()) {
                 errString = "550 Cannot get the size of a non-file\r\n";
                 break mainblock;
             }
-            size = target.length();
+            size = gen.length();
         }
         if (errString != null) {
             sessionThread.writeString(errString);
