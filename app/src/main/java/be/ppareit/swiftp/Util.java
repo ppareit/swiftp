@@ -20,10 +20,11 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp;
 
-import android.content.SharedPreferences;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.util.Log;
+
+import be.ppareit.swiftp.utils.AllowedFolders;
+import be.ppareit.swiftp.utils.StorageProbe;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -35,7 +36,6 @@ import java.util.TimeZone;
 
 abstract public class Util {
     final static String TAG = Util.class.getSimpleName();
-    private static SharedPreferences sp = null;
     private static int useScoped = -1;
 
     public static byte byteOfInt(int value, int which) {
@@ -112,19 +112,23 @@ abstract public class Util {
         return df.parse(time);
     }
 
+    /** Whether the plain File path can still serve the whole of shared storage. */
+    public static boolean hasFullSdCardAccess() {
+        return StorageProbe.hasFullSdCardAccess();
+    }
+
     /*
-     * Implemented mainly for Android 11+ where its forced but can work on earlier Android versions.
-     * Uses an override for when File fails to work during a test as the user sets up the app.
-     * */
+     * Whether to serve files through SAF rather than through File.
+     */
     public static boolean useScopedStorage() {
         if (useScoped != -1) return useScoped == 1; // gets used a lot so speed it up a little
-        if (sp == null) sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-        final boolean choice = sp.getBoolean("useScopedStorage", false);
-        useScoped = choice ? 1 : 0;
-        return choice;
+        final boolean scoped = !hasFullSdCardAccess() || !AllowedFolders.isEmpty();
+        useScoped = scoped ? 1 : 0;
+        return scoped;
     }
 
     public static void resetScoped() {
-        useScoped = -1; // reset on pref change
+        useScoped = -1; // reset when the granted folders change
+        StorageProbe.invalidate();
     }
 }

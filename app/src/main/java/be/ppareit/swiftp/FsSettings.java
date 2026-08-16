@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Set;
 
 import be.ppareit.swiftp.server.FtpUser;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 
 public class FsSettings {
@@ -100,28 +101,7 @@ public class FsSettings {
             }
         }
         users.removeAll(found);
-        if (actualDelete /*Don't do this on modify.*/) {
-            for (FtpUser user : found) {
-                removeUserUriPerm(user);
-            }
-        }
         sp.edit().putString("users", gson.toJson(users)).apply();
-    }
-
-    private static void removeUserUriPerm(FtpUser user) {
-        final String userUriString = user.getUriString();
-        if (userUriString == null || userUriString.isEmpty()) return;
-        List<UriPermission> list = App.getAppContext().getContentResolver().getPersistedUriPermissions();
-        for (UriPermission uriToRemove : list) {
-            if (uriToRemove == null) continue;
-            final String s = uriToRemove.getUri().getPath();
-            if (s == null) continue;
-            if (s.equals(userUriString)) {
-                App.getAppContext().getContentResolver().releasePersistableUriPermission(uriToRemove.getUri(),
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                break;
-            }
-        }
     }
 
     public static void modifyUser(String username, FtpUser newUser) {
@@ -134,31 +114,12 @@ public class FsSettings {
     }
 
     public static File getDefaultChrootDir() {
-        // Get the path from the app's MANAGE USERS chroot folder UI text field that the user will use during setup.
-        String subFix = null;
         if (Util.useScopedStorage()) {
-            // The app's MANAGE USERS chroot folder UI selection cannot select the sd card at least on Android 11+.
-            //  The picker does all that's needed there so that use should be switched with ADVANCED SETTINGS >
-            //  WRITE EXTERNAL picker or just make it invisible when on A11+ ? Could also just pull open the same
-            //  picker on both with A11+ or something else. It also presents possible conflicts with the Uri path
-            //  eg "/storage/sd card/" verses "/sd card/Test/".
-            String s = FileUtil.cleanupUriStoragePath(FileUtil.getTreeUri());
-            if (s != null && !s.contains("primary:")) {
-                final String chroot = FileUtil.getSdCardBaseFolderScopedStorage();
-                // Need to return eg "/storage" for sd card and "/storage/emulated/0" for internal.
-                if (chroot != null && !chroot.isEmpty()) return new File(chroot);
-                // otherwise just get the other path from below.
-            } else if (s != null && s.contains("primary:")) {
-                // Fix for issue seen on Android 8.0:
-                // Had to implement over below as the below chroot is forced to
-                // getExternalStorageDirectory() when actual chroot may include further sub dirs.
-                subFix = s.replace("primary:", "");
-                // At the moment, have to do it below, as a StackOverflow is happening on the test device
-                // here with any additional code for an unknown reason.
-            }
+            final String chroot = AllowedFolders.index().defaultChroot();
+            if (chroot != null && !chroot.isEmpty()) return new File(chroot);
+            // Nothing granted yet. Fall through, so the UI still shows a sensible path.
         }
 
-        // Original below incorrectly returns "/storage/emulated/0" for sd card with Android 11+
         File chrootDir;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             chrootDir = Environment.getExternalStorageDirectory();
@@ -172,7 +133,6 @@ public class FsSettings {
             // but this will probably not be what the user wants
             return App.getAppContext().getFilesDir();
         }
-        if (subFix != null) return new File(chrootDir, subFix);
         return chrootDir;
     }
 

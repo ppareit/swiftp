@@ -26,6 +26,7 @@ import android.util.Log;
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.AnonymousLimit;
 import be.ppareit.swiftp.utils.IPSecurity;
 import be.ppareit.swiftp.utils.Logging;
@@ -66,18 +67,15 @@ public class CmdPASS extends FtpCmd implements Runnable {
                 Log.i(TAG, "Guest logged in with email: " + attemptPassword);
                 sessionThread.writeString("230 Guest login ok, read only access.\r\n");
                 final String anonChroot = sp.getString("anonChroot", "/storage/emulated/0" /*backwards compat*/);
-                final String anonUriString = sp.getString("anonUriString", "");
                 if (!anonChroot.isEmpty()) {
                     sessionThread.setChrootDir(anonChroot);
-                    if (!anonUriString.isEmpty()) {
-                        SessionThread.putUriString(Thread.currentThread().getName(), anonUriString);
-                    } else if (Util.useScopedStorage()) {
-                        // Protect against app crashes/problems
-                        Log.i(TAG, "Failed authentication, too many anonymous users connected.");
-                        Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
-                        sessionThread.writeString("421 too many anonymous users connected.\r\n");
-                        sessionThread.authAttempt(false);
-                    }
+                }
+                if (Util.useScopedStorage() && AllowedFolders.isEmpty()) {
+                    // Nothing is shared, say so here
+                    Log.i(TAG, "Refusing anonymous login, no folders are shared.");
+                    Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
+                    sessionThread.writeString("421 No folders are shared.\r\n");
+                    sessionThread.authAttempt(false);
                 }
             }
             return;
@@ -94,9 +92,6 @@ public class CmdPASS extends FtpCmd implements Runnable {
             sessionThread.writeString("230 Access granted\r\n");
             sessionThread.authAttempt(true);
             sessionThread.setChrootDir(user.getChroot());
-            if (Util.useScopedStorage()) {
-                SessionThread.putUriString(Thread.currentThread().getName(), user.getUriString());
-            }
         } else {
             Log.i(TAG, "Failed authentication, incorrect password");
             Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack

@@ -62,7 +62,6 @@ public class SessionThread extends Thread {
     private boolean userAuthenticated = false;
     private File workingDir = FsSettings.getDefaultChrootDir();
     private File chrootDir = workingDir;
-    private static ConcurrentHashMap<String, String> uriString = null; // scoped match user to perm
     private Socket dataSocket = null; // PASV plain data socket
     private SSLSocket sslDataSocket = null; // PASV secure data socket
     private File renameFrom = null;
@@ -616,22 +615,6 @@ public class SessionThread extends Thread {
             this.chrootDir = chrootDir;
             this.workingDir = chrootDir;
         }
-    }
-
-    public static String getUriString(String threadName) {
-        if (uriString == null) return "";
-        if (uriString.containsKey(threadName)) return uriString.get(threadName);
-        return "";
-    }
-
-    public static void putUriString(String threadName, String s) {
-        if (uriString == null) uriString = new ConcurrentHashMap<>();
-        uriString.put(threadName, s);
-    }
-
-    public static void removeUriString(String threadName) {
-        if (uriString == null) return;
-        uriString.remove(threadName);
     }
 
     public boolean isPbszEnabled() {

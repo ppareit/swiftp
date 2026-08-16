@@ -691,45 +691,30 @@ public abstract class FileUtil {
      * Used to get eg "/storage" since URIs for whatever reasons omit this.
      * */
     public static String getSdCardBaseFolderScopedStorage() {
+        final String name = getSdCardNameScopedStorage();
+        if (name == null) return null;
         final File[] f = ContextCompat.getExternalFilesDirs(App.getAppContext(), null);
-        String path = null;
         for (File each : f) {
             final String eachPath = each.getPath();
-            final Uri uri = FileUtil.getTreeUri();
-            if (uri == null) return null;
-            String s = cleanupUriStoragePath(uri);
-            try {
-                // Only want the sd card folder
-                if (s != null) s = s.substring(0, s.indexOf(File.pathSeparator));
-            } catch (Exception e) {
-                return null;
-            }
-            if (s != null) {
-                if (eachPath.contains(s)) {
-                    // Found the sd card path eg "/storage/[sd card]/Temp" should return as "/storage"
-                    // as the DocumentFile Uri will contain the [sd card] all the way to the picked folder.
-                    path = eachPath.substring(0, eachPath.indexOf(s) - 1);
-                }
+            if (eachPath.contains(name)) {
+                // Found the sd card path eg "/storage/[sd card]/Temp" should return as "/storage"
+                // as the DocumentFile Uri will contain the [sd card] all the way to the picked folder.
+                return eachPath.substring(0, eachPath.indexOf(name) - 1);
             }
         }
-        return path;
+        return null;
     }
 
     /*
-     * Obtains only the sd card folder name or null if sd card is not being used
-     * */
+     * Obtains only the sd card folder name or null if sd card is not being used.
+     */
     public static String getSdCardNameScopedStorage() {
-        final Uri uri = FileUtil.getTreeUri();
-        if (uri == null) return null;
-        String s = cleanupUriStoragePath(uri);
-        if (s.contains("primary:")) return null; // It is definitely not on the sd card.
-        try {
-            // Only want the sd card folder name
-            s = s.substring(0, s.indexOf(File.pathSeparator));
-            return s;
-        } catch (Exception e) {
-            return null;
+        for (StorageTree tree : AllowedFolders.all()) {
+            final String documentId = tree.getDocumentId();
+            final String volume = documentId.substring(0, documentId.indexOf(File.pathSeparator));
+            if (!"primary".equals(volume)) return volume;
         }
+        return null;
     }
 
     private static String getExtSdCardFolderOld(final FileUtil.Gen file, Context context) {
@@ -874,58 +859,27 @@ public abstract class FileUtil {
     }
 
     /*
-     * Retrieves the URI assigned to a user upon connection that is required to use scoped storage
-     * and get the correct URI to work with.
-     * */
-    public static Uri getTreeUri() {
-        String threadName = Thread.currentThread().getName();
-        String userUriString = SessionThread.getUriString(threadName);
-        if (userUriString == null || userUriString.isEmpty()) return null;
-        List<UriPermission> list = App.getAppContext().getContentResolver().getPersistedUriPermissions();
-        if (list.size() > 0 && list.get(0) != null) {
-            for (UriPermission perm : list) {
-                String uriString = perm.getUri().getPath();
-                if (uriString == null) continue;
-                if (uriString.equals(userUriString)) {
-                    return perm.getUri();
-                }
-            }
-        }
-        return null;
-    }
-
-    /*
-     * HUGE performance improvement over DocumentFile.findFile().
-     * Use at least until Google fixes DocumentFile.findFile() performance (should it ever happen).
+     * Resolves a path, or a raw SAF document id, against the folders the user has allowed.
      */
     public static DocumentFile getDocumentFile(String filename) {
-        final Uri uri = getTreeUri();
-        if (uri == null) return null;
-        final String uriString = uri.getPath();
-        if (uriString == null) return null;
-        final String s = filename.contains(File.pathSeparator)
-                ? filename
-                : convertFilePathToUriString(uriString, filename);
-        if (s == null) return null;
-        final Uri finalUri = DocumentsContract.buildDocumentUriUsingTree(uri, s);
-        return getDocumentFileFromUri(finalUri);
-    }
+        if (filename == null) return null;
+        final StorageTreeIndex index = AllowedFolders.index();
 
-    /*
-    * Helper method to switch File path type to uriString.
-    * */
-    private static String convertFilePathToUriString(String mTree, String oldPath) {
-
-        String tree = mTree.contains("/tree/") ? mTree.replaceFirst("/tree/", "") : mTree;
-        if (tree.contains("primary:")) tree = tree.replaceFirst("primary:", "/storage/emulated/0/");
-        else tree = tree.replaceFirst(File.pathSeparator, File.separator);
-        if (oldPath.contains(tree)) {
-            final String s = oldPath.substring(oldPath.indexOf(tree) + tree.length());
-            if (tree.contains("/storage/emulated/0/")) tree = tree.replaceFirst("/storage/emulated/0/", "primary:");
-            else tree = tree.replaceFirst(File.separator, File.pathSeparator);
-            return tree + s;
+        final StorageTree tree;
+        final String documentId;
+        if (filename.contains(File.pathSeparator)) { // ":" means it is already a document id
+            tree = index.owningDocumentId(filename);
+            documentId = filename;
+        } else {
+            tree = index.containing(filename);
+            documentId = tree == null ? null : tree.documentIdFor(filename);
         }
-        return null;
+        if (tree == null || documentId == null) return null;
+
+        final Uri treeUri = AllowedFolders.uriFor(tree);
+        if (treeUri == null) return null;
+        return getDocumentFileFromUri(
+                DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId));
     }
 
     /*
