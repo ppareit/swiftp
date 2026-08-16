@@ -113,6 +113,11 @@ public class FsSettings {
         return sp.getBoolean("allow_anonymous", false);
     }
 
+    /** The anonymous login has its own chroot, it is not one of the users. */
+    public static String getAnonChroot() {
+        return sp.getString("anonChroot", "/storage/emulated/0" /*backwards compat*/);
+    }
+
     public static File getDefaultChrootDir() {
         if (Util.useScopedStorage()) {
             final String chroot = AllowedFolders.index().defaultChroot();
