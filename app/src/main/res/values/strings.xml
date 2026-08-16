@@ -202,8 +202,23 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="bs_low">LOW</string>
     <string name="bs_deep">DEEP</string>
 
-    <string name="use_scoped_storage_label">Use scoped storage</string>
-    <string name="use_scope_storage_summary">Make use of scoped storage, this is needed for recent Android devices. Choose the folders to which you want read/write access in Manage Users…</string>
+    <!-- Allowed folders: which parts of storage the server may serve -->
+    <!-- The ellipsis marks the settings entry that opens a screen; the screen's own title
+         does not carry it. -->
+    <string name="allowed_folders_label">Allowed folders…</string>
+    <string name="allowed_folders_title">Allowed folders</string>
+    <string name="allowed_folders_full_sdcard">FULL SDCARD</string>
+    <string name="allowed_folders_choose">CHOOSE FOLDERS</string>
+    <string name="allowed_folders_add">Add folder</string>
+    <string name="allowed_folders_remove">Remove</string>
+    <string name="allowed_folders_full_sdcard_explanation">This device lets SwiFTP read and write all of the SD card, so no folders need to be chosen.\n\nTo limit what a login can see, set its folder in Manage users…</string>
+    <string name="allowed_folders_none_explanation">This device does not let SwiFTP reach the SD card on its own, so nothing can be served until you choose a folder.\n\nAndroid does not allow choosing the whole SD card, nor the Download folder.</string>
+    <string name="allowed_folders_some_explanation">SwiFTP can serve these folders and everything inside them.\n\nAndroid does not allow choosing the whole SD card, nor the Download folder.</string>
+    <string name="allowed_folders_removed">Removed %1$s</string>
+    <string name="allowed_folders_none_chosen">No folders have been chosen yet. Choose them in Settings, Allowed folders…</string>
+    <string name="allowed_folders_limit_title">Limit to chosen folders?</string>
+    <string name="allowed_folders_limit_message">This device lets SwiFTP serve the whole SD card already.\n\nChoosing a folder limits SwiFTP to the folders you choose, so everything else stops being served. Remove them all to go back.\n\nCheck the folder set for each login in Manage users… afterwards.</string>
+    <string name="allowed_folders_limit_continue">Choose anyway</string>
 
     <string name="logging">Logging</string>
     <string name="enable_logging">Enable logging</string>

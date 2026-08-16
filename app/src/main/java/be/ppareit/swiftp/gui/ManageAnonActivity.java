@@ -35,7 +35,6 @@ import be.ppareit.swiftp.utils.ChrootPicker;
 
 public class ManageAnonActivity extends AppCompatActivity {
 
-    private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
     ChrootPicker chrootPicker = null;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -61,7 +60,6 @@ public class ManageAnonActivity extends AppCompatActivity {
         chroot.setText(chrootString);
         chroot.setOnTouchListener((v, event) -> {
             sp.edit().remove("anonChroot").apply();
-            sp.edit().remove("anonUriString").apply();
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 chrootPicker.showFolderPicker(chroot.getText().toString(), this, null);
             }
@@ -70,10 +68,6 @@ public class ManageAnonActivity extends AppCompatActivity {
         chrootPicker.setOnTextEventListener(s -> {
             chroot.setText(s);
             sp.edit().putString("anonChroot", s).apply();
-        });
-        chrootPicker.setOnActionTreeEventListener(() -> {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
         });
 
         EditText anonMaxCon = findViewById(R.id.anon_max);
@@ -110,23 +104,6 @@ public class ManageAnonActivity extends AppCompatActivity {
             }
             else sp1.edit().putBoolean("allow_anonymous", false).apply();
         });
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-        super.onActivityResult(requestCode, resultCode, resultData);
-        Cat.d("onActivityResult called");
-        if (requestCode == ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
-            if (resultData == null) return;
-            Uri treeUri = resultData.getData();
-            if (treeUri == null) return;
-            String path = treeUri.getPath();
-            Cat.d("Action Open Document Tree on path " + path);
-            chrootPicker.save(this.getApplicationContext(), treeUri);
-            String uriString = treeUri.getPath();
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-            sp.edit().putString("anonUriString", uriString).apply();
-        }
     }
 
     @Override

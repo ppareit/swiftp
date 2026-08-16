@@ -51,6 +51,7 @@ import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
 
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.util.ArraySet;
 import android.view.inputmethod.EditorInfo;
@@ -80,6 +81,7 @@ import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.server.FtpUser;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FTPSSockets;
 
 import be.ppareit.swiftp.utils.Logging;
@@ -92,7 +94,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
 
     private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
     private static final int POST_NOTIFICATIONS_REQUEST_CODE = 15;
-    private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
     private static final int PICK_CERT_FILE_JKS = 84;
     private static final int PICK_CERT_FILE_BKS = 85;
 
@@ -204,6 +205,15 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             });
         }
 
+        Preference allowedFoldersPref = findPref("allowed_folders");
+        if (allowedFoldersPref != null) {
+            updateAllowedFoldersPref();
+            allowedFoldersPref.setOnPreferenceClickListener((preference) -> {
+                startActivity(new Intent(getActivity(), AllowedFoldersActivity.class));
+                return true;
+            });
+        }
+
         EditTextPreference portNumberPref = findPref("portNum");
         if (portNumberPref != null) {
             portNumberPref.setSummary(String.valueOf(FsSettings.getPortNumber()));
@@ -233,62 +243,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         if (wakelockPref != null) {
             wakelockPref.setOnPreferenceChangeListener((preference, newValue) -> {
                 FsService.restart();
-                return true;
-            });
-        }
-
-        final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
-        if (writeExternalStoragePref != null) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                String externalStorageUri = FsSettings.getExternalStorageUri();
-                if (externalStorageUri == null) {
-                    writeExternalStoragePref.setChecked(false);
-                }
-                writeExternalStoragePref.setOnPreferenceChangeListener((preference, newValue) -> {
-                    if ((boolean) newValue) {
-                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                        startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
-                        return false;
-                    } else {
-                        FsSettings.setExternalStorageUri(null);
-                        return true;
-                    }
-                });
-            } else {
-                writeExternalStoragePref.setEnabled(false);
-                writeExternalStoragePref.setChecked(true);
-                writeExternalStoragePref.setSummary(getString(R.string.write_external_storage_old_android_version_summary));
-            }
-        }
-
-        final CheckBoxPreference newScoped = findPref("useScopedStorage");
-        if (newScoped != null && writeExternalStoragePref != null) {
-            if (sp.getBoolean("NewScopedStorageUpgradeCheck", true)) {
-                // Don't break use if "write external storage" was used before the app update as the original
-                // code it now fully uses isn't compat with the newer one and would see major issues.
-                // Runs one time only on update as pref won't be checked after clean install / wipe.
-                // Code is executed on app start which happens automatically after app update.
-                if (writeExternalStoragePref.isChecked()) { // needs to be true to not break use
-                    sp.edit().putBoolean("useScopedStorage", true).apply();
-                    sp.edit().putBoolean("NewScopedStorageUpgradeCheck", false).apply();
-                    writeExtMultiUserUpgradePath();
-                }
-            }
-
-            if (Util.useScopedStorage()) {
-                // Do not allow mixing of old setting with the new one!
-                newScoped.setChecked(true);
-                writeExternalStoragePref.setChecked(false);
-                writeExternalStoragePref.setEnabled(false);
-            } else {
-                newScoped.setChecked(false);
-            }
-            newScoped.setTitle(newScoped.getTitle() + " -> " + getString(R.string.manage_users_label));
-            newScoped.setOnPreferenceChangeListener((preference, newValue) -> {
-                writeExternalStoragePref.setChecked(false);
-                writeExternalStoragePref.setEnabled(!((boolean) newValue));
-                sp.edit().putBoolean("useScopedStorage", (boolean) newValue).apply();
-                Util.resetScoped();
                 return true;
             });
         }
@@ -852,27 +806,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         startActivityForResult(intent, requestCode);
     }
 
-    /*
-    * Multi user:
-    * Upgrade path for previous "write external storage" use so that it doesn't break on update.
-    * Populates the new uriString use of each user.
-    * */
-    private void writeExtMultiUserUpgradePath() {
-        List<UriPermission> oldList = App.getAppContext().getContentResolver().getPersistedUriPermissions();
-        if (oldList.size() == 0) return;
-        Uri uri = oldList.get(0).getUri();
-        if (uri == null) return;
-        List<FtpUser> userList = FsSettings.getUsers();
-        for (int i = 0; i < userList.size(); i++) {
-            if (userList.get(i) == null) continue;
-            FtpUser entry = new FtpUser(userList.get(i).getUsername(),
-                    userList.get(i).getPassword(),
-                    userList.get(i).getChroot(),
-                    uri.getPath());
-            FsSettings.modifyUser(userList.get(i).getUsername(), entry);
-        }
-    }
-
     /**
      * The switch shows whether Android will really display our notification, so switching it
      * on means asking the system, and switching it off means sending the user to the system
@@ -961,6 +894,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
 
         updateRunningState();
         updateUsersPref();
+        updateAllowedFoldersPref();
         updateServerNotificationPref();
 
         Cat.d("onResume: Registering the FTP server actions");
@@ -986,25 +920,9 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
         Cat.d("onActivityResult called");
-        if (requestCode == ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
-            Uri treeUri = resultData.getData();
-            String path = treeUri.getPath();
-            Cat.d("Action Open Document Tree on path " + path);
-
-            final CheckBoxPreference writeExternalStoragePref = findPref("writeExternalStorage");
-            if (path.contains("primary:")) {
-                writeExternalStoragePref.setChecked(false);
-            } else {
-                FsSettings.setExternalStorageUri(treeUri.toString());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    getActivity().getContentResolver()
-                            .takePersistableUriPermission(treeUri,
-                                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                }
-                writeExternalStoragePref.setChecked(true);
-            }
-        } else if (requestCode == PICK_CERT_FILE_JKS && resultCode == Activity.RESULT_OK) {
+        // The folder picker used to be answered here, for the "write external storage" checkbox.
+        // It lives in AllowedFoldersFragment now, so only the certificate pickers are left.
+        if (requestCode == PICK_CERT_FILE_JKS && resultCode == Activity.RESULT_OK) {
             Uri uri = resultData.getData();
             if (uri == null) return;
             importCertFromIntentResult(uri, "storej.jks", "certKeyStore");
@@ -1075,6 +993,25 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
                     //
                 }
             }
+        }
+    }
+
+    /**
+     * Update the summary for the allowed folders, which is the one line telling the user what
+     * the server can actually reach. Either the device serves all of the card by itself, or the
+     * folders that have been chosen, or nothing has been chosen yet and the server cannot serve
+     * anything at all.
+     */
+    private void updateAllowedFoldersPref() {
+        Preference allowedFoldersPref = findPref("allowed_folders");
+        if (allowedFoldersPref == null) return;
+        List<String> names = AllowedFolders.names();
+        if (!names.isEmpty()) {
+            allowedFoldersPref.setSummary(TextUtils.join(", ", names));
+        } else if (Util.hasFullSdCardAccess()) {
+            allowedFoldersPref.setSummary(R.string.allowed_folders_full_sdcard);
+        } else {
+            allowedFoldersPref.setSummary(R.string.allowed_folders_choose);
         }
     }
 

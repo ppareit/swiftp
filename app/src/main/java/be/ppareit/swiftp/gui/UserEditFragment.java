@@ -25,12 +25,9 @@ import be.ppareit.swiftp.utils.ChrootPicker;
 
 public class UserEditFragment extends Fragment {
 
-    private static final int ACTION_OPEN_DOCUMENT_TREE = 42;
-
     private FtpUser item;
     private OnEditFinishedListener editFinishedListener;
     private TextView chroot = null;
-    private String uriString = "";
     private ChrootPicker chrootPicker = null;
 
     public static UserEditFragment newInstance(@Nullable FtpUser item, @NonNull OnEditFinishedListener listener) {
@@ -58,10 +55,6 @@ public class UserEditFragment extends Fragment {
             chrootPicker.showFolderPicker(chroot.getText().toString(), null, getContext());
         });
         chrootPicker.setOnTextEventListener(s -> chroot.setText(s));
-        chrootPicker.setOnActionTreeEventListener(() -> {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            startActivityForResult(intent, ACTION_OPEN_DOCUMENT_TREE);
-        });
 
         if (item != null) {
             username.setText(item.getUsername());
@@ -74,7 +67,10 @@ public class UserEditFragment extends Fragment {
             String newPassword = password.getText().toString();
             String newChroot = chroot.getText().toString();
             if (validateInput(newUsername, newPassword)) {
-                editFinishedListener.onEditActionFinished(item, new FtpUser(newUsername, newPassword, newChroot, uriString));
+                // the allowed folders are app-wide, so a user is only a name, a password and a
+                // chroot in one of the allowed folders
+                editFinishedListener.onEditActionFinished(item,
+                        new FtpUser(newUsername, newPassword, newChroot, ""));
                 goBack();
             }
         });
@@ -84,22 +80,6 @@ public class UserEditFragment extends Fragment {
 
     private void goBack() {
         requireActivity().getOnBackPressedDispatcher().onBackPressed();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-        Cat.d("onActivityResult called");
-        if (requestCode == ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
-            if (resultData == null) return;
-            Uri treeUri = resultData.getData();
-            if (treeUri == null) return;
-            String path = treeUri.getPath();
-            Cat.d("Action Open Document Tree on path " + path);
-            // *************************************
-            // The order following here is critical. They must stay ordered as they are.
-            chrootPicker.save(this.getContext(), treeUri);
-            uriString = treeUri.getPath();
-        }
     }
 
     private boolean validateInput(String username, String password) {

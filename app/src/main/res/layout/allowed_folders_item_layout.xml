@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="3dp"
+    app:cardElevation="5dp"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/allowed_folder_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_shared_dir"
+            android:drawableStart="@drawable/ic_shared_dir"
+            android:gravity="center_vertical|start"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="Documents" />
+
+        <TextView
+            android:id="@+id/allowed_folder_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="/storage/emulated/0/Documents" />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="5dp" />
+
+        <Button
+            android:id="@+id/allowed_folder_remove_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:drawableLeft="@drawable/ic_delete"
+            android:drawableStart="@drawable/ic_delete"
+            android:text="@string/allowed_folders_remove" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

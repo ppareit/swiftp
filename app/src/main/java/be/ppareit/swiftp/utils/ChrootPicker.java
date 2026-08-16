@@ -3,18 +3,15 @@ package be.ppareit.swiftp.utils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.documentfile.provider.DocumentFile;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.gui.FolderPickerDialogBuilder;
@@ -28,67 +25,19 @@ public class ChrootPicker {
         void OnEvent(String s);
     }
 
-    public interface OnActionEventListener {
-        void OnEvent();
-    }
-
     public OnTextEventListener onTextEventListener;
-    public OnActionEventListener onActionEventListener;
 
     public void setOnTextEventListener(OnTextEventListener onTextEventListener) {
         this.onTextEventListener = onTextEventListener;
     }
 
-    public void setOnActionTreeEventListener(OnActionEventListener onActionEventListener) {
-        this.onActionEventListener = onActionEventListener;
-    }
-
     private boolean isShowingFolderPicker = false;
-
-    public void save(Context context, Uri treeUri) {
-        // *************************************
-        // The order following here is critical. They must stay ordered as they are.
-        setPermissionToUseExternalStorage(treeUri, context);
-        scopedStorageChrootOverride(treeUri);
-    }
-
-    private void setPermissionToUseExternalStorage(Uri treeUri, Context context) {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                FsSettings.setExternalStorageUri(treeUri.toString());
-                context.getContentResolver()
-                        .takePersistableUriPermission(treeUri,
-                                Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            }
-        } catch (SecurityException e) {
-            // Harden code against crash: May reach here by adding exact same picker location but
-            // being removed at same time.
-        }
-    }
-
-    private void scopedStorageChrootOverride(Uri treeUri) {
-        if (Util.useScopedStorage()) {
-            DocumentFile df = FileUtil.getDocumentFileFromUri(treeUri);
-            if (df == null) return;
-            String newPath = "/storage/emulated/0/";
-            String treePath = treeUri.getPath();
-            if (treePath == null) return;
-            if (treePath.contains("primary:"))
-                treePath = treePath.substring(treePath.indexOf(":") + 1);
-            else if (treePath.contains(":")) {
-                newPath = "/storage/";
-                treePath = treePath.replace("/tree/", "");
-                treePath = treePath.replace(":", "/");
-            }
-            newPath += treePath;
-            if (onTextEventListener != null) onTextEventListener.OnEvent(newPath);
-        }
-    }
 
     public void showFolderPicker(String s, @Nullable Activity a, Context fragment /*Fragment use*/) {
         if (Util.useScopedStorage()) {
-            if (onActionEventListener != null) onActionEventListener.OnEvent();
+            // Under SAF listFiles() returns null, so browsing shows nothing. Offer the granted
+            // folders and their root instead, exactly the set of chroots that can work.
+            showAllowedFolderChoice(a != null ? a : fragment);
             return;
         }
         if (isShowingFolderPicker)
@@ -116,6 +65,37 @@ public class ChrootPicker {
                 .create();
         folderPicker.setOnDismissListener(dialog -> isShowingFolderPicker = false);
         folderPicker.show();
+    }
+
+    /**
+     * The chroots that can work under SAF: each allowed folder, and the directory they are all
+     * listed under when there is more than one. Anything else would look fine in the UI and then
+     * serve nothing.
+     */
+    private void showAllowedFolderChoice(Context context) {
+        if (isShowingFolderPicker) return;
+
+        final List<String> choices = new ArrayList<>();
+        final String root = AllowedFolders.index().defaultChroot();
+        if (root != null && !AllowedFolders.paths().contains(root)) choices.add(root);
+        choices.addAll(AllowedFolders.paths());
+
+        if (choices.isEmpty()) {
+            showToast(R.string.allowed_folders_none_chosen, context);
+            return;
+        }
+
+        isShowingFolderPicker = true;
+        final String[] items = choices.toArray(new String[0]);
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle(R.string.allowed_folders_title)
+                .setItems(items, (d, which) -> {
+                    if (onTextEventListener != null) onTextEventListener.OnEvent(items[which]);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .create();
+        dialog.setOnDismissListener(d -> isShowingFolderPicker = false);
+        dialog.show();
     }
 
     private void showToast(int errorResId, Context context) {

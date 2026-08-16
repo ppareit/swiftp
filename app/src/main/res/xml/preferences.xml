@@ -46,6 +46,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:key="manage_anon"
             android:title="@string/manage_anon_label" />
 
+        <Preference
+            android:key="allowed_folders"
+            android:title="@string/allowed_folders_label" />
+
         <PreferenceScreen
             android:key="appearance_screen"
             android:title="@string/gui_settings_label">
@@ -106,19 +110,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                     android:defaultValue="@string/wakelock_default"
                     android:key="stayAwake"
                     android:title="@string/wakelock_label" />
-
-                <CheckBoxPreference
-                    android:defaultValue="@string/writeExternalStorage_default"
-                    android:key="writeExternalStorage"
-                    android:title="@string/writeExternalStorage_label" />
-
-                <CheckBoxPreference
-                    android:defaultValue="@string/useScopedStorage_default"
-                    android:drawableStart="@drawable/ic_shared_dir"
-                    android:drawableLeft="@drawable/ic_shared_dir"
-                    android:key="useScopedStorage"
-                    android:summary="@string/use_scope_storage_summary"
-                    android:title="@string/use_scoped_storage_label" />
 
                 <ListPreference
                     android:defaultValue="0"
