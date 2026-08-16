@@ -113,9 +113,17 @@ public class FsSettings {
         return sp.getBoolean("allow_anonymous", false);
     }
 
+    public static void setAllowAnonymous(boolean allow) {
+        sp.edit().putBoolean("allow_anonymous", allow).apply();
+    }
+
     /** The anonymous login has its own chroot, it is not one of the users. */
     public static String getAnonChroot() {
         return sp.getString("anonChroot", "/storage/emulated/0" /*backwards compat*/);
+    }
+
+    public static void setAnonChroot(String chroot) {
+        sp.edit().putString("anonChroot", chroot).apply();
     }
 
     public static File getDefaultChrootDir() {
@@ -175,6 +183,10 @@ public class FsSettings {
         int i = Integer.parseInt(s);
         Log.v(TAG, "Using anon max connections: " + i);
         return i;
+    }
+
+    public static void setAnonMaxConNumber(int max) {
+        sp.edit().putString("anon_max", String.valueOf(max)).apply();
     }
 
     public static boolean shouldTakeFullWakeLock() {

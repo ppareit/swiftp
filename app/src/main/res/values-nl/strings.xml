@@ -35,7 +35,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="password_label">Paswoord</string>
     <string name="show_password_label">Toon paswoord</string>
     <string name="allow_anonymous_label">Anoniem aanloggen toestaan</string>
-    <string name="anonymous_summary">Anonieme gebruikers mogen enkel bestanden lezen</string>
     <string name="advanced_settings_label">Geavanceerde instellingen...</string>
     <string name="port_number_label">Poort nummer</string>
     <string name="chroot_label">Blijf in map</string>
@@ -107,7 +106,6 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="clear">Wis logboek</string>
     <string name="display_logcat">Toon logcat</string>
     <string name="anon_max_conn">Maximaal gelijktijdige verbindingen</string>
-    <string name="manage_anon_label">Beheer anoniem…</string>
 
     <string name="found_check">&#10004;</string>
     <string name="found_check_green">&#9989;</string>

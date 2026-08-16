@@ -197,14 +197,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             });
         }
 
-        Preference manageAnonPref = findPref("manage_anon");
-        if (manageAnonPref != null) {
-            manageAnonPref.setOnPreferenceClickListener((preference) -> {
-                startActivity(new Intent(getActivity(), ManageAnonActivity.class));
-                return true;
-            });
-        }
-
         Preference allowedFoldersPref = findPref("allowed_folders");
         if (allowedFoldersPref != null) {
             updateAllowedFoldersPref();
@@ -1024,16 +1016,23 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         Preference manageUsersPref = findPref("manage_users");
         if (manageUsersPref == null) return;
         List<FtpUser> users = FsSettings.getUsers();
+        final String summary;
         switch (users.size()) {
             case 0:
-                manageUsersPref.setSummary(R.string.manage_users_no_users);
+                summary = getString(R.string.manage_users_no_users);
                 break;
             case 1:
                 FtpUser user = users.get(0);
-                manageUsersPref.setSummary(user.getUsername() + ":" + user.getPassword());
+                summary = user.getUsername() + ":" + user.getPassword();
                 break;
             default:
-                manageUsersPref.setSummary(R.string.manage_users_multiple_users);
+                summary = getString(R.string.manage_users_multiple_users);
+        }
+        // anonymous is edited on that same screen, so it has to show up here as well
+        if (FsSettings.allowAnonymous()) {
+            manageUsersPref.setSummary(getString(R.string.manage_users_with_anonymous, summary));
+        } else {
+            manageUsersPref.setSummary(summary);
         }
     }
 

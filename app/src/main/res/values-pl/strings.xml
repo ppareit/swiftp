@@ -54,7 +54,6 @@ wraz z SwiFTP. Jeśli nie, zobacz <http://www.gnu.org/licenses/>.
         Żadne inne znaki nie są dozwolone.
     </string>
     <string name="allow_anonymous_label">Zezwól na anonimowe logowanie</string>
-    <string name="anonymous_summary">Logowanie anonimowe jest dozwolone tylko do odczytu</string>
     <string name="advanced_settings_label">Ustawienia zaawansowane…</string>
     <string name="port_number_label">Numer portu</string>
     <string name="port_validation_error">Numer portu musi być z zakresu od 1 do 65535.</string>
@@ -201,7 +200,6 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_log_label">Dziennik…</string>
 
     <string name="anon_max_conn">Maksymalna liczba jednoczesnych połączeń</string>
-    <string name="manage_anon_label">Zarządzaj anonimowo…</string>
 
     <string name="found_check">&#10004;</string>
     <string name="found_check_green">&#9989;</string>

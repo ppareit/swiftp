@@ -40,7 +40,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="password_label">Лозинка</string>
     <string name="show_password_label">Прикажи лозинку</string>
     <string name="allow_anonymous_label">Дозволи анонимне пријаве</string>
-    <string name="anonymous_summary">Анонимне пријаве имају само дозволу читања</string>
     <string name="advanced_settings_label">Напредне поставке...</string>
     <string name="port_number_label">Број порта</string>
     <string name="chroot_label">Остани у фасцикли</string>
@@ -136,7 +135,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_log_label">Пријава…</string>
 
     <string name="anon_max_conn">Максимално истовремене везе</string>
-    <string name="manage_anon_label">Управљајте анонимно…</string>
 
     <string name="found_check">&#10004;</string>
     <string name="found_check_green">&#9989;</string>

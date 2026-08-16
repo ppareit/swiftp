@@ -54,7 +54,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         No other characters are allowed.
     </string>
     <string name="allow_anonymous_label">Allow anonymous login</string>
-    <string name="anonymous_summary">Anonymous logins are only allowed read access</string>
+    <string name="anonymous_summary">Use username <b>anonymous</b>\nNo password check, so use anything\nOnly allowed <b>read access</b></string>
     <string name="advanced_settings_label">Advanced settings…</string>
     <string name="port_number_label">Port Number</string>
     <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
@@ -181,6 +181,8 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="delete">Delete</string>
     <string name="save">Save</string>
     <string name="user_exists_error">Another user with same username already exists!</string>
+    <string name="username_anonymous_error">The name \"anonymous\" is reserved, use the anonymous login on top of the list.</string>
+    <string name="manage_users_with_anonymous">%1$s\nAnonymous login allowed</string>
     <string name="confirm_delete_message">Delete user \"%1$s\"?</string>
     <string name="notice_cant_read_write">Notice that we can not read/write in this folder.</string>
     <string name="notice_cant_write">Notice that we can not write in this folder, reading will work. Writing in sub folders might work.</string>
@@ -228,7 +230,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="display_logcat">Display Logcat</string>
 
     <string name="anon_max_conn">Max simultaneous connections</string>
-    <string name="manage_anon_label">Manage anonymous…</string>
 
     <string name="found_check">&#10004;</string>
     <string name="found_check_green">&#9989;</string>

@@ -47,7 +47,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="password_validation_error">La contraseña debe tener uno o más caracteres alfanuméricos. El resto de caracteres no están permitidos.</string>
 
     <string name="allow_anonymous_label">Permitir acceso anónimo</string>
-    <string name="anonymous_summary">El acceso anónimo solo tiene permisos de lectura</string>
     <string name="advanced_settings_label">Ajustes avanzados\u2026</string>
     <string name="port_number_label">Número de puerto</string>
     <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
@@ -175,7 +174,6 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="manage_log_label">Registro…</string>
 
     <string name="anon_max_conn">Conexiones simultáneas máximas</string>
-    <string name="manage_anon_label">Administrar anónimo…</string>
 
     <string name="found_check">&#10004;</string>
     <string name="found_check_green">&#9989;</string>

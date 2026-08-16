@@ -56,7 +56,6 @@ së bashku me SwiFTP. Nëse jo, shihni <http://www.gnu.org/licenses/>.
          Asnjë karaktere tjetër nuk lejohet.
     </string>
     <string name="allow_anonymous_label">Lejo hyrjen anonime</string>
-    <string name="anonymous_summary">Hyrjet anonime lejohen vetëm me qasje për lexim</string>
     <string name="advanced_settings_label">Cilësimet e përparuara ...</string>
     <string name="port_number_label">Numri i Portit</string>
     <string name="port_validation_error">Numri i portit duhet të jetë në intervalin 1 deri në 65535.</string>
@@ -203,7 +202,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_log_label">Regjistrohu…</string>
 
     <string name="anon_max_conn">Lidhjet maksimale të njëkohshme</string>
-    <string name="manage_anon_label">Menaxho anonim…</string>
 
     <string name="found_check">&#10004;</string>
     <string name="found_check_green">&#9989;</string>

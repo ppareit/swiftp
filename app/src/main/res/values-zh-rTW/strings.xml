@@ -50,7 +50,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         不允許使用其他字符。
     </string>
     <string name="allow_anonymous_label">允許匿名登入</string>
-    <string name="anonymous_summary">匿名登入功能僅允許讀取</string>
     <string name="advanced_settings_label">進階設定...</string>
     <string name="port_number_label">埠號</string>
     <string name="port_validation_error">埠號必須在1到65535之間。</string>
@@ -191,7 +190,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     <string name="manage_log_label">紀錄…</string>
 
     <string name="anon_max_conn">最大同時連線數</string>
-    <string name="manage_anon_label">管理匿名…</string>
 
     <string name="found_check">&#10004;</string>
     <string name="found_check_green">&#9989;</string>

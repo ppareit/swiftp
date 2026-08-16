@@ -38,7 +38,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="password_label">Пароль</string>
     <string name="show_password_label">Відображати пароль</string>
     <string name="allow_anonymous_label">Дозволити анонімне підключення</string>
-    <string name="anonymous_summary">При анонімному підключенні доступ дозволено лише для читання</string>
     <string name="advanced_settings_label">Розширені налаштування...</string>
     <string name="port_number_label">Номер порту</string>
     <string name="chroot_label">Коренева папка доступу</string>
@@ -174,7 +173,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_log_label">Журнал…</string>
 
     <string name="anon_max_conn">Максимальна кількість одночасних підключень</string>
-    <string name="manage_anon_label">Керувати анонімно…</string>
 
     <string name="found_check">&#10004;</string>
     <string name="found_check_green">&#9989;</string>

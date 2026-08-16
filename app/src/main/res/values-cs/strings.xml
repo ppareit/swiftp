@@ -54,7 +54,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         Žádné další znaky nejsou povoleny.
     </string>
     <string name="allow_anonymous_label">Povolit anonymní přihlášení</string>
-    <string name="anonymous_summary">Anonymní přihlášení jsou povolena pouze pro čtení</string>
     <string name="advanced_settings_label">Pokročilé nastavení…</string>
     <string name="port_number_label">Číslo portu</string>
     <string name="port_validation_error">Číslo portu musí být v rozsahu 1 až 65535.</string>

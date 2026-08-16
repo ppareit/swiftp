@@ -55,7 +55,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         Aucun autre caractère n\'est accepté.
     </string>
     <string name="allow_anonymous_label">Autoriser les identifications anonymes</string>
-    <string name="anonymous_summary">Les identifications anonymes ont un accès en lecture seulement</string>
     <string name="advanced_settings_label">Paramètres avancés...</string>
     <string name="port_number_label">Numéro du port</string>
     <string name="port_validation_error">Le port doit être inclus entre 1 et 65535.</string>
@@ -157,7 +156,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_log_label">Enregistrer…</string>
 
     <string name="anon_max_conn">Nombre maximum de connexions simultanées</string>
-    <string name="manage_anon_label">Gérer les anonymes…</string>
 
     <string name="found_check">&#10004;</string>
     <string name="found_check_green">&#9989;</string>

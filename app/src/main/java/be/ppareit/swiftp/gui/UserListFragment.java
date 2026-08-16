@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -19,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.io.File;
 
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
@@ -124,6 +127,10 @@ public class UserListFragment extends Fragment {
     private void refreshUserList() {
         final LayoutInflater inflater = LayoutInflater.from(getActivity());
         listView.removeAllViews();
+        // anonymous is not one of the users, it heads the list as its own card
+        View anonRow = inflater.inflate(R.layout.anon_list_item_layout, listView, false);
+        new AnonItemViewHolder(anonRow).show();
+        listView.addView(anonRow);
         for (FtpUser user : FsSettings.getUsers()) {
             View row = inflater.inflate(R.layout.user_list_item_layout, listView, false);
             new UserItemViewHolder(row).show(user);
@@ -133,6 +140,77 @@ public class UserListFragment extends Fragment {
 
     private void showToast(int errorResId) {
         Toast.makeText(getActivity(), errorResId, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * The anonymous login is a view on three preferences, not on a stored user: the name is
+     * fixed by the protocol, the password is ignored and the access is read only.
+     */
+    private class AnonItemViewHolder {
+        private final SwitchCompat enable;
+        private final View details;
+        private final TextView chroot;
+        private final EditText maxConnections;
+
+        private AnonItemViewHolder(View row) {
+            enable = row.findViewById(R.id.anon_enable);
+            details = row.findViewById(R.id.anon_details);
+            chroot = row.findViewById(R.id.anon_chroot);
+            maxConnections = row.findViewById(R.id.anon_max);
+
+            enable.setOnClickListener(v -> toggle(enable.isChecked()));
+            chroot.setOnClickListener(v -> pickChroot());
+            maxConnections.setOnFocusChangeListener((v, hasFocus) -> {
+                if (!hasFocus) commitMaxConnections();
+            });
+            maxConnections.setOnEditorActionListener((v, actionId, event) -> {
+                if (actionId != EditorInfo.IME_ACTION_DONE) return false;
+                maxConnections.clearFocus();
+                return false;
+            });
+        }
+
+        private void show() {
+            final boolean allowed = FsSettings.allowAnonymous();
+            chroot.setText(FsSettings.getAnonChroot());
+            maxConnections.setText(String.valueOf(FsSettings.getAnonMaxConNumber()));
+            enable.setChecked(allowed);
+            details.setVisibility(allowed ? View.VISIBLE : View.GONE);
+        }
+
+        private void toggle(boolean allowed) {
+            if (allowed && !new File(chroot.getText().toString()).isDirectory()) {
+                // logging in on a folder that is not there fails, so start out on one that is
+                setChroot(FsSettings.getDefaultChrootDir().getPath());
+            }
+            FsSettings.setAllowAnonymous(allowed);
+            details.setVisibility(allowed ? View.VISIBLE : View.GONE);
+        }
+
+        private void pickChroot() {
+            ChrootPicker picker = new ChrootPicker();
+            picker.setOnTextEventListener(this::setChroot);
+            picker.showFolderPicker(chroot.getText().toString(), null, getContext());
+        }
+
+        private void setChroot(String path) {
+            chroot.setText(path);
+            FsSettings.setAnonChroot(path);
+        }
+
+        /** Stores what the field shows, a refused edit resets what is stored. */
+        private void commitMaxConnections() {
+            int max;
+            try {
+                max = Integer.parseInt(maxConnections.getText().toString());
+            } catch (NumberFormatException e) {
+                max = 0;
+            }
+            // an empty or zero limit would refuse every anonymous login
+            if (max < 1) max = 1;
+            FsSettings.setAnonMaxConNumber(max);
+            maxConnections.setText(String.valueOf(max));
+        }
     }
 
     private class UserItemViewHolder {
@@ -196,6 +274,12 @@ public class UserListFragment extends Fragment {
             }
             if (!newPassword.matches("[a-zA-Z0-9]+")) {
                 showToast(R.string.password_validation_error);
+                show(item);
+                return;
+            }
+            if (newUsername.equalsIgnoreCase("anonymous")) {
+                // the name is taken by the card at the top of the list
+                showToast(R.string.username_anonymous_error);
                 show(item);
                 return;
             }

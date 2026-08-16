@@ -40,7 +40,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="password_label">パスワード</string>
     <string name="show_password_label">パスワードを表示する</string>
     <string name="allow_anonymous_label">匿名ログインを許可する</string>
-    <string name="anonymous_summary">匿名ログインは読み取りアクセスのみ許可されます</string>
     <string name="advanced_settings_label">拡張設定...</string>
     <string name="port_number_label">ポート番号</string>
     <string name="chroot_label">ルートとして公開するフォルダ</string>
@@ -136,7 +135,6 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="manage_log_label">ログ…</string>
 
     <string name="anon_max_conn">最大同時接続数</string>
-    <string name="manage_anon_label">匿名で管理する…</string>
 
     <string name="found_check">&#10004;</string>
     <string name="found_check_green">&#9989;</string>

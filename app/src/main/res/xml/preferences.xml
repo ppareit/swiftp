@@ -43,10 +43,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:title="@string/manage_users_label" />
 
         <Preference
-            android:key="manage_anon"
-            android:title="@string/manage_anon_label" />
-
-        <Preference
             android:key="allowed_folders"
             android:title="@string/allowed_folders_label" />
 

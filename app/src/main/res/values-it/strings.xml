@@ -38,7 +38,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="password_label">Password</string>
     <string name="show_password_label">Mostra password</string>
     <string name="allow_anonymous_label">Permetti login anonimo</string>
-    <string name="anonymous_summary">Gli utenti anonimi avranno accesso in sola lettura</string>
     <string name="advanced_settings_label">Impostazioni avanzate...</string>
     <string name="port_number_label">Numbero Porta</string>
     <string name="chroot_label">Rimani nella cartella</string>
@@ -102,7 +101,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_log_label">Tronco d\'albero…</string>
 
     <string name="anon_max_conn">Numero massimo di connessioni simultanee</string>
-    <string name="manage_anon_label">Gestisci anonimo…</string>
 
     <string name="found_check">&#10004;</string>
     <string name="found_check_green">&#9989;</string>
