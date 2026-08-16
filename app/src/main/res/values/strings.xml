@@ -176,6 +176,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <!-- since 2.19 -->
     <string name="unable_to_proceed_no_permissions">Unable to proceed without the needed permissions, shutting down</string>
     <string name="manage_users_label">Manage users…</string>
+    <string name="manage_users_title">Manage users</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="save">Save</string>

@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/user_list"
+    <!-- Not a ListView, a recycled row would be rebound while it is being typed in -->
+    <ScrollView
+        android:id="@+id/user_list_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:descendantFocusability="afterDescendants"
-        android:divider="@android:color/transparent"
-        tools:listitem="@layout/user_list_item_layout" />
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="100dp">
+
+        <LinearLayout
+            android:id="@+id/user_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/user_add_btn"

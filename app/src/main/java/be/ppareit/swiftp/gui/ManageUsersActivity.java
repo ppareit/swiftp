@@ -20,6 +20,7 @@ public class ManageUsersActivity extends AppCompatActivity {
         setContentView(R.layout.manage_users_layout);
         setSupportActionBar(findViewById(R.id.my_toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle(R.string.manage_users_title);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.manage_users_activity_fragment, UserListFragment.newInstance())
                 .commit();
