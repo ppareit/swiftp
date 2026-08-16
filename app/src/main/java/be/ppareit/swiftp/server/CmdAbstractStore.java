@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.MediaUpdater;
 
@@ -60,6 +61,11 @@ abstract public class CmdAbstractStore extends FtpCmd {
             // Get a normalized absolute path for the desired file
             if (violatesChroot(storeFile)) {
                 errString = "550 Invalid name or chroot violation\r\n";
+                break storing;
+            }
+            if (Util.useScopedStorage() && AllowedFolders.index().isVirtual(storeFile.getParent())) {
+                // We can't store in a virtual folder, tell the user
+                errString = "553 Can't store here, store inside one of the allowed folders\r\n";
                 break storing;
             }
             if (storeFile.isDirectory()) {

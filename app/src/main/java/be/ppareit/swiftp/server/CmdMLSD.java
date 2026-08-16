@@ -63,18 +63,19 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
                 }
             }
             String listing;
-            if (!fileToList.isDirectory()) {
-                errString = "501 Not a directory\r\n";
-                break mainblock;
-            }
-
             StringBuilder response = new StringBuilder();
             // TBD
             // https://tools.ietf.org/html/rfc3659#page-39
             // MLSD auto need to add [type=cdir] and [type=pdir]
             FileUtil.Gen gen = FileUtil.createGenFromFile(fileToList);
             if (gen.getOb() == null) {
-                errString = "MLSD failed. Try write external storage\r\n";
+                errString = "550 No such directory, or it is not a shared folder\r\n";
+                break mainblock;
+            }
+            // Use a Gen, so a granted folder and the virtual root above
+            // it are both recognised as directories under SAF.
+            if (!gen.isDirectory()) {
+                errString = "501 Not a directory\r\n";
                 break mainblock;
             }
             errString = listDirectory(response, gen);

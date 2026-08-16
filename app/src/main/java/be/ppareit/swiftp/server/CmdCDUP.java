@@ -24,6 +24,8 @@ import java.io.IOException;
 
 import android.util.Log;
 
+import be.ppareit.swiftp.utils.FileUtil;
+
 public class CmdCDUP extends FtpCmd implements Runnable {
     private static final String TAG = CmdCDUP.class.getSimpleName();
     protected String input;
@@ -52,10 +54,13 @@ public class CmdCDUP extends FtpCmd implements Runnable {
 
             try {
                 newDir = newDir.getCanonicalFile();
-                if (!newDir.isDirectory()) {
+                // Use Gen for the same reason as CWD: coming back up out of a granted
+                // folder lands on the virtual root, which no File test recognises.
+                final FileUtil.Gen gen = FileUtil.createGenFromFile(newDir);
+                if (!gen.isDirectory()) {
                     errString = "550 Can't CWD to invalid directory\r\n";
                     break mainBlock;
-                } else if (newDir.canRead()) {
+                } else if (gen.canRead()) {
                     sessionThread.setWorkingDir(newDir);
                 } else {
                     errString = "550 That path is inaccessible\r\n";

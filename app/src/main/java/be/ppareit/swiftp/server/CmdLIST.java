@@ -84,20 +84,21 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
                     break mainblock;
                 }
             }
+
+            final FileUtil.Gen gen = docFileToList != null
+                    ? FileUtil.convertDocumentFileToGen(docFileToList)
+                    : FileUtil.createGenFromFile(fileToList);
+
             String listing;
-            if (fileToList.isDirectory() || (docFileToList != null && docFileToList.isDirectory())) {
+            if (gen.isDirectory()) {
                 StringBuilder response = new StringBuilder();
-                FileUtil.Gen gen;
-                if (docFileToList != null) gen = FileUtil.convertDocumentFileToGen(docFileToList);
-                else gen = FileUtil.createGenFromFile(fileToList);
                 errString = listDirectory(response, gen);
                 if (errString != null) {
                     break mainblock;
                 }
                 listing = response.toString();
             } else {
-                if (docFileToList != null) listing = makeLsString(new FileUtil.Gen(docFileToList));
-                else listing = makeLsString(new FileUtil.Gen(fileToList));
+                listing = makeLsString(gen);
                 if (listing == null) {
                     errString = "450 Couldn't list that file\r\n";
                     break mainblock;

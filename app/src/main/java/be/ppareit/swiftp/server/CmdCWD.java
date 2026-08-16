@@ -24,6 +24,8 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 
+import be.ppareit.swiftp.utils.FileUtil;
+
 public class CmdCWD extends FtpCmd implements Runnable {
     private static final String TAG = CmdCWD.class.getSimpleName();
 
@@ -55,9 +57,12 @@ public class CmdCWD extends FtpCmd implements Runnable {
             try {
                 newDir = newDir.getCanonicalFile();
                 Log.i(TAG, "New directory: " + newDir);
-                if (!newDir.isDirectory()) {
+                // Use Gen not File, under SAF a granted folder fails canRead() and the virtual
+                // root is no directory at all, so only the Gen can say it is enterable.
+                final FileUtil.Gen gen = FileUtil.createGenFromFile(newDir);
+                if (!gen.isDirectory()) {
                     sessionThread.writeString("550 Can't CWD to invalid directory\r\n");
-                } else if (newDir.canRead()) {
+                } else if (gen.canRead()) {
                     sessionThread.setWorkingDir(newDir);
                     sessionThread.writeString("250 CWD successful\r\n");
                 } else {

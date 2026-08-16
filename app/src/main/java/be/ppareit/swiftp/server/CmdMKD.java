@@ -24,6 +24,8 @@ import java.io.File;
 import android.util.Log;
 
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdMKD extends FtpCmd implements Runnable {
@@ -58,6 +60,11 @@ public class CmdMKD extends FtpCmd implements Runnable {
             }
             if (toCreate.exists()) {
                 errString = "550 Already exists\r\n";
+                break mainblock;
+            }
+            if (Util.useScopedStorage() && AllowedFolders.index().isVirtual(toCreate.getParent())) {
+                // we are in a virtual folder
+                errString = "550 Can't create a folder here, add it in the app instead\r\n";
                 break mainblock;
             }
 

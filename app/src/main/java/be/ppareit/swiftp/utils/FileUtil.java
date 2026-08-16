@@ -950,6 +950,7 @@ public abstract class FileUtil {
         public boolean exists() {
             Object ob = getOb();
             if (ob == null) return false;
+            if (ob instanceof VirtualDir) return true;
             if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).exists();
             else return ((File) ob).exists();
         }
@@ -957,6 +958,7 @@ public abstract class FileUtil {
         public String getName() {
             Object ob = getOb();
             if (ob == null) return "";
+            if (ob instanceof VirtualDir) return ((VirtualDir) ob).getName();
             if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).getName();
             else return ((File) ob).getName();
         }
@@ -964,6 +966,7 @@ public abstract class FileUtil {
         public boolean isDirectory() {
             Object ob = getOb();
             if (ob == null) return false;
+            if (ob instanceof VirtualDir) return true;
             if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).isDirectory();
             else return ((File) ob).isDirectory();
         }
@@ -971,6 +974,7 @@ public abstract class FileUtil {
         public long length() {
             Object ob = getOb();
             if (ob == null) return 0;
+            if (ob instanceof VirtualDir) return 0;
             if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).length();
             else return ((File) ob).length();
         }
@@ -978,6 +982,7 @@ public abstract class FileUtil {
         public long lastModified() {
             Object ob = getOb();
             if (ob == null) return 0;
+            if (ob instanceof VirtualDir) return ((VirtualDir) ob).getLastModified();
             if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).lastModified();
             else return ((File) ob).lastModified();
         }
@@ -985,6 +990,7 @@ public abstract class FileUtil {
         public boolean isFile() {
             Object ob = getOb();
             if (ob == null) return false;
+            if (ob instanceof VirtualDir) return false;
             if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).isFile();
             else return ((File) ob).isFile();
         }
@@ -992,6 +998,7 @@ public abstract class FileUtil {
         public boolean canRead() {
             Object ob = getOb();
             if (ob == null) return false;
+            if (ob instanceof VirtualDir) return true;
             if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).canRead();
             else return ((File) ob).canRead();
         }
@@ -999,6 +1006,9 @@ public abstract class FileUtil {
         public boolean canWrite() {
             Object ob = getOb();
             if (ob == null) return false;
+            // Never writable: a virtual directory has no provider behind it, so MKD and STOR
+            // there have to be refused rather than half succeed on the File path.
+            if (ob instanceof VirtualDir) return false;
             if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).canWrite();
             else return ((File) ob).canWrite();
         }
@@ -1006,6 +1016,7 @@ public abstract class FileUtil {
         public String getCanonicalPath() throws IOException {
             Object ob = getOb();
             if (ob == null) return "";
+            if (ob instanceof VirtualDir) return ((VirtualDir) ob).getPath();
             if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).getUri().getPath();
             else return ((File) ob).getCanonicalPath();
         }
@@ -1013,6 +1024,7 @@ public abstract class FileUtil {
         public String getAbsolutePath() {
             Object ob = getOb();
             if (ob == null) return "";
+            if (ob instanceof VirtualDir) return ((VirtualDir) ob).getPath();
             if (ob instanceof DocumentFile) return ((DocumentFile) getOb()).getUri().getPath();
             else return ((File) ob).getAbsolutePath();
         }
@@ -1032,9 +1044,20 @@ public abstract class FileUtil {
      * */
     public static Gen createGenFromFile(File f) {
         if (Util.useScopedStorage()) {
+            if (AllowedFolders.index().isVirtual(f.getPath())) {
+                return new Gen<>(new VirtualDir(f.getPath(), virtualDirTime(f)));
+            }
             return FileUtil.convertDocumentFileToGen(FileUtil.getDocumentFileFromFileScopedStorage(f));
         } else {
             return FileUtil.convertFileToGen(f);
         }
+    }
+
+    /*
+     * A virtual directory has no real modification time.
+     */
+    private static long virtualDirTime(File f) {
+        final long modified = f.lastModified();
+        return modified > 0 ? modified : System.currentTimeMillis(); // some clients refuse 0
     }
 }
