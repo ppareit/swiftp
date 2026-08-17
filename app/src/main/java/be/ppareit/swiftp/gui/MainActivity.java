@@ -50,6 +50,7 @@ import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.R;
+import be.ppareit.swiftp.Util;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestReadWritePermissions() {
         // We can no longer request READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE,
-        // This is not allowed. We use scoped storage in stead
+        // This is not allowed. We use scoped storage instead
         if (VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             return;
         }
@@ -134,8 +135,11 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                     Cat.e("Unable to proceed, no permissions given.");
                     finish();
+                    return;
                 }
             }
+            // we might have received improved permissions, reset probing for files
+            Util.resetScoped();
         }
     }
 
