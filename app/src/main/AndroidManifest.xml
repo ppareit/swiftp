@@ -18,7 +18,8 @@ You should have received a copy of the GNU General Public License
 along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -148,12 +149,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             </intent-filter>
         </activity>
 
+        <!-- TileService needs API 24, minSdk is 23. Harmless below 24: those
+             platforms have no quick settings tile binding, so the class is
+             never loaded and its missing superclass never matters. -->
         <service
             android:name=".gui.FsTileService"
             android:icon="@mipmap/ic_qs_ftp_server"
             android:label="@string/swiftp_name"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            android:exported="true">
+            android:exported="true"
+            tools:targetApi="24">
 
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
