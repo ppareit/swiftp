@@ -817,7 +817,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         serverNotificationPref.setChecked(enabled);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestAccessCoarseLocationPermission() {
         String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION};
         requestPermissions(permissions, ACCESS_COARSE_LOCATION_REQUEST_CODE);

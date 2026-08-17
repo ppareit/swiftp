@@ -20,9 +20,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package be.ppareit.swiftp.server;
 
 import java.io.File;
-import java.io.IOException;
-
-import android.os.Build;
 
 import net.vrallev.android.cat.Cat;
 
@@ -67,39 +64,10 @@ public class CmdRNTO extends FtpCmd implements Runnable {
             }
             Cat.i("RNTO from file: " + fromFile.getPath());
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-                // TODO: this code is working around a bug that java6 and before cannot
-                // reliable move a file, once java7 is supported by Dalvik, this code can
-                // be replaced with Files.move()
-                File tmpFile = null;
-                try {
-                    tmpFile = File.createTempFile("temp_" + fromFile.getName(), null,
-                            sessionThread.getWorkingDir());
-                    if (fromFile.isDirectory()) {
-                        String tmpFilePath = tmpFile.getPath();
-                        tmpFile.delete();
-                        tmpFile = new File(tmpFilePath);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    errString = "550 Error during rename operation\r\n";
-                    break mainblock;
-                }
-                if (!fromFile.renameTo(tmpFile)) {
-                    errString = "550 Error during rename operation\r\n";
-                    break mainblock;
-                }
-                fromFile.delete();
-                if (!tmpFile.renameTo(toFile)) {
-                    errString = "550 Error during rename operation\r\n";
-                    break mainblock;
-                }
+            if (fromFile.isDirectory()) {
+                FileUtil.renameFolder(fromFile, toFile, App.getAppContext());
             } else {
-                if (fromFile.isDirectory()) {
-                    FileUtil.renameFolder(fromFile, toFile, App.getAppContext());
-                } else {
-                    FileUtil.moveFile(fromFile, toFile, App.getAppContext());
-                }
+                FileUtil.moveFile(fromFile, toFile, App.getAppContext());
             }
 
         }

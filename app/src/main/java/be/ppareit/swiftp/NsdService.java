@@ -19,7 +19,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
 package be.ppareit.swiftp;
 
-import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -32,7 +31,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class NsdService extends Service {
     private static final String TAG = NsdService.class.getSimpleName();
 
@@ -48,10 +46,6 @@ public class NsdService extends Service {
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "onReceive broadcast: " + intent.getAction());
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                Log.w(TAG, "Pre-JB to old for NSD functionality");
-                return;
-            }
             if (intent.getAction() == null) {
                 return;
             }

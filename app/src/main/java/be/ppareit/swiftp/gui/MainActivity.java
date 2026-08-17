@@ -101,18 +101,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean haveReadWritePermissions() {
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return checkSelfPermission(READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED
-                    && checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED;
-        } else {
-            return true;
-        }
+        return checkSelfPermission(READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED
+                && checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED;
     }
 
     private void requestReadWritePermissions() {
-        if (VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return;
-        }
         // We can no longer request READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE,
         // This is not allowed. We use scoped storage in stead
         if (VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
