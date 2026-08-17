@@ -158,8 +158,6 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="manage_users_no_users">No hay usuarios disponibles, crea un usuario.</string>
     <string name="manage_users_multiple_users">Varios usuarios disponibles, mira la lista.</string>
     <string name="gui_settings_label">Apariencia...</string>
-    <string name="show_notification_icon_summary">Mostrar el icono de notificación mientras el servidor se está ejecutando</string>
-    <string name="show_notification_icon">Mostrar el icono de notificación</string>
     <string name="auto_connect_stop_server_remove_from_list">
         Detener el servidor FTP mientras estamos conectados a una red wifi a la que nos conectamos automáticamente. Eliminar esta red wifi de las preferencias
     </string>

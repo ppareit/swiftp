@@ -186,8 +186,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_users_no_users">Nejsou k dispozici žádní uživatelé, vytvořte uživatele.</string>
     <string name="manage_users_multiple_users">K dispozici je více uživatelů, viz seznam.</string>
     <string name="gui_settings_label">Vzhled…</string>
-    <string name="show_notification_icon_summary">Zobrazovat ikonu upozornění, když je server spuštěný</string>
-    <string name="show_notification_icon">Zobrazit ikonu oznámení</string>
     <string name="auto_connect_stop_server_remove_from_list">
         Zastavení FTP serveru při připojení k síti Wi-Fi, ke které jsme se automaticky připojili. Odebírání této sítě Wi-Fi z předvoleb.
     </string>

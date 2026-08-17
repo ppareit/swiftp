@@ -212,10 +212,6 @@ public class FsSettings {
 
     }
 
-    public static boolean showNotificationIcon() {
-        return sp.getBoolean("show_notification_icon_preference", true);
-    }
-
     /**
      * @return the SharedPreferences for this application
      */

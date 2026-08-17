@@ -282,35 +282,13 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             });
         }
 
-        // Notification setting for old devices
-        Preference showNotificationIconPref = findPref("show_notification_icon_preference");
-        if (showNotificationIconPref != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                PreferenceScreen appearanceScreen = (PreferenceScreen) findPreference("appearance_screen");
-                if (appearanceScreen != null) {
-                    appearanceScreen.removePreference(showNotificationIconPref);
-                }
-            }
-            showNotificationIconPref.setOnPreferenceChangeListener((preference, newValue) -> {
-                FsService.stop();
-                return true;
-            });
-        }
-
-        // Notification setting for recent devices
         TwoStatePreference serverNotificationPref = findPref("show_server_notification");
         if (serverNotificationPref != null) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                if (serverNotificationPref.getParent() != null) {
-                    serverNotificationPref.getParent().removePreference(serverNotificationPref);
-                }
-            } else {
-                serverNotificationPref.setOnPreferenceChangeListener((preference, newValue) -> {
-                    onServerNotificationToggled();
-                    // Never flip on the tap alone, the system decides and onResume shows it
-                    return false;
-                });
-            }
+            serverNotificationPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                onServerNotificationToggled();
+                // Never flip on the tap alone, the system decides and onResume shows it
+                return false;
+            });
         }
 
         Preference helpPref = findPref("help");
@@ -804,7 +782,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
      * settings: an app can neither revoke its own permission nor hide the notification of a
      * running foreground service.
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void onServerNotificationToggled() {
         final Context context = getActivity();
         if (context == null) return;
@@ -830,16 +807,22 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         return shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    /**
+     * ACTION_APP_NOTIFICATION_SETTINGS is only public since API 26, fallback if needed
+     */
     private void openNotificationSettings(Context context) {
-        try {
-            startActivity(new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                    .putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName()));
-        } catch (ActivityNotFoundException e) {
-            Cat.e("No notification settings screen, falling back on the app details");
-            startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                    Uri.fromParts("package", context.getPackageName(), null)));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+                startActivity(new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName()));
+                return;
+            } catch (ActivityNotFoundException e) {
+                Cat.e("No notification settings screen, falling back on the app details");
+            }
         }
+        // fallback if above call did not work, show app details settings, contains notification
+        startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", context.getPackageName(), null)));
     }
 
     /**

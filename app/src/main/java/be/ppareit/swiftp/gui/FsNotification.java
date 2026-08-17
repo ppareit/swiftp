@@ -84,9 +84,6 @@ public class FsNotification {
         PendingIntent preferencePendingIntent = PendingIntent.getActivity(context, 0,
                 preferenceIntent, PendingIntent.FLAG_IMMUTABLE);
 
-        int priority = FsSettings.showNotificationIcon() ? Notification.PRIORITY_DEFAULT
-                : Notification.PRIORITY_MIN;
-
         String channelId = "be.ppareit.swiftp.notification.channelId";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Show FTP Server state";
@@ -107,7 +104,7 @@ public class FsNotification {
                 .setOngoing(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                .setPriority(priority)
+                .setPriority(Notification.PRIORITY_DEFAULT)  // Ignored on API >= 26
                 .addAction(stopIcon, stopText, stopPendingIntent)
                 .addAction(preferenceIcon, preferenceText, preferencePendingIntent)
                 .setShowWhen(false)

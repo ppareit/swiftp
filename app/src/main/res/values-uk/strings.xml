@@ -157,8 +157,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_users_no_users">Відсутні доступні користувачі, створіть користувача.</string>
     <string name="manage_users_multiple_users">Доступно кілька користувачів, дивіться список.</string>
     <string name="gui_settings_label">Зовнішній вигляд...</string>
-    <string name="show_notification_icon_summary">Показувати значок сповіщення під час роботи сервера</string>
-    <string name="show_notification_icon">Показати значок сповіщення</string>
     <string name="auto_connect_stop_server_remove_from_list">
         Зупинка FTP-сервера під час підключення до мережі Wi-Fi, до якої ми автоматично підключилися. Видалення цієї мережі Wi-Fi з налаштувань
     </string>

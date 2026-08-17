@@ -184,8 +184,6 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_users_no_users">Brak użytkowników, utwórz użytkownika.</string>
     <string name="manage_users_multiple_users">Dostępnych jest wielu użytkowników, patrz lista.</string>
     <string name="gui_settings_label">Wygląd…</string>
-    <string name="show_notification_icon_summary">Pokaż ikonę powiadomienia podczas działania serwera</string>
-    <string name="show_notification_icon">Pokaż ikonę powiadomienia</string>
     <string name="auto_connect_stop_server_remove_from_list">
         Zatrzymywanie serwera FTP połączonego z siecią Wi-Fi, z którą łączyłeś się automatycznie. Usuwanie tej sieci Wi-Fi z preferencji.
     </string>

@@ -174,8 +174,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     <string name="manage_users_no_users">沒有可用的用戶，請建立用戶。</string>
     <string name="manage_users_multiple_users">多個用戶可用，參見清單。</string>
     <string name="gui_settings_label">外觀...</string>
-    <string name="show_notification_icon_summary">當伺服器運行時顯示通知圖示</string>
-    <string name="show_notification_icon">顯示通知圖示</string>
     <string name="auto_connect_stop_server_remove_from_list">
         在連接到自動連接的Wi-Fi網絡時停止FTP伺服器。從設定中刪除此Wi-Fi網絡
     </string>

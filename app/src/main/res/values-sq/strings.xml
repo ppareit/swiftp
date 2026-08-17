@@ -186,8 +186,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_users_no_users">Asnjë përdorues në dispozicion, krijoni një përdorues.</string>
     <string name="manage_users_multiple_users">Shumë përdorues të disponueshëm, shihni listën.</string>
     <string name="gui_settings_label">Paraqitja...</string>
-    <string name="show_notification_icon_summary">Trego ikonën e njoftimit ndërsa serveri po funksionon</string>
-    <string name="show_notification_icon">Shfaq ikonën e njoftimit</string>
     <string name="auto_connect_stop_server_remove_from_list">
         Ndalimi i serverit FTP ndërsa ishte i lidhur me një rrjet wifi me të cilin automatikisht jemi lidhur. Heqja e këtij rrjeti wifi nga preferencat
     </string>
