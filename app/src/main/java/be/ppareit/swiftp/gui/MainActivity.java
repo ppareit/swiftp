@@ -19,20 +19,14 @@
 
 package be.ppareit.swiftp.gui;
 
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,21 +38,16 @@ import androidx.fragment.app.FragmentManager;
 
 import net.vrallev.android.cat.Cat;
 
-import java.util.Arrays;
-
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.R;
-import be.ppareit.swiftp.Util;
 
 /**
  * This is the main activity for swiftp, it enables the user to start the server service
  * and allows the users to change the settings.
  */
 public class MainActivity extends AppCompatActivity {
-
-    final static int PERMISSIONS_REQUEST_CODE = 12;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,10 +57,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_layout);
         setSupportActionBar(findViewById(R.id.my_toolbar));
         syncUpArrowWithBackStack();
-
-        if (!haveReadWritePermissions()) {
-            requestReadWritePermissions();
-        }
 
         if (App.isFreeVersion() && App.isPaidVersionInstalled()) {
             Cat.d("Running demo while paid is installed");
@@ -98,48 +83,6 @@ public class MainActivity extends AppCompatActivity {
             if (getIntent().getAction() != null && getIntent().getAction().equals("Intent.QuickOn")) {
                 FsService.start();
             }
-        }
-    }
-
-    private boolean haveReadWritePermissions() {
-        return checkSelfPermission(READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED
-                && checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED;
-    }
-
-    private void requestReadWritePermissions() {
-        // We can no longer request READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE,
-        // This is not allowed. We use scoped storage instead
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return;
-        }
-        String[] permissions = new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE};
-        requestPermissions(permissions, PERMISSIONS_REQUEST_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode != PERMISSIONS_REQUEST_CODE) {
-            Cat.e("Unhandled request code");
-            return;
-        }
-        Cat.d("permissions: " + Arrays.toString(permissions));
-        Cat.d("grantResults: " + Arrays.toString(grantResults));
-        if (grantResults.length > 0) {
-            // Permissions not granted, close down
-            for (int result : grantResults) {
-                if (result != PERMISSION_GRANTED) {
-                    Toast.makeText(this, R.string.unable_to_proceed_no_permissions,
-                            Toast.LENGTH_LONG).show();
-                    Cat.e("Unable to proceed, no permissions given.");
-                    finish();
-                    return;
-                }
-            }
-            // we might have received improved permissions, reset probing for files
-            Util.resetScoped();
         }
     }
 

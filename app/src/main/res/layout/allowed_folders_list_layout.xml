@@ -21,11 +21,30 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         tools:text="@string/allowed_folders_full_sdcard_explanation" />
 
+    <!-- Only shown where the old storage permission can still be asked for and is missing. -->
+    <Button
+        android:id="@+id/allowed_folders_permission_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/allowed_folders_explanation"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:drawableLeft="@drawable/ic_allow_files"
+        android:drawableStart="@drawable/ic_allow_files"
+        android:drawablePadding="8dp"
+        android:drawableTint="?attr/colorAccent"
+        android:text="@string/allowed_folders_allow_permission"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
     <ListView
         android:id="@+id/allowed_folders_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/allowed_folders_explanation"
+        android:layout_below="@id/allowed_folders_permission_btn"
         android:descendantFocusability="afterDescendants"
         android:divider="@android:color/transparent"
         tools:listitem="@layout/allowed_folders_item_layout" />

@@ -84,6 +84,7 @@ import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.server.FtpUser;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FTPSSockets;
+import be.ppareit.swiftp.utils.LegacyStoragePermission;
 
 import be.ppareit.swiftp.utils.Logging;
 
@@ -958,6 +959,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             allowedFoldersPref.setSummary(TextUtils.join(", ", names));
         } else if (Util.hasFullSdCardAccess()) {
             allowedFoldersPref.setSummary(R.string.allowed_folders_full_sdcard);
+        } else if (LegacyStoragePermission.isMissing(allowedFoldersPref.getContext())) {
+            allowedFoldersPref.setSummary(R.string.allowed_folders_allow_access);
         } else {
             allowedFoldersPref.setSummary(R.string.allowed_folders_choose);
         }
