@@ -155,10 +155,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
         Birgit Niemegeers
     </string>
 
-    <string name="app_theme">Theme…</string>
-    <string name="dark_theme">Dark Theme</string>
-    <string name="light_theme">Light Theme</string>
-    <string name="mixed_theme">Mixed Theme</string>
     <string name="unable_to_start_mail_client">Unable to start mail client to send feedback.</string>
     <string name="use_english">Please use clear English!</string>
 
@@ -188,7 +184,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notice_cant_write">Notice that we can not write in this folder, reading will work. Writing in sub folders might work.</string>
     <string name="manage_users_no_users">No users available, create a user.</string>
     <string name="manage_users_multiple_users">Multiple users available, see list.</string>
-    <string name="gui_settings_label">Appearance…</string>
     <string name="show_server_notification">Show server notification</string>
     <string name="show_server_notification_summary">Show the server address and a stop button while the server is running</string>
     <string name="auto_connect_stop_server_remove_from_list">

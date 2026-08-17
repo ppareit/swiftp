@@ -24,6 +24,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 
 import net.vrallev.android.cat.Cat;
@@ -39,6 +40,8 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(FsService.ACTION_STARTED);

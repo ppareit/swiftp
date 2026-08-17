@@ -56,12 +56,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/swiftp_name"
+        android:theme="@style/AppTheme"
         android:dataExtractionRules="@xml/data_extraction_rules">
 
         <activity
             android:name="be.ppareit.swiftp.gui.MainActivity"
             android:configChanges="screenSize|orientation"
-            android:theme="@style/AppThemeDark"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -73,25 +73,21 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
         <activity
             android:name=".gui.AboutActivity"
-            android:parentActivityName=".gui.MainActivity"
-            android:theme="@style/AppThemeDark" />
+            android:parentActivityName=".gui.MainActivity" />
 
         <activity
             android:name=".gui.LogActivity"
-            android:parentActivityName=".gui.MainActivity"
-            android:theme="@style/AppThemeDark" />
+            android:parentActivityName=".gui.MainActivity" />
 
         <activity
             android:name=".gui.ManageUsersActivity"
             android:configChanges="screenSize|orientation"
-            android:parentActivityName=".gui.MainActivity"
-            android:theme="@style/AppThemeDark" />
+            android:parentActivityName=".gui.MainActivity" />
 
         <activity
             android:name=".gui.AllowedFoldersActivity"
             android:configChanges="screenSize|orientation"
-            android:parentActivityName=".gui.MainActivity"
-            android:theme="@style/AppThemeDark" />
+            android:parentActivityName=".gui.MainActivity" />
 
         <service
             android:name="be.ppareit.swiftp.FsService"
@@ -124,7 +120,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:exported="true"
             android:icon="@drawable/widget_on"
             android:label="@string/tasker_action_set_state"
-            android:theme="@style/AppThemeDark"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
@@ -136,8 +131,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:name="be.ppareit.swiftp.tasker.StateConfigServerRunning"
             android:exported="true"
             android:icon="@drawable/widget_on"
-            android:label="@string/tasker_state_running"
-            android:theme="@style/AppThemeDark">
+            android:label="@string/tasker_state_running">
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.EDIT_CONDITION" />
             </intent-filter>
@@ -148,8 +142,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:name="be.ppareit.swiftp.tasker.EventConfigServerStateChanged"
             android:exported="true"
             android:icon="@drawable/widget_on"
-            android:label="@string/tasker_event_state_changed"
-            android:theme="@style/AppThemeDark">
+            android:label="@string/tasker_event_state_changed">
             <intent-filter>
                 <action android:name="net.dinglisch.android.tasker.ACTION_EDIT_EVENT" />
             </intent-filter>

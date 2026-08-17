@@ -8,14 +8,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 
 public class ManageUsersActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(FsSettings.getTheme());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manage_users_layout);
         setSupportActionBar(findViewById(R.id.my_toolbar));

@@ -147,10 +147,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
         Birgit Niemegeers
     </string>
 
-    <string name="app_theme">主題...</string>
-    <string name="dark_theme">暗色主題</string>
-    <string name="light_theme">亮色主題</string>
-    <string name="mixed_theme">混合主題</string>
     <string name="unable_to_start_mail_client">無法啟動郵件用戶端以傳送反饋。</string>
     <string name="use_english">請使用清晰英語來表達！</string>
 
@@ -173,7 +169,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     <string name="notice_cant_write">請注意我們無法寫入此資料夾，但可以讀取。此資料夾內的子資料夾或可寫入。</string>
     <string name="manage_users_no_users">沒有可用的用戶，請建立用戶。</string>
     <string name="manage_users_multiple_users">多個用戶可用，參見清單。</string>
-    <string name="gui_settings_label">外觀...</string>
     <string name="auto_connect_stop_server_remove_from_list">
         在連接到自動連接的Wi-Fi網絡時停止FTP伺服器。從設定中刪除此Wi-Fi網絡
     </string>

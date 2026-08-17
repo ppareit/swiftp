@@ -126,10 +126,6 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="about_description_text">FTP Server (SwiFTP) te permite ejecutar un servidor FTP en tu dispositivo Android.</string>
     <string name="about_libraries_title">Bibliotecas</string>
     <string name="about_contributor_title">Colaboradores</string>
-    <string name="dark_theme">Tema oscuro</string>
-    <string name="light_theme">Tema ligero</string>
-    <string name="mixed_theme">Tema mixto</string>
-    <string name="app_theme">Tema...</string>
 
 
     <string name="unable_to_start_mail_client">No se puede iniciar el cliente de correo para enviar opinión.</string>
@@ -157,7 +153,6 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="notice_cant_write">Tendrás en cuenta que no podemos escribir en esta carpeta, la lectura de esta funcionará. Escribir en subcarpetas podría funcionar.</string>
     <string name="manage_users_no_users">No hay usuarios disponibles, crea un usuario.</string>
     <string name="manage_users_multiple_users">Varios usuarios disponibles, mira la lista.</string>
-    <string name="gui_settings_label">Apariencia...</string>
     <string name="auto_connect_stop_server_remove_from_list">
         Detener el servidor FTP mientras estamos conectados a una red wifi a la que nos conectamos automáticamente. Eliminar esta red wifi de las preferencias
     </string>

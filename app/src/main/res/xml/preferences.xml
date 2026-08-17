@@ -54,18 +54,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:title="@string/allowed_folders_label" />
 
         <PreferenceScreen
-            android:key="appearance_screen"
-            android:title="@string/gui_settings_label">
-            <ListPreference
-                android:defaultValue="0"
-                android:entries="@array/pref_list_themes"
-                android:entryValues="@array/pref_list_themes_values"
-                android:key="theme"
-                android:title="@string/app_theme" />
-        </PreferenceScreen>
-
-
-        <PreferenceScreen
             android:key="preference_screen_advanced"
             android:title="@string/advanced_settings_label">
 

@@ -142,10 +142,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
     <string name="about_libraries_title">Bibliothèques</string>
     <string name="about_contributor_title">Contributions</string>
-    <string name="dark_theme">Thème sombre</string>
-    <string name="light_theme">Thème lumineux</string>
-    <string name="mixed_theme">Thème mixte</string>
-    <string name="app_theme">Thème...</string>
 
     <string name="battery_saver_setting_title">Économiseur de batterie</string>
     <string name="bs_high">HAUT</string>

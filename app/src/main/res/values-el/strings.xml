@@ -137,10 +137,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="about_libraries_title">Βιβλιοθήκες</string>
     <string name="about_contributor_title">Συμμετέχοντες</string>
 
-    <string name="app_theme">Θέμα...</string>
-    <string name="dark_theme">Σκοτεινό Θέμα</string>
-    <string name="light_theme">Φωτεινό Θέμα</string>
-    <string name="mixed_theme">Ανάμεικτο Θέμα</string>
 
     <string name="battery_saver_setting_title">Εξοικονόμηση μπαταρίας</string>
     <string name="bs_high">ΥΨΗΛΟΣ</string>

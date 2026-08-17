@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import be.ppareit.swiftp.BuildConfig;
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 
 /**
@@ -25,7 +24,6 @@ public class AboutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(FsSettings.getTheme());
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.about_layout);

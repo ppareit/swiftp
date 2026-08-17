@@ -83,10 +83,6 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
     <string name="port_validation_error">Die Portnummer muss im Bereich von 1 bis 65535 liegen!</string>
     <string name="storage_warning">Warnung: das Speichermedium ist nicht verfügbar!</string>
     <string name="widget_name">FTP Server Widget</string>
-    <string name="dark_theme">Dunkles Thema</string>
-    <string name="light_theme">Lichtthema</string>
-    <string name="mixed_theme">Gemischtes Thema</string>
-    <string name="app_theme">Thema...</string>
 
     <string name="battery_saver_setting_title">Batteriesparmodus</string>
     <string name="bs_high">HOCH</string>

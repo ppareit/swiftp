@@ -7,7 +7,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 
-import be.ppareit.swiftp.FsSettings
 import be.ppareit.swiftp.R
 
 /**
@@ -16,7 +15,6 @@ import be.ppareit.swiftp.R
 class AllowedFoldersActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(FsSettings.getTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.allowed_folders_layout)
         setSupportActionBar(findViewById(R.id.my_toolbar))

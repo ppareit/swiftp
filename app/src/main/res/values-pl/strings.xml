@@ -153,10 +153,6 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
         Birgit Niemegeers
     </string>
 
-    <string name="app_theme">Wygląd…</string>
-    <string name="dark_theme">Ciemny</string>
-    <string name="light_theme">Jasny</string>
-    <string name="mixed_theme">Mieszany</string>
     <string name="unable_to_start_mail_client">Nie można uruchomić klienta poczty, aby wysłać opinię.</string>
     <string name="use_english">Użyj czystego angielskiego!</string>
 
@@ -183,7 +179,6 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notice_cant_write">Nie można zapisać w tym katalogu, odczytywanie będzie działać. Zapisywanie w podkatalogach może działać.</string>
     <string name="manage_users_no_users">Brak użytkowników, utwórz użytkownika.</string>
     <string name="manage_users_multiple_users">Dostępnych jest wielu użytkowników, patrz lista.</string>
-    <string name="gui_settings_label">Wygląd…</string>
     <string name="auto_connect_stop_server_remove_from_list">
         Zatrzymywanie serwera FTP połączonego z siecią Wi-Fi, z którą łączyłeś się automatycznie. Usuwanie tej sieci Wi-Fi z preferencji.
     </string>

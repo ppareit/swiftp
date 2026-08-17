@@ -21,7 +21,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 import be.ppareit.swiftp.utils.Logging;
 
@@ -33,7 +32,6 @@ public class LogActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(FsSettings.getTheme());
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.logs_layout);

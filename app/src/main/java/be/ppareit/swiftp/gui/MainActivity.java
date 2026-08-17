@@ -49,7 +49,6 @@ import java.util.Arrays;
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.BuildConfig;
 import be.ppareit.swiftp.FsService;
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 
 /**
@@ -63,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Cat.d("created");
-        setTheme(FsSettings.getTheme());
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main_layout);

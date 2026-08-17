@@ -193,25 +193,6 @@ public class FsSettings {
         return sp.getBoolean("stayAwake", false);
     }
 
-    public static int getTheme() {
-        String theme = sp.getString("theme", "0");
-        if (theme == null) {
-            return R.style.AppThemeDark;
-        }
-
-        switch (theme) {
-            case "0":
-                return R.style.AppThemeDark;
-            case "1":
-                return R.style.AppThemeLight;
-            case "2":
-                return R.style.AppThemeLight_DarkActionBar;
-            default:
-                return R.style.AppThemeDark;
-        }
-
-    }
-
     /**
      * @return the SharedPreferences for this application
      */

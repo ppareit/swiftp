@@ -31,7 +31,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight"/>
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"

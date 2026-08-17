@@ -104,13 +104,11 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
 
     private static int showScreen = 0;
     private static final int SHOW_ADVANCED_SCREEN = 1;
-    private static final int SHOW_APPEARANCE_SCREEN = 2;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         switch (showScreen) {
             case SHOW_ADVANCED_SCREEN -> setPreferencesFromResource(R.xml.preferences, "preference_screen_advanced");
-            case SHOW_APPEARANCE_SCREEN -> setPreferencesFromResource(R.xml.preferences, "appearance_screen");
             default -> setPreferencesFromResource(R.xml.preferences, rootKey);
         }
         showScreen = 0;
@@ -134,19 +132,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
                 showScreen = SHOW_ADVANCED_SCREEN;
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main_activity_fragment, new PreferenceFragment(), "preference_screen_advanced")
-                        .addToBackStack("default")
-                        .commit();
-                return true;
-            });
-        }
-
-        // Helps the list to get updated without recreating the UI.
-        PreferenceScreen prefScreenAppearance = findPref("appearance_screen");
-        if (prefScreenAppearance != null) {
-            prefScreenAppearance.setOnPreferenceClickListener(preference -> {
-                showScreen = SHOW_APPEARANCE_SCREEN;
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_activity_fragment, new PreferenceFragment(), "appearance_screen")
                         .addToBackStack("default")
                         .commit();
                 return true;
@@ -267,17 +252,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
                 final String bSum2 = bSumSelection2;
                 batterySaver.setSummary(bSum2);
                 FsService.restart();
-                return true;
-            });
-        }
-
-        ListPreference themePref = findPref("theme");
-        if (themePref != null) {
-            themePref.setSummary(themePref.getEntry());
-            themePref.setOnPreferenceChangeListener((preference, newValue) -> {
-                themePref.setSummary(themePref.getEntry());
-                getActivity().getSupportFragmentManager().popBackStack();
-                getActivity().recreate();
                 return true;
             });
         }

@@ -155,10 +155,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
         Birgit Niemegeers
     </string>
 
-    <string name="app_theme">Temë...</string>
-    <string name="dark_theme">Tema e errët</string>
-    <string name="light_theme">Tema e çelët</string>
-    <string name="mixed_theme">Tema e përzier</string>
     <string name="unable_to_start_mail_client">E pamundur për të filluar klientin e postës për të dërguar reagime.</string>
     <string name="use_english">Ju lutemi përdorni anglisht të qartë!</string>
 
@@ -185,7 +181,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notice_cant_write">Vini re se ne nuk mund të shkruajmë në këtë dosje, leximi do të funksionojë. Shkrimi në nën dosje mund të funksionojë.</string>
     <string name="manage_users_no_users">Asnjë përdorues në dispozicion, krijoni një përdorues.</string>
     <string name="manage_users_multiple_users">Shumë përdorues të disponueshëm, shihni listën.</string>
-    <string name="gui_settings_label">Paraqitja...</string>
     <string name="auto_connect_stop_server_remove_from_list">
         Ndalimi i serverit FTP ndërsa ishte i lidhur me një rrjet wifi me të cilin automatikisht jemi lidhur. Heqja e këtij rrjeti wifi nga preferencat
     </string>

@@ -26,7 +26,6 @@ import android.widget.RadioGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import be.ppareit.swiftp.FsService
-import be.ppareit.swiftp.FsSettings
 import be.ppareit.swiftp.R
 import com.joaomgcd.taskerpluginlibrary.action.TaskerPluginRunnerActionNoOutput
 import com.joaomgcd.taskerpluginlibrary.config.TaskerPluginConfig
@@ -72,7 +71,6 @@ class ActionConfigSetServerState : AppCompatActivity(), TaskerPluginConfig<Serve
     override val context: Context get() = applicationContext
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(FsSettings.getTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.locale_edit_layout)
 
