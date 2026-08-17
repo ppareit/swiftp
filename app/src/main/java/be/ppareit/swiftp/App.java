@@ -29,7 +29,6 @@ import androidx.core.content.ContextCompat;
 
 import net.vrallev.android.cat.Cat;
 
-import be.ppareit.swiftp.gui.FsWidgetProvider;
 import be.ppareit.swiftp.tasker.ServerStateBroadcastReceiver;
 
 public class App extends Application {
@@ -48,12 +47,11 @@ public class App extends Application {
         intentFilter.addAction(FsService.ACTION_STOPPED);
         intentFilter.addAction(FsService.ACTION_FAILEDTOSTART);
 
+        // stuck on ContextCompat till API >= 33 because RECEIVER_NOT_EXPORTED
         ContextCompat.registerReceiver(this, new NsdService.ServerActionsReceiver(),
-                intentFilter, ContextCompat.RECEIVER_EXPORTED);
-        ContextCompat.registerReceiver(this, new FsWidgetProvider(),
-                intentFilter, ContextCompat.RECEIVER_EXPORTED);
+                intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
         ContextCompat.registerReceiver(this, new ServerStateBroadcastReceiver(),
-                intentFilter, ContextCompat.RECEIVER_EXPORTED);
+                intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
     }
 
     /**

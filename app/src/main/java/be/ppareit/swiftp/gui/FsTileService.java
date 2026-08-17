@@ -6,6 +6,7 @@ import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 
 import net.vrallev.android.cat.Cat;
 
@@ -39,11 +40,11 @@ public class FsTileService extends TileService {
         intentFilter.addAction(FsService.ACTION_STARTED);
         intentFilter.addAction(FsService.ACTION_STOPPED);
         intentFilter.addAction(FsService.ACTION_FAILEDTOSTART);
-        if (Build.VERSION.SDK_INT >= 33) {
-            registerReceiver(mFsActionsReceiver, intentFilter, RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(mFsActionsReceiver, intentFilter);
-        }
+
+        // Our own actions only, so no other app can drive the tile state.
+        ContextCompat.registerReceiver(this, mFsActionsReceiver, intentFilter,
+                ContextCompat.RECEIVER_NOT_EXPORTED);
+
         updateTileState();
     }
 

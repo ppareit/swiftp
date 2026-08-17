@@ -269,7 +269,12 @@ public class FsService extends Service implements Runnable {
         Log.d(TAG, "Exiting cleanly, returning from run()");
 
         stopSelf();
-        sendBroadcast(new Intent(ACTION_STOPPED));
+        broadcastAction(ACTION_STOPPED);
+    }
+
+    private void broadcastAction(String action) {
+        // need setPackage for our RECEIVER_NOT_EXPORTED calls
+        sendBroadcast(new Intent(action).setPackage(getPackageName()));
     }
 
     // This opens a listening socket on all interfaces.
@@ -303,7 +308,7 @@ public class FsService extends Service implements Runnable {
         if (!isConnectedToLocalNetwork()) {
             Log.w(TAG, "run: There is no local network, bailing out");
             stopSelf();
-            sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
+            broadcastAction(ACTION_FAILEDTOSTART);
             return;
         }
 
@@ -315,7 +320,7 @@ public class FsService extends Service implements Runnable {
         } catch (IOException e) {
             Log.w(TAG, "run: Unable to open port, bailing out.");
             stopSelf();
-            sendBroadcast(new Intent(ACTION_FAILEDTOSTART));
+            broadcastAction(ACTION_FAILEDTOSTART);
             return;
         }
 
@@ -335,7 +340,7 @@ public class FsService extends Service implements Runnable {
 
         // A socket is open now, so the FTP server is started, notify rest of world
         Log.i(TAG, "Ftp Server up and running, broadcasting ACTION_STARTED");
-        sendBroadcast(new Intent(ACTION_STARTED));
+        broadcastAction(ACTION_STARTED);
 
         socketWatcher = new TcpListener(listenSocket, this, listenSocketSecure);
         socketWatcher.start();

@@ -39,6 +39,7 @@ import android.provider.Settings;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.viewmodel.CreationExtras;
 import androidx.preference.EditTextPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -851,11 +852,10 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         filter.addAction(FsService.ACTION_STARTED);
         filter.addAction(FsService.ACTION_STOPPED);
         filter.addAction(FsService.ACTION_FAILEDTOSTART);
-        if (Build.VERSION.SDK_INT >= 33) {
-            getActivity().registerReceiver(mFsActionsReceiver, filter, FsService.RECEIVER_EXPORTED);
-        } else {
-            getActivity().registerReceiver(mFsActionsReceiver, filter);
-        }
+
+        // Our own actions only, so no other app can drive the screen state.
+        ContextCompat.registerReceiver(requireActivity(), mFsActionsReceiver, filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED);
     }
 
     @Override
@@ -863,7 +863,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         super.onPause();
 
         Cat.v("onPause: Unregistering the FTPServer actions");
-        getActivity().unregisterReceiver(mFsActionsReceiver);
+        requireActivity().unregisterReceiver(mFsActionsReceiver);
     }
 
     @Override
