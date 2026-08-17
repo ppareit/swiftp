@@ -27,6 +27,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:summary="@string/running_summary_stopped"
         android:title="@string/running_label"
         app:iconSpaceReserved="false" />
+    <!-- Not persisted, the checked state is read from the system -->
+    <CheckBoxPreference
+        android:key="show_server_notification"
+        android:persistent="false"
+        android:summary="@string/show_server_notification_summary"
+        android:title="@string/show_server_notification"
+        app:iconSpaceReserved="false" />
     <Preference
         android:key="market_version"
         android:summary="@string/market_version_summary"
@@ -110,13 +117,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                     android:key="battery_saver"
                     android:summary="@string/battery_saver_desc"
                     android:title="@string/battery_saver_setting_title" />
-
-                <!-- Not persisted, the checked state is read from the system -->
-                <CheckBoxPreference
-                    android:key="show_server_notification"
-                    android:persistent="false"
-                    android:summary="@string/show_server_notification_summary"
-                    android:title="@string/show_server_notification" />
 
             </PreferenceCategory>
 
