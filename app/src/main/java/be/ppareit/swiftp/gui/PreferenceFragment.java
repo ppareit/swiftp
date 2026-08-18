@@ -956,7 +956,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
      * folder can be granted nowhere else.
      */
     private void updateAllowedFoldersPref() {
-        AllowedFoldersPreference allowedFoldersPref = findPref("allowed_folders");
+        FixablePreference allowedFoldersPref = findPref("allowed_folders");
         if (allowedFoldersPref == null) return;
         List<String> names = AllowedFolders.names();
         boolean nothingIsShared = false;
@@ -977,12 +977,14 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
     /**
      * Update the summary for the users. When there are no users, ask to add at least one user.
      * When there is one user, display helpful message about user/password. When there are
-     * multiple users, refer to the list.
+     * multiple users, refer to the list. Show FIX when neither a named user nor anonymous login
+     * is available, because no client could authenticate in that state.
      */
     private void updateUsersPref() {
-        Preference manageUsersPref = findPref("manage_users");
+        FixablePreference manageUsersPref = findPref("manage_users");
         if (manageUsersPref == null) return;
         List<FtpUser> users = FsSettings.getUsers();
+        boolean anonymousAllowed = FsSettings.allowAnonymous();
         final String summary;
         switch (users.size()) {
             case 0:
@@ -996,11 +998,12 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
                 summary = getString(R.string.manage_users_multiple_users);
         }
         // anonymous is edited on that same screen, so it has to show up here as well
-        if (FsSettings.allowAnonymous()) {
+        if (anonymousAllowed) {
             manageUsersPref.setSummary(getString(R.string.manage_users_with_anonymous, summary));
         } else {
             manageUsersPref.setSummary(summary);
         }
+        manageUsersPref.setShowFix(users.isEmpty() && !anonymousAllowed);
     }
 
     /**

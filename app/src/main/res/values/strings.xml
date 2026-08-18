@@ -205,7 +205,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="allowed_folders_title">Allowed folders</string>
     <string name="allowed_folders_full_sdcard">FULL SDCARD</string>
     <string name="allowed_folders_choose">CHOOSE FOLDERS</string>
-    <string name="allowed_folders_fix">FIX</string>
+    <string name="preference_fix">FIX</string>
     <string name="allowed_folders_allow_access">ALLOW ACCESS TO ALL FILES</string>
     <string name="allowed_folders_allow_permission">Allow access to all files</string>
     <string name="allowed_folders_permission_blocked">Android will not ask again. Allow access to all files in the app settings.</string>

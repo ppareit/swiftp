@@ -45,11 +45,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:title="@string/settings_label"
         app:iconSpaceReserved="false">
 
-        <Preference
+        <be.ppareit.swiftp.gui.FixablePreference
             android:key="manage_users"
-            android:title="@string/manage_users_label" />
+            android:title="@string/manage_users_label"
+            android:widgetLayout="@layout/pref_widget_fix" />
 
-        <be.ppareit.swiftp.gui.AllowedFoldersPreference
+        <be.ppareit.swiftp.gui.FixablePreference
             android:key="allowed_folders"
             android:title="@string/allowed_folders_label"
             android:widgetLayout="@layout/pref_widget_fix" />

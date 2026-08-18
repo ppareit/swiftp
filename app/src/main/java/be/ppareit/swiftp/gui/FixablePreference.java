@@ -28,19 +28,16 @@ import androidx.preference.PreferenceViewHolder;
 
 import be.ppareit.swiftp.R;
 
-/**
- * The "Allowed folders" row in the settings, with a FIX button on the right if starting the
- * ftp server would serve nothing and thus being in a bad state.
- */
-public class AllowedFoldersPreference extends Preference {
+/** A settings row with a FIX button on the right while its setting is in a bad state. */
+public class FixablePreference extends Preference {
 
     private boolean mShowFix = false;
 
-    public AllowedFoldersPreference(Context context, AttributeSet attrs) {
+    public FixablePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public AllowedFoldersPreference(Context context, AttributeSet attrs, int defStyleAttr) {
+    public FixablePreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -54,7 +51,7 @@ public class AllowedFoldersPreference extends Preference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        View fix = holder.findViewById(R.id.allowed_folders_fix);
+        View fix = holder.findViewById(R.id.preference_fix);
         if (fix != null) fix.setVisibility(mShowFix ? View.VISIBLE : View.GONE);
     }
 }
