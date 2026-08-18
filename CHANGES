@@ -1,3 +1,32 @@
+Version 3.2 (2026/08/18)
+    + Added Android scoped storage support with a single Allowed folders screen
+      and a virtual FTP root containing all shared folders, based on work by
+      Xavron
+    + Added FTPS support by Xavron
+    + Added Tasker integration for controlling and monitoring the server
+    + Added a connection log, per-user shared folders, anonymous connection
+      limits, and an app shortcut for starting the server by Xavron
+    + Added VPN support by Timotheos Constambeys
+    + Added EPSV, EPRT, PBSZ and PROT support by Xavron
+    * Updated the interface, themes, launcher icon, notifications, widget and
+      quick settings tile for current Android versions
+    * Updated build tooling and dependencies and raised Android support through
+      API 36
+    * Improved FTP path handling, chroot enforcement, directory listings,
+      transfers, checksums, resumed uploads and downloads, and error reporting,
+      with contributions by Xavron and Richard D. Thompson II
+    * Improved security by sanitizing logs, protecting credentials, restricting
+      internal broadcasts and PendingIntents, and improving lock-screen tile
+      behavior
+    * Improved foreground service, wake-lock, network, notification and storage
+      permission handling, with contributions by Xavron
+    * Refuse logins when no folders are shared and guide the user to fix missing
+      users, folder access and storage permissions
+    * Added Czech translation by Miraficus and Ukrainian translation by Nikolya
+    * Updated English and Polish translations by Valdnet and Spanish translation
+      by Ismael
+    * Fixed crashes, hangs and compatibility issues on recent Android releases,
+      with contributions by Xavron
 Version 3.1 (2020/09/13)
     + Added Albanian Translation by 0x0byte
     * Fixes for android API 29 by Linquize
