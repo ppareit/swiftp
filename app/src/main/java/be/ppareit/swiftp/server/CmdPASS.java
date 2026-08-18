@@ -59,19 +59,14 @@ public class CmdPASS extends FtpCmd implements Runnable {
                 Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
                 sessionThread.writeString("421 too many anonymous users connected.\r\n");
                 sessionThread.authAttempt(false);
+            } else if (nothingIsShared()) {
+                refuseNothingShared();
             } else {
                 Log.i(TAG, "Guest logged in with email: " + attemptPassword);
                 sessionThread.writeString("230 Guest login ok, read only access.\r\n");
                 final String anonChroot = FsSettings.getAnonChroot();
                 if (!anonChroot.isEmpty()) {
                     sessionThread.setChrootDir(anonChroot);
-                }
-                if (Util.useScopedStorage() && AllowedFolders.isEmpty()) {
-                    // Nothing is shared, say so here
-                    Log.i(TAG, "Refusing anonymous login, no folders are shared.");
-                    Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
-                    sessionThread.writeString("421 No folders are shared.\r\n");
-                    sessionThread.authAttempt(false);
                 }
             }
             return;
@@ -84,6 +79,10 @@ public class CmdPASS extends FtpCmd implements Runnable {
             sessionThread.authAttempt( false);
             IPSecurity.putIPFail(sessionThread.getRemoteAddress());
         } else if (user.getPassword().equals(attemptPassword)) {
+            if (nothingIsShared()) {
+                refuseNothingShared();
+                return;
+            }
             Log.i(TAG, "User " + user.getUsername() + " password verified");
             sessionThread.writeString("230 Access granted\r\n");
             sessionThread.authAttempt(true);
@@ -95,5 +94,26 @@ public class CmdPASS extends FtpCmd implements Runnable {
             sessionThread.authAttempt(false);
             IPSecurity.putIPFail(sessionThread.getRemoteAddress());
         }
+    }
+
+    /**
+     * Nothing can be served if there are no folders shared.
+     */
+    private boolean nothingIsShared() {
+        return Util.useScopedStorage() && AllowedFolders.isEmpty();
+    }
+
+    /**
+     * We could refuse already in SessionThread, for instance instead of the welcome message. But
+     * after PASS ensures we dont leak information about the servers state to world.
+     */
+    private void refuseNothingShared() {
+        Log.i(TAG, "Refusing login, no folders are shared.");
+        sessionThread.writeString("421 No folders are shared. Open SwiFTP on the device and go to Allowed folders.\r\n");
+        sessionThread.authAttempt(false);
+        // 421 is "closing control connection", and authAttempt only counts the failure. Without
+        // the close the refusal is advisory: isAnonymouslyLoggedIn() reads the global setting,
+        // not the session, so a refused guest could go on to LIST and RETR.
+        sessionThread.quit();
     }
 }
