@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package be.ppareit.swiftp.gui;
 
 import android.content.ActivityNotFoundException;
