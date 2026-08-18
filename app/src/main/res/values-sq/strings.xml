@@ -228,5 +228,4 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="disable_feat_title">Çaktivizo FEAT</string>
     <string name="disable_syst_title">Çaktivizo SYST</string>
     <string name="tls_limit_protocols_title">Limit protokollet</string>
-    <string name="shortcut_on">Ndizni shpejt</string>
 </resources>

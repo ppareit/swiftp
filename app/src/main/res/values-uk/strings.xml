@@ -199,5 +199,4 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="disable_feat_title">Вимкнути FEAT</string>
     <string name="disable_syst_title">Вимкнути SYST</string>
     <string name="tls_limit_protocols_title">Лімітні протоколи</string>
-    <string name="shortcut_on">Швидко</string>
 </resources>

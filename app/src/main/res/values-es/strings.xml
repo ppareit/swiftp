@@ -200,6 +200,4 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="disable_feat_title">Deshabilitar FUNCIÓN</string>
     <string name="disable_syst_title">Deshabilitar SISTEMA</string>
     <string name="tls_limit_protocols_title">Limitar protocolos</string>
-    <string name="shortcut_on">Rápido</string>
 </resources>
-

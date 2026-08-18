@@ -164,5 +164,4 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="disable_feat_title">Онемогући ФЕАТ</string>
     <string name="disable_syst_title">Онемогући СИСТ</string>
     <string name="tls_limit_protocols_title">Лимит протоколи</string>
-    <string name="shortcut_on">Брзо</string>
 </resources>

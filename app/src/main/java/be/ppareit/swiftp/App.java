@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat;
 
 import net.vrallev.android.cat.Cat;
 
+import be.ppareit.swiftp.gui.QuickToggleShortcut;
 import be.ppareit.swiftp.tasker.ServerStateBroadcastReceiver;
 
 public class App extends Application {
@@ -52,6 +53,10 @@ public class App extends Application {
                 intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
         ContextCompat.registerReceiver(this, new ServerStateBroadcastReceiver(),
                 intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
+        ContextCompat.registerReceiver(this, new QuickToggleShortcut(),
+                intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
+
+        QuickToggleShortcut.update(this, FsService.isRunning());
     }
 
     /**

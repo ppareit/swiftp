@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import net.vrallev.android.cat.Cat;
 
@@ -43,18 +44,39 @@ public class FsNotification {
 
     public static final int NOTIFICATION_ID = 7890;
 
-    public static Notification setupNotification(Context context) {
-        Cat.d("Setting up the notification");
-        // Get NotificationManager reference
-        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+    private static final String CHANNEL_ID = "be.ppareit.swiftp.notification.channelId";
 
-        // get ip address
+    /**
+     * Will the user really see the notification?
+     */
+    public static boolean isVisible(Context context) {
+        if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) return false;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        if (nm == null) return false;
+        NotificationChannel channel = nm.getNotificationChannel(CHANNEL_ID);
+        // no channel yet means it was never created, so nothing blocked it either
+        return channel == null || channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
+    }
+
+    /**
+     * The server address as shown to the user, "-" as long as there is no address.
+     */
+    public static String getServerAddressText() {
         InetAddress address = FsService.getLocalInetAddress();
         String ipText;
         if (address == null) ipText = "-";
         else ipText = "ftp://" + address.getHostAddress() + ":" + FsSettings.getPortNumber();
         if (FsSettings.isImplicitUsed()) ipText += ", " + FsSettings.getPortNumberImplicit();
-        ipText += "/";
+        return ipText + "/";
+    }
+
+    public static Notification setupNotification(Context context) {
+        Cat.d("Setting up the notification");
+        // Get NotificationManager reference
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+
+        String ipText = getServerAddressText();
 
         // Instantiate a Notification
         int icon = R.mipmap.notification;
@@ -84,12 +106,11 @@ public class FsNotification {
         PendingIntent preferencePendingIntent = PendingIntent.getActivity(context, 0,
                 preferenceIntent, PendingIntent.FLAG_IMMUTABLE);
 
-        String channelId = "be.ppareit.swiftp.notification.channelId";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Show FTP Server state";
             String description = "This notification shows the current state of the FTP Server";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
             nm.createNotificationChannel(channel);
         }
@@ -108,7 +129,7 @@ public class FsNotification {
                 .addAction(stopIcon, stopText, stopPendingIntent)
                 .addAction(preferenceIcon, preferenceText, preferencePendingIntent)
                 .setShowWhen(false)
-                .setChannelId(channelId)
+                .setChannelId(CHANNEL_ID)
                 .build();
 
         // Pass Notification to NotificationManager

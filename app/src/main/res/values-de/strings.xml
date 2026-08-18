@@ -126,5 +126,4 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
     <string name="disable_feat_title">FEAT deaktivieren</string>
     <string name="disable_syst_title">SYST deaktivieren</string>
     <string name="tls_limit_protocols_title">Protokolle begrenzen</string>
-    <string name="shortcut_on">Schnell weiter</string>
 </resources>

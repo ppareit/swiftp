@@ -145,5 +145,4 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="disable_feat_title">Отключить ФЕАТ</string>
     <string name="disable_syst_title">Отключить систему</string>
     <string name="tls_limit_protocols_title">Ограничительные протоколы</string>
-    <string name="shortcut_on">Быстро</string>
 </resources>

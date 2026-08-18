@@ -74,6 +74,14 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         </activity>
 
         <activity
+            android:name=".gui.QuickToggleActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/QuickToggleTheme" />
+
+        <activity
             android:name=".gui.AboutActivity"
             android:parentActivityName=".gui.MainActivity" />
 
