@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
+        tools:node="remove" />
+
+    <queries>
+        <intent tools:node="remove">
+            <action android:name="com.twofortyfouram.locale.intent.action.REQUEST_QUERY" />
+        </intent>
+    </queries>
+
+    <application>
+        <activity
+            android:name="be.ppareit.swiftp.tasker.ActionConfigSetServerState"
+            tools:node="remove" />
+        <activity
+            android:name="be.ppareit.swiftp.tasker.StateConfigServerRunning"
+            tools:node="remove" />
+        <activity
+            android:name="be.ppareit.swiftp.tasker.EventConfigServerStateChanged"
+            tools:node="remove" />
+
+        <receiver
+            android:name="com.joaomgcd.taskerpluginlibrary.action.BroadcastReceiverAction"
+            tools:node="remove" />
+        <receiver
+            android:name="com.joaomgcd.taskerpluginlibrary.condition.BroadcastReceiverCondition"
+            tools:node="remove" />
+
+        <service
+            android:name="com.joaomgcd.taskerpluginlibrary.action.IntentServiceAction"
+            tools:node="remove" />
+        <service
+            android:name="com.joaomgcd.taskerpluginlibrary.condition.IntentServiceCondition"
+            tools:node="remove" />
+    </application>
+
+</manifest>
