@@ -49,9 +49,10 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
             android:key="manage_users"
             android:title="@string/manage_users_label" />
 
-        <Preference
+        <be.ppareit.swiftp.gui.AllowedFoldersPreference
             android:key="allowed_folders"
-            android:title="@string/allowed_folders_label" />
+            android:title="@string/allowed_folders_label"
+            android:widgetLayout="@layout/pref_widget_fix" />
 
         <PreferenceScreen
             android:key="preference_screen_advanced"

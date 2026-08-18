@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/allowed_folders_fix"
+    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:clickable="false"
+    android:duplicateParentState="true"
+    android:focusable="false"
+    android:text="@string/allowed_folders_fix" />

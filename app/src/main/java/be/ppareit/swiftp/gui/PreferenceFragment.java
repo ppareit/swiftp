@@ -950,20 +950,28 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
      * the server can actually reach. Either the device serves all of the card by itself, or the
      * folders that have been chosen, or nothing has been chosen yet and the server cannot serve
      * anything at all.
+     *
+     * That last case is the one the FIX button is for. It is the same state CmdPASS refuses a
+     * login for, and the only person who can undo it is the one holding the device, since a
+     * folder can be granted nowhere else.
      */
     private void updateAllowedFoldersPref() {
-        Preference allowedFoldersPref = findPref("allowed_folders");
+        AllowedFoldersPreference allowedFoldersPref = findPref("allowed_folders");
         if (allowedFoldersPref == null) return;
         List<String> names = AllowedFolders.names();
+        boolean nothingIsShared = false;
         if (!names.isEmpty()) {
             allowedFoldersPref.setSummary(TextUtils.join(", ", names));
         } else if (Util.hasFullSdCardAccess()) {
             allowedFoldersPref.setSummary(R.string.allowed_folders_full_sdcard);
         } else if (LegacyStoragePermission.isMissing(allowedFoldersPref.getContext())) {
             allowedFoldersPref.setSummary(R.string.allowed_folders_allow_access);
+            nothingIsShared = true;
         } else {
             allowedFoldersPref.setSummary(R.string.allowed_folders_choose);
+            nothingIsShared = true;
         }
+        allowedFoldersPref.setShowFix(nothingIsShared);
     }
 
     /**
