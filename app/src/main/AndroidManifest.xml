@@ -63,7 +63,8 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         <activity
             android:name="be.ppareit.swiftp.gui.MainActivity"
             android:configChanges="screenSize|orientation"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
