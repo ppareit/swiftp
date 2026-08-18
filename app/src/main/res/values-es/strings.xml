@@ -118,7 +118,6 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
 
     <string name="widget_name">Widget FTP Server</string>
     <string name="notif_settings_text">Ajustes</string>
-    <string name="app_copyright">Copyright 2012 - 2017</string>
 
     <string name="about_license_title">Licencia</string>
     <string name="about_license_name">GNU GPL3</string>

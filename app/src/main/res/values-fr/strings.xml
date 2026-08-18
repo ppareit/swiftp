@@ -133,7 +133,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
 
     <string name="widget_name">Widget Serveur FTP</string>
     <string name="notif_settings_text">Paramètres</string>
-    <string name="app_copyright">Copyright 2012 - 2017</string>
     <string name="about_license_title">Licence</string>
     <string name="about_license_name">GNU GPL3</string>
     <string name="about_description_title">Déscription</string>
