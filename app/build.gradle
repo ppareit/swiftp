@@ -88,3 +88,15 @@ android {
     }
     namespace 'be.ppareit.swiftp'
 }
+
+tasks.register('runFdroid_freeDebug', Exec) {
+    dependsOn 'installFdroid_freeDebug'
+    commandLine android.adbExecutable, 'shell', 'am', 'start', '-n',
+            'be.ppareit.swiftp_free/be.ppareit.swiftp.gui.MainActivity'
+}
+
+tasks.register('runPlaystore_paidDebug', Exec) {
+    dependsOn 'installPlaystore_paidDebug'
+    commandLine android.adbExecutable, 'shell', 'am', 'start', '-n',
+            'be.ppareit.swiftp/be.ppareit.swiftp.gui.MainActivity'
+}

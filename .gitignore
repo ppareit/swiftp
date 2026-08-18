@@ -38,12 +38,10 @@ captures/
 *.iml
 
 # Ignore all files in the .idea directory
-.idea/
+.idea/*
 
-# Allow specific files to be tracked
-!.idea/codeStyles/
-!.idea/modules.xml
-!.idea/vcs.xml
+# Allow shared run configurations to be tracked
+!.idea/runConfigurations/
 
 
 # Keystore files
@@ -54,4 +52,3 @@ captures/
 
 ### Android Patch ###
 gen-external-apklibs
-
