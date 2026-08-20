@@ -37,6 +37,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import be.ppareit.swiftp.server.FtpUser;
@@ -75,7 +76,7 @@ public class FsSettings {
 
     public static FtpUser getUser(String username) {
         for (FtpUser user : getUsers()) {
-            if (user.getUsername().equals(username))
+            if (Objects.equals(user.getUsername(), username))
                 return user;
         }
         return null;
@@ -96,7 +97,7 @@ public class FsSettings {
         List<FtpUser> users = getUsers();
         ArrayList<FtpUser> found = new ArrayList<>();
         for (FtpUser user : users) {
-            if (user.getUsername().equals(username)) {
+            if (Objects.equals(user.getUsername(), username)) {
                 found.add(user);
             }
         }
