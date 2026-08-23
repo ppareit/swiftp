@@ -6,6 +6,6 @@ FTP Server (swiftp)
 <a href="https://play.google.com/store/apps/details?id=be.ppareit.swiftp" target="_blank">
 <img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" height="80"/></a>
 
-User documentation: see http://ppareit.github.io/swiftp/
+User documentation: see https://ppareit.github.io/swiftp/
 
-Developer documentation: see file HACKING
+Developer documentation: see [HACKING.md](HACKING.md)
