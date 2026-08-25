@@ -22,6 +22,7 @@ package be.ppareit.swiftp.server;
 import android.util.Log;
 
 import be.ppareit.swiftp.FsSettings;
+import be.ppareit.swiftp.utils.FTPSSockets;
 import be.ppareit.swiftp.utils.Logging;
 
 public class CmdFEAT extends FtpCmd implements Runnable {
@@ -54,9 +55,13 @@ public class CmdFEAT extends FtpCmd implements Runnable {
         sessionThread.writeString(" HASH MD5;SHA-1;SHA-256;SHA-384;SHA-512\r\n");
         sessionThread.writeString(" REST STREAM\r\n");
         sessionThread.writeString(" RANG STREAM\r\n");
-        sessionThread.writeString(" AUTH TLS\r\n");
-        sessionThread.writeString(" PBSZ\r\n");
-        sessionThread.writeString(" PROT\r\n");
+        // Only advertise FTPS when there is a certificate to negotiate with. Announcing
+        // AUTH TLS without one sends the client into a handshake that cannot complete
+        if (FTPSSockets.checkKeyStore()) {
+            sessionThread.writeString(" AUTH TLS\r\n");
+            sessionThread.writeString(" PBSZ\r\n");
+            sessionThread.writeString(" PROT\r\n");
+        }
         sessionThread.writeString("211 End\r\n");
         Log.d(TAG, "run: Gave FEAT");
     }
