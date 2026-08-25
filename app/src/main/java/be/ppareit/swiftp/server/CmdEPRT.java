@@ -36,6 +36,13 @@ public class CmdEPRT extends FtpCmd implements Runnable {
     @Override
     public void run() {
         Log.d(TAG, "EPRT executing");
+
+        if (sessionThread.isEpsvAllRequested()) {
+            Log.d(TAG, "EPRT refused, EPSV ALL is in effect");
+            sessionThread.writeString("500 EPRT not allowed, EPSV ALL is in effect\r\n");
+            return;
+        }
+
         String param = getParameter(input);
 
         if (param.isEmpty()) {
@@ -76,7 +83,6 @@ public class CmdEPRT extends FtpCmd implements Runnable {
         }
 
         sessionThread.writeString("200 EPRT OK\r\n");
-        sessionThread.setEprtEnabled(true);
         Log.d(TAG, "EPRT success");
     }
 }

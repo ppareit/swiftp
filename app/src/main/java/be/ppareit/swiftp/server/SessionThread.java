@@ -79,8 +79,9 @@ public class SessionThread extends Thread {
     private String hashingAlgorithm = "SHA-1";
     private final Logging logging = new Logging();
     private boolean pbszEnabled = false;
-    private boolean epsvEnabled = false;
-    private boolean eprtEnabled = false;
+    // Set by EPSV ALL only. RFC 2428 s4: once a client has said EPSV ALL, the
+    // server must refuse every other way of setting up a data connection
+    private boolean epsvAllRequested = false;
 
     public SessionThread(Socket socket, LocalDataSocket dataSocket, SSLSocket sslSocket) {
         cmdSocket = socket;
@@ -625,20 +626,12 @@ public class SessionThread extends Thread {
         this.pbszEnabled = pbszEnabled;
     }
 
-    public boolean isEpsvEnabled() {
-        return epsvEnabled;
+    public boolean isEpsvAllRequested() {
+        return epsvAllRequested;
     }
 
-    public void setEpsvEnabled(boolean epsvEnabled) {
-        this.epsvEnabled = epsvEnabled;
-    }
-
-    public boolean isEprtEnabled() {
-        return eprtEnabled;
-    }
-
-    public void setEprtEnabled(boolean eprtEnabled) {
-        this.eprtEnabled = eprtEnabled;
+    public void setEpsvAllRequested(boolean epsvAllRequested) {
+        this.epsvAllRequested = epsvAllRequested;
     }
 
     public String makeSelectedTypesResponse(FileUtil.Gen gen) {
