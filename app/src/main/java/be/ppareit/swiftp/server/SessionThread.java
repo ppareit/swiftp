@@ -408,6 +408,11 @@ public class SessionThread extends Thread {
             Cat.i("Connection was dropped");
         }
         closeSocket();
+        // The listener a PASV or EPSV bound is released by the transfer that uses it,
+        // or by the next data setup command. A session that ends between those two
+        // leaves it bound, and with a port range configured the server runs out of
+        // ports after a handful of connections and answers 502 to every PASV.
+        localDataSocket.clearState();
         AnonymousLimit.decrement();
         FsService.connWakelockEndHandler();
     }

@@ -67,8 +67,13 @@ public class LocalDataSocket {
     /**
      * Clears the state of this object, as if no pasv() or port() had occurred. All
      * sockets are closed.
+     *
+     * A transfer clears the state itself, so the only caller that matters from
+     * outside is the end of the session: a client that asks for a passive port and
+     * then leaves without using it would otherwise keep that port bound for as long
+     * as the process lives.
      */
-    private void clearState() {
+    public void clearState() {
         if (server != null) {
             try {
                 server.close();
