@@ -1,0 +1,563 @@
+
+
+
+
+
+
+Internet Engineering Task Force (IETF)                        J. Klensin
+Request for Comments: 5797
+Updates: 959                                                   A. Hoenes
+Category: Standards Track                                         TR-Sys
+ISSN: 2070-1721                                               March 2010
+
+
+                   FTP Command and Extension Registry
+
+Abstract
+
+   Every version of the FTP specification has added a few new commands,
+   with the early ones summarized in RFC 959.  RFC 2389 established a
+   mechanism for specifying and negotiating FTP extensions.  The number
+   of extensions, both those supported by the mechanism and some that
+   are not, continues to increase.  An IANA registry of FTP Command and
+   Feature names is established to reduce the likelihood of conflict of
+   names and the consequent ambiguity.  This specification establishes
+   that registry.
+
+Status of This Memo
+
+   This is an Internet Standards Track document.
+
+   This document is a product of the Internet Engineering Task Force
+   (IETF).  It represents the consensus of the IETF community.  It has
+   received public review and has been approved for publication by the
+   Internet Engineering Steering Group (IESG).  Further information on
+   Internet Standards is available in Section 2 of RFC 5741.
+
+   Information about the current status of this document, any errata,
+   and how to provide feedback on it may be obtained at
+   http://www.rfc-editor.org/info/rfc5797.
+
+Copyright Notice
+
+   Copyright (c) 2010 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+
+
+Klensin & Hoenes             Standards Track                    [Page 1]
+
+RFC 5797           FTP Command and Extension Registry         March 2010
+
+
+Table of Contents
+
+   1. Introduction ....................................................2
+   2. Registry Definition .............................................2
+      2.1. Registry Name ..............................................2
+      2.2. Registry Format ............................................2
+      2.3. Criteria for Registration ..................................4
+      2.4. Base FTP Commands ..........................................5
+      2.5. Obsolete Commands ..........................................5
+   3. Initial Contents of Registry ....................................6
+   4. Acknowledgments .................................................8
+   5. IANA Considerations .............................................9
+   6. Security Considerations .........................................9
+   7. References ......................................................9
+      7.1. Normative References .......................................9
+      7.2. Informative References .....................................9
+
+1.  Introduction
+
+   Every version of the FTP specification has added a few new commands,
+   with the early ones summarized in RFC 959 [RFC0959].  RFC 2389
+   [RFC2389] established a mechanism for specifying and negotiating
+   extensions to the FTP protocol specified in RFC 959, by means of
+   "FEAT Strings" identifying extensions supported by the FTP server,
+   and sent in response to a "FEAT" command.  The number of extensions
+   continues to grow, not all of them supported by FEAT.  An IANA
+   registry is established to reduce the likelihood of a conflict of
+   names and the consequent ambiguity and to encourage the sharing of
+   information.  This specification establishes that registry.
+
+2.  Registry Definition
+
+2.1.  Registry Name
+
+   The name of this registry is "FTP Commands and Extensions".
+
+2.2.  Registry Format
+
+   As specified in this RFC, IANA has established a registry for FTP
+   commands and extensions.  Registration requests and registry entries
+   should include the following:
+
+   Command Name -  The FTP command, either new or modified, used in the
+      extension or with which the extension is used.
+
+      Following the long-standing practice to capitalize command names
+      in specification documents for FTP, the command names are entered
+      in all uppercase.  For extensions amending the operation of a
+
+
+
+Klensin & Hoenes             Standards Track                    [Page 2]
+
+RFC 5797           FTP Command and Extension Registry         March 2010
+
+
+      command, a plus sign ("+") is appended to the command name.
+      However, if an extension affects the overall command parameter
+      handling and/or transaction processing, instead of being bound to
+      one command (or a small number of commands), the string "-N/A-" is
+      entered.
+
+      It is intended to have the registry entries ordered by ascending
+      ASCII collation order of this column (including the "+" suffix if
+      present).
+
+   Extension name -  The name of the extension.
+
+      FTP extensions predating RFC 2389 [RFC2389], and some extensions
+      published after it, did not specify a keyword to identify the
+      extension in a FEAT response.  Some later specifications
+      established FEAT strings with the respective command names as
+      their keywords.  In order to provide for keywords for future
+      specifications in such cases, this document establishes
+      'placeholder' keywords to reserve reasonable feature names for
+      future standardization.  Similarly, placeholder keywords are used
+      for the basic FTP commands specified in RFC 959 [RFC0959] and
+      those of its predecessors that are still in use.  These
+      placeholder keywords are placed in the registry for convenience;
+      it is not intended that they be returned in FEAT responses.
+      To compensate for this idiosyncrasy, the column in the registry is
+      entitled "FEAT Code", and to clearly distinguish between the two
+      cases, defined FEAT keywords codes are listed in all uppercase,
+      whereas placeholder keywords (henceforth called "pseudo FEAT
+      codes") are listed in lowercase.  Future specifications are
+      allowed to "upgrade" a placeholder to a true keyword unless it is
+      specifically declared 'immutable' below, but otherwise IANA
+      maintains uniqueness of feature names (FEAT codes) based on case-
+      insensitive comparison.
+
+   Description -  A brief description of the extension and, where
+      appropriate, the command.
+
+   FEAT String -  (optional in registration requests to IANA)
+
+      The string expected to be included in the response to the FEAT
+      command [RFC2389] if the extension is supported.
+
+      In many cases, the FEAT string required to identify an extension
+      only consists of the "FEAT Code", making this item redundant.
+      Therefore, this item should only be specified if it is intended to
+      register a FEAT string that contains mandatory elements other than
+      the "FEAT Code" itself.
+
+
+
+
+Klensin & Hoenes             Standards Track                    [Page 3]
+
+RFC 5797           FTP Command and Extension Registry         March 2010
+
+
+      Due to space restrictions, and to allow registrants to provide
+      additional information, IANA should present these registration
+      items (if given) in numbered footnotes to the table, not in an
+      additional table column.
+
+   Command Type -  The type (or 'kind') of the command.
+
+      Section 4.1 of RFC 959 [RFC0959] introduced a subdivision of FTP
+      commands into three types: Access control, transfer Parameter
+      {setting}, and Service {execution}.  For clarity, and as a service
+      to the user of the registry, this subdivision is extended to all
+      registered FTP commands, using the characteristic initial of the
+      type, 'a', 'p', or 's', respectively, filed in the registry column
+      titled "type"; combinations are allowed, e.g., 'p/s'.
+
+   Conformance Requirements -  The support expectation for the command.
+
+      RFC 959 specifies mandatory-to-implement commands and optional
+      commands.  This classification is carried over to all registered
+      commands, using a column titled "conf" carrying a single character
+      -- either 'm' or 'o', for "mandatory" and "optional",
+      respectively.  Similarly, obsoleted or historic entries are left
+      in the registry to avoid conflicts with deployed implementations,
+      and these entries are marked with 'h' (for "historic").
+      Beyond the initial registrations, Standards Action [RFC5226] is
+      needed to register new "mandatory" entries or to move such entries
+      to "historic".
+
+   Reference -  A reference to an RFC or other definition of the
+      extension and/or to implementations supporting it (see the next
+      section).
+
+2.3.  Criteria for Registration
+
+   This registry is primarily intended to avoid conflicting uses of the
+   same extension names and command keywords for different purposes, not
+   to demonstrate that an extension is somehow "approved".  The "Expert
+   Review" method will be used, but the designated expert is expected to
+   check only that at least one of the two criteria that follow are met.
+
+   1.  The extension is documented in a permanent and readily available
+       public specification (this is the same as the "Specification
+       Required" registration policy defined in RFC 5226 [RFC5226]).
+
+   2.  The extension is actually implemented in FTP client and server
+       systems that are generally available (not necessarily either free
+       or unencumbered, but available).
+
+
+
+
+Klensin & Hoenes             Standards Track                    [Page 4]
+
+RFC 5797           FTP Command and Extension Registry         March 2010
+
+
+   For an extension or command to be marked "mandatory" ('m' in the
+   "conf" column), an IETF Standards Track specification is required.
+   An IESG Standards Action is allowed to direct IANA to change the
+   Conformance Requirements listed for any entry.
+
+2.4.  Base FTP Commands
+
+   The following commands are part of the base FTP specification
+   [RFC0959] and are listed in the registry with the immutable pseudo
+   FEAT code "base".
+
+      Mandatory commands:
+
+      ABOR, ACCT, ALLO, APPE, CWD, DELE, HELP, LIST, MODE, NLST, NOOP,
+      PASS, PASV, PORT, QUIT, REIN, REST, RETR, RNFR, RNTO, SITE, STAT,
+      STOR, STRU, TYPE, USER
+
+      Optional commands:
+
+      CDUP, MKD, PWD, RMD, SMNT, STOU, SYST
+
+   Note: STD 3 [RFC1123] clarified and updated the status and
+   implementation requirements of these standard FTP commands, and it
+   contains important complementary information for the following
+   commands:
+
+      LIST, NLST, PASV, REST, SITE, STOU
+
+2.5.  Obsolete Commands
+
+   The following commands were specified as experimental in an extension
+   to an early version of the FTP specification [RFC0775] but later
+   deprecated by RFC 1123 [RFC1123], because Standard FTP [RFC0959]
+   specifies their standard successors.  They are listed in the registry
+   with the immutable pseudo FEAT code "hist".
+
+      XCUP, XCWD, XMKD, XPWD, XRMD
+
+   Implementation note:  Deployed FTP clients still make use of the
+      deprecated commands and most FTP servers support them as aliases
+      for the standard commands.
+
+   The following commands were specified as part of the "FOOBAR" IPng
+   effort in RFC 1545 [RFC1545] and, later, RFC 1639 [RFC1639] and are
+   now obsolete.  They are listed in the registry with the immutable
+   pseudo FEAT code "hist".
+
+      LPRT, LPSV
+
+
+
+Klensin & Hoenes             Standards Track                    [Page 5]
+
+RFC 5797           FTP Command and Extension Registry         March 2010
+
+
+3.  Initial Contents of Registry
+
+   As a service to users of the registry and the authors of existing
+   specifications, all FTP commands and features published in RFCs after
+   STD 3 [RFC1123] and up to the time of this writing were included in
+   the registry upon creation.
+
+   The following pseudo FEAT codes have been assigned, according to
+   Section 2:
+
+      base - FTP standard commands [RFC0959]
+      hist - Historic experimental commands [RFC0775], [RFC1639]
+      secu - FTP Security Extensions [RFC2228]
+      feat - FTP Feature Negotiation [RFC2389]
+      nat6 - FTP Extensions for NAT/IPv6 [RFC2428]
+
+   +-------+------+-------------------+------+------+------------------+
+   | cmd   | FEAT | description       | type | conf | RFC#s/References |
+   |       | Code |                   |      |      | and Notes        |
+   +-------+------+-------------------+------+------+------------------+
+   | ABOR  | base | Abort             | s    | m    | 959              |
+   | ACCT  | base | Account           | a    | m    | 959              |
+   | ADAT  | secu | Authentication/   | a    | o    | 2228, 2773, 4217 |
+   |       |      | Security Data     |      |      |                  |
+   | ALLO  | base | Allocate          | s    | m    | 959              |
+   | APPE  | base | Append (with      | s    | m    | 959              |
+   |       |      | create)           |      |      |                  |
+   | AUTH  | secu | Authentication/   | a    | o    | 2228             |
+   |       |      | Security          |      |      |                  |
+   |       |      | Mechanism         |      |      |                  |
+   | AUTH+ | AUTH | Authentication/   | a    | o    | 2773, 4217 #2    |
+   |       |      | Security          |      |      |                  |
+   |       |      | Mechanism         |      |      |                  |
+   | CCC   | secu | Clear Command     | a    | o    | 2228             |
+   |       |      | Channel           |      |      |                  |
+   | CDUP  | base | Change to Parent  | a    | o    | 959              |
+   |       |      | Directory         |      |      |                  |
+   | CONF  | secu | Confidentiality   | a    | o    | 2228             |
+   |       |      | Protected Command |      |      |                  |
+   | CWD   | base | Change Working    | a    | m    | 959              |
+   |       |      | Directory         |      |      |                  |
+   | DELE  | base | Delete File       | s    | m    | 959              |
+   | ENC   | secu | Privacy Protected | a    | o    | 2228, 2773, 4217 |
+   |       |      | Command           |      |      |                  |
+   | EPRT  | nat6 | Extended Port     | p    | o    | 2428             |
+   | EPSV  | nat6 | Extended Passive  | p    | o    | 2428             |
+   |       |      | Mode              |      |      |                  |
+
+
+
+
+Klensin & Hoenes             Standards Track                    [Page 6]
+
+RFC 5797           FTP Command and Extension Registry         March 2010
+
+
+   | FEAT  | feat | Feature           | a    | m #1 | 2389             |
+   |       |      | Negotiation       |      |      |                  |
+   | HELP  | base | Help              | s    | m    | 959              |
+   | LANG  | UTF8 | Language (for     | p    | o    | 2640             |
+   |       |      | Server Messages)  |      |      |                  |
+   | LIST  | base | List              | s    | m    | 959, 1123        |
+   | LPRT  | hist | Data Port         | p    | h    | 1545, 1639       |
+   |       |      | {FOOBAR}          |      |      |                  |
+   | LPSV  | hist | Passive Mode      | p    | h    | 1545, 1639       |
+   |       |      | {FOOBAR}          |      |      |                  |
+   | MDTM  | MDTM | File Modification | s    | o    | 3659             |
+   |       |      | Time              |      |      |                  |
+   | MIC   | secu | Integrity         | a    | o    | 2228, 2773, 4217 |
+   |       |      | Protected Command |      |      |                  |
+   | MKD   | base | Make Directory    | s    | o    | 959              |
+   | MLSD  | MLST | List Directory    | s    | o    | 3659             |
+   |       |      | (for machine)     |      |      |                  |
+   | MLST  | MLST | List Single       | s    | o    | 3659             |
+   |       |      | Object            |      |      |                  |
+   | MODE  | base | Transfer Mode     | p    | m    | 959              |
+   | NLST  | base | Name List         | s    | m    | 959, 1123        |
+   | NOOP  | base | No-Op             | s    | m    | 959              |
+   | OPTS  | feat | Options           | p    | m #1 | 2389             |
+   | PASS  | base | Password          | a    | m    | 959              |
+   | PASV  | base | Passive Mode      | p    | m    | 959, 1123        |
+   | PBSZ  | secu | Protection Buffer | p    | o    | 2228             |
+   |       |      | Size              |      |      |                  |
+   | PBSZ+ | PBSZ | Protection Buffer | p    | o    | 4217             |
+   |       |      | Size              |      |      |                  |
+   | PORT  | base | Data Port         | p    | m    | 959              |
+   | PROT  | secu | Data Channel      | p    | o    | 2228             |
+   |       |      | Protection Level  |      |      |                  |
+   | PROT+ | PROT | Data Channel      | p    | o    | 4217             |
+   |       |      | Protection Level  |      |      |                  |
+   | PWD   | base | Print Directory   | s    | o    | 959              |
+   | QUIT  | base | Logout            | a    | m    | 959              |
+   | REIN  | base | Reinitialize      | a    | m    | 959              |
+   | REST  | base | Restart           | s/p  | m    | 959, 1123        |
+   | REST+ | REST | Restart (for      | s/p  | m    | 3659 #3          |
+   |       |      | STREAM mode)      |      |      |                  |
+   | RETR  | base | Retrieve          | s    | m    | 959              |
+   | RMD   | base | Remove Directory  | s    | o    | 959              |
+   | RNFR  | base | Rename From       | s/p  | m    | 959              |
+   | RNTO  | base | Rename From       | s    | m    | 959              |
+   | SITE  | base | Site Parameters   | s    | m    | 959, 1123        |
+   | SIZE  | SIZE | File Size         | s    | o    | 3659             |
+   | SMNT  | base | Structure Mount   | a    | o    | 959              |
+   | STAT  | base | Status            | s    | m    | 959              |
+
+
+
+Klensin & Hoenes             Standards Track                    [Page 7]
+
+RFC 5797           FTP Command and Extension Registry         March 2010
+
+
+   | STOR  | base | Store             | s    | m    | 959              |
+   | STOU  | base | Store Unique      | a    | o    | 959, 1123        |
+   | STRU  | base | File Structure    | p    | m    | 959              |
+   | SYST  | base | System            | s    | o    | 959              |
+   | TYPE  | base | Representation    | p    | m    | 959 #4           |
+   |       |      | Type              |      |      |                  |
+   | USER  | base | User Name         | a    | m    | 959              |
+   | XCUP  | hist | {precursor for    | s    | h    | 775, 1123        |
+   |       |      | CDUP}             |      |      |                  |
+   | XCWD  | hist | {precursor for    | s    | h    | 775, 1123        |
+   |       |      | CWD}              |      |      |                  |
+   | XMKD  | hist | {precursor for    | s    | h    | 775, 1123        |
+   |       |      | MKD}              |      |      |                  |
+   | XPWD  | hist | {precursor for    | s    | h    | 775, 1123        |
+   |       |      | PWD}              |      |      |                  |
+   | XRMD  | hist | {precursor for    | s    | h    | 775, 1123        |
+   |       |      | RMD}              |      |      |                  |
+   | -N/A- | TVFS | Trivial Virtual   | p    | o    | 3659             |
+   |       |      | File Store        |      |      |                  |
+   +-------+------+-------------------+------+------+------------------+
+
+                                  Table 1
+
+   Notes:
+   #1 While an IETF Standards Action would be required to make the FEAT
+      mechanism [RFC2389] mandatory, implementation of that extension
+      mechanism is clearly required in conjunction with any extension or
+      feature that depends on it.
+   #2 FEAT String for [RFC4217]: AUTH TLS
+      FEAT String for [RFC2773]: AUTH KEA-SKIPJACK
+   #3 FEAT String: REST STREAM
+   #4 FEAT String: TYPE {semicolon-separated list of supported types}
+
+4.  Acknowledgments
+
+   Any work to update or extend FTP depends on the base specification in
+   RFC 959.  The contributions of its editors, Jon Postel and Joyce
+   Reynolds, are gratefully acknowledged.  The option-negotiation
+   mechanism specified in RFC 2389 (and the accumulation of features
+   that followed it) made this registry relevant; the authors of those
+   documents are acknowledged as well.
+
+   Barry Leiba and Alexey Melnikov made several suggestions about
+   earlier versions of this document, most of which have been
+   incorporated.
+
+   Anthony Bryan spotted a few typographical errors.
+
+
+
+
+Klensin & Hoenes             Standards Track                    [Page 8]
+
+RFC 5797           FTP Command and Extension Registry         March 2010
+
+
+   Scott Bradner suggested a clarification to the "Expert Review" text.
+
+   The authors appreciate the comments and support for this work
+   received from FTP implementers and many IETF participants.  Comments
+   from the IESG helped to shape this document and registry to improve
+   its utility.
+
+5.  IANA Considerations
+
+   IANA has established the registry described in Section 2 using the
+   initial content specified in Section 3 and including the body of
+   Sections 2.4 and 2.5 as explanatory text in the preface of the
+   registry.
+
+   New entries should be added to this registry when extensions to FTP
+   are approved or defined in RFCs or when extensions that are already
+   in use and well-documented are identified.  In other words, the
+   requirement for registration is a slightly relaxed version of
+   "Specification Required" [RFC5226] with Expert Review.  See
+   Section 2.3 for specifics and exceptions.
+
+6.  Security Considerations
+
+   The creation of this registry provides improved documentation and
+   protection against interoperability problems.  It introduces no new
+   security issues.
+
+7.  References
+
+7.1.  Normative References
+
+   [RFC0959]  Postel, J. and J. Reynolds, "File Transfer Protocol",
+              STD 9, RFC 959, October 1985.
+
+   [RFC2389]  Hethmon, P. and R. Elz, "Feature negotiation mechanism for
+              the File Transfer Protocol", RFC 2389, August 1998.
+
+   [RFC5226]  Narten, T. and H. Alvestrand, "Guidelines for Writing an
+              IANA Considerations Section in RFCs", BCP 26, RFC 5226,
+              May 2008.
+
+7.2.  Informative References
+
+   [RFC0775]  Mankins, D., Franklin, D., and A. Owen, "Directory
+              oriented FTP commands", RFC 775, December 1980.
+
+   [RFC1123]  Braden, R., "Requirements for Internet Hosts - Application
+              and Support", STD 3, RFC 1123, October 1989.
+
+
+
+Klensin & Hoenes             Standards Track                    [Page 9]
+
+RFC 5797           FTP Command and Extension Registry         March 2010
+
+
+   [RFC1545]  Piscitello, D., "FTP Operation Over Big Address Records
+              (FOOBAR)", RFC 1545, November 1993.
+
+   [RFC1639]  Piscitello, D., "FTP Operation Over Big Address Records
+              (FOOBAR)", RFC 1639, June 1994.
+
+   [RFC2228]  Horowitz, M., "FTP Security Extensions", RFC 2228,
+              October 1997.
+
+   [RFC2428]  Allman, M., Ostermann, S., and C. Metz, "FTP Extensions
+              for IPv6 and NATs", RFC 2428, September 1998.
+
+   [RFC2773]  Housley, R. and P. Yee, "Encryption using KEA and
+              SKIPJACK", RFC 2773, February 2000.
+
+   [RFC4217]  Ford-Hutchinson, P., "Securing FTP with TLS", RFC 4217,
+              October 2005.
+
+Authors' Addresses
+
+   John C Klensin
+   1770 Massachusetts Ave, Ste 322
+   Cambridge, MA  02140
+   USA
+
+   Phone: +1 617 245 1457
+   EMail: john+ietf@jck.com
+
+
+   Alfred Hoenes
+   TR-Sys
+   Gerlinger Str. 12
+   Ditzingen  D-71254
+   Germany
+
+   EMail: ah@TR-Sys.de
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Klensin & Hoenes             Standards Track                   [Page 10]
+
