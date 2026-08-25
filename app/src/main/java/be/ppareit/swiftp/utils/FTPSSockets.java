@@ -147,12 +147,22 @@ public class FTPSSockets {
      * Re-obtains a factory as needed.
      * */
     private SSLSocketFactory getNewSocketFactory(String type) throws KeyStoreException,
-            NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
+            NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException,
+            IOException {
         KeyManagerFactory kmFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         // Need to try to maintain resumption with data sockets in conflict with implicit
         if (getContext() != null) return getContext().getSocketFactory();
         // When implicit port is disabled, create it here.
-        kmFactory.init(getKeyStore(KEYSTORE_CERT_FILENAME), getCertPass());
+        KeyStore ks = getKeyStore(KEYSTORE_CERT_FILENAME);
+        if (ks == null) {
+            // KeyManagerFactory.init accepts a null store and yields key managers with
+            // no certificate in them, so without this the context builds and only fails
+            // at handshake time, as an opaque internal error alert on the wire. Same
+            // condition and same wording as setContext above, so the two agree.
+            throw new IOException("no keystore: " + KEYSTORE_CERT_FILENAME
+                    + " is missing or empty, so no certificate is configured");
+        }
+        kmFactory.init(ks, getCertPass());
         SSLContext context = SSLContext.getInstance(type);
         context.init(kmFactory.getKeyManagers(), getTrustManager(), new SecureRandom());
         putContext(context);

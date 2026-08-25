@@ -23,6 +23,7 @@ import android.util.Log;
 
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.utils.FTPSSockets;
+import be.ppareit.swiftp.utils.Logging;
 
 public class CmdAUTH extends FtpCmd implements Runnable {
     private static final String TAG = CmdAUTH.class.getSimpleName();
@@ -38,14 +39,31 @@ public class CmdAUTH extends FtpCmd implements Runnable {
         Log.d(TAG, "AUTH executing");
         String param = getParameter(input);
 
+        final String mechanism;
         if (param.contains("TLS")) {
-            sessionThread.writeString("234 AUTH command OK. Initializing TLS connection.\r\n");
-            sessionThread.cmdSSLAuthSocket = new FTPSSockets().createAuthSocket("TLS", sessionThread.cmdSocket);
-        } else if (param.contains("SSL")) {
-            if (FsSettings.useSSL()) {
-                sessionThread.writeString("234 AUTH command OK. Initializing SSL connection.\r\n");
-                sessionThread.cmdSSLAuthSocket = new FTPSSockets().createAuthSocket("SSL", sessionThread.cmdSocket);
+            mechanism = "TLS";
+        } else if (param.contains("SSL") && FsSettings.useSSL()) {
+            mechanism = "SSL";
+        } else {
+            mechanism = null;
+        }
+
+        if (mechanism != null) {
+            // The 234 commits the client to a handshake, so anything that would make
+            // that handshake fail has to be answered before it, not after. With no
+            // usable certificate the client would otherwise meet a TLS internal error
+            // alert instead of a reply it can read, and a client that treats a promised
+            // negotiation as fatal cannot then connect at all, plain FTP included.
+            if (!FTPSSockets.checkKeyStore()) {
+                sessionThread.writeString("431 No certificate is configured for FTPS\r\n");
+                new Logging().appendLog("AUTH refused: no certificate is configured");
+                Log.i(TAG, "AUTH refused: no usable keystore, so no certificate to offer");
+                return;
             }
+            sessionThread.writeString("234 AUTH command OK. Initializing " + mechanism
+                    + " connection.\r\n");
+            sessionThread.cmdSSLAuthSocket = new FTPSSockets()
+                    .createAuthSocket(mechanism, sessionThread.cmdSocket);
         }
 
         if (sessionThread.cmdSSLAuthSocket == null) {
