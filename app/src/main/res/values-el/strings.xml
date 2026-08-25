@@ -167,7 +167,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="cert_pass">Πιστοποιητικό: κωδικός πρόσβασης</string>
     <string name="cert_show_pass">Πιστοποιητικό: εμφάνιση κωδικού πρόσβασης</string>
     <string name="cert_use_client">Απαιτείται πιστοποιητικό πελάτη</string>
-    <string name="early_150_response">Πρόωρη λύση απόκρισης 150</string>
     <string name="ip_list_title">Αποδοχή/απόρριψη IP</string>
     <string name="deny_until_allowed">Άρνηση μέχρι να επιτραπεί</string>
     <string name="manually_add_ip">Μη αυτόματη προσθήκη IP</string>

@@ -133,7 +133,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="cert_pass">Сертификат: пароль</string>
     <string name="cert_show_pass">Сертификат: показать пароль</string>
     <string name="cert_use_client">Требовать сертификат клиента</string>
-    <string name="early_150_response">Обходной путь раннего ответа 150</string>
     <string name="ip_list_title">Разрешить/запретить IP-адреса</string>
     <string name="deny_until_allowed">Запретить, пока не разрешено</string>
     <string name="manually_add_ip">Добавить IP вручную</string>

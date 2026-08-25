@@ -194,13 +194,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                     android:key="useClientCert"
                     android:title="@string/cert_use_client" />
 
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:drawableStart="@drawable/ic_shared_dir"
-                    android:drawableLeft="@drawable/ic_shared_dir"
-                    android:key="early150Response"
-                    android:title="@string/early_150_response" />
-
                 <MultiSelectListPreference
                     android:dialogTitle="@string/tls_limit_protocols_title"
                     android:key="limitTLSProtocols"

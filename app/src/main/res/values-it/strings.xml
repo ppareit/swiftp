@@ -118,7 +118,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="cert_pass">Certificato: password</string>
     <string name="cert_show_pass">Certificato: mostra la password</string>
     <string name="cert_use_client">Richiedi certificato client</string>
-    <string name="early_150_response">Soluzione alternativa per la risposta iniziale 150</string>
     <string name="ip_list_title">Consenti/nega IP</string>
     <string name="deny_until_allowed">Negare fino al permesso</string>
     <string name="manually_add_ip">Aggiungi manualmente l\'IP</string>

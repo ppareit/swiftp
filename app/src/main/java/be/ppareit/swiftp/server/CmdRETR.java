@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import be.ppareit.swiftp.App;
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
 
@@ -89,7 +88,11 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 }
                 byte[] buffer = new byte[SessionThread.DATA_CHUNK_SIZE];
                 int bytesRead;
-                if (FsSettings.isEarly150Enabled()) sessionThread.writeString("150 Sending file\r\n");
+                // The 150 goes out before the data socket is opened, because opening it
+                // is what the client is waiting for the 150 to tell it to do. Under PROT P
+                // the server would otherwise block on a ClientHello, the client will not
+                // send until it has read this reply, and the transfer deadlocks!
+                sessionThread.writeString("150 Sending file\r\n");
                 if (sessionThread.openDataSocket()) {
                     Cat.d("RETR opened data socket");
                 } else {
@@ -97,7 +100,6 @@ public class CmdRETR extends FtpCmd implements Runnable {
                     Cat.i("Error in initDataSocket()");
                     break mainblock;
                 }
-                if (!FsSettings.isEarly150Enabled()) sessionThread.writeString("150 Sending file\r\n");
                 if (sessionThread.isBinaryMode()) { // RANG is supported only in binary mode.
                     Cat.d("Transferring in binary mode");
                     long offset = 0L;

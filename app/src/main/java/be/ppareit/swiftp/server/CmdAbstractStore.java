@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import be.ppareit.swiftp.App;
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
@@ -161,16 +160,15 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 errString = "451 Unable to seek in file to append\r\n";
                 break storing;
             }
-            final boolean early150 = FsSettings.isEarly150Enabled();
-            if (early150) {
-                sessionThread.writeString("150 Data socket ready\r\n");
-            }
+            // Before openDataSocket, not after: see the note in CmdRETR. A 425 after a
+            // 150 is the sequence RFC 959 already describes for a data socket that never
+            // came up, so nothing is lost by promising the transfer first.
+            sessionThread.writeString("150 Data socket ready\r\n");
             if (!sessionThread.openDataSocket()) {
                 errString = "425 Couldn't open data socket\r\n";
                 break storing;
             }
             Cat.d("Data socket ready");
-            if (!early150) sessionThread.writeString("150 Data socket ready\r\n");
             byte[] buffer = new byte[SessionThread.DATA_CHUNK_SIZE];
 
             int numRead;

@@ -240,13 +240,6 @@ public class FsSettings {
     }
 
     /*
-     * Returns whether the client early 150 workaround is enabled or not.
-     * */
-    public static boolean isEarly150Enabled() {
-        return sp.getBoolean("early150Response", false);
-    }
-
-    /*
      * Returns whether the FTPS implicit port is enabled or not.
      * */
     public static boolean isFeatDisabled() {

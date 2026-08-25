@@ -112,7 +112,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建议。\n\n
     <string name="cert_pass">证书：密码</string>
     <string name="cert_show_pass">证书：显示密码</string>
     <string name="cert_use_client">需要客户端证书</string>
-    <string name="early_150_response">早期 150 响应解决方法</string>
     <string name="ip_list_title">允许/拒绝 IP</string>
     <string name="deny_until_allowed">拒绝直到允许</string>
     <string name="manually_add_ip">手动添加 IP</string>

@@ -123,7 +123,6 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="cert_pass">Certificaat: wachtwoord</string>
     <string name="cert_show_pass">Certificaat: toon wachtwoord</string>
     <string name="cert_use_client">Vereist clientcertificaat</string>
-    <string name="early_150_response">Tijdelijke oplossing voor vroege 150-reacties</string>
     <string name="ip_list_title">IP\'s toestaan/weigeren</string>
     <string name="deny_until_allowed">Weigeren totdat het is toegestaan</string>
     <string name="manually_add_ip">Handmatig IP toevoegen</string>

@@ -203,7 +203,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     <string name="cert_pass">證書：密碼</string>
     <string name="cert_show_pass">證書：顯示密碼</string>
     <string name="cert_use_client">需要客戶端證書</string>
-    <string name="early_150_response">早期 150 響應解決方法</string>
     <string name="ip_list_title">允許/拒絕 IP</string>
     <string name="deny_until_allowed">拒絕直到允許為止</string>
     <string name="manually_add_ip">手動新增IP</string>

@@ -187,7 +187,6 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="cert_pass">Certificado: contraseña</string>
     <string name="cert_show_pass">Certificado: mostrar contraseña</string>
     <string name="cert_use_client">Requerir certificado de cliente</string>
-    <string name="early_150_response">Solución alternativa de respuesta temprana 150</string>
     <string name="ip_list_title">Permitir/denegar IP</string>
     <string name="deny_until_allowed">Negar hasta que se permita</string>
     <string name="manually_add_ip">Agregar IP manualmente</string>

@@ -151,7 +151,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="cert_pass">Сертификат: лозинка</string>
     <string name="cert_show_pass">Сертификат: прикажи лозинку</string>
     <string name="cert_use_client">Захтевајте сертификат клијента</string>
-    <string name="early_150_response">Заобилазно решење за ране 150 одговора</string>
     <string name="ip_list_title">Дозволи/одбиј ИП-ове</string>
     <string name="deny_until_allowed">Одбити док се не дозволи</string>
     <string name="manually_add_ip">Ручно додајте ИП</string>

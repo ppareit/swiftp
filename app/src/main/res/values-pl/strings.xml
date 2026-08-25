@@ -213,7 +213,6 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="cert_pass">Certyfikat: hasło</string>
     <string name="cert_show_pass">Certyfikat: pokaż hasło</string>
     <string name="cert_use_client">Wymagaj certyfikatu klienta</string>
-    <string name="early_150_response">Obejście problemu z wcześniejszą odpowiedzią 150</string>
     <string name="ip_list_title">Zezwalaj/odmawiaj adresów IP</string>
     <string name="deny_until_allowed">Odmawiaj, dopóki nie zostanie to dozwolone</string>
     <string name="manually_add_ip">Ręcznie dodaj adres IP</string>

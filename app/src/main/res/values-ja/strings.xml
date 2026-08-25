@@ -151,7 +151,6 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="cert_pass">証明書: パスワード</string>
     <string name="cert_show_pass">証明書: パスワードを表示</string>
     <string name="cert_use_client">クライアント証明書が必要</string>
-    <string name="early_150_response">早期 150 応答の回避策</string>
     <string name="ip_list_title">IP を許可/拒否</string>
     <string name="deny_until_allowed">許可されるまで拒否</string>
     <string name="manually_add_ip">IP を手動で追加</string>

@@ -114,7 +114,6 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
     <string name="cert_pass">Zertifikat: Passwort</string>
     <string name="cert_show_pass">Zertifikat: Passwort anzeigen</string>
     <string name="cert_use_client">Client-Zertifikat erforderlich</string>
-    <string name="early_150_response">Workaround für frühe 150-Antwort</string>
     <string name="ip_list_title">IPs zulassen/verweigern</string>
     <string name="deny_until_allowed">Verweigern bis erlaubt</string>
     <string name="manually_add_ip">IP manuell hinzufügen</string>

@@ -38,7 +38,6 @@ import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.utils.VirtualDir;
-import be.ppareit.swiftp.FsSettings;
 
 public abstract class CmdAbstractListing extends FtpCmd {
     // TODO: .class.getSimpleName() from abstract class?
@@ -291,15 +290,14 @@ public abstract class CmdAbstractListing extends FtpCmd {
     // Send the directory listing over the data socket. Used by CmdLIST and CmdNLST.
     // Returns an error string on failure, or returns null if successful.
     protected String sendListing(String listing) {
-        final boolean early150 = FsSettings.isEarly150Enabled();
-        if (early150) send150Response();
+        // Before openDataSocket, not after: see the note in CmdRETR.
+        send150Response();
         if (sessionThread.openDataSocket()) {
             Log.d(TAG, "LIST/NLST done making socket");
         } else {
             sessionThread.closeDataSocket();
             return "425 Error opening data socket\r\n";
         }
-        if (!early150) send150Response();
         if (!sessionThread.sendViaDataSocket(listing)) {
             Log.d(TAG, "sendViaDataSocket failure");
             sessionThread.closeDataSocket();

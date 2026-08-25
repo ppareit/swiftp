@@ -215,7 +215,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="cert_pass">Certifikata: fjalëkalimi</string>
     <string name="cert_show_pass">Certifikata: tregoni fjalëkalimin</string>
     <string name="cert_use_client">Kërkohet certifikata e klientit</string>
-    <string name="early_150_response">Zgjidhja e hershme e përgjigjes 150</string>
     <string name="ip_list_title">Lejo/refuzo IP-të</string>
     <string name="deny_until_allowed">Moho deri sa të lejohet</string>
     <string name="manually_add_ip">Shtoni manualisht IP</string>
