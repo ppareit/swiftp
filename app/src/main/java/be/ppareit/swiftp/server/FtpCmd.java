@@ -70,7 +70,7 @@ public abstract class FtpCmd implements Runnable {
             CmdPWD.class, CmdQUIT.class, CmdRETR.class, CmdSIZE.class, CmdTYPE.class, //
             CmdCDUP.class, CmdNOOP.class, CmdSYST.class, CmdPORT.class, //
             CmdMLST.class, CmdMLSD.class, CmdHASH.class, CmdRANG.class, CmdAUTH.class, //
-            CmdPROT.class, CmdPBSZ.class, //
+            CmdPROT.class, CmdPBSZ.class, CmdFEAT.class, //
             CmdMLST.class, CmdMLSD.class, CmdHASH.class, CmdRANG.class, //
             CmdEPRT.class, CmdEPSV.class //
     };
@@ -143,7 +143,9 @@ public abstract class FtpCmd implements Runnable {
         final boolean socketNotEncrypted = session.getIsPlainSocket();
         if (forceAUTHTLS && socketNotEncrypted) {
             // When enabled, client has to use AUTH command and make the connection encrypted.
-            if (cmdInstance.getClass().equals(CmdAUTH.class)) cmdInstance.run();
+            // FEAT is how the client finds out that AUTH is what we are waiting for
+            if (cmdInstance.getClass().equals(CmdAUTH.class)
+                    || cmdInstance.getClass().equals(CmdFEAT.class)) cmdInstance.run();
             else session.writeString("530 Login first with AUTH, or QUIT\r\n");
             return;
         }
@@ -166,6 +168,9 @@ public abstract class FtpCmd implements Runnable {
         } else if (cmdInstance.getClass().equals(CmdUSER.class)
                 || cmdInstance.getClass().equals(CmdPASS.class)
                 || cmdInstance.getClass().equals(CmdQUIT.class)
+                // RFC 2389 section 3: FEAT has to be answerable before login, otherwise
+                // a client cannot know whether AUTH TLS is on offer
+                || cmdInstance.getClass().equals(CmdFEAT.class)
                 || cmdInstance.getClass().equals(CmdAUTH.class)
                 || cmdInstance.getClass().equals(CmdPROT.class)
                 || cmdInstance.getClass().equals(CmdPBSZ.class)
