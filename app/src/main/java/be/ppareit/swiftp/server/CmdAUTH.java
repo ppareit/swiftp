@@ -25,7 +25,7 @@ import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.utils.FTPSSockets;
 
 public class CmdAUTH extends FtpCmd implements Runnable {
-    private static final String TAG = CmdPROT.class.getSimpleName();
+    private static final String TAG = CmdAUTH.class.getSimpleName();
     protected String input;
 
     public CmdAUTH(SessionThread sessionThread, String input) {
