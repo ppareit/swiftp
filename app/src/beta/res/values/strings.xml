@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Build type source set: overrides main and the flavor, so the beta build is
+     distinguishable in the launcher from a store install sitting next to it. -->
+<resources>
+    <string name="swiftp_name">FTP Server (Beta)</string>
+    <string name="swiftp_name_free">FTP Server (Beta)</string>
+</resources>

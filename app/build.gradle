@@ -3,6 +3,17 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 
+// Commit the beta build was made from, so About and the FTP welcome banner display it
+def gitSha = ''
+try {
+    gitSha = providers.exec {
+        commandLine 'git', 'describe', '--always', '--dirty', '--match=no-such-tag'
+        ignoreExitValue = true
+    }.standardOutput.asText.get().trim()
+} catch (Exception ignored) {
+    // No git, or an export without a checkout. The beta name just omits it.
+}
+
 android {
 
     compileSdk 36
@@ -33,6 +44,12 @@ android {
             shrinkResources = true
             minifyEnabled = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        // Build handed to testers, uploaded by android.yml on every push
+        beta {
+            initWith debug
+            applicationIdSuffix '.beta'
+            versionNameSuffix gitSha.isEmpty() ? '-beta' : '-beta+' + gitSha
         }
     }
     compileOptions {

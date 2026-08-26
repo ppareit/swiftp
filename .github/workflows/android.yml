@@ -25,6 +25,26 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      # assemble rather than build
+      # assemble rather than build, and by variant rather than plain assemble,
+      # which would also build the pointless playstore_paid beta
       - name: Build
-        run: ./gradlew assemble
+        run: ./gradlew assembleDebug assembleRelease assembleFdroid_freeBeta
+
+      # So a tester can quote the file name back at us and we know the commit
+      - name: Name the beta APK after the commit
+        id: beta
+        run: |
+          sha=$(git rev-parse --short HEAD)
+          dir=app/build/outputs/apk/fdroid_free/beta
+          mv "$dir/app-fdroid_free-beta.apk" "$dir/swiftp-beta-$sha.apk"
+          echo "apk=$dir/swiftp-beta-$sha.apk" >> "$GITHUB_OUTPUT"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      # The APK to hand a tester. Expires on its own, it is not a release.
+      - name: Upload beta APK
+        uses: actions/upload-artifact@v5
+        with:
+          name: swiftp-beta-${{ steps.beta.outputs.sha }}
+          path: ${{ steps.beta.outputs.apk }}
+          retention-days: 7
+          if-no-files-found: error
