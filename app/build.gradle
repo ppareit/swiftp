@@ -5,17 +5,17 @@ apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
 
+    compileSdk 36
+
     defaultConfig {
         applicationId "be.ppareit.swiftp"
-        compileSdk 36
         minSdkVersion 23
         targetSdkVersion 36
         versionCode 30203
         versionName "3.2.3"
     }
-    lintOptions {
-        disable 'GoogleAppIndexingWarning'
-        baseline file("lint-baseline.xml")
+    buildFeatures {
+        buildConfig = true
     }
     flavorDimensions "default"
     productFlavors {
@@ -30,12 +30,9 @@ android {
     }
     buildTypes {
         release {
-            shrinkResources true
-            minifyEnabled true
+            shrinkResources = true
+            minifyEnabled = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            lintOptions {
-                disable 'MissingTranslation'
-            }
         }
     }
     compileOptions {
@@ -86,7 +83,12 @@ android {
         exclude 'META-INF/dependencies.txt'
         exclude 'META-INF/LGPL2.1'
     }
-    namespace 'be.ppareit.swiftp'
+    namespace = 'be.ppareit.swiftp'
+    lint {
+        baseline = file('lint-baseline.xml')
+        disable 'GoogleAppIndexingWarning'
+        disable 'MissingTranslation'
+    }
 }
 
 tasks.register('runFdroid_freeDebug', Exec) {
