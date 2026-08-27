@@ -1,3 +1,13 @@
+Version 3.3 (2026/08/27)
+    * Improved FTPS negotiation: AUTH TLS now reports a clear error when no
+      certificate is configured, and FEAT advertises TLS only when it is usable,
+      thanks BrianTZ!
+    * Made FEAT available before login, for anonymous sessions, and when
+      encryption-only mode is enabled
+    * Improved FTP client compatibility by following RFC 2428 for EPSV and by
+      sending the transfer-ready response before opening the data connection
+    * Fixed passive data listeners not being released when a session ends
+    * Updated the Android build to AGP 9 and added automated beta APK builds
 Version 3.2 (2026/08/18)
     + Added Android scoped storage support with a single Allowed folders screen
       and a virtual FTP root containing all shared folders, based on work by
