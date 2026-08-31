@@ -34,11 +34,16 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
-    <!-- Tasker/Locale integration, Tell tasker we start/stop -->
     <queries>
+        <!-- Tasker/Locale integration, Tell tasker we start/stop -->
         <intent>
             <action android:name="com.twofortyfouram.locale.intent.action.REQUEST_QUERY" />
         </intent>
+        <!-- Checked to decide whether to offer the store version -->
+        <package android:name="com.android.vending" />
+        <package android:name="com.google.market" />
+        <!-- Checked by the demo to notice the paid version is installed -->
+        <package android:name="be.ppareit.swiftp" />
     </queries>
 
     <uses-feature
