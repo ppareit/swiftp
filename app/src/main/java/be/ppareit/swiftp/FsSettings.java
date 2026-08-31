@@ -29,18 +29,9 @@ import android.preference.PreferenceManager;
 import android.util.ArraySet;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.File;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
-import be.ppareit.swiftp.server.FtpUser;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 
@@ -49,65 +40,8 @@ public class FsSettings {
     private final static String TAG = FsSettings.class.getSimpleName();
     private static final SharedPreferences sp = getSharedPreferences();
 
-    public static List<FtpUser> getUsers() {
-        final Context context = App.getAppContext();
-        if (sp.contains("users")) {
-            Gson gson = new Gson();
-            Type listType = new TypeToken<List<FtpUser>>() {
-            }.getType();
-            return gson.fromJson(sp.getString("users", null), listType);
-        } else if (sp.contains("username")) {
-            // on ftp server version < 2.19 we had username/password preference
-            String username = sp.getString("username", context.getString(R.string.username_default));
-            String password = sp.getString("password", context.getString(R.string.password_default));
-            String chroot = sp.getString("chrootDir", "");
-            String uriString = sp.getString("uriString", "");
-            if (username == null || password == null || chroot == null) {
-                username = context.getString(R.string.username_default);
-                password = context.getString(R.string.password_default);
-                chroot = "";
-            }
-            return new ArrayList<>(Collections.singletonList(new FtpUser(username, password, chroot, uriString)));
-        } else {
-            FtpUser defaultUser = new FtpUser(context.getString(R.string.username_default), context.getString(R.string.password_default), "\\", "");
-            return new ArrayList<>(Collections.singletonList(defaultUser));
-        }
-    }
-
-    public static FtpUser getUser(String username) {
-        for (FtpUser user : getUsers()) {
-            if (Objects.equals(user.getUsername(), username))
-                return user;
-        }
-        return null;
-    }
-
-    public static void addUser(FtpUser user) {
-        if (getUser(user.getUsername()) != null) {
-            throw new IllegalArgumentException("User already exists");
-        }
-        Gson gson = new Gson();
-        List<FtpUser> userList = getUsers();
-        userList.add(user);
-        sp.edit().putString("users", gson.toJson(userList)).apply();
-    }
-
-    public static void removeUser(String username, boolean actualDelete) {
-        Gson gson = new Gson();
-        List<FtpUser> users = getUsers();
-        ArrayList<FtpUser> found = new ArrayList<>();
-        for (FtpUser user : users) {
-            if (Objects.equals(user.getUsername(), username)) {
-                found.add(user);
-            }
-        }
-        users.removeAll(found);
-        sp.edit().putString("users", gson.toJson(users)).apply();
-    }
-
-    public static void modifyUser(String username, FtpUser newUser) {
-        removeUser(username, false);
-        addUser(newUser);
+    public static SharedPreferences preferences() {
+        return sp;
     }
 
     public static boolean allowAnonymous() {

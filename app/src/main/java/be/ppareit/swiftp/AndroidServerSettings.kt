@@ -2,7 +2,6 @@
 
 package be.ppareit.swiftp
 
-import be.ppareit.swiftp.server.FtpUser
 import be.ppareit.swiftp.server.Settings
 import java.io.File
 
@@ -18,7 +17,6 @@ object AndroidServerSettings : Settings {
     override fun allowAnonymous(): Boolean = FsSettings.allowAnonymous()
     override fun getAnonMaxConNumber(): Int = FsSettings.getAnonMaxConNumber()
     override fun getAnonChroot(): String? = FsSettings.getAnonChroot()
-    override fun getUser(username: String?): FtpUser? = FsSettings.getUser(username)
     override fun getDefaultChrootDir(): File = FsSettings.getDefaultChrootDir()
     override fun getPortRangeLow(): Int = FsSettings.getPortRangeLow()
     override fun getPortRangeHigh(): Int = FsSettings.getPortRangeHigh()

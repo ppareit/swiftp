@@ -63,6 +63,7 @@ import java.util.List;
 
 import javax.net.ssl.SSLServerSocket;
 
+import be.ppareit.swiftp.users.UserStore;
 import be.ppareit.swiftp.gui.FsNotification;
 import be.ppareit.swiftp.server.SessionThread;
 import be.ppareit.swiftp.server.TcpListener;
@@ -354,8 +355,10 @@ public class FsService extends Service implements Runnable {
         Log.i(TAG, "Ftp Server up and running, broadcasting ACTION_STARTED");
         broadcastAction(ACTION_STARTED);
 
-        socketWatcher = new TcpListener(listenSocket, this, listenSocketSecure,
-                AndroidServerSettings.INSTANCE);
+        socketWatcher = new TcpListener(
+                listenSocket, this, listenSocketSecure,
+                AndroidServerSettings.INSTANCE, UserStore.INSTANCE
+        );
         socketWatcher.start();
     }
 

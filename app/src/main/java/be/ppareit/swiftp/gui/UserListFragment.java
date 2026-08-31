@@ -27,7 +27,8 @@ import java.io.File;
 
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
-import be.ppareit.swiftp.server.FtpUser;
+import be.ppareit.swiftp.users.FtpUser;
+import be.ppareit.swiftp.users.UserStore;
 import be.ppareit.swiftp.utils.ChrootPicker;
 
 public class UserListFragment extends Fragment {
@@ -99,8 +100,8 @@ public class UserListFragment extends Fragment {
         commitFocusedField();
         FtpUser user = new FtpUser(freeUsername(),
                 getString(R.string.password_default),
-                FsSettings.getDefaultChrootDir().getPath(), "");
-        FsSettings.addUser(user);
+                FsSettings.getDefaultChrootDir().getPath());
+        UserStore.INSTANCE.add(user);
         refreshUserList();
         scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
@@ -108,7 +109,7 @@ public class UserListFragment extends Fragment {
     /** A new user starts out with a name that is not taken yet, so it can be stored right away. */
     private String freeUsername() {
         String username = "ftp";
-        for (int i = 2; FsSettings.getUser(username) != null; i++) {
+        for (int i = 2; UserStore.INSTANCE.user(username) != null; i++) {
             username = "ftp" + i;
         }
         return username;
@@ -119,7 +120,7 @@ public class UserListFragment extends Fragment {
                 .setMessage(getString(R.string.confirm_delete_message, item.getUsername()))
                 .setNegativeButton(android.R.string.no, null)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, whichButton) -> {
-                    FsSettings.removeUser(item.getUsername(), true);
+                    UserStore.INSTANCE.remove(item.getUsername());
                     refreshUserList();
                 })
                 .create();
@@ -133,7 +134,7 @@ public class UserListFragment extends Fragment {
         View anonRow = inflater.inflate(R.layout.anon_list_item_layout, listView, false);
         new AnonItemViewHolder(anonRow).show();
         listView.addView(anonRow);
-        for (FtpUser user : FsSettings.getUsers()) {
+        for (FtpUser user : UserStore.INSTANCE.users()) {
             View row = inflater.inflate(R.layout.user_list_item_layout, listView, false);
             new UserItemViewHolder(row).show(user);
             listView.addView(row);
@@ -285,17 +286,17 @@ public class UserListFragment extends Fragment {
                 show(item);
                 return;
             }
-            if (!newUsername.equals(item.getUsername()) && FsSettings.getUser(newUsername) != null) {
+            if (!newUsername.equals(item.getUsername()) && UserStore.INSTANCE.user(newUsername) != null) {
                 showToast(R.string.user_exists_error);
                 show(item);
                 return;
             }
             // the allowed folders are app-wide, so a user is only a name, a password and a
             // chroot in one of the allowed folders
-            FtpUser newItem = new FtpUser(newUsername, newPassword, newChroot, "");
-            FsSettings.modifyUser(item.getUsername(), newItem);
-            // the constructor refuses a chroot that is not a directory, so show what was stored
-            show(newItem);
+            FtpUser newItem = new FtpUser(newUsername, newPassword, newChroot);
+            // the store reads back a chroot that is not a directory as the default, so show
+            // what it holds rather than what was typed
+            show(UserStore.INSTANCE.modify(item.getUsername(), newItem));
         }
     }
 }

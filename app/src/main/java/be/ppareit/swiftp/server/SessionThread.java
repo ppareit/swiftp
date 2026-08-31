@@ -60,6 +60,7 @@ public class SessionThread extends Thread {
     private String userName = null;  // username that the client sends
     private boolean userAuthenticated = false;
     private final Settings settings;
+    private final Authenticator authenticator;
     private File workingDir;
     private File chrootDir;
     private Socket dataSocket = null; // PASV plain data socket
@@ -84,16 +85,22 @@ public class SessionThread extends Thread {
     private boolean epsvAllRequested = false;
 
     public SessionThread(Socket socket, LocalDataSocket dataSocket, SSLSocket sslSocket,
-                         Settings settings) {
+                         Settings settings, Authenticator authenticator) {
         cmdSocket = socket;
         cmdSSLSocket = sslSocket;
         localDataSocket = dataSocket; // not an actual socket itself so name is misleading
         sendWelcomeBanner = true;
         this.settings = settings;
+        this.authenticator = authenticator;
         // Not field initializers: both of these need the settings, which arrive here.
         workingDir = settings.getDefaultChrootDir();
         chrootDir = workingDir;
         logging = new Logging(settings.isLoggingEnabled());
+    }
+
+    /** Where this session has a login accepted or refused. */
+    public Authenticator authenticator() {
+        return authenticator;
     }
 
     /** The settings this session answers from. Commands read theirs off their session. */

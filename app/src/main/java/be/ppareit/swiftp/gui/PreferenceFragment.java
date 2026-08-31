@@ -79,7 +79,8 @@ import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 import be.ppareit.swiftp.Util;
-import be.ppareit.swiftp.server.FtpUser;
+import be.ppareit.swiftp.users.FtpUser;
+import be.ppareit.swiftp.users.UserStore;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FTPSSockets;
 import be.ppareit.swiftp.utils.LegacyStoragePermission;
@@ -975,7 +976,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
     private void updateUsersPref() {
         FixablePreference manageUsersPref = findPref("manage_users");
         if (manageUsersPref == null) return;
-        List<FtpUser> users = FsSettings.getUsers();
+        List<FtpUser> users = UserStore.INSTANCE.users();
         boolean anonymousAllowed = FsSettings.allowAnonymous();
         final String summary;
         switch (users.size()) {

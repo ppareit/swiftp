@@ -43,9 +43,6 @@ interface Settings {
     /** The chroot for anonymous, which is its own setting and not one of the users. */
     fun getAnonChroot(): String?
 
-    /** The user with this name, or null when there is none. */
-    fun getUser(username: String?): FtpUser?
-
     /** The chroot a session starts in when the user has none of its own. */
     fun getDefaultChrootDir(): File
 

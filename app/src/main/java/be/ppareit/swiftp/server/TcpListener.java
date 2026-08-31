@@ -45,21 +45,24 @@ public class TcpListener extends Thread {
     private int loopExControlTLS = 0;
 
     private final Settings settings;
+    private final Authenticator authenticator;
     private final Logging logging;
 
     public TcpListener(ServerSocket listenSocket, FsService ftpServerService,
-                       SSLServerSocket sslServerSocket, Settings settings) {
+                       SSLServerSocket sslServerSocket, Settings settings,
+                       Authenticator authenticator) {
         this.listenSSLSocket = sslServerSocket;
         this.listenSocket = listenSocket;
         this.ftpServerService = ftpServerService;
         this.settings = settings;
+        this.authenticator = authenticator;
         this.logging = new Logging(settings.isLoggingEnabled());
     }
 
     public void quit() {
         try {
             listenSocket.close(); // if the TcpListener thread is blocked on accept,
-                                  // closing the socket will raise an exception
+            // closing the socket will raise an exception
         } catch (Exception e) {
             Log.d(TAG, "Exception closing TcpListener listenSocket");
         }
@@ -206,8 +209,10 @@ public class TcpListener extends Thread {
     private void spawnSession(Socket clientSocket, SSLSocket sslClientSocket) {
         Log.i(TAG, "New connection, spawned thread");
         ftpServerService.createConnWakeLock();
-        SessionThread newSession = new SessionThread(clientSocket, new LocalDataSocket(settings), sslClientSocket,
-                settings);
+        SessionThread newSession = new SessionThread(
+                clientSocket, new LocalDataSocket(settings), sslClientSocket,
+                settings, authenticator
+        );
         newSession.start();
         ftpServerService.registerSessionThread(newSession);
     }

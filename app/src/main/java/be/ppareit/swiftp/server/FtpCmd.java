@@ -79,6 +79,11 @@ public abstract class FtpCmd implements Runnable {
         this.sessionThread = sessionThread;
     }
 
+    /** Where this command's session has a login accepted or refused. */
+    protected Authenticator authenticator() {
+        return sessionThread.authenticator();
+    }
+
     /** The settings this command's session answers from. */
     protected Settings settings() {
         return sessionThread.settings();

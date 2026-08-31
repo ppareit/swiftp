@@ -68,29 +68,23 @@ public class CmdPASS extends FtpCmd implements Runnable {
             }
             return;
         }
-        FtpUser user = settings().getUser(attemptUsername);
-        if (user == null) {
-            Log.i(TAG, "Failed authentication, username does not exist!");
-            Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
-            sessionThread.writeString("500 Login incorrect.\r\n");
-            sessionThread.authAttempt( false);
-            IPSecurity.putIPFail(sessionThread.getRemoteAddress());
-        } else if (user.getPassword().equals(attemptPassword)) {
-            if (nothingIsShared()) {
-                refuseNothingShared();
-                return;
-            }
-            Log.i(TAG, "User " + user.getUsername() + " password verified");
-            sessionThread.writeString("230 Access granted\r\n");
-            sessionThread.authAttempt(true);
-            sessionThread.setChrootDir(user.getChroot());
-        } else {
-            Log.i(TAG, "Failed authentication, incorrect password");
+        final String chroot = authenticator().authenticate(attemptUsername, attemptPassword);
+        if (chroot == null) {
+            Log.i(TAG, "Failed authentication");
             Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
             sessionThread.writeString("530 Login incorrect.\r\n");
             sessionThread.authAttempt(false);
             IPSecurity.putIPFail(sessionThread.getRemoteAddress());
+            return;
         }
+        if (nothingIsShared()) {
+            refuseNothingShared();
+            return;
+        }
+        Log.i(TAG, "User " + attemptUsername + " password verified");
+        sessionThread.writeString("230 Access granted\r\n");
+        sessionThread.authAttempt(true);
+        sessionThread.setChrootDir(chroot);
     }
 
     /**
