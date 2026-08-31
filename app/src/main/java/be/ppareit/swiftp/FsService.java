@@ -32,7 +32,6 @@ import android.net.ConnectivityManager;
 import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.Build;
@@ -53,7 +52,6 @@ import androidx.core.content.ContextCompat;
 import net.vrallev.android.cat.Cat;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -70,6 +68,7 @@ import be.ppareit.swiftp.gui.FsNotification;
 import be.ppareit.swiftp.server.SessionThread;
 import be.ppareit.swiftp.server.TcpListener;
 import be.ppareit.swiftp.utils.FTPSSockets;
+import be.ppareit.swiftp.utils.LocalNetwork;
 
 public class FsService extends Service implements Runnable {
     private static final String TAG = FsService.class.getSimpleName();
@@ -305,7 +304,7 @@ public class FsService extends Service implements Runnable {
     public void run() {
         Log.d(TAG, "Server thread running");
 
-        if (!isConnectedToLocalNetwork()) {
+        if (!LocalNetwork.isAvailable()) {
             Log.w(TAG, "run: There is no local network, bailing out");
             stopSelf();
             broadcastAction(ACTION_FAILEDTOSTART);
@@ -468,10 +467,6 @@ public class FsService extends Service implements Runnable {
      */
     public static InetAddress getLocalInetAddress() {
         InetAddress returnAddress = null;
-        if (!isConnectedToLocalNetwork()) {
-            Log.e(TAG, "getLocalInetAddress called and no connection");
-            return null;
-        }
         try {
             ArrayList<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface networkInterface : networkInterfaces) {
@@ -492,6 +487,9 @@ public class FsService extends Service implements Runnable {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if (returnAddress == null) {
+            Log.e(TAG, "getLocalInetAddress found no address to advertise");
         }
         return returnAddress;
     }
@@ -532,43 +530,6 @@ public class FsService extends Service implements Runnable {
         InetAddress selectedAddress = getLocalInetAddress();
         Log.i(TAG, "Selected local FTP address="
                 + (selectedAddress == null ? "none" : selectedAddress.getHostAddress()));
-    }
-
-    /**
-     * Checks to see if we are connected to a local network, for instance wifi or ethernet
-     *
-     * @return true if connected to a local network
-     */
-    public static boolean isConnectedToLocalNetwork() {
-        boolean connected = false;
-        Context context = App.getAppContext();
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        connected = ni != null && ni.isConnected();
-        if (!connected) {
-            Log.d(TAG, "isConnectedToLocalNetwork: see if it is an WIFI AP");
-            WifiManager wm = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            try {
-                Method method = wm.getClass().getDeclaredMethod("isWifiApEnabled");
-                connected = (Boolean) method.invoke(wm);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!connected) {
-            Log.d(TAG, "isConnectedToLocalNetwork: see if it is an USB AP");
-            try {
-                ArrayList<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-                for (NetworkInterface netInterface : networkInterfaces) {
-                    if (netInterface.getDisplayName().startsWith("rndis")) {
-                        connected = true;
-                    }
-                }
-            } catch (SocketException e) {
-                e.printStackTrace();
-            }
-        }
-        return connected;
     }
 
     /**
