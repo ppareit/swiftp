@@ -52,7 +52,6 @@ import androidx.core.content.ContextCompat;
 import net.vrallev.android.cat.Cat;
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -475,37 +474,12 @@ public class FsService extends Service implements Runnable {
     }
 
     /**
-     * Gets the local ip address
+     * Gets the local ip address to advertise, ranked by LocalNetwork
      *
      * @return local ip address or null if not found
      */
     public static InetAddress getLocalInetAddress() {
-        InetAddress returnAddress = null;
-        try {
-            ArrayList<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface networkInterface : networkInterfaces) {
-                // only check network interfaces that give local connection
-                if (!networkInterface.getName().matches("^(eth|wlan|tun).*"))
-                    continue;
-                for (InetAddress address : Collections.list(networkInterface.getInetAddresses())) {
-                    if (!address.isLoopbackAddress()
-                            && !address.isLinkLocalAddress()
-                            && address.isSiteLocalAddress()
-                            && address instanceof Inet4Address) {
-                        if (returnAddress != null) {
-                            Cat.w("Found more than one valid address local inet address, why???");
-                        }
-                        returnAddress = address;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (returnAddress == null) {
-            Log.e(TAG, "getLocalInetAddress found no address to advertise");
-        }
-        return returnAddress;
+        return LocalNetwork.getAddress();
     }
 
     private static void logNetworkConfiguration() {

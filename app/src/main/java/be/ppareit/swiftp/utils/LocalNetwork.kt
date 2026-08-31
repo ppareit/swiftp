@@ -33,6 +33,15 @@ object LocalNetwork {
      */
     private val MOBILE = Regex("^(rmnet|ccmni|pdp).*")
 
+    /** A wifi hotspot this device is running itself. */
+    private val HOTSPOT = Regex("^(ap|swlan|softap).*")
+
+    /** A LAN this device joined, wired or wireless. */
+    private val LAN = Regex("^(wlan|eth).*")
+
+    /** A link tethered to this device over USB or bluetooth. */
+    private val TETHER = Regex("^(rndis|usb|ncm|bt-pan|tether).*")
+
     /** The interfaces ConnectivityManager says carry mobile data. */
     private fun cellularInterfaces(): Set<String> {
         val cm = App.getAppContext().getSystemService(ConnectivityManager::class.java)
@@ -79,6 +88,49 @@ object LocalNetwork {
     private fun serveableInterfaces(): List<String> =
         interfaces().filter { it.canServe() }.map { it.name }
 
+    /**
+     * The address to advertise: the one a client is most likely to be able to dial.
+     *
+     * Several interfaces qualify on an ordinary device, so the candidates are ranked rather
+     * than taking whichever came last out of the enumeration, with a hotspot up, the clients
+     * are on the hotspot and the address shown was whatever else was up.
+     *
+     * @return the address to show and to advertise, or null when nothing can serve
+     */
+    @JvmStatic
+    fun getAddress(): InetAddress? {
+        val candidates = interfaces()
+            .filter { it.canServe() }
+            .sortedBy { rank(it.name) }
+            .mapNotNull { candidate ->
+                Collections.list(candidate.inetAddresses)
+                    .firstOrNull { isServeableAddress(it) }
+                    ?.let { candidate.name to it }
+            }
+        Log.d(TAG, "Candidates to advertise, best first: $candidates")
+        val chosen = candidates.firstOrNull()
+        if (chosen == null) {
+            Log.e(TAG, "No address to advertise")
+            return null
+        }
+        Log.i(TAG, "Advertising ${chosen.second} on ${chosen.first}")
+        return chosen.second
+    }
+
+    /**
+     * How good an interface is to advertise, lower is better. A hotspot first, since a client
+     * that is on it can reach nothing else; then a LAN this device joined; then a tethered
+     * link; then anything else that is up, a VPN tunnel above all.
+     */
+    @JvmStatic
+    fun rank(name: String?): Int = when {
+        name == null -> 3
+        HOTSPOT.matches(name) -> 0
+        LAN.matches(name) -> 1
+        TETHER.matches(name) -> 2
+        else -> 3
+    }
+
     private fun interfaces(): List<NetworkInterface> = try {
         Collections.list(NetworkInterface.getNetworkInterfaces())
     } catch (e: SocketException) {
@@ -88,6 +140,8 @@ object LocalNetwork {
 
     /** This is the nice way to use canServe, on NetworkInterface, but untestable */
     private fun NetworkInterface.canServe(): Boolean = try {
+        // each canServe calls cellularInterfaces and walks allNetworks again,
+        // this is ok, this code is a lot cleaner if we don't pass cellular everywhere
         canServeOn(
             name, isUp, isLoopback,
             Collections.list(inetAddresses), cellularInterfaces()
