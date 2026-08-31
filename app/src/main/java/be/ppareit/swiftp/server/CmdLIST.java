@@ -36,6 +36,7 @@ import androidx.documentfile.provider.DocumentFile;
 import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdLIST extends CmdAbstractListing implements Runnable {
@@ -66,7 +67,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
             if (param.equals("")) {
                 fileToList = sessionThread.getWorkingDir();
                 if (Util.useScopedStorage()) {
-                    docFileToList = FileUtil.getDocumentFileForPath(fileToList.getPath());
+                    docFileToList = AllowedFolders.documentAt(fileToList.getPath());
                 }
             } else {
                 if (param.contains("*")) {
@@ -75,7 +76,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
                 }
                 fileToList = new File(sessionThread.getWorkingDir(), param);
                 if (Util.useScopedStorage()) {
-                    docFileToList = FileUtil.getDocumentFileForPath(fileToList.getPath());
+                    docFileToList = AllowedFolders.documentAt(fileToList.getPath());
                 }
                 if (violatesChroot(fileToList)) {
                     // sd card should be eg /storage/xxx/

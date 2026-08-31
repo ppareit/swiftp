@@ -27,6 +27,7 @@ import androidx.documentfile.provider.DocumentFile;
 
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.MediaUpdater;
 
@@ -48,7 +49,7 @@ public class CmdDELE extends FtpCmd implements Runnable {
                 sessionThread.getWorkingDir(), param);
 
         if (Util.useScopedStorage()) {
-            DocumentFile docStoreFile = FileUtil.getDocumentFileForPath(storeFile.getPath());
+            DocumentFile docStoreFile = AllowedFolders.documentAt(storeFile.getPath());
             tryToDelete(new FileUtil.Gen(docStoreFile));
             return;
         }

@@ -187,7 +187,7 @@ class AllowedFoldersFragment : Fragment() {
     }
 
     private fun removeFolder(tree: StorageTree) {
-        AllowedFolders.releaseGrant(requireContext(), AllowedFolders.uriFor(tree))
+        AllowedFolders.releaseGrant(requireContext(), tree)
         FsService.restart()
         Toast.makeText(
             requireContext(),

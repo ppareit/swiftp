@@ -130,7 +130,7 @@ public abstract class FileUtil {
             // Fix: Store overwrite failure happening with internal Android 13 via the old code.
             // Failure happening with new multi user changes happening on sd card not compat with old.
             // Fix: Must move above File to make sure its deleted without incident.
-            final DocumentFile df = getDocumentFileForPath(file.getPath());
+            final DocumentFile df = AllowedFolders.documentAt(file.getPath());
             if (df != null) return df.delete();
         }
 
@@ -171,7 +171,7 @@ public abstract class FileUtil {
             // Fix: Block is fix for rename file causing app to crash with latest DocumentFile changes.
             // Fix: Must move above File to make sure it happens without incident, as on Android 8,
             // File was successful but always returns false thus causing various issues.
-            DocumentFile df = getDocumentFileForPath(source.getPath());
+            DocumentFile df = AllowedFolders.documentAt(source.getPath());
             if (df != null) {
                 try {
                     if (DocumentsContract.renameDocument(context.getContentResolver(), df.getUri(), target.getName()) != null) {
@@ -229,7 +229,7 @@ public abstract class FileUtil {
             // need to move above File.
             // Fix: Store overwrite failure happening with internal Android 13 via the old code.
             // Fix: Failure happening with new multi user changes happening on sd card not compat with old.
-            DocumentFile df = getDocumentFileForPath(source.getPath());
+            DocumentFile df = AllowedFolders.documentAt(source.getPath());
             if (df != null) {
                 try {
                     if (DocumentsContract.renameDocument(context.getContentResolver(), df.getUri(), target.getName()) != null) {
@@ -311,10 +311,10 @@ public abstract class FileUtil {
             // Fix: error on File use in logcat by moving above.
             final String filename = file.getName();
             String parent = file.getPath();
-            DocumentFile child = getDocumentFileForPath(file.getPath());
+            DocumentFile child = AllowedFolders.documentAt(file.getPath());
             if (child != null && child.exists()) return false;
             parent = parent.substring(0, parent.length() - filename.length());
-            DocumentFile documentFile = getDocumentFileForPath(parent);
+            DocumentFile documentFile = AllowedFolders.documentAt(parent);
             if (documentFile != null) {
                 if (documentFile.createDirectory(filename) != null) {
                     return documentFile.exists();
@@ -397,7 +397,7 @@ public abstract class FileUtil {
             // file in a dir that has the # symbol.
             final String filename = file.getName();
             final String path = file.getPath();
-            DocumentFile parent = getDocumentFileForPath(path.substring(0, path.lastIndexOf(File.separator)));
+            DocumentFile parent = AllowedFolders.documentAt(path.substring(0, path.lastIndexOf(File.separator)));
             if (parent != null) return parent.createFile(mime, filename);
         } catch (Exception e) {
             e.printStackTrace();
@@ -735,25 +735,6 @@ public abstract class FileUtil {
         return document;
     }
 
-    /*
-     * Basic switch out of File to DocumentFile. Can't always be used as the File Uri isn't compatible
-     * with scoped storage. But, won't cause security failure for specific uses.
-     * */
-    public static DocumentFile getDocumentFileFromFileScopedStorage(File f) {
-        if (Util.useScopedStorage()) {
-            return FileUtil.getDocumentFileForPath(f.getPath());
-        }
-        return null;
-    }
-
-    public static DocumentFile getDocumentFileFromUri(Uri uri) {
-        // For DocumentFile, to move into sub folders, the user path cannot start with /
-        // Say a user enters in "/test" inside the client, the string that is received will be "test".
-        // findFile("test") for getting the sub dir "test" contents works.
-        if (uri != null) return DocumentFile.fromTreeUri(App.getAppContext(), uri);
-        return null;
-    }
-
     // Utility methods for external SD card access
 
     /**
@@ -783,35 +764,6 @@ public abstract class FileUtil {
             return 0;
         }
         return 0;
-    }
-
-    /*
-     * Resolves a File path, eg "/storage/emulated/0/Documents/notes.txt", against the folders
-     * the user has allowed. A path stays a path here.
-     */
-    public static DocumentFile getDocumentFileForPath(String path) {
-        if (path == null) return null;
-        final StorageTree tree = AllowedFolders.containing(path);
-        if (tree == null) return null;
-        return documentFileIn(tree, tree.documentIdFor(path));
-    }
-
-    /*
-     * Resolves a raw SAF document id, eg "primary:Documents/notes.txt", against the folders the
-     * user has allowed. Only for callers that really hold an id; everything holding a path wants
-     * getDocumentFileForPath.
-     */
-    public static DocumentFile getDocumentFileForId(String documentId) {
-        if (documentId == null) return null;
-        return documentFileIn(AllowedFolders.owningDocumentId(documentId), documentId);
-    }
-
-    private static DocumentFile documentFileIn(StorageTree tree, String documentId) {
-        if (tree == null || documentId == null) return null;
-        final Uri treeUri = AllowedFolders.uriFor(tree);
-        if (treeUri == null) return null;
-        return getDocumentFileFromUri(
-                DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId));
     }
 
     /*
@@ -979,7 +931,7 @@ public abstract class FileUtil {
             if (AllowedFolders.isVirtual(f.getPath())) {
                 return new Gen<>(new VirtualDir(f.getPath(), virtualDirTime(f)));
             }
-            return FileUtil.convertDocumentFileToGen(FileUtil.getDocumentFileFromFileScopedStorage(f));
+            return FileUtil.convertDocumentFileToGen(AllowedFolders.documentAt(f.getPath()));
         } else {
             return FileUtil.convertFileToGen(f);
         }

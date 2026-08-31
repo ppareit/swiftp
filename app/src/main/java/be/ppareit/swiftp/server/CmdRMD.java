@@ -28,6 +28,7 @@ import androidx.documentfile.provider.DocumentFile;
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.MediaUpdater;
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdRMD extends FtpCmd implements Runnable {
@@ -50,7 +51,7 @@ public class CmdRMD extends FtpCmd implements Runnable {
         if (Util.useScopedStorage()) {
             toRemove = inputPathToChrootedFile(sessionThread.getChrootDir(),
                     sessionThread.getWorkingDir(), param);
-            DocumentFile docFileToRemove = FileUtil.getDocumentFileForPath(toRemove.getPath());
+            DocumentFile docFileToRemove = AllowedFolders.documentAt(toRemove.getPath());
 
             mainblock:
             {

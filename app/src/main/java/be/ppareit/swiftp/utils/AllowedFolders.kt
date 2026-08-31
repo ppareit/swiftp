@@ -7,6 +7,8 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
 
+import androidx.documentfile.provider.DocumentFile
+
 import be.ppareit.swiftp.App
 import be.ppareit.swiftp.Util
 
@@ -61,17 +63,6 @@ object AllowedFolders {
     @JvmStatic
     fun names(): List<String> = all().map { it.name }
 
-    /**
-     * The granted folder holding this path, or null when no folder does. When folders overlap
-     * the most specific one wins.
-     */
-    @JvmStatic
-    fun containing(path: String?): StorageTree? = index().containing(path)
-
-    /** The granted folder a raw SAF document id belongs to, for callers that hold an id. */
-    @JvmStatic
-    fun owningDocumentId(documentId: String?): StorageTree? = index().owningDocumentId(documentId)
-
     /** True when this directory is above at least one granted folder without being inside one. */
     @JvmStatic
     fun isVirtual(dir: String?): Boolean = index().isVirtual(dir)
@@ -84,9 +75,39 @@ object AllowedFolders {
     @JvmStatic
     fun defaultChroot(): String? = index().defaultChroot()
 
-    /** The tree URI a folder came from, needed to build a document URI under it. */
+    /**
+     * The document for a File path, eg "/storage/emulated/0/Documents/notes.txt", or null when
+     * no granted folder holds it. A path stays a path here, a ":" in a name is part of the name.
+     */
     @JvmStatic
-    fun uriFor(tree: StorageTree?): Uri? =
+    fun documentAt(path: String?): DocumentFile? {
+        if (path == null) return null
+        val tree = index().containing(path) ?: return null
+        return documentIn(tree, tree.documentIdFor(path))
+    }
+
+    /**
+     * The document for a raw SAF document id, eg "primary:Documents/notes.txt". Only for callers
+     * that really hold an id; everything holding a path wants [documentAt].
+     */
+    @JvmStatic
+    fun documentForId(documentId: String?): DocumentFile? =
+        documentIn(index().owningDocumentId(documentId), documentId)
+
+    private fun documentIn(tree: StorageTree?, documentId: String?): DocumentFile? {
+        if (tree == null || documentId == null) return null
+        val context = App.getAppContext() ?: return null
+        val treeUri = uriFor(tree) ?: return null
+        // The document URI has to be built under the tree the grant was taken on, a document URI
+        // built anywhere else is not readable.
+        return DocumentFile.fromTreeUri(
+            context,
+            DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId),
+        )
+    }
+
+    /** The tree URI a folder came from, needed to build a document URI under it. */
+    private fun uriFor(tree: StorageTree?): Uri? =
         tree?.let { snapshot().uriByDocumentId[it.documentId] }
 
     /** Takes a persistable grant on a folder the user picked. */
@@ -102,8 +123,8 @@ object AllowedFolders {
 
     /** Gives the grant on a folder back, so the server can no longer reach it. */
     @JvmStatic
-    fun releaseGrant(context: Context, treeUri: Uri?) {
-        if (treeUri == null) return
+    fun releaseGrant(context: Context, tree: StorageTree?) {
+        val treeUri = uriFor(tree) ?: return
         context.contentResolver.releasePersistableUriPermission(
             treeUri,
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,

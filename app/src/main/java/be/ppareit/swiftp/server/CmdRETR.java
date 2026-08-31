@@ -33,6 +33,7 @@ import java.io.InputStream;
 
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 
 public class CmdRETR extends FtpCmd implements Runnable {
@@ -59,7 +60,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
 
             DocumentFile docFileToRetr = null;
             if (Util.useScopedStorage()) {
-                docFileToRetr = FileUtil.getDocumentFileForPath(fileToRetr.getPath());
+                docFileToRetr = AllowedFolders.documentAt(fileToRetr.getPath());
                 if (docFileToRetr == null) {
                     errString = "550 File does not exist\r\n";
                     break mainblock;
