@@ -27,7 +27,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">Serveur FTP</string>
     <string name="running_summary_stopped">Changer l\'état du serveur FTP</string>
     <string name="running_summary_started">sur %s</string>
-    <string name="running_summary_failed">
+    <string name="running_summary_failed_no_network">
         Impossible de démarrer le serveur FTP, êtes-vous bien connecté au réseau local (wifi ou ethernet)?
     </string>
     <string name="running_summary_failed_to_get_ip_address">

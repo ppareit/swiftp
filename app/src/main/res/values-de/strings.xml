@@ -25,7 +25,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">Status des FTP-Servers umschalten</string>
     <string name="running_summary_started">auf %s</string>
-    <string name="running_summary_failed">Der FTP-Server konnte nicht gestartet werden, nicht mit dem lokalen Netzwerk (WiFi oder Ethernet) verbunden?</string>
+    <string name="running_summary_failed_no_network">Der FTP-Server konnte nicht gestartet werden, nicht mit dem lokalen Netzwerk (WiFi oder Ethernet) verbunden?</string>
     <string name="market_version_label">Versionshinweis</string>
     <string name="market_version_summary">
         Das ist die FTP Server Demo-Version.

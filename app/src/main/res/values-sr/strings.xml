@@ -27,7 +27,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">ФТП сервер</string>
     <string name="running_summary_stopped">Мењај стање фтп сервера</string>
     <string name="running_summary_started">на %s</string>
-    <string name="running_summary_failed">Неуспех покретања ФТП сервера, да ли сте повезани на локалну мрежу (бежично или жично)?</string>
+    <string name="running_summary_failed_no_network">Неуспех покретања ФТП сервера, да ли сте повезани на локалну мрежу (бежично или жично)?</string>
     <string name="market_version_label">Издање за продавницу</string>
     <string name="market_version_summary">
         Ово је демо издање ФТП сервера.

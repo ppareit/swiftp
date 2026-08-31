@@ -26,12 +26,25 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">Toggle the state of the FTP server</string>
     <string name="running_summary_started">at %s</string>
-    <string name="running_summary_failed">
-        Failed to start the FTP server, not connected to the local network (Wi-Fi or Ethernet)?
+    <string name="running_summary_failed_no_network">
+        Failed to start the FTP server, no network a client could reach this device on.
+        Connect to Wi-Fi, a hotspot or tethering.
     </string>
     <string name="running_summary_failed_to_get_ip_address">
         Failed to start the FTP server, unable to get IP address
     </string>
+    <string name="running_summary_failed_mobile_only">
+        Failed to start the FTP server, no client can reach this device over mobile data.
+        Connect to Wi-Fi, a hotspot or tethering.
+    </string>
+    <string name="running_summary_failed_port">
+        Failed to start the FTP server, the port is already in use by another app
+    </string>
+    <string name="tile_on">On</string>
+    <string name="tile_off">Off</string>
+    <string name="tile_failed_no_network">No network</string>
+    <string name="tile_failed_mobile_only">Mobile data only</string>
+    <string name="tile_failed_port">Port in use</string>
 
     <string name="market_version_label">Market version</string>
     <string name="market_version_summary">

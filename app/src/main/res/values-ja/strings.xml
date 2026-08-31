@@ -27,7 +27,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">FTP サーバ</string>
     <string name="running_summary_stopped">ftp サーバの状態を切替</string>
     <string name="running_summary_started">開始しました %s</string>
-    <string name="running_summary_failed">FTP サーバが開始できません。ローカルネットワークに接続されていますか (wifi または ethernet)?</string>
+    <string name="running_summary_failed_no_network">FTP サーバが開始できません。ローカルネットワークに接続されていますか (wifi または ethernet)?</string>
     <string name="market_version_label">製品版</string>
     <string name="market_version_summary">
         この FTP サーバはデモ版です。

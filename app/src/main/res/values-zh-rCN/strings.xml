@@ -23,7 +23,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">正在运行</string>
     <string name="running_summary_stopped">开始 FTP server</string>
     <string name="running_summary_started">FTP server 运行于 %s 端口</string>
-    <string name="running_summary_failed">FTP server 启动失败，您尚未连接到 Wi-Fi 或以太网络？</string>
+    <string name="running_summary_failed_no_network">FTP server 启动失败，您尚未连接到 Wi-Fi 或以太网络？</string>
     <string name="market_version_label">市场版本</string>
     <string name="market_version_summary">欢迎使用 FTP Server Demo 版本。
         您可以通过在 Google Play 中购买 FTP Server 以支持开发者。

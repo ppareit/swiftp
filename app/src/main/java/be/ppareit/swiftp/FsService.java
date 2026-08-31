@@ -81,6 +81,11 @@ public class FsService extends Service implements Runnable {
     static public final String ACTION_STARTED = "be.ppareit.swiftp.FTPSERVER_STARTED";
     static public final String ACTION_STOPPED = "be.ppareit.swiftp.FTPSERVER_STOPPED";
     static public final String ACTION_FAILEDTOSTART = "be.ppareit.swiftp.FTPSERVER_FAILEDTOSTART";
+    // Which of the failures in {@link #run()} this was, so the listener can say useful
+    static public final String EXTRA_FAILURE = "be.ppareit.swiftp.EXTRA_FAILURE";
+    static public final int FAILURE_NO_NETWORK = 0;
+    static public final int FAILURE_MOBILE_ONLY = 1;
+    static public final int FAILURE_PORT = 2;
 
     protected static Thread serverThread = null;
     protected boolean shouldExit = false;
@@ -276,6 +281,12 @@ public class FsService extends Service implements Runnable {
         sendBroadcast(new Intent(action).setPackage(getPackageName()));
     }
 
+    private void broadcastFailure(int failure) {
+        sendBroadcast(new Intent(ACTION_FAILEDTOSTART)
+                .setPackage(getPackageName())
+                .putExtra(EXTRA_FAILURE, failure));
+    }
+
     // This opens a listening socket on all interfaces.
     void setupListener() throws IOException {
         initServerSocket();
@@ -307,7 +318,10 @@ public class FsService extends Service implements Runnable {
         if (!LocalNetwork.isAvailable()) {
             Log.w(TAG, "run: There is no local network, bailing out");
             stopSelf();
-            broadcastAction(ACTION_FAILEDTOSTART);
+            // Mobile data is worth naming: the user sees a working connection and an FTP refuses
+            broadcastFailure(
+                    LocalNetwork.onlyMobileDataIsUp() ? FAILURE_MOBILE_ONLY : FAILURE_NO_NETWORK
+            );
             return;
         }
 
@@ -319,7 +333,7 @@ public class FsService extends Service implements Runnable {
         } catch (IOException e) {
             Log.w(TAG, "run: Unable to open port, bailing out.");
             stopSelf();
-            broadcastAction(ACTION_FAILEDTOSTART);
+            broadcastFailure(FAILURE_PORT);
             return;
         }
 

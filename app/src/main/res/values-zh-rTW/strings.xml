@@ -22,7 +22,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">切換FTP伺服器的狀態</string>
     <string name="running_summary_started">位於埠 %s</string>
-    <string name="running_summary_failed">
+    <string name="running_summary_failed_no_network">
         無法啟動FTP伺服器，是否未連接到本地網絡(Wi-Fi或乙太網路)？
     </string>
     <string name="running_summary_failed_to_get_ip_address">

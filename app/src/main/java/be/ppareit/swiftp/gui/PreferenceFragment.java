@@ -100,6 +100,12 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
 
     private Handler mHandler = new Handler();
 
+    /** How long the reason a start failed stays in the switch summary. */
+    private static final long FAILURE_SHOWN_MS = 10_000;
+
+    /** The last start failure to show in the switch summary, or 0 for none. */
+    private int failureSummary = 0;
+
     private static int showScreen = 0;
     private static final int SHOW_ADVANCED_SCREEN = 1;
 
@@ -1003,6 +1009,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         if (runningPref == null) return;
         if (FsService.isRunning()) {
             runningPref.setChecked(true);
+            failureSummary = 0;
             // Fill in the FTP server address
             InetAddress address = FsService.getLocalInetAddress();
             if (address == null) {
@@ -1017,7 +1024,17 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             runningPref.setSummary(summary);
         } else {
             runningPref.setChecked(false);
-            runningPref.setSummary(R.string.running_summary_stopped);
+            if (failureSummary != 0) {
+                runningPref.setSummary(failureSummary);
+                // Cleared on a timer rather than on the next broadcast, because the next
+                // broadcast is the ACTION_STOPPED that trails the failure.
+                mHandler.postDelayed(() -> {
+                    failureSummary = 0;
+                    updateRunningState();
+                }, FAILURE_SHOWN_MS);
+            } else {
+                runningPref.setSummary(R.string.running_summary_stopped);
+            }
         }
     }
 
@@ -1035,21 +1052,32 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             }
             // remove all pending callbacks
             mHandler.removeCallbacksAndMessages(null);
-            // action will be ACTION_STARTED or ACTION_STOPPED
-            updateRunningState();
-            // or it might be ACTION_FAILEDTOSTART
-            final TwoStatePreference runningPref = findPref("running_switch");
+            // Record the reason before repainting: run() calls stopSelf() before it
+            // broadcasts, so ACTION_STOPPED lands a few milliseconds behind
+            // ACTION_FAILEDTOSTART and repaints over it.
             if (intent.getAction().equals(FsService.ACTION_FAILEDTOSTART)) {
-                runningPref.setChecked(false);
-                mHandler.postDelayed(
-                        () -> runningPref.setSummary(R.string.running_summary_failed),
-                        100);
-                mHandler.postDelayed(
-                        () -> runningPref.setSummary(R.string.running_summary_stopped),
-                        5000);
+                failureSummary = summaryFor(intent);
             }
+            // action will be ACTION_STARTED, ACTION_STOPPED or ACTION_FAILEDTOSTART
+            updateRunningState();
         }
     };
+
+    /**
+     * "Failed to start" on its own sends people looking for a bug in the app. Say which of the
+     * three it was, above all mobile data, where the phone has a connection that plainly works
+     * and no client can use it.
+     */
+    private static int summaryFor(Intent intent) {
+        switch (intent.getIntExtra(FsService.EXTRA_FAILURE, FsService.FAILURE_NO_NETWORK)) {
+            case FsService.FAILURE_MOBILE_ONLY:
+                return R.string.running_summary_failed_mobile_only;
+            case FsService.FAILURE_PORT:
+                return R.string.running_summary_failed_port;
+            default:
+                return R.string.running_summary_failed_no_network;
+        }
+    }
 
     @SuppressWarnings({"unchecked"})
     protected <T extends Preference> T findPref(CharSequence key) {

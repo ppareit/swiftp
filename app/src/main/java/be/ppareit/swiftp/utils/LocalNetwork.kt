@@ -42,8 +42,10 @@ object LocalNetwork {
         // default, and that is exactly when it must not be mistaken for a LAN.
         @Suppress("DEPRECATION")
         for (network in cm.allNetworks) {
-            val capabilities = cm.getNetworkCapabilities(network) ?: continue
-            if (!capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) continue
+            val capabilities = cm.getNetworkCapabilities(network)
+                ?: continue
+            if (!capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
+                continue
             cm.getLinkProperties(network)?.interfaceName?.let { names.add(it) }
         }
         return names
@@ -59,20 +61,45 @@ object LocalNetwork {
         return serveable.isNotEmpty()
     }
 
+    /**
+     * True when mobile data is the only thing up. Nobody can reach the server there.
+     *
+     * This is a refusal a user is likely to read as a bug: the phone plainly has a working
+     * connection. Thus the UI needs to show information about this!
+     *
+     * Asked only after [isAvailable] has said no.
+     */
+    @JvmStatic
+    fun onlyMobileDataIsUp(): Boolean {
+        val reachable = interfaces().filter { it.isReachableLink() }
+        return reachable.isNotEmpty() && reachable.all { isMobile(it.name) }
+    }
+
     /** Every interface a client could reach us over, in enumeration order. */
-    private fun serveableInterfaces(): List<String> {
-        val all = try {
-            Collections.list(NetworkInterface.getNetworkInterfaces())
-        } catch (e: SocketException) {
-            Log.w(TAG, "Unable to enumerate the network interfaces", e)
-            return emptyList()
-        }
-        return all.filter { it.canServe() }.map { it.name }
+    private fun serveableInterfaces(): List<String> =
+        interfaces().filter { it.canServe() }.map { it.name }
+
+    private fun interfaces(): List<NetworkInterface> = try {
+        Collections.list(NetworkInterface.getNetworkInterfaces())
+    } catch (e: SocketException) {
+        Log.w(TAG, "Unable to enumerate the network interfaces", e)
+        emptyList()
     }
 
     /** This is the nice way to use canServe, on NetworkInterface, but untestable */
     private fun NetworkInterface.canServe(): Boolean = try {
-        canServeOn(name, isUp, isLoopback, Collections.list(inetAddresses), cellularInterfaces())
+        canServeOn(
+            name, isUp, isLoopback,
+            Collections.list(inetAddresses), cellularInterfaces()
+        )
+    } catch (e: SocketException) {
+        Log.w(TAG, "Skipping $name, it cannot be queried", e)
+        false
+    }
+
+    /** The same, for the link itself, whatever it is named. */
+    private fun NetworkInterface.isReachableLink(): Boolean = try {
+        isReachableLink(isUp, isLoopback, Collections.list(inetAddresses))
     } catch (e: SocketException) {
         Log.w(TAG, "Skipping $name, it cannot be queried", e)
         false
@@ -83,15 +110,24 @@ object LocalNetwork {
     fun canServeOn(
         name: String?, isUp: Boolean, isLoopback: Boolean,
         addresses: List<InetAddress>, cellular: Set<String>
-    ): Boolean {
+    ): Boolean = isReachableLink(isUp, isLoopback, addresses) && !isMobile(name, cellular)
+
+    /**
+     * A link a client could open a connection over, before asking what it is called. Mobile data
+     * passes this and still cannot serve, which is what separates the two refusals.
+     */
+    @JvmStatic
+    fun isReachableLink(isUp: Boolean, isLoopback: Boolean, addresses: List<InetAddress>): Boolean {
         if (!isUp || isLoopback) return false
-        if (isMobile(name, cellular)) return false
         return addresses.any { isServeableAddress(it) }
     }
 
     @JvmStatic
     fun isMobile(name: String?, cellular: Set<String>): Boolean =
         name != null && (cellular.contains(name) || MOBILE.matches(name))
+
+    /** The same, asking the platform which interfaces are cellular. */
+    private fun isMobile(name: String?): Boolean = isMobile(name, cellularInterfaces())
 
     /**
      * A LAN address a client can dial. Site local IPv4 only: link local (169.254) means the

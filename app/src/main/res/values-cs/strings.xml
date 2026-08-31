@@ -26,7 +26,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">Přepnout stav serveru FTP</string>
     <string name="running_summary_started">na %s</string>
-    <string name="running_summary_failed">
+    <string name="running_summary_failed_no_network">
         Nepodařilo se spustit FTP server, nejste připojeni k místní síti (Wi-Fi nebo Ethernet)?
     </string>
     <string name="running_summary_failed_to_get_ip_address">

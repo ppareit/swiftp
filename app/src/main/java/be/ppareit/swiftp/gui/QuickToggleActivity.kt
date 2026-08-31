@@ -89,10 +89,7 @@ class QuickToggleActivity : Activity() {
                         toast(getString(R.string.toast_server_stopped), Toast.LENGTH_SHORT)
 
                     FsService.ACTION_FAILEDTOSTART ->
-                        toast(
-                            getString(R.string.running_summary_failed),
-                            Toast.LENGTH_LONG
-                        )
+                        toast(getString(failureMessage(intent)), Toast.LENGTH_LONG)
                 }
                 leave()
             }
@@ -112,6 +109,14 @@ class QuickToggleActivity : Activity() {
     private fun toast(text: CharSequence, duration: Int) {
         Toast.makeText(this, text, duration).show()
     }
+
+    /** Which of the three failures it was; "failed to start" alone reads like a bug in the app. */
+    private fun failureMessage(intent: Intent) =
+        when (intent.getIntExtra(FsService.EXTRA_FAILURE, FsService.FAILURE_NO_NETWORK)) {
+            FsService.FAILURE_MOBILE_ONLY -> R.string.running_summary_failed_mobile_only
+            FsService.FAILURE_PORT -> R.string.running_summary_failed_port
+            else -> R.string.running_summary_failed_no_network
+        }
 
     /**
      * Back to the launcher, the toggle never has anything of its own to show.

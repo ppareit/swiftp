@@ -26,7 +26,7 @@ së bashku me SwiFTP. Nëse jo, shihni <http://www.gnu.org/licenses/>.
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">Ndryshoni gjendjen e serverit ftp</string>
     <string name="running_summary_started">në %s</string>
-    <string name="running_summary_failed">
+    <string name="running_summary_failed_no_network">
         Dështoi te nis serverit FTP, nuk ka lidhje me rrjetin lokal (wifi ose ethernet)?
     </string>
     <string name="running_summary_failed_to_get_ip_address">

@@ -27,7 +27,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">FTP Εξυπηρετητής</string>
     <string name="running_summary_stopped">Εναλλαγή της κατάστασης του εφ-τι-πι εξυπηρετητή</string>
     <string name="running_summary_started">στην %s</string>
-    <string name="running_summary_failed">
+    <string name="running_summary_failed_no_network">
     Αποτυχία εκκίνησης του ΕφΤιΠι εξυπηρετητή. Μήπως δεν είναι ενεργή η σύνδεση με το τοπικό δίκτυο (γουάι-φάι ή έθερνετ) ;</string>
     <string name="running_summary_failed_to_get_ip_address">
     Αποτυχία εκκίνησης του ΕφΤιΠί εξυπηρετητή. Αδυναμία λήψης της IP διεύθυνσης</string>

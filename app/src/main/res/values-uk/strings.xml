@@ -25,7 +25,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">Запуск</string>
     <string name="running_summary_stopped">Увімкнути FTP сервер</string>
     <string name="running_summary_started">Адреса: %s</string>
-    <string name="running_summary_failed">Неможливо увімкнути FTP сервер. Перевірте підключення до мережі (wifi або ethernet).</string>
+    <string name="running_summary_failed_no_network">Неможливо увімкнути FTP сервер. Перевірте підключення до мережі (wifi або ethernet).</string>
     <string name="market_version_label">Поточна версія</string>
     <string name="market_version_summary">
 	    Встановлено демонстраційну версію програми.
