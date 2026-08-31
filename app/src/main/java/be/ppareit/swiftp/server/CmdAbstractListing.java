@@ -72,7 +72,7 @@ public abstract class CmdAbstractListing extends FtpCmd {
      * folders, one path segment at a time, so a login chrooted above them sees them all.
      */
     private String listEntriesVirtual(StringBuilder response, VirtualDir dir) {
-        for (String name : AllowedFolders.index().childNamesUnder(dir.getPath())) {
+        for (String name : AllowedFolders.childNamesUnder(dir.getPath())) {
             final FileUtil.Gen child = FileUtil.createGenFromFile(new File(dir.getPath(), name));
             final String line = makeLsString(child);
             if (line != null) response.append(line);

@@ -62,7 +62,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break storing;
             }
-            if (Util.useScopedStorage() && AllowedFolders.index().isVirtual(storeFile.getParent())) {
+            if (Util.useScopedStorage() && AllowedFolders.isVirtual(storeFile.getParent())) {
                 // We can't store in a virtual folder, tell the user
                 errString = "553 Can't store here, store inside one of the allowed folders\r\n";
                 break storing;

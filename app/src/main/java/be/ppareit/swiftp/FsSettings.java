@@ -129,7 +129,7 @@ public class FsSettings {
 
     public static File getDefaultChrootDir() {
         if (Util.useScopedStorage()) {
-            final String chroot = AllowedFolders.index().defaultChroot();
+            final String chroot = AllowedFolders.defaultChroot();
             if (chroot != null && !chroot.isEmpty()) return new File(chroot);
             // Nothing granted yet. Fall through, so the UI still shows a sensible path.
         }

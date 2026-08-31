@@ -78,7 +78,7 @@ public class ChrootPicker {
         if (isShowingFolderPicker) return;
 
         final List<String> choices = new ArrayList<>();
-        final String root = AllowedFolders.index().defaultChroot();
+        final String root = AllowedFolders.defaultChroot();
         if (root != null && !AllowedFolders.paths().contains(root)) choices.add(root);
         choices.addAll(AllowedFolders.paths());
 

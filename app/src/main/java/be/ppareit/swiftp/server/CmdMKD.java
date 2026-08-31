@@ -62,7 +62,7 @@ public class CmdMKD extends FtpCmd implements Runnable {
                 errString = "550 Already exists\r\n";
                 break mainblock;
             }
-            if (Util.useScopedStorage() && AllowedFolders.index().isVirtual(toCreate.getParent())) {
+            if (Util.useScopedStorage() && AllowedFolders.isVirtual(toCreate.getParent())) {
                 // we are in a virtual folder
                 errString = "550 Can't create a folder here, add it in the app instead\r\n";
                 break mainblock;

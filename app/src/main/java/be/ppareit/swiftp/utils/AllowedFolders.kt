@@ -61,6 +61,29 @@ object AllowedFolders {
     @JvmStatic
     fun names(): List<String> = all().map { it.name }
 
+    /**
+     * The granted folder holding this path, or null when no folder does. When folders overlap
+     * the most specific one wins.
+     */
+    @JvmStatic
+    fun containing(path: String?): StorageTree? = index().containing(path)
+
+    /** The granted folder a raw SAF document id belongs to, for callers that hold an id. */
+    @JvmStatic
+    fun owningDocumentId(documentId: String?): StorageTree? = index().owningDocumentId(documentId)
+
+    /** True when this directory is above at least one granted folder without being inside one. */
+    @JvmStatic
+    fun isVirtual(dir: String?): Boolean = index().isVirtual(dir)
+
+    /** The entries to show for a virtual directory: the granted folders below it. */
+    @JvmStatic
+    fun childNamesUnder(dir: String?): List<String> = index().childNamesUnder(dir)
+
+    /** The chroot a user should get by default, or null when nothing is granted. */
+    @JvmStatic
+    fun defaultChroot(): String? = index().defaultChroot()
+
     /** The tree URI a folder came from, needed to build a document URI under it. */
     @JvmStatic
     fun uriFor(tree: StorageTree?): Uri? =

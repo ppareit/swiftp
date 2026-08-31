@@ -791,7 +791,7 @@ public abstract class FileUtil {
      */
     public static DocumentFile getDocumentFileForPath(String path) {
         if (path == null) return null;
-        final StorageTree tree = AllowedFolders.index().containing(path);
+        final StorageTree tree = AllowedFolders.containing(path);
         if (tree == null) return null;
         return documentFileIn(tree, tree.documentIdFor(path));
     }
@@ -803,7 +803,7 @@ public abstract class FileUtil {
      */
     public static DocumentFile getDocumentFileForId(String documentId) {
         if (documentId == null) return null;
-        return documentFileIn(AllowedFolders.index().owningDocumentId(documentId), documentId);
+        return documentFileIn(AllowedFolders.owningDocumentId(documentId), documentId);
     }
 
     private static DocumentFile documentFileIn(StorageTree tree, String documentId) {
@@ -976,7 +976,7 @@ public abstract class FileUtil {
      * */
     public static Gen createGenFromFile(File f) {
         if (Util.useScopedStorage()) {
-            if (AllowedFolders.index().isVirtual(f.getPath())) {
+            if (AllowedFolders.isVirtual(f.getPath())) {
                 return new Gen<>(new VirtualDir(f.getPath(), virtualDirTime(f)));
             }
             return FileUtil.convertDocumentFileToGen(FileUtil.getDocumentFileFromFileScopedStorage(f));
