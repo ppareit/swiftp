@@ -354,7 +354,8 @@ public class FsService extends Service implements Runnable {
         Log.i(TAG, "Ftp Server up and running, broadcasting ACTION_STARTED");
         broadcastAction(ACTION_STARTED);
 
-        socketWatcher = new TcpListener(listenSocket, this, listenSocketSecure);
+        socketWatcher = new TcpListener(listenSocket, this, listenSocketSecure,
+                AndroidServerSettings.INSTANCE);
         socketWatcher.start();
     }
 

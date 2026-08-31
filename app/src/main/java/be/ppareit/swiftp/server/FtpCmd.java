@@ -26,8 +26,8 @@ import androidx.documentfile.provider.DocumentFile;
 import java.io.File;
 import java.lang.reflect.Constructor;
 
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.utils.FileUtil;
+import be.ppareit.swiftp.utils.Logging;
 
 public abstract class FtpCmd implements Runnable {
     private static final String TAG = FtpCmd.class.getSimpleName();
@@ -77,6 +77,16 @@ public abstract class FtpCmd implements Runnable {
 
     public FtpCmd(SessionThread sessionThread) {
         this.sessionThread = sessionThread;
+    }
+
+    /** The settings this command's session answers from. */
+    protected Settings settings() {
+        return sessionThread.settings();
+    }
+
+    /** The connection log for this command's session. */
+    protected Logging logging() {
+        return sessionThread.getLogging();
     }
 
     @Override
@@ -139,7 +149,7 @@ public abstract class FtpCmd implements Runnable {
 
         // Used for FTPS encryption only setting.
         // Only affects explicit connection.
-        final boolean forceAUTHTLS = FsSettings.isEncryptionOnlyEnabled();
+        final boolean forceAUTHTLS = session.settings().isEncryptionOnlyEnabled();
         final boolean socketNotEncrypted = session.getIsPlainSocket();
         if (forceAUTHTLS && socketNotEncrypted) {
             // When enabled, client has to use AUTH command and make the connection encrypted.

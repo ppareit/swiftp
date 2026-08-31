@@ -21,9 +21,7 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.utils.FTPSSockets;
-import be.ppareit.swiftp.utils.Logging;
 
 public class CmdFEAT extends FtpCmd implements Runnable {
     private static final String TAG = CmdFEAT.class.getSimpleName();
@@ -35,8 +33,8 @@ public class CmdFEAT extends FtpCmd implements Runnable {
     @Override
     public void run() {
 
-        if (FsSettings.isFeatDisabled()) {
-            new Logging().appendLog("FEAT is disabled");
+        if (settings().isFeatDisabled()) {
+            logging().appendLog("FEAT is disabled");
             sessionThread.writeString("502 Command not implemented\r\n");
             return;
         }

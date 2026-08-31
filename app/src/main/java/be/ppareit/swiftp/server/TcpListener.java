@@ -29,7 +29,6 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 
 import be.ppareit.swiftp.FsService;
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.utils.IPSecurity;
 import be.ppareit.swiftp.utils.Logging;
 
@@ -45,12 +44,16 @@ public class TcpListener extends Thread {
     private int loopExControlPlain = 0;
     private int loopExControlTLS = 0;
 
-    private final Logging logging = new Logging();
+    private final Settings settings;
+    private final Logging logging;
 
-    public TcpListener(ServerSocket listenSocket, FsService ftpServerService, SSLServerSocket sslServerSocket) {
+    public TcpListener(ServerSocket listenSocket, FsService ftpServerService,
+                       SSLServerSocket sslServerSocket, Settings settings) {
         this.listenSSLSocket = sslServerSocket;
         this.listenSocket = listenSocket;
         this.ftpServerService = ftpServerService;
+        this.settings = settings;
+        this.logging = new Logging(settings.isLoggingEnabled());
     }
 
     public void quit() {
@@ -70,7 +73,7 @@ public class TcpListener extends Thread {
 
     private void listenPlainSocket() {
         if (listenSocket == null) return;
-        if (FsSettings.isImplicitOnly()) return;
+        if (settings.isImplicitOnly()) return;
 
         new Thread(() -> {
             try {
@@ -122,7 +125,7 @@ public class TcpListener extends Thread {
 
     private void listenSSLSocket() {
         if (listenSSLSocket == null) return;
-        if (!FsSettings.isImplicitUsed()) return;
+        if (!settings.isImplicitUsed()) return;
 
         new Thread(() -> {
             SSLSocket clientSSLSocket;
@@ -203,7 +206,8 @@ public class TcpListener extends Thread {
     private void spawnSession(Socket clientSocket, SSLSocket sslClientSocket) {
         Log.i(TAG, "New connection, spawned thread");
         ftpServerService.createConnWakeLock();
-        SessionThread newSession = new SessionThread(clientSocket, new LocalDataSocket(), sslClientSocket);
+        SessionThread newSession = new SessionThread(clientSocket, new LocalDataSocket(settings), sslClientSocket,
+                settings);
         newSession.start();
         ftpServerService.registerSessionThread(newSession);
     }

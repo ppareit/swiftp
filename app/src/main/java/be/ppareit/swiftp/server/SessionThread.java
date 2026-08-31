@@ -40,7 +40,6 @@ import javax.net.ssl.SSLSocket;
 
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsService;
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.utils.Logging;
@@ -60,8 +59,9 @@ public class SessionThread extends Thread {
     private boolean binaryMode = false;
     private String userName = null;  // username that the client sends
     private boolean userAuthenticated = false;
-    private File workingDir = FsSettings.getDefaultChrootDir();
-    private File chrootDir = workingDir;
+    private final Settings settings;
+    private File workingDir;
+    private File chrootDir;
     private Socket dataSocket = null; // PASV plain data socket
     private SSLSocket sslDataSocket = null; // PASV secure data socket
     private File renameFrom = null;
@@ -77,17 +77,38 @@ public class SessionThread extends Thread {
     private String[] formatTypes = {"Size", "Modify", "Type", "Perm"}; // types option of MLST/MLSD
     private int authFails = 0;
     private String hashingAlgorithm = "SHA-1";
-    private final Logging logging = new Logging();
+    private final Logging logging;
     private boolean pbszEnabled = false;
     // Set by EPSV ALL only. RFC 2428 s4: once a client has said EPSV ALL, the
     // server must refuse every other way of setting up a data connection
     private boolean epsvAllRequested = false;
 
-    public SessionThread(Socket socket, LocalDataSocket dataSocket, SSLSocket sslSocket) {
+    public SessionThread(Socket socket, LocalDataSocket dataSocket, SSLSocket sslSocket,
+                         Settings settings) {
         cmdSocket = socket;
         cmdSSLSocket = sslSocket;
         localDataSocket = dataSocket; // not an actual socket itself so name is misleading
         sendWelcomeBanner = true;
+        this.settings = settings;
+        // Not field initializers: both of these need the settings, which arrive here.
+        workingDir = settings.getDefaultChrootDir();
+        chrootDir = workingDir;
+        logging = new Logging(settings.isLoggingEnabled());
+    }
+
+    /** The settings this session answers from. Commands read theirs off their session. */
+    public Settings settings() {
+        return settings;
+    }
+
+    /**
+     * The connection log for this session.
+     *
+     * One per session rather than one per command: the session already builds it, and whether
+     * logging is on is settled when the session starts rather than re-read on every verb.
+     */
+    public Logging getLogging() {
+        return logging;
     }
 
     /**
@@ -359,8 +380,8 @@ public class SessionThread extends Thread {
         Cat.i("SessionThread started");
         // Give client a welcome
         if (sendWelcomeBanner) {
-            if (FsSettings.isBannerDisabled()) {
-                new Logging().appendLog("Banner is disabled");
+            if (settings.isBannerDisabled()) {
+                logging.appendLog("Banner is disabled");
                 writeString("220 ready\r\n");
             }
             else writeString("220 SwiFTP " + App.getVersion() + " ready\r\n");
@@ -526,14 +547,14 @@ public class SessionThread extends Thread {
      * @return true if we should allow FTP operations
      */
     public boolean isAuthenticated() {
-        return userAuthenticated || FsSettings.allowAnonymous();
+        return userAuthenticated || settings.allowAnonymous();
     }
 
     /**
      * @return true only when we are anonymously logged in
      */
     public boolean isAnonymouslyLoggedIn() {
-        return !userAuthenticated && FsSettings.allowAnonymous();
+        return !userAuthenticated && settings.allowAnonymous();
     }
 
     /**
@@ -610,7 +631,7 @@ public class SessionThread extends Thread {
     }
 
     public File getChrootDir() {
-        return chrootDir.isDirectory() ? chrootDir : FsSettings.getDefaultChrootDir();
+        return chrootDir.isDirectory() ? chrootDir : settings.getDefaultChrootDir();
     }
 
     public void setChrootDir(String chrootPath) {

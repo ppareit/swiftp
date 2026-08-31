@@ -21,12 +21,10 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.AnonymousLimit;
 import be.ppareit.swiftp.utils.IPSecurity;
-import be.ppareit.swiftp.utils.Logging;
 
 public class CmdPASS extends FtpCmd implements Runnable {
     private static final String TAG = CmdPASS.class.getSimpleName();
@@ -48,12 +46,11 @@ public class CmdPASS extends FtpCmd implements Runnable {
             sessionThread.writeString("503 Must send USER first\r\n");
             return;
         }
-        if (attemptUsername.equals("anonymous") && FsSettings.allowAnonymous()) {
-            final int anonMaxCon = FsSettings.getAnonMaxConNumber();
-            Logging logging = new Logging();
+        if (attemptUsername.equals("anonymous") && settings().allowAnonymous()) {
+            final int anonMaxCon = settings().getAnonMaxConNumber();
             final int newCount = AnonymousLimit.incrementAndGet();
-            logging.appendLog("anon CURRENT client conn count: " + (newCount - 1));
-            logging.appendLog("anon MAX conn count: " + anonMaxCon);
+            logging().appendLog("anon CURRENT client conn count: " + (newCount - 1));
+            logging().appendLog("anon MAX conn count: " + anonMaxCon);
             if (newCount > anonMaxCon) {
                 Log.i(TAG, "Failed authentication, too many anonymous users connected.");
                 Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
@@ -64,14 +61,14 @@ public class CmdPASS extends FtpCmd implements Runnable {
             } else {
                 Log.i(TAG, "Guest logged in with email: " + attemptPassword);
                 sessionThread.writeString("230 Guest login ok, read only access.\r\n");
-                final String anonChroot = FsSettings.getAnonChroot();
+                final String anonChroot = settings().getAnonChroot();
                 if (!anonChroot.isEmpty()) {
                     sessionThread.setChrootDir(anonChroot);
                 }
             }
             return;
         }
-        FtpUser user = FsSettings.getUser(attemptUsername);
+        FtpUser user = settings().getUser(attemptUsername);
         if (user == null) {
             Log.i(TAG, "Failed authentication, username does not exist!");
             Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack

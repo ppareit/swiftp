@@ -21,9 +21,7 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.utils.FTPSSockets;
-import be.ppareit.swiftp.utils.Logging;
 
 public class CmdAUTH extends FtpCmd implements Runnable {
     private static final String TAG = CmdAUTH.class.getSimpleName();
@@ -42,7 +40,7 @@ public class CmdAUTH extends FtpCmd implements Runnable {
         final String mechanism;
         if (param.contains("TLS")) {
             mechanism = "TLS";
-        } else if (param.contains("SSL") && FsSettings.useSSL()) {
+        } else if (param.contains("SSL") && settings().useSSL()) {
             mechanism = "SSL";
         } else {
             mechanism = null;
@@ -56,7 +54,7 @@ public class CmdAUTH extends FtpCmd implements Runnable {
             // negotiation as fatal cannot then connect at all, plain FTP included.
             if (!FTPSSockets.checkKeyStore()) {
                 sessionThread.writeString("431 No certificate is configured for FTPS\r\n");
-                new Logging().appendLog("AUTH refused: no certificate is configured");
+                logging().appendLog("AUTH refused: no certificate is configured");
                 Log.i(TAG, "AUTH refused: no usable keystore, so no certificate to offer");
                 return;
             }

@@ -26,6 +26,8 @@ public class FtpUser {
         mPassword = password;
 
         final File rootPath = new File(chroot);
+        // Not Settings: Gson and the user list screen build users, and neither has a session to
+        // take one from. This is the one server-package read of FsSettings that is left.
         mChroot = rootPath.isDirectory() ? chroot : FsSettings.getDefaultChrootDir().getPath();
         mUriString = uriString;
     }

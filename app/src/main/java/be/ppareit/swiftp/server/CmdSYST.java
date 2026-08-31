@@ -21,8 +21,6 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
-import be.ppareit.swiftp.FsSettings;
-import be.ppareit.swiftp.utils.Logging;
 
 public class CmdSYST extends FtpCmd implements Runnable {
     private static final String TAG = CmdSYST.class.getSimpleName();
@@ -38,8 +36,8 @@ public class CmdSYST extends FtpCmd implements Runnable {
     @Override
     public void run() {
 
-        if (FsSettings.isSystDisabled()) {
-            new Logging().appendLog("SYST is disabled");
+        if (settings().isSystDisabled()) {
+            logging().appendLog("SYST is disabled");
             sessionThread.writeString("502 Command not implemented\r\n");
             return;
         }

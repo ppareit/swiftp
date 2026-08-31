@@ -34,7 +34,6 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 
 import be.ppareit.swiftp.FsService;
-import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.utils.FTPSSockets;
 import be.ppareit.swiftp.utils.Logging;
 
@@ -56,11 +55,14 @@ public class LocalDataSocket {
     private int remotePort;
     private Inet6Address remote6Address = null;
     private int remote6Port;
-    private final Logging logging = new Logging();
+    private final Settings settings;
+    private final Logging logging;
 
     private final FTPSSockets ftpsSockets = new FTPSSockets();
 
-    public LocalDataSocket() {
+    public LocalDataSocket(Settings settings) {
+        this.settings = settings;
+        this.logging = new Logging(settings.isLoggingEnabled());
         clearState();
     }
 
@@ -102,11 +104,11 @@ public class LocalDataSocket {
         try {
             // Listen on any port (port parameter 0)
             if (ssl) {
-                sslServer = ftpsSockets.createSSLServerSocket();
+                sslServer = ftpsSockets.createSSLServerSocket(getNewPort(settings));
                 Log.d(TAG, "Data socket pasv() listen successful");
                 return sslServer.getLocalPort();
             }
-            server = new ServerSocket(getNewPort(), TCP_CONNECTION_BACKLOG);
+            server = new ServerSocket(getNewPort(settings), TCP_CONNECTION_BACKLOG);
             Log.d(TAG, "Data socket pasv() listen successful");
             return server.getLocalPort();
         } catch (Exception e) {
@@ -118,7 +120,7 @@ public class LocalDataSocket {
 
     public int onEpsvPlain(InetAddress address) {
         try {
-            server = new ServerSocket(getNewPort(), TCP_CONNECTION_BACKLOG, address);
+            server = new ServerSocket(getNewPort(settings), TCP_CONNECTION_BACKLOG, address);
             Log.d(TAG, "Data socket pasv() listen successful");
             return server.getLocalPort();
         } catch (Exception e) {
@@ -132,7 +134,7 @@ public class LocalDataSocket {
         if (ssl) {
             try {
                 // Listen on any port (port parameter 0)
-                sslServer = ftpsSockets.createSSLServerSocketEpsv(address);
+                sslServer = ftpsSockets.createSSLServerSocketEpsv(address, getNewPort(settings));
                 Log.d(TAG, "Data socket epsv() listen successful");
                 return sslServer.getLocalPort();
             } catch (Exception e) {
@@ -153,11 +155,14 @@ public class LocalDataSocket {
      * high field set means no lower bound and low equal to high pins that single
      * port.
      *
+     * Static, and told its settings, because the socket factory in FTPSSockets needs a port
+     * too and has no session to take one from.
+     *
      * @return the port to bind, or 0 to let the system choose.
      */
-    public static int getNewPort() {
-        int low = FsSettings.getPortRangeLow();
-        int high = FsSettings.getPortRangeHigh();
+    public static int getNewPort(Settings settings) {
+        int low = settings.getPortRangeLow();
+        int high = settings.getPortRangeHigh();
         if (low <= 0 && high <= 0) {
             return 0;
         }

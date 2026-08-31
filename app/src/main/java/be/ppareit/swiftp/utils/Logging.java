@@ -28,8 +28,19 @@ public class Logging {
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd:hh:mm:ss.SSS", Locale.getDefault());
     private boolean logging = true;
 
+    /** Asks the preferences whether logging is on. For callers with no settings to hand. */
     public Logging() {
         initializeLogging();
+    }
+
+    /**
+     * Told whether logging is on, rather than asking. The server package takes this one, so a
+     * session can be built without the preferences behind it. See
+     * {@link be.ppareit.swiftp.server.Settings}.
+     */
+    public Logging(boolean enabled) {
+        logging = enabled;
+        Cat.d("Logging enabled: " + logging);
     }
 
     public void initializeLogging() {

@@ -350,10 +350,10 @@ public class FTPSSockets {
         return sslSocket;
     }
 
-    public SSLServerSocket createSSLServerSocketEpsv(InetAddress address) throws IOException {
+    public SSLServerSocket createSSLServerSocketEpsv(InetAddress address, int port) throws IOException {
         SSLServerSocket sslServerSocket;
         sslServerSocket = (SSLServerSocket) FTPSSockets.getServerSocketFactory().createServerSocket(
-                LocalDataSocket.getNewPort(),
+                port,
                 LocalDataSocket.TCP_CONNECTION_BACKLOG,
                 address
         );
@@ -366,11 +366,11 @@ public class FTPSSockets {
         return sslServerSocket;
     }
 
-    public SSLServerSocket createSSLServerSocket() throws IOException {
+    public SSLServerSocket createSSLServerSocket(int port) throws IOException {
         SSLServerSocket sslServerSocket;
         //SSLSocketFactory factory = SSLContext.getDefault().getSocketFactory();
         sslServerSocket = (SSLServerSocket) FTPSSockets.getServerSocketFactory().createServerSocket(
-                LocalDataSocket.getNewPort(),
+                port,
                 LocalDataSocket.TCP_CONNECTION_BACKLOG
         );
         sslServerSocket.setReuseAddress(true);
