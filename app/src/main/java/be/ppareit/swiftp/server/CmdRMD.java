@@ -50,7 +50,7 @@ public class CmdRMD extends FtpCmd implements Runnable {
         if (Util.useScopedStorage()) {
             toRemove = inputPathToChrootedFile(sessionThread.getChrootDir(),
                     sessionThread.getWorkingDir(), param);
-            DocumentFile docFileToRemove = FileUtil.getDocumentFile(toRemove.getPath());
+            DocumentFile docFileToRemove = FileUtil.getDocumentFileForPath(toRemove.getPath());
 
             mainblock:
             {

@@ -48,7 +48,7 @@ public class CmdDELE extends FtpCmd implements Runnable {
                 sessionThread.getWorkingDir(), param);
 
         if (Util.useScopedStorage()) {
-            DocumentFile docStoreFile = FileUtil.getDocumentFile(storeFile.getPath());
+            DocumentFile docStoreFile = FileUtil.getDocumentFileForPath(storeFile.getPath());
             tryToDelete(new FileUtil.Gen(docStoreFile));
             return;
         }

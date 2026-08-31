@@ -103,7 +103,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
                         }
                         docStoreFile = FileUtil.mkfile(storeFile, mime);
                     } else {
-                        docStoreFile = FileUtil.getDocumentFile(storeFile.getPath());
+                        docStoreFile = FileUtil.getDocumentFileForPath(storeFile.getPath());
                     }
                     if (docStoreFile == null || !docStoreFile.exists()) {
                         errString = "451 Couldn't open file \"" + param + "\" aka \""

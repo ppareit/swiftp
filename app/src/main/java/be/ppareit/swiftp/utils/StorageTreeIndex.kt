@@ -20,8 +20,8 @@ class StorageTreeIndex(granted: List<StorageTree>?) {
 
     /**
      * The granted folder a raw SAF document id belongs to, for example "primary:Documents/notes.txt"
-     * belongs to a grant on "primary:Documents". Callers inside FileUtil pass document ids
-     * rather than paths.
+     * belongs to a grant on "primary:Documents". Only for callers holding an id; a File path
+     * is answered by [containing], also when the path holds a colon.
      */
     fun owningDocumentId(documentId: String?): StorageTree? =
         trees.filter { it.containsDocumentId(documentId) }.maxByOrNull { it.documentId.length }

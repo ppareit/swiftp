@@ -130,7 +130,7 @@ public abstract class FileUtil {
             // Fix: Store overwrite failure happening with internal Android 13 via the old code.
             // Failure happening with new multi user changes happening on sd card not compat with old.
             // Fix: Must move above File to make sure its deleted without incident.
-            final DocumentFile df = getDocumentFile(file.getPath());
+            final DocumentFile df = getDocumentFileForPath(file.getPath());
             if (df != null) return df.delete();
         }
 
@@ -171,7 +171,7 @@ public abstract class FileUtil {
             // Fix: Block is fix for rename file causing app to crash with latest DocumentFile changes.
             // Fix: Must move above File to make sure it happens without incident, as on Android 8,
             // File was successful but always returns false thus causing various issues.
-            DocumentFile df = getDocumentFile(source.getPath());
+            DocumentFile df = getDocumentFileForPath(source.getPath());
             if (df != null) {
                 try {
                     if (DocumentsContract.renameDocument(context.getContentResolver(), df.getUri(), target.getName()) != null) {
@@ -229,7 +229,7 @@ public abstract class FileUtil {
             // need to move above File.
             // Fix: Store overwrite failure happening with internal Android 13 via the old code.
             // Fix: Failure happening with new multi user changes happening on sd card not compat with old.
-            DocumentFile df = getDocumentFile(source.getPath());
+            DocumentFile df = getDocumentFileForPath(source.getPath());
             if (df != null) {
                 try {
                     if (DocumentsContract.renameDocument(context.getContentResolver(), df.getUri(), target.getName()) != null) {
@@ -311,10 +311,10 @@ public abstract class FileUtil {
             // Fix: error on File use in logcat by moving above.
             final String filename = file.getName();
             String parent = file.getPath();
-            DocumentFile child = getDocumentFile(file.getPath());
+            DocumentFile child = getDocumentFileForPath(file.getPath());
             if (child != null && child.exists()) return false;
             parent = parent.substring(0, parent.length() - filename.length());
-            DocumentFile documentFile = getDocumentFile(parent);
+            DocumentFile documentFile = getDocumentFileForPath(parent);
             if (documentFile != null) {
                 if (documentFile.createDirectory(filename) != null) {
                     return documentFile.exists();
@@ -397,7 +397,7 @@ public abstract class FileUtil {
             // file in a dir that has the # symbol.
             final String filename = file.getName();
             final String path = file.getPath();
-            DocumentFile parent = getDocumentFile(path.substring(0, path.lastIndexOf(File.separator)));
+            DocumentFile parent = getDocumentFileForPath(path.substring(0, path.lastIndexOf(File.separator)));
             if (parent != null) return parent.createFile(mime, filename);
         } catch (Exception e) {
             e.printStackTrace();
@@ -741,7 +741,7 @@ public abstract class FileUtil {
      * */
     public static DocumentFile getDocumentFileFromFileScopedStorage(File f) {
         if (Util.useScopedStorage()) {
-            return FileUtil.getDocumentFile(f.getPath());
+            return FileUtil.getDocumentFileForPath(f.getPath());
         }
         return null;
     }
@@ -786,23 +786,28 @@ public abstract class FileUtil {
     }
 
     /*
-     * Resolves a path, or a raw SAF document id, against the folders the user has allowed.
+     * Resolves a File path, eg "/storage/emulated/0/Documents/notes.txt", against the folders
+     * the user has allowed. A path stays a path here.
      */
-    public static DocumentFile getDocumentFile(String filename) {
-        if (filename == null) return null;
-        final StorageTreeIndex index = AllowedFolders.index();
+    public static DocumentFile getDocumentFileForPath(String path) {
+        if (path == null) return null;
+        final StorageTree tree = AllowedFolders.index().containing(path);
+        if (tree == null) return null;
+        return documentFileIn(tree, tree.documentIdFor(path));
+    }
 
-        final StorageTree tree;
-        final String documentId;
-        if (filename.contains(File.pathSeparator)) { // ":" means it is already a document id
-            tree = index.owningDocumentId(filename);
-            documentId = filename;
-        } else {
-            tree = index.containing(filename);
-            documentId = tree == null ? null : tree.documentIdFor(filename);
-        }
+    /*
+     * Resolves a raw SAF document id, eg "primary:Documents/notes.txt", against the folders the
+     * user has allowed. Only for callers that really hold an id; everything holding a path wants
+     * getDocumentFileForPath.
+     */
+    public static DocumentFile getDocumentFileForId(String documentId) {
+        if (documentId == null) return null;
+        return documentFileIn(AllowedFolders.index().owningDocumentId(documentId), documentId);
+    }
+
+    private static DocumentFile documentFileIn(StorageTree tree, String documentId) {
         if (tree == null || documentId == null) return null;
-
         final Uri treeUri = AllowedFolders.uriFor(tree);
         if (treeUri == null) return null;
         return getDocumentFileFromUri(
