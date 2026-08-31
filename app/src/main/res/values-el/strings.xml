@@ -112,10 +112,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Αποστολή ανατροφοδότησης</string>
     <string name="about">Σχετικά με</string>
 
-    <string name="autoconnect_label">Ρυθμίσεις αυτόματης σύνδεσης...</string>
-    <string name="autoconnect_summary">Επέλεξε τα δίκτυα γουάι-φάι, στα οποία να γίνεται αυτόματη σύνδεση</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">Ενεργοποίησε το γουάι-φάι, για να λάβεις ένα κατάστιχο με τα σημεία πρόσβασης</string>
-
     <string name="demo_while_paid_dialog_title">Ξεκίνησε η Δοκιμαστική, ενώ είναι εγκατεστημένη η πληρωμένη έκδοση</string>
     <string name="demo_while_paid_dialog_message">
     Σε ευχαριστούμε για την υποστήριξή σου στην ανάπτυξη της εφαρμογής.
@@ -124,7 +120,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     </string>
 
     <string name="storage_warning">Προειδοποίηση: ο αποθηκευτικός χώρος δεν είναι διαθέσιμος. Ίσως να θες να τον αποπροσαρτήσεις.</string>
-
 
     <!-- auto added strings by AS -->
     <string name="widget_name">Γραφικό Στοιχείο του FTP Server</string>
@@ -135,7 +130,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="about_description_text">Ο FTP Server (SwiFTP) σου επιτρέπει να τρέχεις έναν ΕφΤιΠί εξυπηρετητή, στην Ανντρόιντ συσκευή σου.</string>
     <string name="about_libraries_title">Βιβλιοθήκες</string>
     <string name="about_contributor_title">Συμμετέχοντες</string>
-
 
     <string name="battery_saver_setting_title">Εξοικονόμηση μπαταρίας</string>
     <string name="bs_high">ΥΨΗΛΟΣ</string>

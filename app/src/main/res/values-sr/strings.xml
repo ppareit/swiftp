@@ -90,12 +90,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Пошаљи повратне информације</string>
     <string name="about">О програму</string>
 
-    <string name="autoconnect_label">Поставке ауто-повезивања...</string>
-    <string name="autoconnect_summary">Изаберите бежичне мреже на којима ћете се аутоматски повезивати</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">
-        Укључите бежични да бисте добили списак приступних тачака
-    </string>
-
     <string name="demo_while_paid_dialog_title">
         Покренуто демо издање и поред инсталираног пуног издања
     </string>

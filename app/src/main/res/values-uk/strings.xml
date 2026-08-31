@@ -89,12 +89,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Повідомити про проблему</string>
     <string name="about">Про додаток</string>
 
-    <string name="autoconnect_label">Налаштування автопідключення...</string>
-    <string name="autoconnect_summary">Виберіть мережі wifi, до яких потрібно підключатися автоматично</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">
-        Для отримання списку мереж увімкніть wifi
-    </string>
-
     <string name="demo_while_paid_dialog_title">
         Демо розпочато, коли встановлено платну версію
     </string>
@@ -125,20 +119,8 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="password_validation_error">Пароль повинен складатися з одного або більше буквено-цифрових символів. Жодні інші символи не допускаються.</string>
     <string name="port_validation_error">Номер порту повинен мати значення від 1 до 65 535.</string>
 
-
     <string name="unable_to_start_mail_client">Не вдається запустити поштовий клієнт для надсилання відгуку.</string>
     <string name="use_english">Будь ласка, використовуйте зрозумілу англійську!</string>
-
-    <!-- since 2.18 -->
-    <string name="request_coarse_location_dlg_title">Запит дозволу для розташування</string>
-    <string name="request_coarse_location_dlg_message">
-        Програма, яка знає поточну точку доступу, може визначити місцезнаходження пристрою.
-        Тому потрібен дозвіл на місцезнаходження. Цей дозвіл потрібен лише в тому випадку, якщо ви цього хочете
-        автоматично запускати сервер, якщо він підключається до певної точки доступу Wi-Fi.
-        Зайве говорити, що ця програма не використовує інформацію про місцезнаходження.\n\n
-        Якщо ви не надасте цей дозвіл, програма все одно працюватиме,
-        ви просто не зможете автоматично підключитися.
-    </string>
 
     <!-- since 2.19 -->
     <string name="unable_to_proceed_no_permissions">Неможливо продовжити без потрібних дозволів, вихід</string>
@@ -152,9 +134,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notice_cant_write">Зверніть увагу, що ми не можливо записувати в цю директорію, читання працюватиме. Запис у піддиректорії може працювати.</string>
     <string name="manage_users_no_users">Відсутні доступні користувачі, створіть користувача.</string>
     <string name="manage_users_multiple_users">Доступно кілька користувачів, дивіться список.</string>
-    <string name="auto_connect_stop_server_remove_from_list">
-        Зупинка FTP-сервера під час підключення до мережі Wi-Fi, до якої ми автоматично підключилися. Видалення цієї мережі Wi-Fi з налаштувань
-    </string>
     <string name="write_external_storage_old_android_version_summary">На цих пристроях вся пам\'ять доступна за допомогою ієрархії файлів.</string>
 
     <string name="battery_saver_setting_title">Економія батареї</string>

@@ -108,12 +108,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Poslat zpětnou vazbu</string>
     <string name="about">O FTP Server</string>
 
-    <string name="autoconnect_label">Nastavení automatického připojení…</string>
-    <string name="autoconnect_summary">Vyberte sítě Wi-Fi, ke kterým se chcete automaticky připojit</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">
-        Chcete-li získat seznam přístupových bodů, povolte Wi-Fi
-    </string>
-
     <string name="demo_while_paid_dialog_title">
         Demo začalo, když je nainstalována placená verze
     </string>
@@ -127,7 +121,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="storage_warning">
         Upozornění: Úložiště není k dispozici. Možná jej budete chtít odpojit.
     </string>
-
 
     <!-- auto added strings by AS -->
     <string name="widget_name">FTP Server Widget</string>
@@ -157,17 +150,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="unable_to_start_mail_client">Nelze spustit poštovního klienta pro odeslání zpětné vazby.</string>
     <string name="use_english">Používejte prosím srozumitelnou angličtinu!</string>
 
-    <!-- since 2.18 -->
-    <string name="request_coarse_location_dlg_title">Žádáme o povolení přístupu k poloze</string>
-    <string name="request_coarse_location_dlg_message">
-        Aplikace, která zná aktuální přístupový bod, může odvodit polohu zařízení.
-        Proto je potřeba povolení k poloze. Toto oprávnění je potřeba pouze v případě, že 
-        chcete automaticky spustit server, pokud se připojí k určitému přístupovému bodu Wi-Fi.
-        Netřeba dodávat, že tato aplikace nepoužívá informace o poloze.\n\n
-        Pokud toto oprávnění neudělíte, aplikace bude stále fungovat, 
-        jen se nebudete moci automaticky připojit.
-    </string>
-
     <!-- since 2.19 -->
     <string name="unable_to_proceed_no_permissions">Bez potřebných oprávnění nelze pokračovat, vypínáme aplikaci</string>
     <string name="manage_users_label">Spravovat uživatele…</string>
@@ -180,9 +162,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notice_cant_write">Všimněte si, že do této složky nemůžeme zapisovat, čtení bude fungovat. Zápis do podsložek může fungovat.</string>
     <string name="manage_users_no_users">Nejsou k dispozici žádní uživatelé, vytvořte uživatele.</string>
     <string name="manage_users_multiple_users">K dispozici je více uživatelů, viz seznam.</string>
-    <string name="auto_connect_stop_server_remove_from_list">
-        Zastavení FTP serveru při připojení k síti Wi-Fi, ke které jsme se automaticky připojili. Odebírání této sítě Wi-Fi z předvoleb.
-    </string>
     <string name="write_external_storage_old_android_version_summary">Na těchto zařízeních je veškeré úložiště dostupné pomocí hierarchie souborů.</string>
 
 </resources>

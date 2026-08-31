@@ -102,12 +102,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     <string name="feedback">傳送反饋</string>
     <string name="about">關於</string>
 
-    <string name="autoconnect_label">自動連接設定...</string>
-    <string name="autoconnect_summary">選擇要自動連接的Wi-Fi網路</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">
-        啟動Wi-Fi以獲取存取點列表
-    </string>
-
     <string name="demo_while_paid_dialog_title">
         示範版本在安裝付費版本後啟動
     </string>
@@ -119,7 +113,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     <string name="storage_warning">
         警告：存儲空間不可用。您可能需要卸載它。
     </string>
-
 
     <!-- auto added strings by AS -->
     <string name="widget_name">FTP Server 小工具</string>
@@ -149,13 +142,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     <string name="unable_to_start_mail_client">無法啟動郵件用戶端以傳送反饋。</string>
     <string name="use_english">請使用清晰英語來表達！</string>
 
-    <!-- since 2.18 -->
-    <string name="request_coarse_location_dlg_title">請求位置權限</string>
-    <string name="request_coarse_location_dlg_message">
-        知道當前存取點的應用程式可以推斷出設備的位置，因此需要位置權限。當伺服器連接到特定的Wi-Fi存取點時，並需要自動啟動伺服器，才需要此權限。當然，這個應用程式不使用位置資訊的。\n\n
-        如果您未允許此權限，這個應用程式仍能夠正常運行，只是無法使用自動連接功能。
-    </string>
-
     <!-- since 2.19 -->
     <string name="unable_to_proceed_no_permissions">沒有所需的權限，無法繼續，正在關閉</string>
     <string name="manage_users_label">管理使用者...</string>
@@ -168,9 +154,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建議。\n\n
     <string name="notice_cant_write">請注意我們無法寫入此資料夾，但可以讀取。此資料夾內的子資料夾或可寫入。</string>
     <string name="manage_users_no_users">沒有可用的用戶，請建立用戶。</string>
     <string name="manage_users_multiple_users">多個用戶可用，參見清單。</string>
-    <string name="auto_connect_stop_server_remove_from_list">
-        在連接到自動連接的Wi-Fi網絡時停止FTP伺服器。從設定中刪除此Wi-Fi網絡
-    </string>
     <string name="write_external_storage_old_android_version_summary">在這些裝置上，可以使用檔案階層標準來使用所有存儲空間。</string>
 
     <string name="battery_saver_setting_title">省電</string>

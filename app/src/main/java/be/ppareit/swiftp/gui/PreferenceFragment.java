@@ -29,7 +29,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.UriPermission;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
@@ -75,7 +74,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import be.ppareit.android.DynamicMultiSelectListPreference;
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
@@ -94,14 +92,12 @@ import be.ppareit.swiftp.utils.Logging;
  */
 public class PreferenceFragment extends PreferenceFragmentCompat {
 
-    private static final int ACCESS_COARSE_LOCATION_REQUEST_CODE = 14;
     private static final int POST_NOTIFICATIONS_REQUEST_CODE = 15;
     private static final int PICK_CERT_FILE_JKS = 84;
     private static final int PICK_CERT_FILE_BKS = 85;
 
     private static final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
 
-    private DynamicMultiSelectListPreference mAutoconnectListPref;
     private Handler mHandler = new Handler();
 
     private static int showScreen = 0;
@@ -818,21 +814,11 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         serverNotificationPref.setChecked(enabled);
     }
 
-    private void requestAccessCoarseLocationPermission() {
-        String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION};
-        requestPermissions(permissions, ACCESS_COARSE_LOCATION_REQUEST_CODE);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (requestCode == ACCESS_COARSE_LOCATION_REQUEST_CODE) {
-            if (permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION)
-                    && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                mAutoconnectListPref.getDialog().cancel();
-            }
-        } else if (requestCode == POST_NOTIFICATIONS_REQUEST_CODE) {
+        if (requestCode == POST_NOTIFICATIONS_REQUEST_CODE) {
             // Denying is fine, the server runs either way
             updateServerNotificationPref();
         }

@@ -89,12 +89,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Сообщить о проблеме</string>
     <string name="about">О программе</string>
 
-    <string name="autoconnect_label">Настройки автоподключения...</string>
-    <string name="autoconnect_summary">Выберите сети wifi, к которым нужно подключаться автоматически</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">
-        Для получения списка сетей включите wifi
-    </string>
-
     <string name="running_summary_failed_to_get_ip_address">Не удается получить URL</string>
     <string name="username_validation_error">Имя пользователя должно состоять из одного или более буквенно-цифровых символов. Никакие другие символы не допускаются.</string>
     <string name="password_validation_error">Пароль длолжен состоять из одного или более бкувенно-цифровых символов. Никакие другие символы не допускаются.</string>

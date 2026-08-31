@@ -101,10 +101,6 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="feedback">Enviar comentarios</string>
     <string name="about">Acerca de</string>
 
-    <string name="autoconnect_label">Ajustes de autoconexión\u2026</string>
-    <string name="autoconnect_summary">Seleccionar las redes Wi\u2011Fi para conectarse automáticamente</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">Habilitar Wi\u2011Fi para obtener una lista de puntos de acceso</string>
-
     <string name="demo_while_paid_dialog_title">Iniciada la demostración con la versión de pago instalada</string>
     <string name="demo_while_paid_dialog_message">
         Gracias por tu soporte al desarrollo.\n\n
@@ -126,19 +122,8 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="about_libraries_title">Bibliotecas</string>
     <string name="about_contributor_title">Colaboradores</string>
 
-
     <string name="unable_to_start_mail_client">No se puede iniciar el cliente de correo para enviar opinión.</string>
     <string name="use_english">¡Utiliza un inglés claro!</string>
-
-    <!-- since 2.18 -->
-    <string name="request_coarse_location_dlg_title">Solicitar permiso para la ubicación</string>
-    <string name="request_coarse_location_dlg_message">
-        Una aplicación que conoce el punto de acceso actual puede deducir la ubicación del dispositivo.
-        Como tal, se necesita el permiso de ubicación. Este permiso solo es necesario si deseas
-        iniciar automáticamente el servidor si se conecta a un punto de acceso wifi en particular.
-        No hace falta decir que esta aplicación no usa la información de ubicación.\n\n
-        Si no concedes este permiso, la aplicación seguirá funcionando. Simplemente, no podrá conectarse automáticamente.
-    </string>
 
     <!-- since 2.19 -->
     <string name="unable_to_proceed_no_permissions">No se puede continuar sin los permisos necesarios, cerrando</string>
@@ -152,9 +137,6 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="notice_cant_write">Tendrás en cuenta que no podemos escribir en esta carpeta, la lectura de esta funcionará. Escribir en subcarpetas podría funcionar.</string>
     <string name="manage_users_no_users">No hay usuarios disponibles, crea un usuario.</string>
     <string name="manage_users_multiple_users">Varios usuarios disponibles, mira la lista.</string>
-    <string name="auto_connect_stop_server_remove_from_list">
-        Detener el servidor FTP mientras estamos conectados a una red wifi a la que nos conectamos automáticamente. Eliminar esta red wifi de las preferencias
-    </string>
     <string name="write_external_storage_old_android_version_summary">En estos dispositivos, toda lo guardado está disponible utilizando la jerarquía de archivos.</string>
 
     <string name="battery_saver_setting_title">Ahorro de batería</string>

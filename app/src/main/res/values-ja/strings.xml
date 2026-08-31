@@ -90,12 +90,6 @@ https://github.com/ppareit/swiftp/issues を参照してください。\n\n
     <string name="feedback">フィードバックを送信</string>
     <string name="about">アプリについて</string>
 
-    <string name="autoconnect_label">自動接続設定...</string>
-    <string name="autoconnect_summary">自動接続する wifi ネットワークを選択します</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">
-        Wifi を有効にして、アクセスポイントのリストを取得します
-    </string>
-
     <string name="demo_while_paid_dialog_title">
         有料版がインストールされる間、デモが開始されました
     </string>

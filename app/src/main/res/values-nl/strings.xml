@@ -80,9 +80,6 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Geef feedback</string>
     <string name="about">Over</string>
 
-    <string name="autoconnect_label">Automatische verbinding...</string>
-    <string name="autoconnect_summary">Selecteer de wifi netwerken waar automatisch moet worden verbonden</string>
-
     <string name="running_summary_failed_to_get_ip_address">Can\'t retreive url</string>
     <string name="username_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>
     <string name="password_validation_error">The password must consist of 1 or more alphanumeric characters. No other characters are allowed.</string>

@@ -109,12 +109,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Envoyer un retour</string>
     <string name="about">À propos</string>
 
-    <string name="autoconnect_label">Paramètres de connexion automatique...</string>
-    <string name="autoconnect_summary">Sélectionnez les réseaux wifi où se connecter automatiquement</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">
-        Activez le wifi pour obtenir une liste des points d\'accès
-    </string>
-
     <string name="demo_while_paid_dialog_title">
         Démo démarrée tandis que la version payante est installée
     </string>
@@ -129,7 +123,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="storage_warning">
         Attention: stockage indisponible. Vous devrez peut-être le démonter.
     </string>
-
 
     <string name="widget_name">Widget Serveur FTP</string>
     <string name="notif_settings_text">Paramètres</string>

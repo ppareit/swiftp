@@ -115,12 +115,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Send feedback</string>
     <string name="about">About</string>
 
-    <string name="autoconnect_label">Autoconnect settings…</string>
-    <string name="autoconnect_summary">Select the Wi-Fi networks on which to autoconnect</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">
-        Enable Wi-Fi to get list of access points
-    </string>
-
     <string name="demo_while_paid_dialog_title">
         Demo started while paid version is installed
     </string>
@@ -134,7 +128,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="storage_warning">
         Warning: Storage is not available. You may want to unmount it.
     </string>
-
 
     <!-- auto added strings by AS -->
     <string name="widget_name">FTP Server Widget</string>
@@ -167,17 +160,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="unable_to_start_mail_client">Unable to start mail client to send feedback.</string>
     <string name="use_english">Please use clear English!</string>
 
-    <!-- since 2.18 -->
-    <string name="request_coarse_location_dlg_title">Request permission for location</string>
-    <string name="request_coarse_location_dlg_message">
-        An application that knows the current access point can deduce the location of the device.
-        As such the location permission is needed. This permission is only needed if you want to
-        automatically start the server if it connects to a particular Wi-Fi access point.
-        Needless to say that this application does not use the location information.\n\n
-        If you don not grant this permission, the app will still work,
-        you just won not be able to automatically connect.
-    </string>
-
     <!-- since 2.19 -->
     <string name="unable_to_proceed_no_permissions">Unable to proceed without the needed permissions, shutting down</string>
     <string name="manage_users_label">Manage users…</string>
@@ -195,9 +177,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_users_multiple_users">Multiple users available, see list.</string>
     <string name="show_server_notification">Show server notification</string>
     <string name="show_server_notification_summary">Show the server address and a stop button while the server is running</string>
-    <string name="auto_connect_stop_server_remove_from_list">
-        Stopping FTP Server while connected to a Wi-Fi network we automatically connected to. Removing this Wi-Fi network from the preferences.
-    </string>
     <string name="write_external_storage_old_android_version_summary">On these devices, all store is available using the file hierarchy.</string>
 
     <!-- since 3.1 -->

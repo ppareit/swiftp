@@ -18,8 +18,6 @@ Ju duhet të keni marrë një kopje të licencës së përgjithshme publike të 
 së bashku me SwiFTP. Nëse jo, shihni <http://www.gnu.org/licenses/>.
 -->
 
-
-
 <resources>
 
     <string name="swiftp_name">FTP Server</string>
@@ -108,12 +106,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Dërgoni reagime</string>
     <string name="about">Rreth</string>
 
-    <string name="autoconnect_label">Cilësimet e automatizimit ...</string>
-    <string name="autoconnect_summary">Zgjidhni rrjetet wifi në të cilat do të lidhen automatikisht</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">
-        Aktivizoni wifi për të marrë listën e pikave të hyrjes
-    </string>
-
     <string name="demo_while_paid_dialog_title">
        Demo filloi ndërsa versioni me pagesë është i instaluar
     </string>
@@ -127,8 +119,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="storage_warning">
        Paralajmërim: ruajtja nuk është në dispozicion. Ju mund të dëshironi ta çmontoni atë.
     </string>
-
-
 
     <string name="widget_name">Vegël e serverit FTP</string>
     <string name="notif_settings_text">Cilësimet</string>
@@ -157,17 +147,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="unable_to_start_mail_client">E pamundur për të filluar klientin e postës për të dërguar reagime.</string>
     <string name="use_english">Ju lutemi përdorni anglisht të qartë!</string>
 
-    <!-- since 2.18 -->
-    <string name="request_coarse_location_dlg_title">Kërkoni leje për vendndodhje</string>
-    <string name="request_coarse_location_dlg_message">
-      Një aplikacion që njeh pikën aktuale të hyrjes mund të nxjerrë vendndodhjen e pajisjes.
-         Si i tillë kërkohet leja e vendndodhjes. Kjo leje është e nevojshme vetëm nëse dëshironi
-         automatikisht filloni serverin nëse lidhet me një pikë të veçantë të hyrjes me WiFi.
-         Lessshtë e panevojshme të thuhet se ky aplikacion nuk përdor informacionin e vendndodhjes.\n\n
-        Nëse nuk e jepni këtë leje, aplikacioni do të funksionojë akoma,
-         thjesht nuk do të mund të lidhesh automatikisht.
-    </string>
-
     <!-- since 2.19 -->
     <string name="unable_to_proceed_no_permissions">E pamundur për të vazhduar pa lejet e nevojshme, mbyllja</string>
     <string name="manage_users_label">Menaxhoni përdoruesit...</string>
@@ -180,9 +159,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notice_cant_write">Vini re se ne nuk mund të shkruajmë në këtë dosje, leximi do të funksionojë. Shkrimi në nën dosje mund të funksionojë.</string>
     <string name="manage_users_no_users">Asnjë përdorues në dispozicion, krijoni një përdorues.</string>
     <string name="manage_users_multiple_users">Shumë përdorues të disponueshëm, shihni listën.</string>
-    <string name="auto_connect_stop_server_remove_from_list">
-        Ndalimi i serverit FTP ndërsa ishte i lidhur me një rrjet wifi me të cilin automatikisht jemi lidhur. Heqja e këtij rrjeti wifi nga preferencat
-    </string>
     <string name="write_external_storage_old_android_version_summary">Në këto pajisje, e gjithë dyqani është në dispozicion duke përdorur hierarkinë e skedarit.</string>
 
     <string name="battery_saver_setting_title">Kursuesi i baterisë</string>

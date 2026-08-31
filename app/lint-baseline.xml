@@ -331,16 +331,6 @@
             column="5"/>
     </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.array.empty_array` appears to be unused"
-        errorLine1="    &lt;string-array name=&quot;empty_array&quot; />"
-        errorLine2="                  ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/arrays.xml"
-            line="3"
-            column="19"/>
-    </issue>
 
     <issue
         id="UnusedResources"
@@ -578,38 +568,8 @@
             column="13"/>
     </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.autoconnect_label` appears to be unused"
-        errorLine1="    &lt;string name=&quot;autoconnect_label&quot;>Autoconnect settings…&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="118"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.autoconnect_summary` appears to be unused"
-        errorLine1="    &lt;string name=&quot;autoconnect_summary&quot;>Select the Wi-Fi networks on which to autoconnect&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="119"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.autoconnect_error_enable_wifi_for_access_points` appears to be unused"
-        errorLine1="    &lt;string name=&quot;autoconnect_error_enable_wifi_for_access_points&quot;>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="120"
-            column="13"/>
-    </issue>
 
     <issue
         id="UnusedResources"
@@ -633,27 +593,7 @@
             column="13"/>
     </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.request_coarse_location_dlg_title` appears to be unused"
-        errorLine1="    &lt;string name=&quot;request_coarse_location_dlg_title&quot;>Request permission for location&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="171"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.request_coarse_location_dlg_message` appears to be unused"
-        errorLine1="    &lt;string name=&quot;request_coarse_location_dlg_message&quot;>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="172"
-            column="13"/>
-    </issue>
 
     <issue
         id="UnusedResources"
@@ -688,16 +628,6 @@
             column="13"/>
     </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.auto_connect_stop_server_remove_from_list` appears to be unused"
-        errorLine1="    &lt;string name=&quot;auto_connect_stop_server_remove_from_list&quot;>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="198"
-            column="13"/>
-    </issue>
 
     <issue
         id="UnusedResources"
@@ -1447,104 +1377,14 @@
             column="49"/>
     </issue>
 
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;autoconnect_label&quot;>Automatische verbinding...&lt;/string>"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-nl/strings.xml"
-            line="83"
-            column="38"/>
-    </issue>
 
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;autoconnect_label&quot;>Настройки автоподключения...&lt;/string>"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-ru/strings.xml"
-            line="92"
-            column="38"/>
-    </issue>
 
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;autoconnect_label&quot;>Налаштування автопідключення...&lt;/string>"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-uk/strings.xml"
-            line="92"
-            column="38"/>
-    </issue>
 
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;autoconnect_label&quot;>自動接続設定...&lt;/string>"
-        errorLine2="                                     ~~~~~~~~~">
-        <location
-            file="src/main/res/values-ja/strings.xml"
-            line="93"
-            column="38"/>
-    </issue>
 
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;autoconnect_label&quot;>Поставке ауто-повезивања...&lt;/string>"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-sr/strings.xml"
-            line="93"
-            column="38"/>
-    </issue>
 
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;autoconnect_label&quot;>自動連接設定...&lt;/string>"
-        errorLine2="                                     ~~~~~~~~~">
-        <location
-            file="src/main/res/values-zh-rTW/strings.xml"
-            line="105"
-            column="38"/>
-    </issue>
 
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;autoconnect_label&quot;>Cilësimet e automatizimit ...&lt;/string>"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-sq/strings.xml"
-            line="111"
-            column="38"/>
-    </issue>
 
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;autoconnect_label&quot;>Paramètres de connexion automatique...&lt;/string>"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-fr/strings.xml"
-            line="112"
-            column="38"/>
-    </issue>
 
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;autoconnect_label&quot;>Ρυθμίσεις αυτόματης σύνδεσης...&lt;/string>"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-el/strings.xml"
-            line="115"
-            column="38"/>
-    </issue>
 
     <issue
         id="TypographyEllipsis"

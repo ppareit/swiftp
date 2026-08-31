@@ -107,12 +107,6 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="feedback">Prześlij opinię</string>
     <string name="about">O FTP Server</string>
 
-    <string name="autoconnect_label">Ustawienia automatycznego łączenia…</string>
-    <string name="autoconnect_summary">Wybierz sieci Wi-Fi, w których chcesz się łączyć automatycznie</string>
-    <string name="autoconnect_error_enable_wifi_for_access_points">
-        Włącz Wi-Fi, aby uzyskać listę punktów dostępu
-    </string>
-
     <string name="demo_while_paid_dialog_title">
         Uruchomiono wersję Demo, gdy zainstalowana jest wersja płatna
     </string>
@@ -126,7 +120,6 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="storage_warning">
         Ostrzeżenie: Pamięć jest niedostępna. Może ją odłączyłeś.
     </string>
-
 
     <!-- auto added strings by AS -->
     <string name="widget_name">Widżet FTP Server</string>
@@ -155,17 +148,6 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="unable_to_start_mail_client">Nie można uruchomić klienta poczty, aby wysłać opinię.</string>
     <string name="use_english">Użyj czystego angielskiego!</string>
 
-    <!-- since 2.18 -->
-    <string name="request_coarse_location_dlg_title">Poproś o pozwolenie na lokalizację</string>
-    <string name="request_coarse_location_dlg_message">
-        Aplikacja, która zna bieżący punkt dostępu, może określić lokalizację urządzenia.
-        W związku z tym potrzebne jest pozwolenie na lokalizację. Zezwolenie to jest potrzebne tylko, jeśli chcesz
-        automatycznie uruchomić serwer, jeśli łączy się z określonym punktem dostępu Wi-Fi.
-        Nie trzeba dodawać, że ta aplikacja nie korzysta z informacji o lokalizacji.\n\n
-        Jeśli nie udzielisz tego uprawnienia, aplikacja będzie nadal działać,
-        ale po prostu nie będziesz mógł automatycznie się łączyć.
-    </string>
-
     <!-- since 2.19 -->
     <string name="unable_to_proceed_no_permissions">Nie można kontynuować bez wymaganych uprawnień, zamykam</string>
     <string name="manage_users_label">Zarządzaj użytkownikami…</string>
@@ -178,9 +160,6 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notice_cant_write">Nie można zapisać w tym katalogu, odczytywanie będzie działać. Zapisywanie w podkatalogach może działać.</string>
     <string name="manage_users_no_users">Brak użytkowników, utwórz użytkownika.</string>
     <string name="manage_users_multiple_users">Dostępnych jest wielu użytkowników, patrz lista.</string>
-    <string name="auto_connect_stop_server_remove_from_list">
-        Zatrzymywanie serwera FTP połączonego z siecią Wi-Fi, z którą łączyłeś się automatycznie. Usuwanie tej sieci Wi-Fi z preferencji.
-    </string>
     <string name="write_external_storage_old_android_version_summary">Na tych urządzeniach cały sklep jest dostępny przy użyciu hierarchii plików.</string>
 
     <string name="battery_saver_setting_title">Program oszczędzający baterię</string>
