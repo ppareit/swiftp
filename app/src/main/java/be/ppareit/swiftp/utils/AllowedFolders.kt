@@ -112,13 +112,15 @@ object AllowedFolders {
 
     /** Takes a persistable grant on a folder the user picked. */
     @JvmStatic
-    fun takeGrant(context: Context, treeUri: Uri?) {
-        if (treeUri == null) return
+    fun takeGrant(context: Context, treeUri: Uri?): Boolean {
+        val uri = treeUri ?: return false
+        if (ExternalStorageTreeResolver.fromTreeUri(context, uri) == null) return false
         context.contentResolver.takePersistableUriPermission(
-            treeUri,
+            uri,
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
         )
         invalidate()
+        return true
     }
 
     /** Gives the grant on a folder back, so the server can no longer reach it. */
@@ -146,29 +148,19 @@ object AllowedFolders {
     }
 
     private fun build(now: Long): Snapshot {
+        val context = App.getAppContext() ?: return Snapshot(StorageTreeIndex(null), emptyMap(), now)
         // A LinkedHashMap so the folders keep the order they were granted in, which is the order
         // the user sees in the settings summary and on the folder screen.
         val uris = LinkedHashMap<String, Uri>()
         val trees = mutableListOf<StorageTree>()
         for (uri in source.treeUris()) {
-            val documentId = treeDocumentId(uri) ?: continue
+            val tree = ExternalStorageTreeResolver.fromTreeUri(context, uri) ?: continue
+            val documentId = tree.documentId
             if (uris.containsKey(documentId)) continue
-            val tree = StorageTree.fromDocumentId(documentId) ?: continue
             uris[documentId] = uri
             trees.add(tree)
         }
         return Snapshot(StorageTreeIndex(trees), uris, now)
-    }
-
-    /**
-     * The tree document id of a tree URI, or null when the URI is not a tree at all. Written out
-     * rather than using DocumentsContract.isTreeUri, which needs API 24 while the app still
-     * supports 23.
-     */
-    private fun treeDocumentId(uri: Uri?): String? {
-        val segments = uri?.pathSegments ?: return null
-        if (segments.size < 2 || segments[0] != "tree") return null
-        return segments[1]
     }
 
     /** The real source: whatever the system says this package still holds. */

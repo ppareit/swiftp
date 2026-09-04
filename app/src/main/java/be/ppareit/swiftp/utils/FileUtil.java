@@ -644,7 +644,7 @@ public abstract class FileUtil {
         for (StorageTree tree : AllowedFolders.all()) {
             final String documentId = tree.getDocumentId();
             final String volume = documentId.substring(0, documentId.indexOf(File.pathSeparator));
-            if (!"primary".equals(volume)) return volume;
+            if (!"primary".equals(volume) && !"home".equals(volume)) return volume;
         }
         return null;
     }

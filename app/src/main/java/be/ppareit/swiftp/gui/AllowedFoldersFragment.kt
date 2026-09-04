@@ -180,7 +180,14 @@ class AllowedFoldersFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != ACTION_OPEN_DOCUMENT_TREE || resultCode != Activity.RESULT_OK) return
         val treeUri = data?.data ?: return
-        AllowedFolders.takeGrant(requireContext(), treeUri)
+        if (!AllowedFolders.takeGrant(requireContext(), treeUri)) {
+            Toast.makeText(
+                requireContext(),
+                R.string.allowed_folders_unsupported_provider,
+                Toast.LENGTH_LONG,
+            ).show()
+            return
+        }
         // The storage mode may have just changed, so the running server has to be told.
         FsService.restart()
         refresh()
