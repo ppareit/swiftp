@@ -29,6 +29,9 @@ proguard/
 # Log Files
 *.log
 
+# Transient editor/process marker
+*.salive
+
 # Android Studio Navigation editor temp files
 .navigation/
 
