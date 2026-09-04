@@ -48,26 +48,27 @@ public class CmdDELE extends FtpCmd implements Runnable {
         File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(),
                 sessionThread.getWorkingDir(), param);
 
-        if (Util.useScopedStorage()) {
-            DocumentFile docStoreFile = AllowedFolders.documentAt(storeFile.getPath());
-            tryToDelete(new FileUtil.Gen(docStoreFile));
+        if (violatesChroot(storeFile)) {
+            sessionThread.writeString("550 Invalid name or chroot violation\r\n");
+            Log.i(TAG, "DELE failed: chroot violation");
             return;
         }
 
-        tryToDelete(new FileUtil.Gen(storeFile));
+        if (Util.useScopedStorage()) {
+            tryToDelete(new FileUtil.Gen(AllowedFolders.documentAt(storeFile.getPath())));
+        } else {
+            tryToDelete(new FileUtil.Gen(storeFile));
+        }
     }
 
     private void tryToDelete(FileUtil.Gen storeFile) {
         String errString = null;
-        if (storeFile == null || storeFile.getOb() == null) {
-            errString = "550 Invalid name or chroot violation\r\n";
+        if (storeFile.getOb() == null) {
+            errString = "550 File does not exist\r\n";
         } else {
             final boolean isDocumentFile = storeFile.getOb() instanceof DocumentFile;
             final boolean isFile = !isDocumentFile;
-            if ((isDocumentFile && violatesChroot((DocumentFile) storeFile.getOb()))
-                    || (isFile && violatesChroot((File) storeFile.getOb()))) {
-                errString = "550 Invalid name or chroot violation\r\n";
-            } else if (storeFile.isDirectory()) {
+            if (storeFile.isDirectory()) {
                 errString = "550 Can't DELE a directory\r\n";
             } else if ((isDocumentFile && !((DocumentFile) storeFile.getOb()).delete())
                     || (isFile && !FileUtil.deleteFile((File) storeFile.getOb(), App.getAppContext()))) {

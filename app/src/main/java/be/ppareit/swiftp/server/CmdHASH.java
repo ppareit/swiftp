@@ -44,11 +44,9 @@ public class CmdHASH extends FtpCmd implements Runnable {
                     sessionThread.getWorkingDir(), param);
 
             FileUtil.Gen gen = FileUtil.createGenFromFile(fileToHash);
-            final boolean isDocumentFile = gen.getOb() instanceof DocumentFile;
-            final boolean isFile = !isDocumentFile;
+            final boolean isFile = !(gen.getOb() instanceof DocumentFile);
 
-            if (isFile && violatesChroot((File) gen.getOb())
-                    || isDocumentFile && violatesChroot((DocumentFile) gen.getOb())) {
+            if (violatesChroot(fileToHash)) {
                 errString = "550 Invalid name or chroot violation\r\n";
                 break mainblock;
             } else if (gen.isDirectory()) {

@@ -804,18 +804,6 @@ public abstract class FileUtil {
         return null;
     }
 
-    /*
-     * Gets the full File type path using the DocumentFile including eg "/storage/ and all the way
-     * to the picker folder.
-     */
-    public static String getFileTypePathFromDocumentFile(DocumentFile file) {
-        String cleaned = cleanupUriStoragePath(file.getUri());
-        if (cleaned.contains("primary:")) {
-            return cleaned.replaceFirst("primary:", "/storage/emulated/0/");
-        }
-        return "/storage/" + cleaned.replaceFirst(File.pathSeparator, File.separator);
-    }
-
     /**
      * Used to deduplicate some File and DocumentFile methods as eg .isDirectory() applies to both
      * Thus, it gets rid of some horrible duplication that would have happened otherwise.

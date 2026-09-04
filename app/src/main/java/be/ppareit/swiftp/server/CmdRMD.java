@@ -63,7 +63,8 @@ public class CmdRMD extends FtpCmd implements Runnable {
                     errString = "550 Invalid argument\r\n";
                     break mainblock;
                 }
-                if (violatesChroot(docFileToRemove)) {
+                // on the File the request resolved to: the document was looked up from it
+                if (violatesChroot(toRemove)) {
                     errString = "550 Invalid name or chroot violation\r\n";
                     break mainblock;
                 }

@@ -56,6 +56,10 @@ public class CmdRETR extends FtpCmd implements Runnable {
         {
             fileToRetr = inputPathToChrootedFile(sessionThread.getChrootDir(),
                     sessionThread.getWorkingDir(), param);
+            if (violatesChroot(fileToRetr)) {
+                errString = "550 Invalid name or chroot violation\r\n";
+                break mainblock;
+            }
             Uri uri;
 
             DocumentFile docFileToRetr = null;
@@ -74,7 +78,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
             FileUtil.Gen gen;
             if (docFileToRetr != null) gen = FileUtil.convertDocumentFileToGen(docFileToRetr);
             else gen = FileUtil.convertFileToGen(fileToRetr);
-            errString = validate(gen, param);
+            errString = validate(gen);
             if (errString != null) break mainblock;
 
             FileInputStream in = null;
@@ -226,20 +230,12 @@ public class CmdRETR extends FtpCmd implements Runnable {
         }
     }
 
-    private String validate(FileUtil.Gen fileToRetr, String param) {
+    /** The caller checks the chroot, on the File: that canonicalizes, a document id cannot. */
+    private String validate(FileUtil.Gen fileToRetr) {
         String errString = null;
-        if (fileToRetr == null) {
-            errString = "550 Invalid name or chroot violation\r\n";
-            return errString;
-        }
-
         final boolean isDocumentFile = fileToRetr.getOb() instanceof DocumentFile;
-        final boolean isFile = !isDocumentFile;
 
-        if ((isDocumentFile && violatesChroot((DocumentFile) fileToRetr.getOb()))
-                || (isFile && violatesChroot((File) fileToRetr.getOb()))) {
-            errString = "550 Invalid name or chroot violation\r\n";
-        } else if (fileToRetr.isDirectory()) {
+        if (fileToRetr.isDirectory()) {
             Cat.d("Ignoring RETR for directory");
             errString = "550 Can't RETR a directory\r\n";
         } else if (!fileToRetr.exists()) {

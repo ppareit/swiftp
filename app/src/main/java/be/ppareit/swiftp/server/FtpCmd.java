@@ -21,12 +21,9 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
-import androidx.documentfile.provider.DocumentFile;
-
 import java.io.File;
 import java.lang.reflect.Constructor;
 
-import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.utils.Logging;
 
 public abstract class FtpCmd implements Runnable {
@@ -297,26 +294,6 @@ public abstract class FtpCmd implements Runnable {
         } catch (Exception e) {
             Log.i(TAG, "Path canonicalization problem: " + e.toString());
             if (file != null) Log.i(TAG, "When checking file: " + file.getAbsolutePath()); // fix possible crash
-            return true; // for security, assume violation
-        }
-    }
-
-    public boolean violatesChroot(DocumentFile file) {
-        try {
-            // Get the full path to the chosen Android 11 dir and compare with that of the file
-            File chroot = sessionThread.getChrootDir();
-            String canonicalChroot = chroot.getCanonicalPath();
-            String canonicalPath = FileUtil.getFileTypePathFromDocumentFile(file);
-            if (!isWithinChroot(canonicalChroot, canonicalPath)) {
-                Log.i(TAG, "Path violated folder restriction, denying");
-                Log.d(TAG, "path: " + canonicalPath);
-                Log.d(TAG, "chroot: " + chroot.toString());
-                return true; // the path must be the chroot or below it
-            }
-            return false;
-        } catch (Exception e) {
-            Log.i(TAG, "Path canonicalization problem: " + e.toString());
-            //Log.i(TAG, "When checking file: " + file.getAbsolutePath());
             return true; // for security, assume violation
         }
     }
