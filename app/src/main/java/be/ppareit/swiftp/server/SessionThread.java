@@ -340,6 +340,19 @@ public class SessionThread extends Thread {
     }
 
     /**
+     * Why the last openDataSocket() failed, as a single line fit for the text of a 425
+     * reply. Clients print that text in their error dialog, so this is the one message
+     * about a data connection that reaches a user who will never look at a log.
+     */
+    public String getDataSocketErrorMessage() {
+        if (localDataSocket == null || localDataSocket.getFailureReason() == null) {
+            return "Error opening data socket";
+        } else {
+            return localDataSocket.getFailureReason();
+        }
+    }
+
+    /**
      * Call when done doing IO over the data socket
      */
     public void closeDataSocket() {

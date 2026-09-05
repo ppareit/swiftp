@@ -165,7 +165,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
             // came up, so nothing is lost by promising the transfer first.
             sessionThread.writeString("150 Data socket ready\r\n");
             if (!sessionThread.openDataSocket()) {
-                errString = "425 Couldn't open data socket\r\n";
+                errString = "425 " + sessionThread.getDataSocketErrorMessage() + "\r\n";
                 break storing;
             }
             Cat.d("Data socket ready");

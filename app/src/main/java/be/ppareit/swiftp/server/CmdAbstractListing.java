@@ -296,7 +296,7 @@ public abstract class CmdAbstractListing extends FtpCmd {
             Log.d(TAG, "LIST/NLST done making socket");
         } else {
             sessionThread.closeDataSocket();
-            return "425 Error opening data socket\r\n";
+            return "425 " + sessionThread.getDataSocketErrorMessage() + "\r\n";
         }
         if (!sessionThread.sendViaDataSocket(listing)) {
             Log.d(TAG, "sendViaDataSocket failure");

@@ -101,7 +101,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
                 if (sessionThread.openDataSocket()) {
                     Cat.d("RETR opened data socket");
                 } else {
-                    errString = "425 Error opening socket\r\n";
+                    errString = "425 " + sessionThread.getDataSocketErrorMessage() + "\r\n";
                     Cat.i("Error in initDataSocket()");
                     break mainblock;
                 }

@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -40,7 +41,8 @@ import be.ppareit.swiftp.utils.Logging;
 public class LocalDataSocket {
     private static final String TAG = LocalDataSocket.class.getSimpleName();
 
-    private static final int SO_TIMEOUT_MS = 30000; // socket timeout millis
+    // How long a data connection and open data socket is waited for, field to ease setting/testing
+    int soTimeoutMs = 30000;
     public static final int TCP_CONNECTION_BACKLOG = 5;
 
     // Bounds for passive port range. Below 1024 we would need extra privileges
@@ -59,6 +61,10 @@ public class LocalDataSocket {
     private final Logging logging;
 
     private final FTPSSockets ftpsSockets = new FTPSSockets();
+
+    // Why the last transfer attempt failed to get a data socket, phrased as a single
+    // line fit to be sent as the text of a 425 reply. Null while nothing went wrong.
+    private volatile String failureReason = null;
 
     public LocalDataSocket(Settings settings) {
         this.settings = settings;
@@ -193,17 +199,32 @@ public class LocalDataSocket {
     }
 
     public Socket onTransfer() {
+        failureReason = null;
         return plain();
     }
 
     public SSLSocket onTransferSSL() {
+        failureReason = null;
         return ssl();
+    }
+
+    /**
+     * @return why the last onTransfer()/onTransferSSL() returned null, or null if the
+     * last attempt succeeded or none has been made.
+     */
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    private String noConnectionMessage(int port) {
+        return "No data connection on port " + port + " after " + (soTimeoutMs / 1000) + "s";
     }
 
     private SSLSocket ssl() {
         if (sslServer == null) {
             // We're in PORT mode (not PASV)
             if ((remoteAddress == null || remotePort == 0) && (remote6Address == null || remote6Port == 0)) {
+                failureReason = "No data connection set up, send PASV or PORT first";
                 Log.i(TAG, "PORT mode but not initialized correctly");
                 clearState();
                 return null;
@@ -214,12 +235,13 @@ public class LocalDataSocket {
                 else socket = ftpsSockets.createSSLSocket(remoteAddress, remotePort);
             } catch (Exception e) {
                 if (remote6Address != null) {
-                    Log.i(TAG, "Couldn't open PORT data socket to: " + remote6Address.toString()
-                            + ":" + remote6Port);
+                    failureReason = "Could not connect data socket to "
+                            + remote6Address.getHostAddress() + " port " + remote6Port;
                 } else {
-                    Log.i(TAG, "Couldn't open PORT data socket to: " + remoteAddress.toString()
-                            + ":" + remotePort);
+                    failureReason = "Could not connect data socket to "
+                            + remoteAddress.getHostAddress() + " port " + remotePort;
                 }
+                Log.i(TAG, "Couldn't open PORT data socket: " + failureReason);
                 clearState();
                 return null;
             }
@@ -233,34 +255,50 @@ public class LocalDataSocket {
             });
             logging.appendLog("Begin FTPS handshake");
             try {
-                socket.setSoTimeout(30000);
+                socket.setSoTimeout(soTimeoutMs);
                 socket.startHandshake();
             } catch (IOException e) {
+                failureReason = "TLS handshake failed on data connection to "
+                        + socket.getInetAddress().getHostAddress() + " port " + socket.getPort();
                 return null;
             }
             return socket;
         } else {
             // We're in PASV mode (not PORT)
             final SSLSocket socket;
+            final int port = sslServer.getLocalPort();
+            // Accepting and handshaking are separate tries: a timeout on the accept
+            // means nobody arrived, a failure after it means somebody did and the TLS
+            // negotiation went wrong. The 425 says which.
             try {
-                sslServer.setSoTimeout(30000);
+                sslServer.setSoTimeout(soTimeoutMs);
                 socket = (SSLSocket) sslServer.accept();
                 sslServer.setSoTimeout(0);
+            } catch (SocketTimeoutException e) {
+                failureReason = noConnectionMessage(port);
+                Log.i(TAG, failureReason);
+                clearState();
+                return null;
+            } catch (Exception e) {
+                failureReason = "Error opening data socket on port " + port;
+                Log.i(TAG, failureReason + ": " + e.getMessage());
+                clearState();
+                return null;
+            }
+            try {
                 socket.setTcpNoDelay(true);
-                changeSocketTimeout(socket, 30000); // require this before handshake (see catch block)
+                changeSocketTimeout(socket, soTimeoutMs); // require this before handshake (see catch block)
                 socket.addHandshakeCompletedListener(event -> {
                     logging.appendLog("Handshake completed");
                     changeSocketTimeout(socket, 0);
                 });
                 logging.appendLog("Begin FTPS handshake");
-                socket.startHandshake();
-            } catch (Exception e) {
                 // Confirmed that some clients will timeout on first use of data connection so do
                 // a handshake and find out right here and now.
-                if (remoteAddress != null) {
-                    Log.i(TAG, "Couldn't open PORT data socket to: " + remoteAddress.toString()
-                            + ":" + remotePort);
-                }
+                socket.startHandshake();
+            } catch (Exception e) {
+                failureReason = "TLS handshake failed on data connection on port " + port;
+                Log.i(TAG, failureReason + ": " + e.getMessage());
                 clearState();
                 return null;
             }
@@ -283,6 +321,7 @@ public class LocalDataSocket {
         if (server == null) {
             // We're in PORT mode (not PASV)
             if (remoteAddress == null || remotePort == 0) {
+                failureReason = "No data connection set up, send PASV or PORT first";
                 Log.i(TAG, "PORT mode but not initialized correctly");
                 clearState();
                 return null;
@@ -291,16 +330,18 @@ public class LocalDataSocket {
             try {
                 socket = new Socket(remoteAddress, remotePort);
             } catch (IOException e) {
-                Log.i(TAG, "Couldn't open PORT data socket to: " + remoteAddress.toString()
-                        + ":" + remotePort);
+                failureReason = "Could not connect data socket to "
+                        + remoteAddress.getHostAddress() + " port " + remotePort;
+                Log.i(TAG, "Couldn't open PORT data socket: " + failureReason);
                 clearState();
                 return null;
             }
 
             // Kill the socket if nothing happens for X milliseconds
             try {
-                socket.setSoTimeout(SO_TIMEOUT_MS);
+                socket.setSoTimeout(soTimeoutMs);
             } catch (Exception e) {
+                failureReason = "Could not set a timeout on the data socket";
                 Log.e(TAG, "Couldn't set SO_TIMEOUT");
                 clearState();
                 return null;
@@ -310,12 +351,20 @@ public class LocalDataSocket {
         } else {
             // We're in PASV mode (not PORT)
             Socket socket = null;
+            final int port = server.getLocalPort();
             try {
-                server.setSoTimeout(30000);
+                server.setSoTimeout(soTimeoutMs);
                 socket = server.accept();
                 server.setSoTimeout(0);
                 Log.d(TAG, "onTransfer pasv accept successful");
+            } catch (SocketTimeoutException e) {
+                // The client asked for this transfer, so it has not gone away: something
+                // between it and this port is dropping the connection.
+                failureReason = noConnectionMessage(port);
+                Log.i(TAG, failureReason);
+                socket = null;
             } catch (Exception e) {
+                failureReason = "Error opening data socket on port " + port;
                 Log.i(TAG, "Exception accepting PASV socket: " + Arrays.toString(e.getStackTrace()));
                 socket = null;
             }
