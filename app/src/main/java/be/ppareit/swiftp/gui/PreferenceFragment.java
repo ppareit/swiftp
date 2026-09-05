@@ -1057,8 +1057,9 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
      * problem is asked for rather than taken from the broadcast, so a problem raised while this
      * screen was closed still shows up when it opens.
      *
-     * The server reports which case it hit, not a sentence: the wording belongs here, in the
-     * string table, where it can be translated and where the server package needs no Context.
+     * The server reports which problem it hit and the numbers that go in it, never a sentence:
+     * the wording belongs here, in the string table, where it can be translated and where the
+     * server package needs no Context.
      */
     private void updateServerProblemPref() {
         Preference problemPref = findPref("server_problem");
@@ -1066,19 +1067,27 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         ServerProblem problem = FsService.getProblem();
         problemPref.setVisible(problem != null);
         if (problem != null) {
-            problemPref.setSummary(describe(problem, FsService.getProblemDetail()));
+            problemPref.setSummary(describe(problem, FsService.getProblemArgs()));
         }
     }
 
-    /** The one line shown for a problem. The detail is the server's own, so it is not translated. */
-    private String describe(ServerProblem problem, String detail) {
-        switch (problem) {
-            case NOTHING_SHARED:
-                return getString(R.string.server_problem_nothing_shared);
-            case DATA_SOCKET:
-            default:
-                return detail != null ? detail : getString(R.string.server_problem_data_socket);
-        }
+    /** The one line shown for a problem: our sentence, the server's numbers. */
+    private String describe(ServerProblem problem, Object[] args) {
+        return getString(messageOf(problem), args);
+    }
+
+    /** Package private for the harness: every case must map to a string that fits its arguments. */
+    static int messageOf(ServerProblem problem) {
+        return switch (problem) {
+            case NOTHING_SHARED -> R.string.server_problem_nothing_shared;
+            case DATA_NOT_SET_UP -> R.string.server_problem_data_not_set_up;
+            case DATA_CONNECT_FAILED -> R.string.server_problem_data_connect_failed;
+            case DATA_TLS_FAILED_ACTIVE -> R.string.server_problem_data_tls_failed_active;
+            case DATA_NO_CONNECTION -> R.string.server_problem_data_no_connection;
+            case DATA_ACCEPT_FAILED -> R.string.server_problem_data_accept_failed;
+            case DATA_TLS_FAILED_PASSIVE -> R.string.server_problem_data_tls_failed_passive;
+            case DATA_SOCKET ->  R.string.server_problem_data_socket;
+        };
     }
 
     /**

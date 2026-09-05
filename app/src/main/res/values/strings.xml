@@ -28,7 +28,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_summary_started">at %s</string>
     <string name="server_problem_label">Error</string>
     <string name="server_problem_nothing_shared">A client was refused: no folders are shared. Choose folders under Allowed folders.</string>
-    <string name="server_problem_data_socket">Error opening the data connection.</string>
+    <string name="server_problem_data_socket">A transfer failed: could not open the data connection.</string>
+    <string name="server_problem_data_not_set_up">A transfer failed: the client asked for one without setting up a data connection.</string>
+    <string name="server_problem_data_connect_failed">A transfer failed: could not connect to the client at %1$s port %2$d.</string>
+    <string name="server_problem_data_tls_failed_active">A transfer failed: the TLS handshake with the client at %1$s port %2$d did not complete.</string>
+    <string name="server_problem_data_no_connection">A transfer failed: nothing connected to port %1$d within %2$d seconds. A router or firewall is probably blocking it. Make that port reachable, or set a data port range under Advanced settings, Ports, and open only those ports.</string>
+    <string name="server_problem_data_accept_failed">A transfer failed: could not open the data connection on port %1$d.</string>
+    <string name="server_problem_data_tls_failed_passive">A transfer failed: the TLS handshake on port %1$d did not complete.</string>
     <string name="running_summary_failed_no_network">
         Failed to start the FTP server, no network a client could reach this device on.
         Connect to Wi-Fi, a hotspot or tethering.

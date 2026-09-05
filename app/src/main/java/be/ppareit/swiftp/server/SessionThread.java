@@ -311,8 +311,21 @@ public class SessionThread extends Thread {
      */
     public boolean openDataSocket() {
         if (openDataStreams()) return true;
-        FsService.reportProblem(ServerProblem.DATA_SOCKET, getDataSocketErrorMessage());
+        reportDataSocketFailure();
         return false;
+    }
+
+    /**
+     * The 425 the caller writes says this in English on the wire. Here the case travels on its
+     * own, so the settings screen can say it in the language of the person who has to act on it.
+     */
+    private void reportDataSocketFailure() {
+        ServerProblem failure = localDataSocket == null ? null : localDataSocket.getFailure();
+        if (failure == null) {
+            FsService.reportProblem(ServerProblem.DATA_SOCKET);
+        } else {
+            FsService.reportProblem(failure, localDataSocket.getFailureArgs());
+        }
     }
 
     private boolean openDataStreams() {
@@ -356,7 +369,7 @@ public class SessionThread extends Thread {
      */
     public String getDataSocketErrorMessage() {
         if (localDataSocket == null || localDataSocket.getFailureReason() == null) {
-            return "Error opening data socket";
+            return ServerProblem.DATA_SOCKET.message();
         } else {
             return localDataSocket.getFailureReason();
         }

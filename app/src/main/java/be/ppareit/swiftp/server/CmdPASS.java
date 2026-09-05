@@ -102,7 +102,7 @@ public class CmdPASS extends FtpCmd implements Runnable {
     private void refuseNothingShared() {
         Log.i(TAG, "Refusing login, no folders are shared.");
         // Tell client what happened
-        sessionThread.writeString("421 No folders are shared. Open SwiFTP on the device and go to Allowed folders.\r\n");
+        sessionThread.writeString("421 " + ServerProblem.NOTHING_SHARED.message() + "\r\n");
         sessionThread.authAttempt(false);
         // Tell server what happened, this will show up in the settings screen
         FsService.reportProblem(ServerProblem.NOTHING_SHARED);

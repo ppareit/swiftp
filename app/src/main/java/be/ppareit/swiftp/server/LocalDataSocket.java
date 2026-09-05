@@ -29,7 +29,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
 import java.util.Random;
 
 import javax.net.ssl.SSLServerSocket;
@@ -70,7 +69,10 @@ public class LocalDataSocket {
 
     // Why the last transfer attempt failed to get a data socket, phrased as a single
     // line fit to be sent as the text of a 425 reply. Null while nothing went wrong.
-    private volatile String failureReason = null;
+    private static final Object[] NO_ARGS = new Object[0];
+
+    private volatile ServerProblem failure = null;
+    private volatile Object[] failureArgs = NO_ARGS;
 
     public LocalDataSocket(Settings settings) {
         this.settings = settings;
@@ -205,13 +207,18 @@ public class LocalDataSocket {
     }
 
     public Socket onTransfer() {
-        failureReason = null;
+        clearFailure();
         return plain();
     }
 
     public SSLSocket onTransferSSL() {
-        failureReason = null;
+        clearFailure();
         return ssl();
+    }
+
+    private void clearFailure() {
+        failure = null;
+        failureArgs = NO_ARGS;
     }
 
     /**
@@ -219,19 +226,40 @@ public class LocalDataSocket {
      * last attempt succeeded or none has been made.
      */
     public String getFailureReason() {
-        return failureReason;
+        return failure == null ? null : failure.message(failureArgs);
     }
 
-    private String noConnectionMessage(int port) {
-        return "No data connection on port " + port + " after " + (setupTimeoutMs / 1000) + "s";
+    /**
+     * @return the same failure as a case the settings screen words itself, or null when the
+     * last attempt succeeded or none has been made.
+     */
+    public ServerProblem getFailure() {
+        return failure;
+    }
+
+    /** The numbers that go with it, in the order {@link ServerProblem} documents. */
+    public Object[] getFailureArgs() {
+        return failureArgs;
+    }
+
+    /**
+     * Remember why this attempt failed and log it. The problem is what the settings screen turns
+     * into a sentence in the user's own language, so the numbers travel beside it rather than
+     * being written into a message here.
+     *
+     * We also log here, so the caller does not need to log, except when it has something extra.
+     */
+    private void fail(ServerProblem problem, Object... args) {
+        failure = problem;
+        failureArgs = args;
+        Log.i(TAG, problem.message(args));
     }
 
     private SSLSocket ssl() {
         if (sslServer == null) {
             // We're in PORT mode (not PASV)
             if ((remoteAddress == null || remotePort == 0) && (remote6Address == null || remote6Port == 0)) {
-                failureReason = "No data connection set up, send PASV or PORT first";
-                Log.i(TAG, "PORT mode but not initialized correctly");
+                fail(ServerProblem.DATA_NOT_SET_UP);
                 clearState();
                 return null;
             }
@@ -241,13 +269,12 @@ public class LocalDataSocket {
                 else socket = ftpsSockets.createSSLSocket(remoteAddress, remotePort);
             } catch (Exception e) {
                 if (remote6Address != null) {
-                    failureReason = "Could not connect data socket to "
-                            + remote6Address.getHostAddress() + " port " + remote6Port;
+                    fail(ServerProblem.DATA_CONNECT_FAILED,
+                            remote6Address.getHostAddress(), remote6Port);
                 } else {
-                    failureReason = "Could not connect data socket to "
-                            + remoteAddress.getHostAddress() + " port " + remotePort;
+                    fail(ServerProblem.DATA_CONNECT_FAILED,
+                            remoteAddress.getHostAddress(), remotePort);
                 }
-                Log.i(TAG, "Couldn't open PORT data socket: " + failureReason);
                 clearState();
                 return null;
             }
@@ -264,8 +291,8 @@ public class LocalDataSocket {
                 socket.setSoTimeout(setupTimeoutMs);
                 socket.startHandshake();
             } catch (IOException e) {
-                failureReason = "TLS handshake failed on data connection to "
-                        + socket.getInetAddress().getHostAddress() + " port " + socket.getPort();
+                fail(ServerProblem.DATA_TLS_FAILED_ACTIVE,
+                        socket.getInetAddress().getHostAddress(), socket.getPort());
                 return null;
             }
             return socket;
@@ -281,13 +308,12 @@ public class LocalDataSocket {
                 socket = (SSLSocket) sslServer.accept();
                 sslServer.setSoTimeout(0);
             } catch (SocketTimeoutException e) {
-                failureReason = noConnectionMessage(port);
-                Log.i(TAG, failureReason);
+                fail(ServerProblem.DATA_NO_CONNECTION, port, setupTimeoutMs / 1000);
                 clearState();
                 return null;
             } catch (Exception e) {
-                failureReason = "Error opening data socket on port " + port;
-                Log.i(TAG, failureReason + ": " + e.getMessage());
+                fail(ServerProblem.DATA_ACCEPT_FAILED, port);
+                Log.i(TAG, "Exception accepting the data socket", e);
                 clearState();
                 return null;
             }
@@ -303,8 +329,8 @@ public class LocalDataSocket {
                 // a handshake and find out right here and now.
                 socket.startHandshake();
             } catch (Exception e) {
-                failureReason = "TLS handshake failed on data connection on port " + port;
-                Log.i(TAG, failureReason + ": " + e.getMessage());
+                fail(ServerProblem.DATA_TLS_FAILED_PASSIVE, port);
+                Log.i(TAG, "The data connection handshake failed", e);
                 clearState();
                 return null;
             }
@@ -327,8 +353,7 @@ public class LocalDataSocket {
         if (server == null) {
             // We're in PORT mode (not PASV)
             if (remoteAddress == null || remotePort == 0) {
-                failureReason = "No data connection set up, send PASV or PORT first";
-                Log.i(TAG, "PORT mode but not initialized correctly");
+                fail(ServerProblem.DATA_NOT_SET_UP);
                 clearState();
                 return null;
             }
@@ -338,9 +363,8 @@ public class LocalDataSocket {
                 // OS default, which is minutes.
                 socket.connect(new InetSocketAddress(remoteAddress, remotePort), setupTimeoutMs);
             } catch (IOException e) {
-                failureReason = "Could not connect data socket to "
-                        + remoteAddress.getHostAddress() + " port " + remotePort;
-                Log.i(TAG, "Couldn't open PORT data socket: " + failureReason);
+                fail(ServerProblem.DATA_CONNECT_FAILED,
+                        remoteAddress.getHostAddress(), remotePort);
                 clearState();
                 return null;
             }
@@ -360,12 +384,11 @@ public class LocalDataSocket {
             } catch (SocketTimeoutException e) {
                 // The client asked for this transfer, so it has not gone away: something
                 // between it and this port is dropping the connection.
-                failureReason = noConnectionMessage(port);
-                Log.i(TAG, failureReason);
+                fail(ServerProblem.DATA_NO_CONNECTION, port, setupTimeoutMs / 1000);
                 socket = null;
             } catch (Exception e) {
-                failureReason = "Error opening data socket on port " + port;
-                Log.i(TAG, "Exception accepting PASV socket: " + Arrays.toString(e.getStackTrace()));
+                fail(ServerProblem.DATA_ACCEPT_FAILED, port);
+                Log.i(TAG, "Exception accepting the data socket", e);
                 socket = null;
             }
             clearState();

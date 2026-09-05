@@ -94,8 +94,10 @@ public class FsService extends Service implements Runnable {
 
     /** What is currently wrong with the running server, or null when nothing is. */
     private static volatile ServerProblem serverProblem = null;
-    /** What the server alone knows about it, or null when the case says everything. */
-    private static volatile String serverProblemDetail = null;
+    private static final Object[] NO_ARGS = new Object[0];
+
+    /** What the server alone knows about it: the format arguments its sentence needs. */
+    private static volatile Object[] serverProblemArgs = NO_ARGS;
 
     protected static Thread serverThread = null;
     protected boolean shouldExit = false;
@@ -296,19 +298,15 @@ public class FsService extends Service implements Runnable {
     }
 
     /**
-     * Something went wrong that nobody at the phone can otherwise see. The client shows that text
-     * in its own error dialog. We keep it for the settings screen and say that it changed.
+     * Something went wrong. The client shows the FTP reply in its own error dialog. We keep the
+     * error for the settings screen and say that it changed.
+     *
+     * The arguments are the part only the server knows: a port, a cause, a path. They go into
+     * the sentence the settings screen builds from the string table, so keep language out.
      */
-    public static void reportProblem(ServerProblem problem) {
-        reportProblem(problem, null);
-    }
-
-    /** As above, with the part only the server knows: a port, a cause, a path.
-     *  That detail will show up in the UI on the device, untranslated, try to keep language out.
-     */
-    public static void reportProblem(ServerProblem problem, String detail) {
+    public static void reportProblem(ServerProblem problem, Object... args) {
         serverProblem = problem;
-        serverProblemDetail = detail;
+        serverProblemArgs = args;
         Context context = App.getAppContext();
         context.sendBroadcast(new Intent(ACTION_SERVER_PROBLEM)
                 .setPackage(context.getPackageName()));
@@ -319,14 +317,14 @@ public class FsService extends Service implements Runnable {
         return serverProblem;
     }
 
-    /** The detail of the current problem, or null when it has none. */
-    public static String getProblemDetail() {
-        return serverProblemDetail;
+    /** The format arguments of the current problem, empty when its sentence needs none. */
+    public static Object[] getProblemArgs() {
+        return serverProblemArgs;
     }
 
     public static void clearProblem() {
         serverProblem = null;
-        serverProblemDetail = null;
+        serverProblemArgs = NO_ARGS;
     }
 
     private void broadcastFailure(int failure) {
