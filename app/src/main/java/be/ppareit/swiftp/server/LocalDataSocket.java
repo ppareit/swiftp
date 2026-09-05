@@ -24,6 +24,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -41,8 +42,13 @@ import be.ppareit.swiftp.utils.Logging;
 public class LocalDataSocket {
     private static final String TAG = LocalDataSocket.class.getSimpleName();
 
-    // How long a data connection and open data socket is waited for, field to ease setting/testing
-    int soTimeoutMs = 30000;
+    // How long the data connection is given to come up: the accept in passive mode, the connect
+    // in active mode, and the TLS handshake on either. Not a transfer timeout, the socket goes
+    // back to blocking forever once it is up, or a slow client loses its transfer halfway. The
+    // client asked for this transfer, so it connects within a round trip or something in between
+    // is dropping it, and waiting longer only freezes the client for longer.
+    // Field, not a constant, to ease setting it in tests.
+    int setupTimeoutMs = 10000;
     public static final int TCP_CONNECTION_BACKLOG = 5;
 
     // Bounds for passive port range. Below 1024 we would need extra privileges
@@ -217,7 +223,7 @@ public class LocalDataSocket {
     }
 
     private String noConnectionMessage(int port) {
-        return "No data connection on port " + port + " after " + (soTimeoutMs / 1000) + "s";
+        return "No data connection on port " + port + " after " + (setupTimeoutMs / 1000) + "s";
     }
 
     private SSLSocket ssl() {
@@ -255,7 +261,7 @@ public class LocalDataSocket {
             });
             logging.appendLog("Begin FTPS handshake");
             try {
-                socket.setSoTimeout(soTimeoutMs);
+                socket.setSoTimeout(setupTimeoutMs);
                 socket.startHandshake();
             } catch (IOException e) {
                 failureReason = "TLS handshake failed on data connection to "
@@ -271,7 +277,7 @@ public class LocalDataSocket {
             // means nobody arrived, a failure after it means somebody did and the TLS
             // negotiation went wrong. The 425 says which.
             try {
-                sslServer.setSoTimeout(soTimeoutMs);
+                sslServer.setSoTimeout(setupTimeoutMs);
                 socket = (SSLSocket) sslServer.accept();
                 sslServer.setSoTimeout(0);
             } catch (SocketTimeoutException e) {
@@ -287,7 +293,7 @@ public class LocalDataSocket {
             }
             try {
                 socket.setTcpNoDelay(true);
-                changeSocketTimeout(socket, soTimeoutMs); // require this before handshake (see catch block)
+                changeSocketTimeout(socket, setupTimeoutMs); // require this before handshake (see catch block)
                 socket.addHandshakeCompletedListener(event -> {
                     logging.appendLog("Handshake completed");
                     changeSocketTimeout(socket, 0);
@@ -326,9 +332,11 @@ public class LocalDataSocket {
                 clearState();
                 return null;
             }
-            Socket socket;
+            Socket socket = new Socket();
             try {
-                socket = new Socket(remoteAddress, remotePort);
+                // With a timeout: an unanswered connect to a filtered port otherwise sits on the
+                // OS default, which is minutes.
+                socket.connect(new InetSocketAddress(remoteAddress, remotePort), setupTimeoutMs);
             } catch (IOException e) {
                 failureReason = "Could not connect data socket to "
                         + remoteAddress.getHostAddress() + " port " + remotePort;
@@ -337,23 +345,15 @@ public class LocalDataSocket {
                 return null;
             }
 
-            // Kill the socket if nothing happens for X milliseconds
-            try {
-                socket.setSoTimeout(soTimeoutMs);
-            } catch (Exception e) {
-                failureReason = "Could not set a timeout on the data socket";
-                Log.e(TAG, "Couldn't set SO_TIMEOUT");
-                clearState();
-                return null;
-            }
-
+            // No read timeout on the socket itself, like the passive and TLS paths, which both
+            // put theirs back to 0 once the connection is up.
             return socket;
         } else {
             // We're in PASV mode (not PORT)
             Socket socket = null;
             final int port = server.getLocalPort();
             try {
-                server.setSoTimeout(soTimeoutMs);
+                server.setSoTimeout(setupTimeoutMs);
                 socket = server.accept();
                 server.setSoTimeout(0);
                 Log.d(TAG, "onTransfer pasv accept successful");
