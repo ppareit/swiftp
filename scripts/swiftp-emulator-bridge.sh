@@ -14,6 +14,11 @@ publisher_pid=""
 ftp_proxy_pid=""
 passive_proxy_pids=()
 added_address=false
+emulator_serial=""
+
+adb_emulator() {
+    adb -s "$emulator_serial" "$@"
+}
 
 ensure_adb_forward() {
     local host_port="$1"
@@ -24,7 +29,7 @@ ensure_adb_forward() {
         return
     fi
 
-    if adb forward "tcp:$host_port" "tcp:$device_port"; then
+    if adb_emulator forward "tcp:$host_port" "tcp:$device_port"; then
         echo "Restored ADB forward: tcp:$host_port -> tcp:$device_port"
     fi
 }
@@ -33,7 +38,7 @@ ensure_adb_forwards() {
     local adb_port
     local forwards
     local passive_port
-    forwards="$(adb forward --list 2>/dev/null)" || return
+    forwards="$(adb_emulator forward --list 2>/dev/null)" || return
 
     ensure_adb_forward "$ADB_FTP_PORT" "$FTP_PORT" "$forwards"
     for ((passive_port = PASSIVE_PORT_LOW; passive_port <= PASSIVE_PORT_HIGH; passive_port++)); do
@@ -57,10 +62,10 @@ cleanup() {
         fi
     done
 
-    adb forward --remove "tcp:$ADB_FTP_PORT" 2>/dev/null || true
+    adb_emulator forward --remove "tcp:$ADB_FTP_PORT" 2>/dev/null || true
     for ((passive_port = PASSIVE_PORT_LOW; passive_port <= PASSIVE_PORT_HIGH; passive_port++)); do
         adb_port=$((ADB_PASSIVE_PORT_LOW + passive_port - PASSIVE_PORT_LOW))
-        adb forward --remove "tcp:$adb_port" 2>/dev/null || true
+        adb_emulator forward --remove "tcp:$adb_port" 2>/dev/null || true
     done
 
     if [[ "$added_address" == true ]]; then
@@ -81,10 +86,23 @@ for required_command in adb avahi-publish-service ip socat sudo; do
     fi
 done
 
-if ! adb get-state >/dev/null 2>&1; then
-    echo "No active ADB device or emulator found." >&2
+mapfile -t emulator_serials < <(
+    adb devices | awk '$1 ~ /^emulator-/ && $2 == "device" { print $1 }'
+)
+
+if (( ${#emulator_serials[@]} == 0 )); then
+    echo "No active Android emulator found." >&2
     exit 1
 fi
+
+if (( ${#emulator_serials[@]} > 1 )); then
+    echo "Multiple active Android emulators found:" >&2
+    printf '  %s\n' "${emulator_serials[@]}" >&2
+    exit 1
+fi
+
+emulator_serial="${emulator_serials[0]}"
+echo "Using Android emulator: $emulator_serial"
 
 sudo -v
 
@@ -120,7 +138,7 @@ echo "Waiting for SwiFTP to start..."
 while true; do
     ensure_adb_forwards
 
-    if adb shell ss -H -ltn 2>/dev/null |
+    if adb_emulator shell ss -H -ltn 2>/dev/null |
        grep -Eq -- "[:.]${FTP_PORT}[[:space:]]"
     then
         if [[ -z "$publisher_pid" ]] ||
