@@ -56,7 +56,8 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
                     errString = "550 MLSD does not support wildcards\r\n";
                     break mainblock;
                 }
-                fileToList = new File(sessionThread.getWorkingDir(), param);
+                fileToList = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                        sessionThread.getWorkingDir(), param);
                 if (violatesChroot(fileToList)) {
                     errString = "450 MLSD target violates chroot\r\n";
                     break mainblock;

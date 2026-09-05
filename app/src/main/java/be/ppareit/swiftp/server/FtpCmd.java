@@ -24,6 +24,8 @@ import android.util.Log;
 import java.io.File;
 import java.lang.reflect.Constructor;
 
+import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.Logging;
 
 public abstract class FtpCmd implements Runnable {
@@ -232,17 +234,41 @@ public abstract class FtpCmd implements Runnable {
         return getParameter(input, false);
     }
 
-    public static File inputPathToChrootedFile(final File chrootDir, final File existingPrefix, String param) {
-        try {
-            if (param.charAt(0) == '/') {
-                // The STOR contained an absolute path
-                return new File(chrootDir, param);
+    /**
+     * Resolves a path the client sent: absolute ones against the chroot, relative ones against
+     * {@code existingPrefix}, normally the working dir. Both live in the FTP namespace, so under
+     * scoped storage the result is mapped back to a physical path. This does not enforce the
+     * chroot; callers check the result with violatesChroot.
+     */
+    public static File inputPathToChrootedFile(final File chrootDir, final File existingPrefix, String ftpPath) {
+        if (ftpPath == null) ftpPath = "";
+
+        File namespacePrefix = existingPrefix;
+        if (Util.useScopedStorage()) {
+            try {
+                final String virtualPrefix = AllowedFolders.virtualPathForPhysical(
+                        existingPrefix.getCanonicalPath(), chrootDir.getCanonicalPath());
+                if (virtualPrefix != null) namespacePrefix = new File(virtualPrefix);
+            } catch (Exception ignored) {
+                // Keep the physical prefix; later validation still enforces the chroot.
             }
-        } catch (Exception e) {
         }
 
-        // The STOR contained a relative path
-        return new File(existingPrefix, param);
+        final File path;
+        if (ftpPath.startsWith(File.separator)) {
+            // The command contained an absolute FTP path.
+            path = new File(chrootDir, ftpPath);
+        } else {
+            path = new File(namespacePrefix, ftpPath);
+        }
+
+        if (!Util.useScopedStorage()) return path;
+        try {
+            final String physicalPath = AllowedFolders.physicalPathForVirtual(path.getCanonicalPath());
+            return physicalPath == null ? path : new File(physicalPath);
+        } catch (Exception e) {
+            return path;
+        }
     }
 
     /**

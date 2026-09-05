@@ -75,6 +75,15 @@ object AllowedFolders {
     @JvmStatic
     fun defaultChroot(): String? = index().defaultChroot()
 
+    /** Resolves a path in the temporary FTP namespace to its physical storage path. */
+    @JvmStatic
+    fun physicalPathForVirtual(path: String?): String? = index().physicalPathForVirtual(path)
+
+    /** Projects a physical storage path into the temporary FTP namespace. */
+    @JvmStatic
+    fun virtualPathForPhysical(path: String?, chroot: String?): String? =
+        index().virtualPathForPhysical(path, chroot)
+
     /**
      * The document for a File path, eg "/storage/emulated/0/Documents/notes.txt", or null when
      * no granted folder holds it. A path stays a path here, a ":" in a name is part of the name.
@@ -82,8 +91,10 @@ object AllowedFolders {
     @JvmStatic
     fun documentAt(path: String?): DocumentFile? {
         if (path == null) return null
-        val tree = index().containing(path) ?: return null
-        return documentIn(tree, tree.documentIdFor(path))
+        val index = index()
+        val physicalPath = index.physicalPathForVirtual(path) ?: path
+        val tree = index.containing(physicalPath) ?: return null
+        return documentIn(tree, tree.documentIdFor(physicalPath))
     }
 
     /**

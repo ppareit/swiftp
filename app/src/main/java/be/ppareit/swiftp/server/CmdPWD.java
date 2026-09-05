@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 
 /**
@@ -55,7 +56,12 @@ public class CmdPWD extends FtpCmd implements Runnable {
             File chrootDir = sessionThread.getChrootDir();
             String visibleDir = "/";
             if (chrootDir != null) {
-                visibleDir = chrootRelativePath(chrootDir.getCanonicalPath(), currentDir);
+                final String chroot = chrootDir.getCanonicalPath();
+                if (Util.useScopedStorage()) {
+                    final String virtualDir = AllowedFolders.virtualPathForPhysical(currentDir, chroot);
+                    if (virtualDir != null) currentDir = virtualDir;
+                }
+                visibleDir = chrootRelativePath(chroot, currentDir);
                 if (visibleDir == null) {
                     Log.i(TAG, "Working dir lies outside the chroot, reporting the root");
                     visibleDir = "/";

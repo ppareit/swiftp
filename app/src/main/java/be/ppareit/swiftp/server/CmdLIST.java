@@ -74,7 +74,8 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
                     errString = "550 LIST does not support wildcards\r\n";
                     break mainblock;
                 }
-                fileToList = new File(sessionThread.getWorkingDir(), param);
+                fileToList = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                        sessionThread.getWorkingDir(), param);
                 if (Util.useScopedStorage()) {
                     docFileToList = AllowedFolders.documentAt(fileToList.getPath());
                 }

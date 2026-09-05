@@ -41,7 +41,7 @@ public class CmdCDUP extends FtpCmd implements Runnable {
         String errString = null;
         mainBlock: {
             File workingDir = sessionThread.getWorkingDir();
-            newDir = workingDir.getParentFile();
+            newDir = inputPathToChrootedFile(sessionThread.getChrootDir(), workingDir, "..");
             if (newDir == null) {
                 errString = "550 Current dir cannot find parent\r\n";
                 break mainBlock;

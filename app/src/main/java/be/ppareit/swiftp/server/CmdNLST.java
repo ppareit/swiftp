@@ -61,7 +61,8 @@ public class CmdNLST extends CmdAbstractListing implements Runnable {
                     errString = "550 NLST does not support wildcards\r\n";
                     break mainblock;
                 }
-                fileToList = new File(sessionThread.getWorkingDir(), param);
+                fileToList = inputPathToChrootedFile(sessionThread.getChrootDir(),
+                        sessionThread.getWorkingDir(), param);
                 if (violatesChroot(fileToList)) {
                     errString = "450 Listing target violates chroot\r\n";
                     break mainblock;

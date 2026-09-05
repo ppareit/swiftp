@@ -8,6 +8,8 @@ package be.ppareit.swiftp.utils
  */
 class StorageTree private constructor(
     val documentId: String,
+    val volumeId: String,
+    val relativePath: String,
     /** The physical path of the granted folder, without a trailing separator. */
     val rootPath: String,
 ) {
@@ -47,6 +49,15 @@ class StorageTree private constructor(
         if (path == rootPath) return documentId
         return idPrefix + path.substring(pathPrefix.length)
     }
+
+    /** Path below the volume root, including Documents for the historical home root. */
+    fun pathWithinVolume(): String = when (volumeId) {
+        HOME_ROOT_ID -> DOCUMENTS_DIR.joinRelative(relativePath)
+        else -> relativePath
+    }
+
+    /** Home is another view of the primary volume, not a separate storage volume. */
+    fun storageVolumeId(): String = if (volumeId == HOME_ROOT_ID) PRIMARY_ROOT_ID else volumeId
 
     override fun toString(): String = rootPath
 
@@ -96,6 +107,8 @@ class StorageTree private constructor(
 
             return StorageTree(
                 documentId = documentId,
+                volumeId = volume,
+                relativePath = relative,
                 rootPath = volumeRootPath.joinPath(relative),
             )
         }
@@ -106,6 +119,12 @@ class StorageTree private constructor(
             return relative.split('/').none { it.isEmpty() || it == "." || it == ".." }
         }
     }
+}
+
+private fun String.joinRelative(relative: String): String = when {
+    isEmpty() -> relative
+    relative.isEmpty() -> this
+    else -> "$this/$relative"
 }
 
 private fun String.joinPath(relative: String): String {
