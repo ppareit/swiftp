@@ -27,6 +27,14 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
         android:summary="@string/running_summary_stopped"
         android:title="@string/running_label"
         app:iconSpaceReserved="false" />
+    <!-- Shown only while something is wrong, see PreferenceFragment -->
+    <Preference
+        android:key="server_problem"
+        android:persistent="false"
+        android:selectable="true"
+        android:title="@string/server_problem_label"
+        app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false" />
     <!-- Not persisted, the checked state is read from the system -->
     <CheckBoxPreference
         android:key="show_server_notification"

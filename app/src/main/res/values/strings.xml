@@ -26,6 +26,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_label">FTP Server</string>
     <string name="running_summary_stopped">Toggle the state of the FTP server</string>
     <string name="running_summary_started">at %s</string>
+    <string name="server_problem_label">Error</string>
     <string name="running_summary_failed_no_network">
         Failed to start the FTP server, no network a client could reach this device on.
         Connect to Wi-Fi, a hotspot or tethering.

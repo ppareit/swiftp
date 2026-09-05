@@ -87,6 +87,13 @@ public class FsService extends Service implements Runnable {
     static public final int FAILURE_MOBILE_ONLY = 1;
     static public final int FAILURE_PORT = 2;
 
+    // Broadcast when something went wrong that the settings screen should show.
+    // Use FsServer.getProblem() to see what went wrong.
+    static public final String ACTION_SERVER_PROBLEM = "be.ppareit.swiftp.SERVER_PROBLEM";
+
+    /** What is currently wrong with the running server, or null when nothing is. */
+    private static volatile String serverProblem = null;
+
     protected static Thread serverThread = null;
     protected boolean shouldExit = false;
 
@@ -272,6 +279,10 @@ public class FsService extends Service implements Runnable {
         shouldExit = false; // we handled the exit flag, so reset it to acknowledge
         Log.d(TAG, "Exiting cleanly, returning from run()");
 
+        // The one problem we report names a port on a server that no longer exists, so it goes
+        // with it. A problem that outlives its server will have to say so itself.
+        clearProblem();
+
         stopSelf();
         broadcastAction(ACTION_STOPPED);
     }
@@ -279,6 +290,26 @@ public class FsService extends Service implements Runnable {
     private void broadcastAction(String action) {
         // need setPackage for our RECEIVER_NOT_EXPORTED calls
         sendBroadcast(new Intent(action).setPackage(getPackageName()));
+    }
+
+    /**
+     * Something went wrong that nobody at the phone can otherwise see. The client shows that text
+     * in its own error dialog. We keep it for the settings screen and say that it changed.
+     */
+    public static void reportProblem(String message) {
+        serverProblem = message;
+        Context context = App.getAppContext();
+        context.sendBroadcast(new Intent(ACTION_SERVER_PROBLEM)
+                .setPackage(context.getPackageName()));
+    }
+
+    /** What is currently wrong, as one line, or null when nothing is. */
+    public static String getProblem() {
+        return serverProblem;
+    }
+
+    public static void clearProblem() {
+        serverProblem = null;
     }
 
     private void broadcastFailure(int failure) {

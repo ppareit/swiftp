@@ -303,9 +303,19 @@ public class SessionThread extends Thread {
      *
      * Must call closeDataSocket() when done
      *
+     * A failure is reported to the UI here rather than by the caller: the 425 belongs to the
+     * command, but nobody at the phone reads it, and a command that answers something else, or
+     * gives up without answering at all, still has to be visible.
+     *
      * @return true if successful
      */
     public boolean openDataSocket() {
+        if (openDataStreams()) return true;
+        FsService.reportProblem(getDataSocketErrorMessage());
+        return false;
+    }
+
+    private boolean openDataStreams() {
         if (cmdSSLSocket != null || cmdSSLAuthSocket != null) {
             try {
                 sslDataSocket = localDataSocket.onTransferSSL();

@@ -178,6 +178,16 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             });
         }
 
+        Preference serverProblemPref = findPref("server_problem");
+        if (serverProblemPref != null) {
+            updateServerProblemPref();
+            serverProblemPref.setOnPreferenceClickListener(preference -> {
+                FsService.clearProblem();
+                updateServerProblemPref();
+                return true;
+            });
+        }
+
         Preference manageUsersPref = findPref("manage_users");
         if (manageUsersPref != null) {
             updateUsersPref();
@@ -839,12 +849,14 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         updateUsersPref();
         updateAllowedFoldersPref();
         updateServerNotificationPref();
+        updateServerProblemPref();
 
         Cat.d("onResume: Registering the FTP server actions");
         IntentFilter filter = new IntentFilter();
         filter.addAction(FsService.ACTION_STARTED);
         filter.addAction(FsService.ACTION_STOPPED);
         filter.addAction(FsService.ACTION_FAILEDTOSTART);
+        filter.addAction(FsService.ACTION_SERVER_PROBLEM);
 
         // Our own actions only, so no other app can drive the screen state.
         ContextCompat.registerReceiver(requireActivity(), mFsActionsReceiver, filter,
@@ -1040,6 +1052,21 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
     }
 
     /**
+     * Show whatever is currently wrong with the server, or hide the row when nothing is. The
+     * message is asked for rather than taken from the broadcast, so a problem raised while this
+     * screen was closed still shows up when it opens.
+     */
+    private void updateServerProblemPref() {
+        Preference problemPref = findPref("server_problem");
+        if (problemPref == null) return;
+        String message = FsService.getProblem();
+        problemPref.setVisible(message != null);
+        if (message != null) {
+            problemPref.setSummary(message);
+        }
+    }
+
+    /**
      * This receiver will check FTPServer.ACTION* messages and will update the button,
      * running_state, if the server is running and will also display at what url the
      * server is running.
@@ -1049,6 +1076,11 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         public void onReceive(Context context, Intent intent) {
             Cat.v("action received: " + intent.getAction());
             if (intent.getAction() == null) {
+                return;
+            }
+            if (intent.getAction().equals(FsService.ACTION_SERVER_PROBLEM)) {
+                // Not a start failure, just a (hopefully solvable) problem the switch stays!
+                updateServerProblemPref();
                 return;
             }
             // remove all pending callbacks
@@ -1061,6 +1093,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             }
             // action will be ACTION_STARTED, ACTION_STOPPED or ACTION_FAILEDTOSTART
             updateRunningState();
+            // Stopping the server clears its problems, so repaint that too
+            updateServerProblemPref();
         }
     };
 
