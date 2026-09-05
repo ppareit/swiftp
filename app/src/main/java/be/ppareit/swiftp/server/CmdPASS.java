@@ -21,6 +21,7 @@ package be.ppareit.swiftp.server;
 
 import android.util.Log;
 
+import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.AnonymousLimit;
@@ -100,8 +101,11 @@ public class CmdPASS extends FtpCmd implements Runnable {
      */
     private void refuseNothingShared() {
         Log.i(TAG, "Refusing login, no folders are shared.");
+        // Tell client what happened
         sessionThread.writeString("421 No folders are shared. Open SwiFTP on the device and go to Allowed folders.\r\n");
         sessionThread.authAttempt(false);
+        // Tell server what happened, this will show up in the settings screen
+        FsService.reportProblem(ServerProblem.NOTHING_SHARED);
         // 421 is "closing control connection", and authAttempt only counts the failure. Without
         // the close the refusal is advisory: isAnonymouslyLoggedIn() reads the global setting,
         // not the session, so a refused guest could go on to LIST and RETR.

@@ -79,6 +79,7 @@ import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.server.ServerProblem;
 import be.ppareit.swiftp.users.FtpUser;
 import be.ppareit.swiftp.users.UserStore;
 import be.ppareit.swiftp.utils.AllowedFolders;
@@ -1053,16 +1054,30 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
 
     /**
      * Show whatever is currently wrong with the server, or hide the row when nothing is. The
-     * message is asked for rather than taken from the broadcast, so a problem raised while this
+     * problem is asked for rather than taken from the broadcast, so a problem raised while this
      * screen was closed still shows up when it opens.
+     *
+     * The server reports which case it hit, not a sentence: the wording belongs here, in the
+     * string table, where it can be translated and where the server package needs no Context.
      */
     private void updateServerProblemPref() {
         Preference problemPref = findPref("server_problem");
         if (problemPref == null) return;
-        String message = FsService.getProblem();
-        problemPref.setVisible(message != null);
-        if (message != null) {
-            problemPref.setSummary(message);
+        ServerProblem problem = FsService.getProblem();
+        problemPref.setVisible(problem != null);
+        if (problem != null) {
+            problemPref.setSummary(describe(problem, FsService.getProblemDetail()));
+        }
+    }
+
+    /** The one line shown for a problem. The detail is the server's own, so it is not translated. */
+    private String describe(ServerProblem problem, String detail) {
+        switch (problem) {
+            case NOTHING_SHARED:
+                return getString(R.string.server_problem_nothing_shared);
+            case DATA_SOCKET:
+            default:
+                return detail != null ? detail : getString(R.string.server_problem_data_socket);
         }
     }
 

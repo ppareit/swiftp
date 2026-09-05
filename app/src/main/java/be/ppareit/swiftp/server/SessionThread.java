@@ -311,7 +311,7 @@ public class SessionThread extends Thread {
      */
     public boolean openDataSocket() {
         if (openDataStreams()) return true;
-        FsService.reportProblem(getDataSocketErrorMessage());
+        FsService.reportProblem(ServerProblem.DATA_SOCKET, getDataSocketErrorMessage());
         return false;
     }
 

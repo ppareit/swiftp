@@ -65,6 +65,7 @@ import javax.net.ssl.SSLServerSocket;
 
 import be.ppareit.swiftp.users.UserStore;
 import be.ppareit.swiftp.gui.FsNotification;
+import be.ppareit.swiftp.server.ServerProblem;
 import be.ppareit.swiftp.server.SessionThread;
 import be.ppareit.swiftp.server.TcpListener;
 import be.ppareit.swiftp.utils.FTPSSockets;
@@ -92,7 +93,9 @@ public class FsService extends Service implements Runnable {
     static public final String ACTION_SERVER_PROBLEM = "be.ppareit.swiftp.SERVER_PROBLEM";
 
     /** What is currently wrong with the running server, or null when nothing is. */
-    private static volatile String serverProblem = null;
+    private static volatile ServerProblem serverProblem = null;
+    /** What the server alone knows about it, or null when the case says everything. */
+    private static volatile String serverProblemDetail = null;
 
     protected static Thread serverThread = null;
     protected boolean shouldExit = false;
@@ -279,8 +282,8 @@ public class FsService extends Service implements Runnable {
         shouldExit = false; // we handled the exit flag, so reset it to acknowledge
         Log.d(TAG, "Exiting cleanly, returning from run()");
 
-        // The one problem we report names a port on a server that no longer exists, so it goes
-        // with it. A problem that outlives its server will have to say so itself.
+        // Every problem we report is about a session on a server that no longer exists, so it
+        // goes with it. A problem that outlives its server will have to say so itself.
         clearProblem();
 
         stopSelf();
@@ -296,20 +299,34 @@ public class FsService extends Service implements Runnable {
      * Something went wrong that nobody at the phone can otherwise see. The client shows that text
      * in its own error dialog. We keep it for the settings screen and say that it changed.
      */
-    public static void reportProblem(String message) {
-        serverProblem = message;
+    public static void reportProblem(ServerProblem problem) {
+        reportProblem(problem, null);
+    }
+
+    /** As above, with the part only the server knows: a port, a cause, a path.
+     *  That detail will show up in the UI on the device, untranslated, try to keep language out.
+     */
+    public static void reportProblem(ServerProblem problem, String detail) {
+        serverProblem = problem;
+        serverProblemDetail = detail;
         Context context = App.getAppContext();
         context.sendBroadcast(new Intent(ACTION_SERVER_PROBLEM)
                 .setPackage(context.getPackageName()));
     }
 
-    /** What is currently wrong, as one line, or null when nothing is. */
-    public static String getProblem() {
+    /** What is currently wrong, or null when nothing is. */
+    public static ServerProblem getProblem() {
         return serverProblem;
+    }
+
+    /** The detail of the current problem, or null when it has none. */
+    public static String getProblemDetail() {
+        return serverProblemDetail;
     }
 
     public static void clearProblem() {
         serverProblem = null;
+        serverProblemDetail = null;
     }
 
     private void broadcastFailure(int failure) {
