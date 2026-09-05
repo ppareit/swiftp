@@ -23,6 +23,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.net.InetAddress;
 
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
@@ -91,6 +92,20 @@ public abstract class FtpCmd implements Runnable {
     /** The connection log for this command's session. */
     protected Logging logging() {
         return sessionThread.getLogging();
+    }
+
+    /**
+     * Whether an active data connection may be opened to this address.
+     *
+     * RFC 2577 section 3: only the host that issued the command, so the server cannot
+     * be used to reach a third host on the client's behalf (the FTP bounce attack).
+     * Comparing InetAddress ignores the IPv6 scope id, which is what we want: the
+     * client names a link local address without one, we hold the same address with
+     * the interface it arrived on.
+     */
+    protected boolean isControlPeer(InetAddress dest) {
+        InetAddress peer = sessionThread.getControlPeerAddress();
+        return peer != null && peer.equals(dest);
     }
 
     @Override

@@ -247,6 +247,14 @@ public class SessionThread extends Thread {
         return localDataSocket.onPort(dest, port);
     }
 
+    /** The address at the far end of the control connection. */
+    public InetAddress getControlPeerAddress() {
+        if (cmdSocket != null) return cmdSocket.getInetAddress();
+        if (cmdSSLSocket != null) return cmdSSLSocket.getInetAddress();
+        if (cmdSSLAuthSocket != null) return cmdSSLAuthSocket.getInetAddress();
+        return null;
+    }
+
     /*
     * Returns IP of the device running Swiftp.
     * */

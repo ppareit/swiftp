@@ -87,6 +87,12 @@ public class CmdPORT extends FtpCmd implements Runnable {
                 break mainBlock;
             }
 
+            if (!isControlPeer(inetAddr)) {
+                Log.i(TAG, "PORT refused, address is not the control connection peer");
+                errString = "500 Illegal PORT command\r\n";
+                break mainBlock;
+            }
+
             int port = Integer.parseInt(substrs[4]) * 256 + Integer.parseInt(substrs[5]);
 
             sessionThread.onPort(inetAddr, port);

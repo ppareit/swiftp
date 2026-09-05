@@ -74,6 +74,11 @@ public class CmdEPRT extends FtpCmd implements Runnable {
             NetworkInterface ni = NetworkInterface.getByInetAddress(sessionThread.getDataSocketPasvIp());
             // Scope ID required for IPv6 link local address
             Inet6Address inet6Address = Inet6Address.getByAddress(a1, addr, ni);
+            if (!isControlPeer(inet6Address)) {
+                Log.i(TAG, "EPRT refused, address is not the control connection peer");
+                sessionThread.writeString("500 Illegal EPRT command\r\n");
+                return;
+            }
             sessionThread.onEprt(inet6Address, Integer.parseInt(portString));
         } catch (Exception e) {
             // There was a problem opening a port
