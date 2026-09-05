@@ -58,6 +58,7 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -88,9 +89,9 @@ public class FsService extends Service implements Runnable {
     static public final int FAILURE_MOBILE_ONLY = 1;
     static public final int FAILURE_PORT = 2;
 
-    // Broadcast when something went wrong that the settings screen should show.
-    // Use FsServer.getProblem() to see what went wrong.
-    static public final String ACTION_SERVER_PROBLEM = "be.ppareit.swiftp.SERVER_PROBLEM";
+    // Broadcast what the settings screen should show changed: something went wrong, or
+    // the problem is over. Use FsServer.getProblem() to see which.
+    static public final String ACTION_PROBLEM_CHANGED = "be.ppareit.swiftp.PROBLEM_CHANGED";
 
     /** What is currently wrong with the running server, or null when nothing is. */
     private static volatile ServerProblem serverProblem = null;
@@ -305,10 +306,17 @@ public class FsService extends Service implements Runnable {
      * the sentence the settings screen builds from the string table, so keep language out.
      */
     public static void reportProblem(ServerProblem problem, Object... args) {
+        // Don't report the exact same problem again
+        if (problem == serverProblem && Arrays.equals(args, serverProblemArgs))
+            return;
         serverProblem = problem;
         serverProblemArgs = args;
+        broadcastProblemChanged();
+    }
+
+    private static void broadcastProblemChanged() {
         Context context = App.getAppContext();
-        context.sendBroadcast(new Intent(ACTION_SERVER_PROBLEM)
+        context.sendBroadcast(new Intent(ACTION_PROBLEM_CHANGED)
                 .setPackage(context.getPackageName()));
     }
 
@@ -322,9 +330,16 @@ public class FsService extends Service implements Runnable {
         return serverProblemArgs;
     }
 
+    /**
+     * Nothing is wrong any more. Called on every successful transfer, so it does nothing at all
+     * when there was no problem, and only then is it worth telling the settings screen.
+     */
     public static void clearProblem() {
+        if (serverProblem == null)
+            return;
         serverProblem = null;
         serverProblemArgs = NO_ARGS;
+        broadcastProblemChanged();
     }
 
     private void broadcastFailure(int failure) {

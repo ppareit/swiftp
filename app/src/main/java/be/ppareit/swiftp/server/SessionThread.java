@@ -310,7 +310,11 @@ public class SessionThread extends Thread {
      * @return true if successful
      */
     public boolean openDataSocket() {
-        if (openDataStreams()) return true;
+        if (openDataStreams()) {
+            // Everything works normal, clear problems (if any)
+            FsService.clearProblem();
+            return true;
+        }
         reportDataSocketFailure();
         return false;
     }

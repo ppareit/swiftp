@@ -857,7 +857,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         filter.addAction(FsService.ACTION_STARTED);
         filter.addAction(FsService.ACTION_STOPPED);
         filter.addAction(FsService.ACTION_FAILEDTOSTART);
-        filter.addAction(FsService.ACTION_SERVER_PROBLEM);
+        filter.addAction(FsService.ACTION_PROBLEM_CHANGED);
 
         // Our own actions only, so no other app can drive the screen state.
         ContextCompat.registerReceiver(requireActivity(), mFsActionsReceiver, filter,
@@ -1102,7 +1102,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             if (intent.getAction() == null) {
                 return;
             }
-            if (intent.getAction().equals(FsService.ACTION_SERVER_PROBLEM)) {
+            if (intent.getAction().equals(FsService.ACTION_PROBLEM_CHANGED)) {
                 // Not a start failure, just a (hopefully solvable) problem the switch stays!
                 updateServerProblemPref();
                 return;
