@@ -25,6 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 
+import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
 import be.ppareit.swiftp.users.FtpUser;
@@ -102,6 +103,7 @@ public class UserListFragment extends Fragment {
                 getString(R.string.password_default),
                 FsSettings.getDefaultChrootDir().getPath());
         UserStore.INSTANCE.add(user);
+        FsService.checkUsersAvailable();
         refreshUserList();
         scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
@@ -121,6 +123,7 @@ public class UserListFragment extends Fragment {
                 .setNegativeButton(android.R.string.no, null)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, whichButton) -> {
                     UserStore.INSTANCE.remove(item.getUsername());
+                    FsService.checkUsersAvailable();
                     refreshUserList();
                 })
                 .create();
@@ -187,6 +190,7 @@ public class UserListFragment extends Fragment {
                 setChroot(FsSettings.getDefaultChrootDir().getPath());
             }
             FsSettings.setAllowAnonymous(allowed);
+            FsService.checkUsersAvailable();
             details.setVisibility(allowed ? View.VISIBLE : View.GONE);
         }
 

@@ -1080,6 +1080,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
     static int messageOf(ServerProblem problem) {
         return switch (problem) {
             case NOTHING_SHARED -> R.string.server_problem_nothing_shared;
+            case NO_USERS -> R.string.server_problem_no_users;
             case DATA_NOT_SET_UP -> R.string.server_problem_data_not_set_up;
             case DATA_CONNECT_FAILED -> R.string.server_problem_data_connect_failed;
             case DATA_TLS_FAILED_ACTIVE -> R.string.server_problem_data_tls_failed_active;

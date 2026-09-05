@@ -60,6 +60,9 @@ public enum ServerProblem {
 
     /** A login was refused because the SAF path is in use and no folder has been granted. */
     NOTHING_SHARED("No folders are shared. Open SwiFTP on the device and go to Allowed folders."),
+
+    /** The server runs, but there is no user and no anonymous login, so nobody can log in. */
+    NO_USERS("No users. Open SwiFTP on the device and go to Manage users."),
     ;
 
     private final String template;

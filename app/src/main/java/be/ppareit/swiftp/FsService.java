@@ -317,6 +317,20 @@ public class FsService extends Service implements Runnable {
                 .setPackage(context.getPackageName()));
     }
 
+    /**
+     * A server nobody can log in on is running for nothing, report as problem. It is not
+     * a start failure: the server stays up, and the moment a user is added or the
+     * anonymous login is switched on it serves again, which is why this also clears.
+     */
+    public static void checkUsersAvailable() {
+        if (!isRunning())
+            return;
+        if (UserStore.INSTANCE.users().isEmpty() && !FsSettings.allowAnonymous())
+            reportProblem(ServerProblem.NO_USERS);
+        else if (serverProblem == ServerProblem.NO_USERS)
+            clearProblem();
+    }
+
     /** What is currently wrong, or null when nothing is. */
     public static ServerProblem getProblem() {
         return serverProblem;
@@ -412,6 +426,8 @@ public class FsService extends Service implements Runnable {
         // A socket is open now, so the FTP server is started, notify rest of world
         Log.i(TAG, "Ftp Server up and running, broadcasting ACTION_STARTED");
         broadcastAction(ACTION_STARTED);
+
+        checkUsersAvailable();
 
         socketWatcher = new TcpListener(
                 listenSocket, this, listenSocketSecure,
