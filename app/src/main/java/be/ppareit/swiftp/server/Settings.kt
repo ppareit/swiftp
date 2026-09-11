@@ -46,6 +46,12 @@ interface Settings {
     /** The chroot a session starts in when the user has none of its own. */
     fun getDefaultChrootDir(): File
 
+    /**
+     * Whether a session chrooted here can be served at all. Which folders are reachable is
+     * the host's business, the server only needs the answer before it accepts a login.
+     */
+    fun isPathServed(path: String): Boolean
+
     /** Low end of the PASV data port range, 0 when unset. */
     fun getPortRangeLow(): Int
 

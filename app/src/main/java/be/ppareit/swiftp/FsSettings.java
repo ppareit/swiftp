@@ -52,9 +52,22 @@ public class FsSettings {
         sp.edit().putBoolean("allow_anonymous", allow).apply();
     }
 
-    /** The anonymous login has its own chroot, it is not one of the users. */
+    /**
+     * The anonymous login has its own chroot, it is not one of the users.
+     *
+     * Empty means the allowed folders, whichever they are, the same as
+     * {@link be.ppareit.swiftp.users.UserStore#ALL_ALLOWED_FOLDERS}.
+     *
+     * Never chosen is empty too. It used to default to the literal "/storage/emulated/0".
+     */
     public static String getAnonChroot() {
-        return sp.getString("anonChroot", "/storage/emulated/0" /*backwards compat*/);
+        final String chroot = sp.getString("anonChroot", "");
+        if (!chroot.isEmpty() && chroot.equals(getDefaultChrootDir().getPath())) {
+            // Migrate this also to 'All allowed folders'
+            setAnonChroot("");
+            return "";
+        }
+        return chroot;
     }
 
     public static void setAnonChroot(String chroot) {

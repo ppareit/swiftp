@@ -23,11 +23,10 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.File;
-
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
 import be.ppareit.swiftp.R;
+import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.users.FtpUser;
 import be.ppareit.swiftp.users.UserStore;
 import be.ppareit.swiftp.utils.ChrootPicker;
@@ -99,9 +98,10 @@ public class UserListFragment extends Fragment {
 
     private void addUser() {
         commitFocusedField();
+        // Not a path: a new user follows the allowed folders until somebody says otherwise
         FtpUser user = new FtpUser(freeUsername(),
                 getString(R.string.password_default),
-                FsSettings.getDefaultChrootDir().getPath());
+                UserStore.ALL_ALLOWED_FOLDERS);
         UserStore.INSTANCE.add(user);
         FsService.checkUsersAvailable();
         refreshUserList();
@@ -149,6 +149,48 @@ public class UserListFragment extends Fragment {
     }
 
     /**
+     * Which folders a login gets, in two steps.
+     *
+     * Following the allowed folders is what almost everybody wants and is the only answer that
+     * stays right when those folders change, so it is the first entry. Naming one folder is the
+     * exception and sits behind the second, where it cannot be picked by accident.
+     */
+    private void chooseChroot(String current, ChrootPicker.OnTextEventListener onChosen) {
+        final CharSequence[] items = {
+                getString(R.string.chroot_all_allowed_folders),
+                getString(R.string.chroot_restrict_to_folder),
+        };
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.chroot_label)
+                .setItems(items, (dialog, which) -> {
+                    if (which == 0) {
+                        onChosen.OnEvent(UserStore.ALL_ALLOWED_FOLDERS);
+                        return;
+                    }
+                    ChrootPicker picker = new ChrootPicker();
+                    picker.setOnTextEventListener(onChosen);
+                    picker.showFolderPicker(current, null, getContext());
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    /** What the row shows for a chroot: the allowed folders have no one path to print. */
+    private String chrootText(String chroot) {
+        return chroot.isEmpty() ? getString(R.string.chroot_all_allowed_folders) : chroot;
+    }
+
+    /**
+     * Says on the row that this login is kept in a folder that is not shared any more, which
+     * would otherwise only show up as a refused login on somebody else's client.
+     */
+    private void showChrootWarning(TextView warning, String chroot) {
+        final boolean stranded = !chroot.isEmpty() && !Util.isPathServed(chroot);
+        warning.setVisibility(stranded ? View.VISIBLE : View.GONE);
+        if (stranded) warning.setText(getString(R.string.chroot_not_shared, chroot));
+    }
+
+    /**
      * The anonymous login is a view on three preferences, not on a stored user: the name is
      * fixed by the protocol, the password is ignored and the access is read only.
      */
@@ -156,12 +198,16 @@ public class UserListFragment extends Fragment {
         private final SwitchCompat enable;
         private final View details;
         private final TextView chroot;
+        private final TextView chrootWarning;
         private final EditText maxConnections;
+        /** What is stored, the field above shows a name for it rather than the value. */
+        private String chrootPath;
 
         private AnonItemViewHolder(View row) {
             enable = row.findViewById(R.id.anon_enable);
             details = row.findViewById(R.id.anon_details);
             chroot = row.findViewById(R.id.anon_chroot);
+            chrootWarning = row.findViewById(R.id.anon_chroot_warning);
             maxConnections = row.findViewById(R.id.anon_max);
 
             enable.setOnClickListener(v -> toggle(enable.isChecked()));
@@ -178,16 +224,19 @@ public class UserListFragment extends Fragment {
 
         private void show() {
             final boolean allowed = FsSettings.allowAnonymous();
-            chroot.setText(FsSettings.getAnonChroot());
+            chrootPath = FsSettings.getAnonChroot();
+            chroot.setText(chrootText(chrootPath));
+            showChrootWarning(chrootWarning, chrootPath);
             maxConnections.setText(String.valueOf(FsSettings.getAnonMaxConNumber()));
             enable.setChecked(allowed);
             details.setVisibility(allowed ? View.VISIBLE : View.GONE);
         }
 
         private void toggle(boolean allowed) {
-            if (allowed && !new File(chroot.getText().toString()).isDirectory()) {
-                // logging in on a folder that is not there fails, so start out on one that is
-                setChroot(FsSettings.getDefaultChrootDir().getPath());
+            if (allowed && !chrootPath.isEmpty() && !Util.isPathServed(chrootPath)) {
+                // logging in on a folder that is not served fails, so start out on the ones
+                // that are
+                setChroot(UserStore.ALL_ALLOWED_FOLDERS);
             }
             FsSettings.setAllowAnonymous(allowed);
             FsService.checkUsersAvailable();
@@ -195,14 +244,15 @@ public class UserListFragment extends Fragment {
         }
 
         private void pickChroot() {
-            ChrootPicker picker = new ChrootPicker();
-            picker.setOnTextEventListener(this::setChroot);
-            picker.showFolderPicker(chroot.getText().toString(), null, getContext());
+            chooseChroot(chrootPath, this::setChroot);
         }
 
         private void setChroot(String path) {
-            chroot.setText(path);
+            chrootPath = path;
+            chroot.setText(chrootText(path));
+            showChrootWarning(chrootWarning, path);
             FsSettings.setAnonChroot(path);
+            FsService.checkUsersAvailable();
         }
 
         /** Stores what the field shows, a refused edit resets what is stored. */
@@ -223,12 +273,16 @@ public class UserListFragment extends Fragment {
     private class UserItemViewHolder {
         private final EditText username, password;
         private final TextView chroot;
+        private final TextView chrootWarning;
         private FtpUser item;
+        /** What is stored, the field above shows a name for it rather than the value. */
+        private String chrootPath;
 
         private UserItemViewHolder(View row) {
             username = row.findViewById(R.id.user_name);
             password = row.findViewById(R.id.user_password);
             chroot = row.findViewById(R.id.user_chroot);
+            chrootWarning = row.findViewById(R.id.user_chroot_warning);
 
             username.setOnFocusChangeListener((v, hasFocus) -> {
                 if (!hasFocus) commit();
@@ -250,16 +304,16 @@ public class UserListFragment extends Fragment {
             item = user;
             username.setText(user.getUsername());
             password.setText(user.getPassword());
-            chroot.setText(user.getChroot());
+            chrootPath = user.getChroot();
+            chroot.setText(chrootText(chrootPath));
+            showChrootWarning(chrootWarning, chrootPath);
         }
 
         private void pickChroot() {
-            ChrootPicker picker = new ChrootPicker();
-            picker.setOnTextEventListener(path -> {
-                chroot.setText(path);
+            chooseChroot(chrootPath, path -> {
+                chrootPath = path;
                 commit();
             });
-            picker.showFolderPicker(chroot.getText().toString(), null, getContext());
         }
 
         /**
@@ -268,7 +322,7 @@ public class UserListFragment extends Fragment {
         private void commit() {
             final String newUsername = username.getText().toString();
             final String newPassword = password.getText().toString();
-            final String newChroot = chroot.getText().toString();
+            final String newChroot = chrootPath;
             if (newUsername.equals(item.getUsername())
                     && newPassword.equals(item.getPassword())
                     && newChroot.equals(item.getChroot())) {
@@ -298,9 +352,11 @@ public class UserListFragment extends Fragment {
             // the allowed folders are app-wide, so a user is only a name, a password and a
             // chroot in one of the allowed folders
             FtpUser newItem = new FtpUser(newUsername, newPassword, newChroot);
-            // the store reads back a chroot that is not a directory as the default, so show
-            // what it holds rather than what was typed
+            // the store reads back a chroot that is the whole allowed set as the allowed
+            // folders, so show what it holds rather than what was typed
             show(UserStore.INSTANCE.modify(item.getUsername(), newItem));
+            // the folder may have been the one that stranded this user, or may strand it now
+            FsService.checkUsersAvailable();
         }
     }
 }

@@ -24,6 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 import be.ppareit.swiftp.FsService
 import be.ppareit.swiftp.R
+import be.ppareit.swiftp.users.UserStore
 import be.ppareit.swiftp.utils.AllowedFolders
 import be.ppareit.swiftp.utils.LegacyStoragePermission
 import be.ppareit.swiftp.utils.StorageProbe
@@ -191,6 +192,7 @@ class AllowedFoldersFragment : Fragment() {
         // The storage mode may have just changed, so the running server has to be told.
         FsService.restart()
         refresh()
+        warnAboutStrandedUsers()
     }
 
     private fun removeFolder(tree: StorageTree) {
@@ -202,6 +204,26 @@ class AllowedFoldersFragment : Fragment() {
             Toast.LENGTH_SHORT,
         ).show()
         refresh()
+        warnAboutStrandedUsers()
+    }
+
+    /**
+     * Changing the allowed folders is what breaks a login that was kept in one of them, say
+     * it here and offer the user to use all allowed folders.
+     */
+    private fun warnAboutStrandedUsers() {
+        val stranded = UserStore.strandedUsers()
+        if (stranded.isEmpty()) return
+        val named = stranded.joinToString("\n") { "${it.username}: ${it.chroot}" }
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.chroot_stranded_title)
+            .setMessage(getString(R.string.chroot_stranded_message, named))
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.chroot_stranded_fix) { _, _ ->
+                stranded.forEach { UserStore.serveAllAllowedFolders(it.username) }
+                FsService.checkUsersAvailable()
+            }
+            .show()
     }
 
     /** Not inner: ArrayAdapter has its own `remove(T)`, which silently shadowed the fragment's. */

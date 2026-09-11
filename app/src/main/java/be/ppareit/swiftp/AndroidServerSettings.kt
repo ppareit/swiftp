@@ -18,6 +18,7 @@ object AndroidServerSettings : Settings {
     override fun getAnonMaxConNumber(): Int = FsSettings.getAnonMaxConNumber()
     override fun getAnonChroot(): String? = FsSettings.getAnonChroot()
     override fun getDefaultChrootDir(): File = FsSettings.getDefaultChrootDir()
+    override fun isPathServed(path: String): Boolean = Util.isPathServed(path)
     override fun getPortRangeLow(): Int = FsSettings.getPortRangeLow()
     override fun getPortRangeHigh(): Int = FsSettings.getPortRangeHigh()
     override fun isLoggingEnabled(): Boolean = FsSettings.isLoggingEnabled()

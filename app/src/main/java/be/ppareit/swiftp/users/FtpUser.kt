@@ -8,7 +8,8 @@ import com.google.gson.annotations.SerializedName
  * One FTP user as the app stores and edits it.
  *
  * The server never sees this type: it asks [UserStore] whether a login is accepted and gets
- * back a chroot, nothing more.
+ * back a chroot, nothing more. An empty [chroot] is [UserStore.ALL_ALLOWED_FOLDERS], resolved
+ * at the login rather than stored as a path.
  *
  * Every parameter has a default so that Kotlin emits a no-arg constructor. Gson then builds
  * instances through it rather than through Unsafe, and a key missing from stored JSON reads

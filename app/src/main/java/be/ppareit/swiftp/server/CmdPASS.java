@@ -60,17 +60,22 @@ public class CmdPASS extends FtpCmd implements Runnable {
             } else if (nothingIsShared()) {
                 refuseNothingShared();
             } else {
+                // An empty chroot is "the allowed folders", the session already starts there
+                final String anonChroot = settings().getAnonChroot();
+                if (!anonChroot.isEmpty() && !settings().isPathServed(anonChroot)) {
+                    refuseFolderNotShared("anonymous");
+                    return;
+                }
                 Log.i(TAG, "Guest logged in with email: " + attemptPassword);
                 sessionThread.writeString("230 Guest login ok, read only access.\r\n");
-                final String anonChroot = settings().getAnonChroot();
                 if (!anonChroot.isEmpty()) {
                     sessionThread.setChrootDir(anonChroot);
                 }
             }
             return;
         }
-        final String chroot = authenticator().authenticate(attemptUsername, attemptPassword);
-        if (chroot == null) {
+        final AuthResult result = authenticator().authenticate(attemptUsername, attemptPassword);
+        if (result instanceof AuthResult.Refused) {
             Log.i(TAG, "Failed authentication");
             Util.sleepIgnoreInterrupt(1000); // sleep to foil brute force attack
             sessionThread.writeString("530 Login incorrect.\r\n");
@@ -82,10 +87,14 @@ public class CmdPASS extends FtpCmd implements Runnable {
             refuseNothingShared();
             return;
         }
+        if (result instanceof AuthResult.FolderNotShared) {
+            refuseFolderNotShared(attemptUsername);
+            return;
+        }
         Log.i(TAG, "User " + attemptUsername + " password verified");
         sessionThread.writeString("230 Access granted\r\n");
         sessionThread.authAttempt(true);
-        sessionThread.setChrootDir(chroot);
+        sessionThread.setChrootDir(((AuthResult.Accepted) result).getChroot());
     }
 
     /**
@@ -109,6 +118,20 @@ public class CmdPASS extends FtpCmd implements Runnable {
         // 421 is "closing control connection", and authAttempt only counts the failure. Without
         // the close the refusal is advisory: isAnonymouslyLoggedIn() reads the global setting,
         // not the session, so a refused guest could go on to LIST and RETR.
+        sessionThread.quit();
+    }
+
+    /**
+     * The credentials were right, the folder this login is kept in is not shared. So we refuse
+     * login and report as a problem, so the user sees what login is giving problem.
+     */
+    private void refuseFolderNotShared(String username) {
+        Log.i(TAG, "Refusing login, the folder for this login is not shared.");
+        sessionThread.writeString("421 " + ServerProblem.USER_FOLDER_NOT_SHARED.message(username)
+                + "\r\n");
+        sessionThread.authAttempt(false);
+        FsService.reportProblem(ServerProblem.USER_FOLDER_NOT_SHARED, username);
+        // Like a refused anonymous login: without the close the refusal would be advisory
         sessionThread.quit();
     }
 }

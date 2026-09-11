@@ -26,6 +26,7 @@ import android.util.Log;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.StorageProbe;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.ParseException;
@@ -125,6 +126,18 @@ abstract public class Util {
         final boolean scoped = !hasFullSdCardAccess() || !AllowedFolders.isEmpty();
         useScoped = scoped ? 1 : 0;
         return scoped;
+    }
+
+    /**
+     * Whether a session chrooted here can be served at all.
+     *
+     * Under SAF that means inside one of the allowed folders, or the directory they are listed
+     * under when there is more than one. On the File path any real directory does.
+     */
+    public static boolean isPathServed(String path) {
+        if (path == null || path.isEmpty()) return false;
+        if (useScopedStorage()) return AllowedFolders.canServe(path);
+        return new File(path).isDirectory();
     }
 
     public static void resetScoped() {

@@ -1010,6 +1010,14 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             manageUsersPref.setSummary(summary);
         }
         manageUsersPref.setShowFix(users.isEmpty() && !anonymousAllowed);
+        // a user kept in a folder that is not shared any more is refused, so it belongs here
+        // rather than only on the screen behind this line
+        List<FtpUser> stranded = UserStore.INSTANCE.strandedUsers();
+        if (!stranded.isEmpty()) {
+            manageUsersPref.setSummary(getString(R.string.manage_users_folder_not_shared,
+                    stranded.get(0).getUsername()));
+            manageUsersPref.setShowFix(true);
+        }
     }
 
     /**
@@ -1081,6 +1089,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         return switch (problem) {
             case NOTHING_SHARED -> R.string.server_problem_nothing_shared;
             case NO_USERS -> R.string.server_problem_no_users;
+            case USER_FOLDER_NOT_SHARED -> R.string.server_problem_user_folder_not_shared;
             case DATA_NOT_SET_UP -> R.string.server_problem_data_not_set_up;
             case DATA_CONNECT_FAILED -> R.string.server_problem_data_connect_failed;
             case DATA_TLS_FAILED_ACTIVE -> R.string.server_problem_data_tls_failed_active;

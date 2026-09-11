@@ -70,17 +70,17 @@ public class ChrootPicker {
     }
 
     /**
-     * The chroots that can work under SAF: each allowed folder, and the directory they are all
-     * listed under when there is more than one. Anything else would look fine in the UI and then
-     * serve nothing.
+     * The chroots that can work under SAF: one of the allowed folders. Anything else would look
+     * fine in the UI and then serve nothing.
+     *
+     * The directory they are all listed under is not offered any more: that is the whole set,
+     * which is what "All allowed folders" says one step earlier, and saying it as a path is
+     * what stopped following the folders in the first place.
      */
     private void showAllowedFolderChoice(Context context) {
         if (isShowingFolderPicker) return;
 
-        final List<String> choices = new ArrayList<>();
-        final String root = AllowedFolders.defaultChroot();
-        if (root != null && !AllowedFolders.paths().contains(root)) choices.add(root);
-        choices.addAll(AllowedFolders.paths());
+        final List<String> choices = new ArrayList<>(AllowedFolders.paths());
 
         if (choices.isEmpty()) {
             showToast(R.string.allowed_folders_none_chosen, context);

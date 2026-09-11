@@ -29,6 +29,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="server_problem_label">Error</string>
     <string name="server_problem_nothing_shared">A client was refused: no folders are shared. Choose folders under Allowed folders.</string>
     <string name="server_problem_no_users">Nobody can log in: there are no users. Add one under Manage users, or allow anonymous.</string>
+    <string name="server_problem_user_folder_not_shared">The folder for %1$s is not shared. Set its folder under Manage users, or share the folder again under Allowed folders.</string>
     <string name="server_problem_data_socket">A transfer failed: could not open the data connection.</string>
     <string name="server_problem_data_not_set_up">A transfer failed: the client asked for one without setting up a data connection.</string>
     <string name="server_problem_data_connect_failed">A transfer failed: could not connect to the client at %1$s port %2$d.</string>
@@ -82,6 +83,13 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="port_number_label">Port Number</string>
     <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
     <string name="chroot_label">Stay in folder</string>
+    <!-- The chroot of a login that follows the allowed folders instead of naming one -->
+    <string name="chroot_all_allowed_folders">All allowed folders</string>
+    <string name="chroot_restrict_to_folder">Restrict to one folder…</string>
+    <string name="chroot_not_shared">%1$s is not shared any more</string>
+    <string name="chroot_stranded_title">Folder not shared</string>
+    <string name="chroot_stranded_message">These logins are kept in a folder that is not shared any more, so they can no longer log in:\n\n%1$s</string>
+    <string name="chroot_stranded_fix">Use all allowed folders</string>
     <string name="accept_wifi_label">Accept connection from Wi-Fi</string>
     <string name="wakelock_label">Keep device awake (full CPU speed)</string>
     <string name="writeExternalStorage_label">Writing external storage</string>
@@ -198,6 +206,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="notice_cant_write">Notice that we can not write in this folder, reading will work. Writing in sub folders might work.</string>
     <string name="manage_users_no_users">No users available, create a user.</string>
     <string name="manage_users_multiple_users">Multiple users available, see list.</string>
+    <string name="manage_users_folder_not_shared">%1$s is kept in a folder that is not shared any more and cannot log in.</string>
     <string name="show_server_notification">Show server notification</string>
     <string name="show_server_notification_summary">Show the server address and a stop button while the server is running</string>
     <string name="write_external_storage_old_android_version_summary">On these devices, all store is available using the file hierarchy.</string>

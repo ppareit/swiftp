@@ -71,6 +71,11 @@ object AllowedFolders {
     @JvmStatic
     fun childNamesUnder(dir: String?): List<String> = index().childNamesUnder(dir)
 
+    /** True when a chroot on this path works: thus inside a granted folder or subfolder */
+    @JvmStatic
+    fun canServe(path: String?): Boolean =
+        index().let { it.containing(path) != null || it.isVirtual(path) }
+
     /** The chroot a user should get by default, or null when nothing is granted. */
     @JvmStatic
     fun defaultChroot(): String? = index().defaultChroot()

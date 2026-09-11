@@ -61,6 +61,7 @@ import java.util.List;
 
 import javax.net.ssl.SSLServerSocket;
 
+import be.ppareit.swiftp.users.FtpUser;
 import be.ppareit.swiftp.users.UserStore;
 import be.ppareit.swiftp.gui.FsNotification;
 import be.ppareit.swiftp.server.ServerProblem;
@@ -325,9 +326,29 @@ public class FsService extends Service implements Runnable {
     public static void checkUsersAvailable() {
         if (!isRunning())
             return;
-        if (UserStore.INSTANCE.users().isEmpty() && !FsSettings.allowAnonymous())
+        if (UserStore.INSTANCE.users().isEmpty() && !FsSettings.allowAnonymous()) {
             reportProblem(ServerProblem.NO_USERS);
-        else if (serverProblem == ServerProblem.NO_USERS)
+            return;
+        }
+        if (serverProblem == ServerProblem.NO_USERS)
+            clearProblem();
+        checkChrootsServed();
+    }
+
+    /**
+     * A login kept in a folder that is no longer shared is refused, which is only visible to
+     * whoever tried it. Say it on the device as well, without waiting for that attempt: the
+     * folder set changing is what breaks it, and that happens on another screen entirely.
+     */
+    private static void checkChrootsServed() {
+        List<FtpUser> stranded = UserStore.INSTANCE.strandedUsers();
+        String anonChroot = FsSettings.getAnonChroot();
+        if (!stranded.isEmpty())
+            reportProblem(ServerProblem.USER_FOLDER_NOT_SHARED, stranded.get(0).getUsername());
+        else if (FsSettings.allowAnonymous() && !anonChroot.isEmpty()
+                && !Util.isPathServed(anonChroot))
+            reportProblem(ServerProblem.USER_FOLDER_NOT_SHARED, "anonymous");
+        else if (serverProblem == ServerProblem.USER_FOLDER_NOT_SHARED)
             clearProblem();
     }
 

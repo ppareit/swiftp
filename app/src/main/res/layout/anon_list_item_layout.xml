@@ -46,7 +46,18 @@
                 android:gravity="center_vertical|start"
                 android:hint="@string/chroot_label"
                 android:maxLines="1"
-                tools:text="/storage/emulated/0" />
+                tools:text="All allowed folders" />
+
+            <!-- Only while the folder anonymous is kept in is no longer shared -->
+            <TextView
+                android:id="@+id/anon_chroot_warning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/holo_red_light"
+                android:visibility="gone"
+                tools:text="/storage/emulated/0/Music is not shared any more"
+                tools:visibility="visible" />
 
             <LinearLayout
                 android:layout_width="match_parent"
