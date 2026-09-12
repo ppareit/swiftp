@@ -4,6 +4,9 @@
 *.aab
 *.ap_
 
+# Play Store release exports and extracted app bundles
+/app/playstore_paid/
+
 # Files for the ART/Dalvik VM
 *.dex
 

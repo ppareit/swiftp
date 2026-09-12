@@ -1,3 +1,17 @@
+Version 3.4 (2026/09/06)
+    + Added an All allowed folders login root, made it the default for new
+      logins, and added guidance for logins whose selected folder is no longer
+      shared
+    * Fixed FTP path resolution across the virtual root, Android storage grants
+      and real storage mounts, including chroot checks
+    * Improved local network detection and address selection, with clearer
+      explanations when the server cannot start
+    * Show localized server, login and transfer problems on the main screen and
+      clear them when the problem is resolved
+    * Improved data-connection diagnostics and timeouts, including the port and
+      cause in 425 replies
+    * Improved security by refusing PORT and EPRT data connections to hosts
+      other than the connected FTP client
 Version 3.3 (2026/08/27)
     * Improved FTPS negotiation: AUTH TLS now reports a clear error when no
       certificate is configured, and FEAT advertises TLS only when it is usable,
