@@ -82,8 +82,8 @@ public class CmdMFMT extends FtpCmd implements Runnable {
             return;
         }
 
-        // SAF exposes modification time as read-only metadata.
-        // Does work with Android's all-files access, use the real path
+        // SAF exposes modification time as read-only metadata. When direct access is also
+        // available, use the real path to add timestamp support for the selected folder.
         FileUtil.Gen target = Util.hasFullSdCardAccess()
                 ? FileUtil.convertFileToGen(file) : FileUtil.createGenFromFile(file);
 
