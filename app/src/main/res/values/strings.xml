@@ -27,9 +27,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="running_summary_stopped">Toggle the state of the FTP server</string>
     <string name="running_summary_started">at %s</string>
     <string name="server_problem_label">Error</string>
-    <string name="server_problem_nothing_shared">A client was refused: no folders are shared. Choose folders under Allowed folders.</string>
+    <string name="server_problem_nothing_shared">A client was refused: no folders are shared. Choose folders under Storage access.</string>
     <string name="server_problem_no_users">Nobody can log in: there are no users. Add one under Manage users, or allow anonymous.</string>
-    <string name="server_problem_user_folder_not_shared">The folder for %1$s is not shared. Set its folder under Manage users, or share the folder again under Allowed folders.</string>
+    <string name="server_problem_user_folder_not_shared">The folder for %1$s is not shared. Set its folder under Manage users, or share the folder again under Storage access.</string>
     <string name="server_problem_data_socket">A transfer failed: could not open the data connection.</string>
     <string name="server_problem_data_not_set_up">A transfer failed: the client asked for one without setting up a data connection.</string>
     <string name="server_problem_data_connect_failed">A transfer failed: could not connect to the client at %1$s port %2$d.</string>
@@ -221,8 +221,8 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <!-- Allowed folders: which parts of storage the server may serve -->
     <!-- The ellipsis marks the settings entry that opens a screen; the screen's own title
          does not carry it. -->
-    <string name="allowed_folders_label">Allowed folders…</string>
-    <string name="allowed_folders_title">Allowed folders</string>
+    <string name="allowed_folders_label">Storage access…</string>
+    <string name="allowed_folders_title">Storage access</string>
     <string name="allowed_folders_full_sdcard">FULL SDCARD</string>
     <string name="allowed_folders_choose">CHOOSE FOLDERS</string>
     <string name="allowed_folders_choose_access">CHOOSE ACCESS</string>
@@ -233,9 +233,9 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="allowed_folders_add">Add folder</string>
     <string name="allowed_folders_remove">Remove</string>
     <string name="allowed_folders_choice_explanation">Choose how SwiFTP can access files. You can use only one mode at a time.</string>
-    <string name="allowed_folders_all_files_title">All files</string>
+    <string name="allowed_folders_all_files_title">All files access</string>
     <string name="allowed_folders_recommended">Full access</string>
-    <string name="allowed_folders_all_files_description">Supports all SwiFTP file operations, including preserving and changing file timestamps. Access files and folders across shared storage.</string>
+    <string name="allowed_folders_all_files_description">Needed for full FTP access across shared storage. Supports all SwiFTP file operations, including preserving and changing file timestamps.</string>
     <string name="allowed_folders_saf_title">Selected folders</string>
     <string name="allowed_folders_restricted">Selected access</string>
     <string name="allowed_folders_saf_description">Access only folders you choose with Android’s folder picker. Some file operations are unavailable, including changing file dates and times.</string>
@@ -247,7 +247,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="allowed_folders_selected_heading">Folders SwiFTP can access</string>
     <string name="allowed_folders_removed">Removed %1$s</string>
     <string name="allowed_folders_unsupported_provider">Choose a folder on this device or a connected storage volume. Cloud and other document providers are not supported.</string>
-    <string name="allowed_folders_none_chosen">No folders have been chosen yet. Choose them in Settings, Allowed folders…</string>
+    <string name="allowed_folders_none_chosen">No folders have been chosen yet. Choose them in Settings, Storage access…</string>
 
     <string name="logging">Logging</string>
     <string name="enable_logging">Enable logging</string>
