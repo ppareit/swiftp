@@ -970,7 +970,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             allowedFoldersPref.setSummary(TextUtils.join(", ", names));
         } else if (Util.hasFullSdCardAccess()) {
             allowedFoldersPref.setSummary(R.string.allowed_folders_full_sdcard);
-        } else if (LegacyStoragePermission.isMissing(allowedFoldersPref.getContext())) {
+        } else if (!LegacyStoragePermission.isGranted(allowedFoldersPref.getContext())) {
             allowedFoldersPref.setSummary(R.string.allowed_folders_allow_access);
             nothingIsShared = true;
         } else {

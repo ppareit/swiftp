@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 
 import net.vrallev.android.cat.Cat;
 
@@ -75,21 +76,37 @@ public class CmdMFMT extends FtpCmd implements Runnable {
         File file = inputPathToChrootedFile(sessionThread.getChrootDir(),
                 sessionThread.getWorkingDir(), pathName);
 
-        if (!file.exists()) {
+        if (violatesChroot(file)) {
+            sessionThread.writeString("550 Invalid name or chroot violation\r\n");
+            Cat.d("run: MFMT failed, chroot violation");
+            return;
+        }
+
+        // SAF exposes modification time as read-only metadata.
+        // Does work with Android's all-files access, use the real path
+        FileUtil.Gen target = Util.hasFullSdCardAccess()
+                ? FileUtil.convertFileToGen(file) : FileUtil.createGenFromFile(file);
+
+        if (!target.exists()) {
             sessionThread.writeString("550 file does not exist on server\r\n");
             Cat.d("run: MFMT failed, file does not exist");
             return;
         }
 
-        boolean success = file.setLastModified(timeVal.getTime());
-        if (!success) {
+        if (!(target.getOb() instanceof File targetFile)) {
+            sessionThread.writeString("500 unable to modify last modification time\r\n");
+            Cat.d("run: MFMT failed, direct file access is unavailable");
+            return;
+        }
+
+        if (!targetFile.setLastModified(timeVal.getTime())) {
             sessionThread.writeString("500 unable to modify last modification time\r\n");
             Cat.d("run: MFMT failed, unable to modify last modification time");
             // more info at https://code.google.com/p/android/issues/detail?id=18624
             return;
         }
 
-        long lastModified = file.lastModified();
+        long lastModified = target.lastModified();
         String response = "213 " + df.format(new Date(lastModified)) + "; "
                 + file.getAbsolutePath() + "\r\n";
         sessionThread.writeString(response);
@@ -98,4 +115,3 @@ public class CmdMFMT extends FtpCmd implements Runnable {
     }
 
 }
-

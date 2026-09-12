@@ -3,9 +3,14 @@
 package be.ppareit.swiftp.utils
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.os.Environment
+import android.provider.Settings
 
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
@@ -14,7 +19,8 @@ import be.ppareit.swiftp.App
 import be.ppareit.swiftp.Util
 
 /**
- * Handles the old READ/WRITE_EXTERNAL_STORAGE pair
+ * Handles direct shared-storage access: MANAGE_EXTERNAL_STORAGE on modern Android, and the old
+ * READ/WRITE_EXTERNAL_STORAGE pair where those still work.
  */
 object LegacyStoragePermission {
 
@@ -24,20 +30,17 @@ object LegacyStoragePermission {
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
     )
 
-    /**
-     * Whether asking can achieve anything, API > 33 the permissions are never granted
-     */
     @JvmStatic
-    fun appliesHere(): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+    fun usesSettingsGrant(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
     @JvmStatic
-    fun isGranted(context: Context): Boolean = PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+    fun isGranted(context: Context): Boolean = if (usesSettingsGrant()) {
+        Environment.isExternalStorageManager()
+    } else {
+        PERMISSIONS.all {
+            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+        }
     }
-
-    /** Both that the permission is worth having here and that we do not have it. */
-    @JvmStatic
-    fun isMissing(context: Context): Boolean = appliesHere() && !isGranted(context)
 
     /**
      * The system shows its dialog once, after that requestPermissions is silently ignored!
@@ -70,6 +73,13 @@ object LegacyStoragePermission {
         if (granted) Util.resetScoped()
         return granted
     }
+
+    @JvmStatic
+    @SuppressLint("InlinedApi") // Called only when usesSettingsGrant() has established API 30+.
+    fun settingsIntent(context: Context): Intent = Intent(
+        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+        Uri.fromParts("package", context.packageName, null),
+    )
 
     private const val REQUESTED_KEY = "legacy_storage_requested"
 

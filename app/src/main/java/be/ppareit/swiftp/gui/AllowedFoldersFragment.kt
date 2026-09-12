@@ -24,6 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 import be.ppareit.swiftp.FsService
 import be.ppareit.swiftp.R
+import be.ppareit.swiftp.Util
 import be.ppareit.swiftp.users.UserStore
 import be.ppareit.swiftp.utils.AllowedFolders
 import be.ppareit.swiftp.utils.LegacyStoragePermission
@@ -38,6 +39,7 @@ class AllowedFoldersFragment : Fragment() {
     private lateinit var listView: ListView
     private lateinit var explanation: TextView
     private lateinit var permissionButton: Button
+    private var waitingForSettingsGrant = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +60,11 @@ class AllowedFoldersFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        if (waitingForSettingsGrant) {
+            waitingForSettingsGrant = false
+            Util.resetScoped()
+            if (LegacyStoragePermission.isGranted(requireContext())) FsService.restart()
+        }
         refresh()
     }
 
@@ -67,6 +74,8 @@ class AllowedFoldersFragment : Fragment() {
         val canAskForFullAccess = canAskForFullAccess()
         explanation.setText(
             when {
+                folders.isNotEmpty() && canAskForFullAccess ->
+                    R.string.allowed_folders_some_permission_explanation
                 folders.isNotEmpty() -> R.string.allowed_folders_some_explanation
                 servesTheCard -> R.string.allowed_folders_full_sdcard_explanation
                 canAskForFullAccess -> R.string.allowed_folders_permission_explanation
@@ -83,9 +92,8 @@ class AllowedFoldersFragment : Fragment() {
     /**
      * Whether the whole card is one grant away
      */
-    private fun canAskForFullAccess() = AllowedFolders.isEmpty()
-            && !StorageProbe.hasFullSdCardAccess()
-            && LegacyStoragePermission.isMissing(requireContext())
+    private fun canAskForFullAccess() = !StorageProbe.hasFullSdCardAccess()
+            && !LegacyStoragePermission.isGranted(requireContext())
 
     /**
      * On a device that can serve everything, the *first* folder is the one that switches the app
@@ -98,7 +106,8 @@ class AllowedFoldersFragment : Fragment() {
      */
     private fun pickFolder() {
         val servesTheCard = AllowedFolders.isEmpty() && StorageProbe.hasFullSdCardAccess()
-        if (!servesTheCard && !canAskForFullAccess()) {
+        val couldServeTheCard = AllowedFolders.isEmpty() && canAskForFullAccess()
+        if (!servesTheCard && !couldServeTheCard) {
             openPicker()
             return
         }
@@ -114,14 +123,18 @@ class AllowedFoldersFragment : Fragment() {
     }
 
     /**
-     * The old storage permission:
+     * Modern Android opens its special-access screen. Older versions use the old storage
+     * permission, which has to cope with a permanently denied dialog:
      *    - on a device that grants it, it serves the whole card
      *    - it has to cope with a permission that was denied, Android then
      *      shows no dialog at all and answers always denied, so the app
      *      info screen is the only place left to repair it.
      */
     private fun askForFullAccess() {
-        if (androidWillNotAskAgain())
+        if (LegacyStoragePermission.usesSettingsGrant()) {
+            waitingForSettingsGrant = true
+            startActivity(LegacyStoragePermission.settingsIntent(requireContext()))
+        } else if (androidWillNotAskAgain())
             openAppSettings() // is the only thing we can do and hope the users finds storage
         else
             requestPermissions(LegacyStoragePermission.PERMISSIONS, REQUEST_STORAGE_PERMISSION)

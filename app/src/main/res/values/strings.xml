@@ -235,6 +235,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="allowed_folders_permission_explanation">This device can serve all of the SD card, but SwiFTP needs your permission to read and write it.\n\nAllow access to all files below, or choose single folders with + instead.</string>
     <string name="allowed_folders_none_explanation">This device does not let SwiFTP reach the SD card on its own, so nothing can be served until you choose a folder.\n\nAndroid does not allow choosing the whole SD card, nor the Download folder.</string>
     <string name="allowed_folders_some_explanation">SwiFTP can serve these folders and everything inside them.\n\nAndroid does not allow choosing the whole SD card, nor the Download folder.</string>
+    <string name="allowed_folders_some_permission_explanation">SwiFTP can serve these folders and everything inside them.\n\nAllow access to all files below so uploaded files can keep their original modification times.</string>
     <string name="allowed_folders_removed">Removed %1$s</string>
     <string name="allowed_folders_unsupported_provider">Choose a folder on this device or a connected storage volume. Cloud and other document providers are not supported.</string>
     <string name="allowed_folders_none_chosen">No folders have been chosen yet. Choose them in Settings, Allowed folders…</string>
