@@ -45,12 +45,23 @@ object AllowedFolders {
     @Volatile
     private var cached: Snapshot? = null
 
+    private val emptyIndex = StorageTreeIndex(null)
+
     /** The granted folders, as the path questions the server needs to ask. */
     @JvmStatic
-    fun index(): StorageTreeIndex = snapshot().index
+    fun index(): StorageTreeIndex = if (
+        StorageAccessModeStore.current() == StorageAccessMode.SELECTED_FOLDERS
+    ) snapshot().index else emptyIndex
 
     @JvmStatic
     fun all(): List<StorageTree> = index().trees
+
+    /** Every persisted SAF folder, including folders dormant while all-files access is active. */
+    @JvmStatic
+    fun saved(): List<StorageTree> = snapshot().index.trees
+
+    @JvmStatic
+    fun hasSavedFolders(): Boolean = !snapshot().index.isEmpty()
 
     @JvmStatic
     fun isEmpty(): Boolean = index().isEmpty()

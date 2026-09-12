@@ -18,6 +18,7 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -28,6 +29,8 @@ import be.ppareit.swiftp.Util
 import be.ppareit.swiftp.users.UserStore
 import be.ppareit.swiftp.utils.AllowedFolders
 import be.ppareit.swiftp.utils.LegacyStoragePermission
+import be.ppareit.swiftp.utils.StorageAccessMode
+import be.ppareit.swiftp.utils.StorageAccessModeStore
 import be.ppareit.swiftp.utils.StorageProbe
 import be.ppareit.swiftp.utils.StorageTree
 
@@ -37,8 +40,13 @@ import be.ppareit.swiftp.utils.StorageTree
 class AllowedFoldersFragment : Fragment() {
 
     private lateinit var listView: ListView
-    private lateinit var explanation: TextView
-    private lateinit var permissionButton: Button
+    private lateinit var selectedHeading: TextView
+    private lateinit var allFilesCard: CardView
+    private lateinit var safCard: CardView
+    private lateinit var allFilesDescription: TextView
+    private lateinit var allFilesButton: Button
+    private lateinit var safButton: Button
+    private lateinit var addButton: FloatingActionButton
     private var waitingForSettingsGrant = false
 
     override fun onCreateView(
@@ -48,14 +56,25 @@ class AllowedFoldersFragment : Fragment() {
     ): View {
         val root = inflater.inflate(R.layout.allowed_folders_list_layout, container, false)
         listView = root.findViewById(R.id.allowed_folders_list)
-        explanation = root.findViewById(R.id.allowed_folders_explanation)
-        permissionButton = root.findViewById(R.id.allowed_folders_permission_btn)
-        permissionButton.setOnClickListener { askForFullAccess() }
+        selectedHeading = root.findViewById(R.id.allowed_folders_selected_heading)
+        allFilesCard = root.findViewById(R.id.allowed_folders_all_files_card)
+        safCard = root.findViewById(R.id.allowed_folders_saf_card)
+        allFilesDescription = root.findViewById(R.id.allowed_folders_all_files_description)
+        allFilesButton = root.findViewById(R.id.allowed_folders_all_files_btn)
+        safButton = root.findViewById(R.id.allowed_folders_saf_btn)
+        addButton = root.findViewById(R.id.allowed_folders_add_btn)
 
-        root.findViewById<FloatingActionButton>(R.id.allowed_folders_add_btn)
-            .setOnClickListener { pickFolder() }
+        waitingForSettingsGrant = savedInstanceState?.getBoolean(WAITING_FOR_SETTINGS) ?: false
+        allFilesButton.setOnClickListener { askForFullAccess() }
+        safButton.setOnClickListener { chooseSelectedFolders() }
+        addButton.setOnClickListener { openPicker() }
 
         return root
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(WAITING_FOR_SETTINGS, waitingForSettingsGrant)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onResume() {
@@ -63,63 +82,75 @@ class AllowedFoldersFragment : Fragment() {
         if (waitingForSettingsGrant) {
             waitingForSettingsGrant = false
             Util.resetScoped()
-            if (LegacyStoragePermission.isGranted(requireContext())) FsService.restart()
+            if (LegacyStoragePermission.isGranted(requireContext())
+                && StorageProbe.hasFullSdCardAccess()
+            ) {
+                activateAllFiles()
+                return
+            }
         }
         refresh()
     }
 
     private fun refresh() {
-        val folders = AllowedFolders.all()
-        val servesTheCard = StorageProbe.hasFullSdCardAccess()
-        val canAskForFullAccess = canAskForFullAccess()
-        explanation.setText(
+        var mode = StorageAccessModeStore.current()
+        if (mode == StorageAccessMode.SELECTED_FOLDERS && !AllowedFolders.hasSavedFolders()) {
+            StorageAccessModeStore.select(StorageAccessMode.UNCHOSEN)
+            mode = StorageAccessMode.UNCHOSEN
+        }
+
+        val fullAccessWorks = StorageProbe.hasFullSdCardAccess()
+        val safIsActive = mode == StorageAccessMode.SELECTED_FOLDERS
+        val allFilesIsActive = mode == StorageAccessMode.ALL_FILES && fullAccessWorks
+        setSelected(allFilesCard, mode == StorageAccessMode.ALL_FILES)
+        setSelected(safCard, safIsActive)
+
+        allFilesDescription.setText(
+            if (mode == StorageAccessMode.ALL_FILES && !fullAccessWorks)
+                R.string.allowed_folders_all_files_repair
+            else R.string.allowed_folders_all_files_description
+        )
+        allFilesButton.setText(
             when {
-                folders.isNotEmpty() && canAskForFullAccess ->
-                    R.string.allowed_folders_some_permission_explanation
-                folders.isNotEmpty() -> R.string.allowed_folders_some_explanation
-                servesTheCard -> R.string.allowed_folders_full_sdcard_explanation
-                canAskForFullAccess -> R.string.allowed_folders_permission_explanation
-                else -> R.string.allowed_folders_none_explanation
+                allFilesIsActive -> R.string.allowed_folders_in_use
+                fullAccessWorks -> R.string.allowed_folders_use_all_files
+                else -> R.string.allowed_folders_allow_permission
             }
         )
-        permissionButton.visibility = if (canAskForFullAccess) View.VISIBLE else View.GONE
+        allFilesButton.isEnabled = !allFilesIsActive
+
+        safButton.setText(
+            when {
+                safIsActive -> R.string.allowed_folders_in_use
+                AllowedFolders.hasSavedFolders() -> R.string.allowed_folders_use_selected
+                else -> R.string.allowed_folders_choose_selected
+            }
+        )
+        safButton.isEnabled = !safIsActive
+
+        selectedHeading.visibility = if (safIsActive) View.VISIBLE else View.GONE
+        listView.visibility = if (safIsActive) View.VISIBLE else View.GONE
+        addButton.visibility = if (safIsActive) View.VISIBLE else View.GONE
+        val folders = AllowedFolders.all()
         // A copy: ArrayAdapter keeps the list it is given and will mutate it, and this one
         // belongs to the cached AllowedFolders snapshot that the server reads from.
         listView.adapter =
             FolderAdapter(requireContext(), folders.toMutableList(), ::removeFolder)
     }
 
-    /**
-     * Whether the whole card is one grant away
-     */
-    private fun canAskForFullAccess() = !StorageProbe.hasFullSdCardAccess()
-            && !LegacyStoragePermission.isGranted(requireContext())
+    private fun setSelected(card: CardView, selected: Boolean) {
+        card.cardElevation = (if (selected) 8 else 2) * resources.displayMetrics.density
+    }
 
-    /**
-     * On a device that can serve everything, the *first* folder is the one that switches the app
-     * to SAF, and from then on only the chosen folders are served. So the 'Add Folder' fab is
-     * limiting the allowed folders, and it says so before the picker opens.
-     *
-     * A device that only *could* serve everything, because the permission is there for the
-     * asking, has the same choice to make: picking a folder here settles it for SAF and leaves
-     * the simpler route unused. The warning differs only in that the card is not served yet.
-     */
-    private fun pickFolder() {
-        val servesTheCard = AllowedFolders.isEmpty() && StorageProbe.hasFullSdCardAccess()
-        val couldServeTheCard = AllowedFolders.isEmpty() && canAskForFullAccess()
-        if (!servesTheCard && !couldServeTheCard) {
+    private fun chooseSelectedFolders() {
+        if (AllowedFolders.hasSavedFolders()) {
+            StorageAccessModeStore.select(StorageAccessMode.SELECTED_FOLDERS)
+            FsService.restart()
+            refresh()
+            warnAboutStrandedUsers()
+        } else {
             openPicker()
-            return
         }
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.allowed_folders_limit_title)
-            .setMessage(
-                if (servesTheCard) R.string.allowed_folders_limit_message
-                else R.string.allowed_folders_limit_permission_message
-            )
-            .setPositiveButton(R.string.allowed_folders_limit_continue) { _, _ -> openPicker() }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
     }
 
     /**
@@ -131,7 +162,9 @@ class AllowedFoldersFragment : Fragment() {
      *      info screen is the only place left to repair it.
      */
     private fun askForFullAccess() {
-        if (LegacyStoragePermission.usesSettingsGrant()) {
+        if (StorageProbe.hasFullSdCardAccess()) {
+            activateAllFiles()
+        } else if (LegacyStoragePermission.usesSettingsGrant()) {
             waitingForSettingsGrant = true
             startActivity(LegacyStoragePermission.settingsIntent(requireContext()))
         } else if (androidWillNotAskAgain())
@@ -163,8 +196,7 @@ class AllowedFoldersFragment : Fragment() {
     ) {
         if (requestCode != REQUEST_STORAGE_PERMISSION) return
         if (LegacyStoragePermission.onResult(grantResults)) {
-            // The storage mode may have just changed, so the running server has to be told.
-            FsService.restart()
+            activateAllFiles()
         } else if (grantResults.isNotEmpty() && androidWillNotAskAgain()) {
             Toast.makeText(
                 requireContext(),
@@ -176,7 +208,14 @@ class AllowedFoldersFragment : Fragment() {
         refresh()
     }
 
+    private fun activateAllFiles() {
+        StorageAccessModeStore.select(StorageAccessMode.ALL_FILES)
+        FsService.restart()
+        refresh()
+    }
+
     private fun openAppSettings() {
+        waitingForSettingsGrant = true
         startActivity(
             Intent(
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
@@ -202,6 +241,7 @@ class AllowedFoldersFragment : Fragment() {
             ).show()
             return
         }
+        StorageAccessModeStore.select(StorageAccessMode.SELECTED_FOLDERS)
         // The storage mode may have just changed, so the running server has to be told.
         FsService.restart()
         refresh()
@@ -210,6 +250,9 @@ class AllowedFoldersFragment : Fragment() {
 
     private fun removeFolder(tree: StorageTree) {
         AllowedFolders.releaseGrant(requireContext(), tree)
+        if (!AllowedFolders.hasSavedFolders()) {
+            StorageAccessModeStore.select(StorageAccessMode.UNCHOSEN)
+        }
         FsService.restart()
         Toast.makeText(
             requireContext(),
@@ -262,5 +305,6 @@ class AllowedFoldersFragment : Fragment() {
     companion object {
         private const val ACTION_OPEN_DOCUMENT_TREE = 94
         private const val REQUEST_STORAGE_PERMISSION = 95
+        private const val WAITING_FOR_SETTINGS = "waiting_for_settings_grant"
     }
 }

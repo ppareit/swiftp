@@ -24,6 +24,8 @@ import android.os.Build;
 import android.util.Log;
 
 import be.ppareit.swiftp.utils.AllowedFolders;
+import be.ppareit.swiftp.utils.StorageAccessMode;
+import be.ppareit.swiftp.utils.StorageAccessModeStore;
 import be.ppareit.swiftp.utils.StorageProbe;
 
 import java.io.File;
@@ -123,7 +125,8 @@ abstract public class Util {
      */
     public static boolean useScopedStorage() {
         if (useScoped != -1) return useScoped == 1; // gets used a lot so speed it up a little
-        final boolean scoped = !hasFullSdCardAccess() || !AllowedFolders.isEmpty();
+        final boolean scoped = StorageAccessModeStore.current() != StorageAccessMode.ALL_FILES
+                || !hasFullSdCardAccess();
         useScoped = scoped ? 1 : 0;
         return scoped;
     }

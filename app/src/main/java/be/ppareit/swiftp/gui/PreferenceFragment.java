@@ -85,6 +85,8 @@ import be.ppareit.swiftp.users.UserStore;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FTPSSockets;
 import be.ppareit.swiftp.utils.LegacyStoragePermission;
+import be.ppareit.swiftp.utils.StorageAccessMode;
+import be.ppareit.swiftp.utils.StorageAccessModeStore;
 
 import be.ppareit.swiftp.utils.Logging;
 
@@ -964,17 +966,21 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
     private void updateAllowedFoldersPref() {
         FixablePreference allowedFoldersPref = findPref("allowed_folders");
         if (allowedFoldersPref == null) return;
+        StorageAccessMode mode = StorageAccessModeStore.current();
         List<String> names = AllowedFolders.names();
         boolean nothingIsShared = false;
-        if (!names.isEmpty()) {
+        if (mode == StorageAccessMode.SELECTED_FOLDERS && !names.isEmpty()) {
             allowedFoldersPref.setSummary(TextUtils.join(", ", names));
-        } else if (Util.hasFullSdCardAccess()) {
+        } else if (mode == StorageAccessMode.ALL_FILES && Util.hasFullSdCardAccess()) {
             allowedFoldersPref.setSummary(R.string.allowed_folders_full_sdcard);
-        } else if (!LegacyStoragePermission.isGranted(allowedFoldersPref.getContext())) {
+        } else if (mode == StorageAccessMode.ALL_FILES) {
             allowedFoldersPref.setSummary(R.string.allowed_folders_allow_access);
             nothingIsShared = true;
-        } else {
+        } else if (mode == StorageAccessMode.SELECTED_FOLDERS) {
             allowedFoldersPref.setSummary(R.string.allowed_folders_choose);
+            nothingIsShared = true;
+        } else {
+            allowedFoldersPref.setSummary(R.string.allowed_folders_choose_access);
             nothingIsShared = true;
         }
         allowedFoldersPref.setShowFix(nothingIsShared);
