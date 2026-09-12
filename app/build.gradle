@@ -119,3 +119,17 @@ tasks.register('runPlaystore_paidDebug', Exec) {
     commandLine android.adbExecutable, 'shell', 'am', 'start', '-n',
             'be.ppareit.swiftp/be.ppareit.swiftp.gui.MainActivity'
 }
+
+tasks.register('resetFdroid_freePermissions', Exec) {
+    group = 'verification'
+    description = 'Clears be.ppareit.swiftp_free and resets its all-files access on the current device.'
+    commandLine android.adbExecutable, 'shell',
+            'appops set --uid be.ppareit.swiftp_free MANAGE_EXTERNAL_STORAGE default || true; pm clear be.ppareit.swiftp_free || true'
+}
+
+tasks.register('resetPlaystore_paidPermissions', Exec) {
+    group = 'verification'
+    description = 'Clears be.ppareit.swiftp and resets its all-files access on the current device.'
+    commandLine android.adbExecutable, 'shell',
+            'appops set --uid be.ppareit.swiftp MANAGE_EXTERNAL_STORAGE default || true; pm clear be.ppareit.swiftp || true'
+}
