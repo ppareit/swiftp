@@ -51,9 +51,16 @@ public class CmdMLST extends FtpCmd implements Runnable {
                     sessionThread.getWorkingDir(), param);
         }
 
-        if (fileToFormat.exists()) {
+        if (violatesChroot(fileToFormat)) {
+            Log.w(TAG, "run: chroot violation");
+            sessionThread.writeString("550 Invalid name or chroot violation\r\n");
+            return;
+        }
+
+        FileUtil.Gen gen = FileUtil.createGenFromFile(fileToFormat);
+        if (gen.exists()) {
             sessionThread.writeString("250- Listing " + param + "\r\n");
-            sessionThread.writeString(makeString(new FileUtil.Gen(fileToFormat)) + "\r\n");
+            sessionThread.writeString(makeString(gen) + "\r\n");
             sessionThread.writeString("250 End\r\n");
         } else {
             Log.w(TAG, "run: file does not exist");

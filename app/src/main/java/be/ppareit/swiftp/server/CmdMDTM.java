@@ -22,6 +22,7 @@ package be.ppareit.swiftp.server;
 import java.io.File;
 
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.FileUtil;
 import android.util.Log;
 
 /**
@@ -44,8 +45,15 @@ public class CmdMDTM extends FtpCmd implements Runnable {
         File file = inputPathToChrootedFile(sessionThread.getChrootDir(),
                 sessionThread.getWorkingDir(), param);
 
-        if (file.exists()) {
-            long lastModified = file.lastModified();
+        if (violatesChroot(file)) {
+            Log.w(TAG, "run: chroot violation");
+            sessionThread.writeString("550 Invalid name or chroot violation\r\n");
+            return;
+        }
+
+        FileUtil.Gen gen = FileUtil.createGenFromFile(file);
+        if (gen.exists()) {
+            long lastModified = gen.lastModified();
             String response = "213 " + Util.getFtpDate(lastModified) + "\r\n";
             sessionThread.writeString(response);
         } else {

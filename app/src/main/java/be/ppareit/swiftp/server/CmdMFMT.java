@@ -26,6 +26,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.FileUtil;
 
@@ -84,8 +86,10 @@ public class CmdMFMT extends FtpCmd implements Runnable {
 
         // SAF exposes modification time as read-only metadata. When direct access is also
         // available, use the real path to add timestamp support for the selected folder.
-        FileUtil.Gen target = Util.hasFullSdCardAccess()
-                ? FileUtil.convertFileToGen(file) : FileUtil.createGenFromFile(file);
+        FileUtil.Gen target = FileUtil.createGenFromFile(file);
+        if (Util.hasFullSdCardAccess() && target.getOb() instanceof DocumentFile) {
+            target = FileUtil.convertFileToGen(file);
+        }
 
         if (!target.exists()) {
             sessionThread.writeString("550 file does not exist on server\r\n");
