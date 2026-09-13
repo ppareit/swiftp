@@ -1,3 +1,8 @@
+Version 3.5 (2026/09/13)
+    + Added a clear Storage access screen for switching between full access and
+      selected folders while keeping saved folder selections
+    * Restored MFMT modification-time updates when full storage access is in use
+    * Made MDTM, MLST, and MFMT respect the login root and selected folders
 Version 3.4 (2026/09/06)
     + Added an All allowed folders login root, made it the default for new
       logins, and added guidance for logins whose selected folder is no longer

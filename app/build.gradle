@@ -22,8 +22,8 @@ android {
         applicationId "be.ppareit.swiftp"
         minSdkVersion 23
         targetSdkVersion 36
-        versionCode 30400
-        versionName "3.4.0"
+        versionCode 30500
+        versionName "3.5.0"
     }
     buildFeatures {
         buildConfig = true
