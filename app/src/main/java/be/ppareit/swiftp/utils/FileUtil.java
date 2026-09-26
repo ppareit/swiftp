@@ -110,8 +110,15 @@ public abstract class FileUtil {
         } else {
             // Storage Access Framework
             DocumentFile targetDocument = getDocumentFile(target, false, context);
-            outStream = new ParcelFileDescriptor.AutoCloseOutputStream(context.getContentResolver()
-                    .openFileDescriptor(targetDocument.getUri(), "rw"));
+            if (targetDocument == null) {
+                throw new FileNotFoundException("No direct or SAF write access to " + target);
+            }
+            ParcelFileDescriptor descriptor = context.getContentResolver()
+                    .openFileDescriptor(targetDocument.getUri(), "rw");
+            if (descriptor == null) {
+                throw new FileNotFoundException("Cannot open " + target + " for writing");
+            }
+            outStream = new ParcelFileDescriptor.AutoCloseOutputStream(descriptor);
         }
         return outStream;
     }

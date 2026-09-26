@@ -151,7 +151,8 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 Cat.e("error : ", e);
                 try {
                     errString = "451 Couldn't open file \"" + param + "\" aka \""
-                            + storeFile.getCanonicalPath() + "\" for writing\r\n";
+                            + storeFile.getCanonicalPath()
+                            + "\" for writing. Check storage access and mount status.\r\n";
                 } catch (IOException io_e) {
                     errString = "451 Couldn't open file, nested exception\r\n";
                 }
