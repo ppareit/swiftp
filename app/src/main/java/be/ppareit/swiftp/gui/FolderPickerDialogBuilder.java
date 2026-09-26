@@ -103,6 +103,16 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
             dirs = new String[]{};
         }
         LinkedHashSet<String> folderNames = new LinkedHashSet<>(Arrays.asList(dirs));
+        // Android may hide /storage/emulated from directory enumeration even though the
+        // app can access its primary storage directory at /storage/emulated/0.
+        File primary = Environment.getExternalStorageDirectory();
+        String rootPath = mRoot.getAbsolutePath();
+        String rootPrefix = rootPath.endsWith(File.separator) ? rootPath : rootPath + File.separator;
+        String primaryPath = primary.getAbsolutePath();
+        if (primary.isDirectory() && primaryPath.startsWith(rootPrefix)) {
+            String remainder = primaryPath.substring(rootPrefix.length());
+            folderNames.add(remainder.split(File.separator, 2)[0]);
+        }
         // Some devices do not enumerate removable volumes through File.list() on /storage,
         // although their direct paths work. Android reports those mounts as external files dirs.
         if ("/storage".equals(mRoot.getAbsolutePath())) {
