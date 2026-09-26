@@ -177,8 +177,14 @@ public class CmdRMD extends FtpCmd implements Runnable {
      * @return Whether the operation completed successfully
      */
     protected boolean recursiveDelete(File toDelete) {
+        if (isSymlink(toDelete)) {
+            // the link itself, never what it points to, which can lie outside the chroot
+            Log.d(TAG, "RMD unlinking: " + toDelete);
+            return toDelete.delete();
+        }
         if (!toDelete.exists()) {
-            return false;
+            // a dangling link: listed, but exists() follows it to nothing
+            return toDelete.delete();
         }
         if (toDelete.isDirectory()) {
             // If any of the recursive operations fail, then we return false
@@ -196,6 +202,23 @@ public class CmdRMD extends FtpCmd implements Runnable {
                 MediaUpdater.notifyFileDeleted(toDelete.getPath());
             }
             return success;
+        }
+    }
+
+    /**
+     * Whether the last name in the path is a symbolic link.
+     * if min API becomes API 26, then java.nio.file.isSymlink can replace this function
+     */
+    private static boolean isSymlink(File file) {
+        final String name = file.getName();
+        if (name.equals(".") || name.equals("..")) return false;
+        final File parent = file.getAbsoluteFile().getParentFile();
+        if (parent == null) return false;
+        try {
+            final File inParent = new File(parent.getCanonicalFile(), name);
+            return !inParent.getCanonicalFile().equals(inParent);
+        } catch (IOException e) {
+            return true; // then only the name is removed, never a tree
         }
     }
 }
