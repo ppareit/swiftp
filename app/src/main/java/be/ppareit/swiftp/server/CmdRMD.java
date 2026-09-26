@@ -20,6 +20,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package be.ppareit.swiftp.server;
 
 import java.io.File;
+import java.io.IOException;
 
 import android.util.Log;
 
@@ -68,6 +69,10 @@ public class CmdRMD extends FtpCmd implements Runnable {
                     errString = "550 Invalid name or chroot violation\r\n";
                     break mainblock;
                 }
+                if (isChroot(toRemove)) {
+                    errString = "550 Won't RMD the root directory\r\n";
+                    break mainblock;
+                }
                 if (!docFileToRemove.isDirectory()) {
                     errString = "550 Can't RMD a non-directory\r\n";
                     break mainblock;
@@ -102,7 +107,7 @@ public class CmdRMD extends FtpCmd implements Runnable {
                 errString = "550 Can't RMD a non-directory\r\n";
                 break mainblock;
             }
-            if (toRemove.equals(new File("/"))) {
+            if (isChroot(toRemove)) {
                 errString = "550 Won't RMD the root directory\r\n";
                 break mainblock;
             }
@@ -118,6 +123,16 @@ public class CmdRMD extends FtpCmd implements Runnable {
             sessionThread.writeString("250 Removed directory\r\n");
         }
         Log.d(TAG, "RMD finished");
+    }
+
+    /** The client's root directory, however the path reached it: "/", "." ...  */
+    private boolean isChroot(File file) {
+        try {
+            return file.getCanonicalPath()
+                    .equals(sessionThread.getChrootDir().getCanonicalPath());
+        } catch (IOException e) {
+            return true; // for security, assume the worst
+        }
     }
 
     /**
