@@ -31,6 +31,7 @@ import be.ppareit.swiftp.MediaUpdater;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
+import be.ppareit.swiftp.utils.StorageRoots;
 
 public class CmdRMD extends FtpCmd implements Runnable {
     private static final String TAG = CmdRMD.class.getSimpleName();
@@ -73,6 +74,10 @@ public class CmdRMD extends FtpCmd implements Runnable {
                     errString = "550 Won't RMD the root directory\r\n";
                     break mainblock;
                 }
+                if (StorageRoots.isVolumeRootOrAbove(toRemove)) {
+                    errString = "550 Won't RMD a storage volume\r\n";
+                    break mainblock;
+                }
                 if (!docFileToRemove.isDirectory()) {
                     errString = "550 Can't RMD a non-directory\r\n";
                     break mainblock;
@@ -109,6 +114,10 @@ public class CmdRMD extends FtpCmd implements Runnable {
             }
             if (isChroot(toRemove)) {
                 errString = "550 Won't RMD the root directory\r\n";
+                break mainblock;
+            }
+            if (StorageRoots.isVolumeRootOrAbove(toRemove)) {
+                errString = "550 Won't RMD a storage volume\r\n";
                 break mainblock;
             }
             if (!recursiveDelete(toRemove)) {
