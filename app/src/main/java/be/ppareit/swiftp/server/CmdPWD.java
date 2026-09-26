@@ -48,9 +48,7 @@ public class CmdPWD extends FtpCmd implements Runnable {
         // The chroot restriction has been applied when the working directory was set, so
         // the user-visible path is the current directory with the chroot part taken off
         // the front. It cannot simply be sliced off by length: a chroot of "/" would lose
-        // the leading slash, and getChrootDir() falls back to another directory entirely
-        // once the session's own chroot stops existing, which can leave the working
-        // directory outside it.
+        // the leading slash.
         try {
             String currentDir = sessionThread.getWorkingDir().getCanonicalPath();
             File chrootDir = sessionThread.getChrootDir();

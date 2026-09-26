@@ -686,7 +686,7 @@ public class SessionThread extends Thread {
     }
 
     public File getChrootDir() {
-        return chrootDir.isDirectory() ? chrootDir : settings.getDefaultChrootDir();
+        return chrootDir;
     }
 
     public void setChrootDir(String chrootPath) {
