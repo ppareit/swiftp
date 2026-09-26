@@ -157,7 +157,7 @@ public class UserListFragment extends Fragment {
      */
     private void chooseChroot(String current, ChrootPicker.OnTextEventListener onChosen) {
         final CharSequence[] items = {
-                getString(R.string.chroot_all_allowed_folders),
+                allAllowedFoldersLabel(),
                 getString(R.string.chroot_restrict_to_folder),
         };
         new AlertDialog.Builder(getActivity())
@@ -175,9 +175,14 @@ public class UserListFragment extends Fragment {
                 .show();
     }
 
-    /** What the row shows for a chroot: the allowed folders have no one path to print. */
+    /** Show the actual default path when File access is active. */
     private String chrootText(String chroot) {
-        return chroot.isEmpty() ? getString(R.string.chroot_all_allowed_folders) : chroot;
+        return chroot.isEmpty() ? allAllowedFoldersLabel() : chroot;
+    }
+
+    private String allAllowedFoldersLabel() {
+        if (Util.useScopedStorage()) return getString(R.string.chroot_all_allowed_folders);
+        return getString(R.string.chroot_default_folder, FsSettings.getDefaultChrootDir().getPath());
     }
 
     /**

@@ -29,6 +29,10 @@ import net.vrallev.android.cat.Cat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+
+import be.ppareit.swiftp.utils.FileUtil;
 
 /**
  * Builder class for a folder picker dialog.
@@ -98,8 +102,19 @@ public class FolderPickerDialogBuilder extends AlertDialog.Builder {
             Cat.d("Unable to fix, continue with empty list");
             dirs = new String[]{};
         }
+        LinkedHashSet<String> folderNames = new LinkedHashSet<>(Arrays.asList(dirs));
+        // Some devices do not enumerate removable volumes through File.list() on /storage,
+        // although their direct paths work. Android reports those mounts as external files dirs.
+        if ("/storage".equals(mRoot.getAbsolutePath())) {
+            for (String path : FileUtil.getExtSdCardPathsForActivity(getContext())) {
+                File volume = new File(path);
+                if (mRoot.equals(volume.getParentFile()) && volume.isDirectory()) {
+                    folderNames.add(volume.getName());
+                }
+            }
+        }
         mAdapter.add("..");
-        mAdapter.addAll(dirs);
+        mAdapter.addAll(folderNames);
     }
 
     public AlertDialog.Builder setSelectedButton(int textId, OnSelectedListener listener) {
