@@ -817,9 +817,15 @@ public abstract class FileUtil {
      */
     public static class Gen<T> {
         T ob;
+        private final String displayName;
 
         public Gen(T o1) {
+            this(o1, null);
+        }
+
+        public Gen(T o1, String displayName) {
             ob = o1;
+            this.displayName = displayName;
         }
 
         public T getOb() {
@@ -835,6 +841,7 @@ public abstract class FileUtil {
         }
 
         public String getName() {
+            if (displayName != null) return displayName;
             Object ob = getOb();
             if (ob == null) return "";
             if (ob instanceof VirtualDir) return ((VirtualDir) ob).getName();
