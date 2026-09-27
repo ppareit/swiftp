@@ -22,6 +22,7 @@ package be.ppareit.swiftp.server;
 import android.util.Log;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 
@@ -344,6 +345,41 @@ public abstract class FtpCmd implements Runnable {
                 : canonicalChroot.length();
         String relative = canonicalPath.substring(prefix);
         return relative.isEmpty() ? File.separator : relative;
+    }
+
+    /**
+     * The path of a file as the client sees it, for the 257 replies of PWD and MKD.
+     */
+    protected String visiblePath(File file) throws IOException {
+        // The chroot restriction has been applied when the working directory was set, so
+        // the user-visible path is the current directory with the chroot part taken off
+        // the front. It cannot simply be sliced off by length: a chroot of "/" would lose
+        // the leading slash. In multi-volume all-files mode the session keeps its own root
+        // when a volume disappears, so the reply must not expose a different volume's path.
+        String currentDir = file.getCanonicalPath();
+        File chrootDir = sessionThread.getChrootDir();
+        if (chrootDir == null) {
+            return "/";
+        }
+        final String chroot = chrootDir.getCanonicalPath();
+        if (Util.useScopedStorage()) {
+            final String virtualDir = AllowedFolders.virtualPathForPhysical(currentDir, chroot);
+            if (virtualDir != null) currentDir = virtualDir;
+        } else if (AllFilesVolumes.servesVirtualRoot(chrootDir)) {
+            final String virtualDir = AllFilesVolumes.virtualPathForPhysical(currentDir);
+            currentDir = virtualDir == null ? chroot : virtualDir;
+        }
+        String visibleDir = chrootRelativePath(chroot, currentDir);
+        if (visibleDir == null) {
+            Log.i(TAG, "Path lies outside the chroot, reporting the root");
+            visibleDir = "/";
+        }
+        return visibleDir;
+    }
+
+    /** A path quoted for a 257 reply, RFC 959 Appendix II: an embedded quote is doubled. */
+    static String quotePath(String path) {
+        return "\"" + path.replace("\"", "\"\"") + "\"";
     }
 
     /**

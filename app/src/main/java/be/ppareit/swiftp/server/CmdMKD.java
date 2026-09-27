@@ -20,6 +20,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package be.ppareit.swiftp.server;
 
 import java.io.File;
+import java.io.IOException;
 
 import android.util.Log;
 
@@ -42,7 +43,7 @@ public class CmdMKD extends FtpCmd implements Runnable {
     public void run() {
         Log.d(TAG, "MKD executing");
         String param = getParameter(input);
-        File toCreate;
+        File toCreate = null;
         String errString = null;
         mainblock:
         {
@@ -77,7 +78,14 @@ public class CmdMKD extends FtpCmd implements Runnable {
             sessionThread.writeString(errString);
             Log.i(TAG, "MKD error: " + errString.trim());
         } else {
-            sessionThread.writeString("250 Directory created\r\n");
+            String visible;
+            try {
+                visible = visiblePath(toCreate);
+            } catch (IOException e) {
+                // the directory exists, so it is still a 257, named as the client asked
+                visible = param;
+            }
+            sessionThread.writeString("257 " + quotePath(visible) + " created\r\n");
         }
         Log.i(TAG, "MKD complete");
     }
