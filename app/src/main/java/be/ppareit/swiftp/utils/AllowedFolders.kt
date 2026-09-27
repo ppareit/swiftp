@@ -12,6 +12,8 @@ import androidx.documentfile.provider.DocumentFile
 import be.ppareit.swiftp.App
 import be.ppareit.swiftp.Util
 
+import java.io.File
+
 /**
  * The folders the user has allowed SwiFTP to serve.
  *
@@ -77,6 +79,16 @@ object AllowedFolders {
     /** True when this directory is above at least one granted folder without being inside one. */
     @JvmStatic
     fun isVirtual(dir: String?): Boolean = index().isVirtual(dir)
+
+    /** True for a granted folder itself or a directory above one, which FTP must not rename or remove. */
+    @JvmStatic
+    fun isGrantRootOrAbove(dir: String?): Boolean =
+        dir != null && index().isGrantRootOrAbove(StorageRoots.canonical(File(dir)).path)
+
+    /** True when a granted folder holds this path. */
+    @JvmStatic
+    fun isInsideGrant(path: String?): Boolean =
+        path != null && index().containing(StorageRoots.canonical(File(path)).path) != null
 
     /** The entries to show for a virtual directory: the granted folders below it. */
     @JvmStatic

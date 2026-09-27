@@ -24,6 +24,8 @@ import java.io.File;
 import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.App;
+import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 
 /**
@@ -55,6 +57,10 @@ public class CmdRNTO extends FtpCmd implements Runnable {
             Cat.i("RNTO to file: " + toFile.getPath());
             if (violatesChroot(toFile)) {
                 errString = "550 Invalid name or chroot violation\r\n";
+                break mainblock;
+            }
+            if (Util.useScopedStorage() && !AllowedFolders.isInsideGrant(toFile.getParent())) {
+                errString = "550 Can't move outside the allowed folders\r\n";
                 break mainblock;
             }
             File fromFile = sessionThread.getRenameFrom();

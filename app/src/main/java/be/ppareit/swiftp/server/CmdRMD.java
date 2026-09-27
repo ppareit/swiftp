@@ -78,6 +78,10 @@ public class CmdRMD extends FtpCmd implements Runnable {
                     errString = "550 Won't RMD a storage volume\r\n";
                     break mainblock;
                 }
+                if (AllowedFolders.isGrantRootOrAbove(toRemove.getPath())) {
+                    errString = "550 Won't RMD an allowed folder\r\n";
+                    break mainblock;
+                }
                 if (!docFileToRemove.isDirectory()) {
                     errString = "550 Can't RMD a non-directory\r\n";
                     break mainblock;

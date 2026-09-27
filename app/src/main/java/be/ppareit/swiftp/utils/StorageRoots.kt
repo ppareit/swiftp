@@ -42,6 +42,6 @@ object StorageRoots {
     }
 
     /** Return the one canonical form of the file, . and .. resolved, symlinks followed*/
-    private fun canonical(file: File): File =
+    fun canonical(file: File): File =
         runCatching { file.canonicalFile }.getOrDefault(file.absoluteFile)
 }

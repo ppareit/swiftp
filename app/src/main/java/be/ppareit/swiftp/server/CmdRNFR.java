@@ -23,6 +23,9 @@ import java.io.File;
 
 import net.vrallev.android.cat.Cat;
 
+import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllowedFolders;
+
 /**
  * CmdRNFR implements RENAME FROM (RNFR)
  * This command specifies the old pathname of the file which is
@@ -50,6 +53,10 @@ public class CmdRNFR extends FtpCmd implements Runnable {
                     sessionThread.getWorkingDir(), param);
             if (violatesChroot(file)) {
                 errString = "550 Invalid name or chroot violation\r\n";
+                break mainblock;
+            }
+            if (Util.useScopedStorage() && AllowedFolders.isGrantRootOrAbove(file.getPath())) {
+                errString = "550 Won't rename an allowed folder\r\n";
                 break mainblock;
             }
             if (!file.exists()) {

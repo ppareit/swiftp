@@ -84,6 +84,15 @@ class StorageTreeIndex(granted: List<StorageTree>?) {
     }
 
     /**
+     * True for a granted folder itself or a directory above one. Renaming or removing it would
+     * take the grant with it, Android revokes a grant whose document goes away.
+     */
+    fun isGrantRootOrAbove(dir: String?): Boolean {
+        val path = dir?.trimTrailingSeparator() ?: return false
+        return isVirtual(path) || trees.any { it.rootPath == path || it.rootPath.isStrictlyBelow(path) }
+    }
+
+    /**
      * The entries to show for a virtual directory.
      */
     fun childNamesUnder(dir: String?): List<String> {
