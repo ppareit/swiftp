@@ -33,6 +33,7 @@ import java.io.File;
 import java.util.Set;
 
 import be.ppareit.swiftp.utils.AllowedFolders;
+import be.ppareit.swiftp.utils.AllFilesVolumes;
 import be.ppareit.swiftp.utils.FileUtil;
 
 public class FsSettings {
@@ -65,7 +66,7 @@ public class FsSettings {
         // Only on the first read, like the users, or a folder chosen later is widened
         if (sp.getBoolean("anonChrootNormalized", false)) return chroot;
         sp.edit().putBoolean("anonChrootNormalized", true).apply();
-        if (!chroot.isEmpty() && chroot.equals(getDefaultChrootDir().getPath())) {
+        if (!chroot.isEmpty() && chroot.equals(getLegacyDefaultChrootDir().getPath())) {
             // Migrate this also to 'All allowed folders'
             setAnonChroot("");
             return "";
@@ -78,6 +79,18 @@ public class FsSettings {
     }
 
     public static File getDefaultChrootDir() {
+        if (!Util.useScopedStorage() && AllFilesVolumes.hasMultiple()) {
+            return new File(AllFilesVolumes.VIRTUAL_ROOT);
+        }
+        return getLegacyDefaultChrootDir();
+    }
+
+    /**
+     * The default chroot from before the volumes could be served by name under /storage, and
+     * still the default with one volume. Older versions stored this very path for users that
+     * never chose a folder, so the migrations recognize a frozen default by it.
+     */
+    public static File getLegacyDefaultChrootDir() {
         if (Util.useScopedStorage()) {
             final String chroot = AllowedFolders.defaultChroot();
             if (chroot != null && !chroot.isEmpty()) return new File(chroot);

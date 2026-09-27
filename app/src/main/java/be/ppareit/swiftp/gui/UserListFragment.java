@@ -30,6 +30,7 @@ import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.users.FtpUser;
 import be.ppareit.swiftp.users.UserStore;
 import be.ppareit.swiftp.utils.ChrootPicker;
+import be.ppareit.swiftp.utils.AllFilesVolumes;
 
 public class UserListFragment extends Fragment {
 
@@ -182,6 +183,7 @@ public class UserListFragment extends Fragment {
 
     private String allAllowedFoldersLabel() {
         if (Util.useScopedStorage()) return getString(R.string.chroot_all_allowed_folders);
+        if (AllFilesVolumes.hasMultiple()) return getString(R.string.chroot_all_allowed_folders);
         return getString(R.string.chroot_default_folder, FsSettings.getDefaultChrootDir().getPath());
     }
 

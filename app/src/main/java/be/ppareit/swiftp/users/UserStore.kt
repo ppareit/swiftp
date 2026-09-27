@@ -144,7 +144,7 @@ object UserStore : Authenticator {
      */
     private fun normalized(user: FtpUser): FtpUser =
         if (user.chroot != ALL_ALLOWED_FOLDERS
-            && user.chroot == FsSettings.getDefaultChrootDir().path
+            && user.chroot == FsSettings.getLegacyDefaultChrootDir().path
         ) user.copy(chroot = ALL_ALLOWED_FOLDERS)
         else user
 }
