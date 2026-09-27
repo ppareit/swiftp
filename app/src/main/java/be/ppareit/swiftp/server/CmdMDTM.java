@@ -51,7 +51,7 @@ public class CmdMDTM extends FtpCmd implements Runnable {
             return;
         }
 
-        FileUtil.Gen gen = FileUtil.createGenFromFile(file);
+        FileUtil.Gen gen = genFor(file);
         if (gen.exists()) {
             long lastModified = gen.lastModified();
             String response = "213 " + Util.getFtpDate(lastModified) + "\r\n";

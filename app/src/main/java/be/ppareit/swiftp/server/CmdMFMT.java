@@ -86,7 +86,7 @@ public class CmdMFMT extends FtpCmd implements Runnable {
 
         // SAF exposes modification time as read-only metadata. When direct access is also
         // available, use the real path to add timestamp support for the selected folder.
-        FileUtil.Gen target = FileUtil.createGenFromFile(file);
+        FileUtil.Gen target = genFor(file);
         if (Util.hasFullSdCardAccess() && target.getOb() instanceof DocumentFile) {
             target = FileUtil.convertFileToGen(file);
         }

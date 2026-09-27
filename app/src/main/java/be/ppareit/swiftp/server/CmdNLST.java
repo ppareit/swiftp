@@ -77,7 +77,7 @@ public class CmdNLST extends CmdAbstractListing implements Runnable {
             String listing;
             // Use Gen, otherwise a granted folder and the virtual root above it
             // both fail File.isDirectory() checks under SAF.
-            FileUtil.Gen gen = FileUtil.createGenFromFile(fileToList);
+            FileUtil.Gen gen = genFor(fileToList);
             if (gen.isDirectory()) {
                 StringBuilder response = new StringBuilder();
                 errString = listDirectory(response, gen);

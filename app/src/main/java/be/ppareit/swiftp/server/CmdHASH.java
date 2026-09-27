@@ -43,7 +43,7 @@ public class CmdHASH extends FtpCmd implements Runnable {
             fileToHash = inputPathToChrootedFile(sessionThread.getChrootDir(),
                     sessionThread.getWorkingDir(), param);
 
-            FileUtil.Gen gen = FileUtil.createGenFromFile(fileToHash);
+            FileUtil.Gen gen = genFor(fileToHash);
             final boolean isFile = !(gen.getOb() instanceof DocumentFile);
 
             if (violatesChroot(fileToHash)) {

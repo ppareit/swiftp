@@ -32,7 +32,7 @@ public class CmdSIZE extends FtpCmd {
                 break mainblock;
             }
             // Under scoped storage the plain File cannot be read and would report 0
-            FileUtil.Gen gen = FileUtil.createGenFromFile(target);
+            FileUtil.Gen gen = genFor(target);
             if (!gen.exists()) {
                 errString = "550 Cannot get the SIZE of nonexistent object\r\n";
                 Log.d(TAG, "Failed getting size of: " + target.getAbsolutePath());

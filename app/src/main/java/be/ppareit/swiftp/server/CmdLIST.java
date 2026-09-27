@@ -89,7 +89,7 @@ public class CmdLIST extends CmdAbstractListing implements Runnable {
 
             final FileUtil.Gen gen = docFileToList != null
                     ? FileUtil.convertDocumentFileToGen(docFileToList)
-                    : FileUtil.createGenFromFile(fileToList);
+                    : genFor(fileToList);
 
             String listing;
             if (gen.isDirectory()) {

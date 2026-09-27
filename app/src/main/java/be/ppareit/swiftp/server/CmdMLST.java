@@ -57,7 +57,7 @@ public class CmdMLST extends FtpCmd implements Runnable {
             return;
         }
 
-        FileUtil.Gen gen = FileUtil.createGenFromFile(fileToFormat);
+        FileUtil.Gen gen = genFor(fileToFormat);
         if (gen.exists()) {
             sessionThread.writeString("250- Listing " + param + "\r\n");
             sessionThread.writeString(makeString(gen) + "\r\n");

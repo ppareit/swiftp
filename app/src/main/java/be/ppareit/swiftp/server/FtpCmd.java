@@ -27,6 +27,7 @@ import java.net.InetAddress;
 
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
+import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.utils.Logging;
 
 public abstract class FtpCmd implements Runnable {
@@ -316,6 +317,14 @@ public abstract class FtpCmd implements Runnable {
                 : canonicalChroot.length();
         String relative = canonicalPath.substring(prefix);
         return relative.isEmpty() ? File.separator : relative;
+    }
+
+    /**
+     * The entry for a path this session resolved. Commands turn their paths into entries here
+     * and nowhere else, so whatever the session's namespace adds to an entry is added alike.
+     */
+    protected FileUtil.Gen genFor(File file) {
+        return FileUtil.createGenFromFile(file);
     }
 
     public boolean violatesChroot(File file) {

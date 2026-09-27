@@ -73,7 +73,7 @@ public abstract class CmdAbstractListing extends FtpCmd {
      */
     private String listEntriesVirtual(StringBuilder response, VirtualDir dir) {
         for (String name : AllowedFolders.childNamesUnder(dir.getPath())) {
-            final FileUtil.Gen child = FileUtil.createGenFromFile(new File(dir.getPath(), name));
+            final FileUtil.Gen child = genFor(new File(dir.getPath(), name));
             final String line = makeLsString(child);
             if (line != null) response.append(line);
         }

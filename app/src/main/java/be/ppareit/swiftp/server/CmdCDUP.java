@@ -56,7 +56,7 @@ public class CmdCDUP extends FtpCmd implements Runnable {
                 newDir = newDir.getCanonicalFile();
                 // Use Gen for the same reason as CWD: coming back up out of a granted
                 // folder lands on the virtual root, which no File test recognises.
-                final FileUtil.Gen gen = FileUtil.createGenFromFile(newDir);
+                final FileUtil.Gen gen = genFor(newDir);
                 if (!gen.isDirectory()) {
                     errString = "550 Can't CWD to invalid directory\r\n";
                     break mainBlock;
