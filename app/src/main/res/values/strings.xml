@@ -85,7 +85,12 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="chroot_label">Stay in folder</string>
     <!-- The chroot of a login that follows the allowed folders instead of naming one -->
     <string name="chroot_all_allowed_folders">All allowed folders</string>
-    <string name="chroot_default_folder">Default folder: %1$s</string>
+    <!-- The same under all files access, where "all" is internal storage and any SD card -->
+    <string name="chroot_internal_storage">Internal storage</string>
+    <plurals name="chroot_internal_storage_and_cards">
+        <item quantity="one">Internal storage and SD card</item>
+        <item quantity="other">Internal storage and SD cards</item>
+    </plurals>
     <string name="chroot_restrict_to_folder">Restrict to one folder…</string>
     <string name="chroot_not_shared">%1$s is not shared any more</string>
     <string name="chroot_stranded_title">Folder not shared</string>

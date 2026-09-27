@@ -158,7 +158,7 @@ public class UserListFragment extends Fragment {
      */
     private void chooseChroot(String current, ChrootPicker.OnTextEventListener onChosen) {
         final CharSequence[] items = {
-                allAllowedFoldersLabel(),
+                unrestrictedLabel(),
                 getString(R.string.chroot_restrict_to_folder),
         };
         new AlertDialog.Builder(getActivity())
@@ -176,15 +176,17 @@ public class UserListFragment extends Fragment {
                 .show();
     }
 
-    /** Show the actual default path when File access is active. */
+    /** Show what the default covers when File access is active. */
     private String chrootText(String chroot) {
-        return chroot.isEmpty() ? allAllowedFoldersLabel() : chroot;
+        return chroot.isEmpty() ? unrestrictedLabel() : chroot;
     }
 
-    private String allAllowedFoldersLabel() {
+    private String unrestrictedLabel() {
         if (Util.useScopedStorage()) return getString(R.string.chroot_all_allowed_folders);
-        if (AllFilesVolumes.hasMultiple()) return getString(R.string.chroot_all_allowed_folders);
-        return getString(R.string.chroot_default_folder, FsSettings.getDefaultChrootDir().getPath());
+        final int cards = AllFilesVolumes.cards().size();
+        return cards == 0
+                ? getString(R.string.chroot_internal_storage)
+                : getResources().getQuantityString(R.plurals.chroot_internal_storage_and_cards, cards);
     }
 
     /**

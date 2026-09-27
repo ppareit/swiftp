@@ -23,6 +23,10 @@ object AllFilesVolumes {
         return listOf(Volume("Internal", primary.path)) + cards
     }
 
+    /** The volumes besides internal storage, the SD cards. */
+    @JvmStatic
+    fun cards(): List<Volume> = available().drop(1)
+
     @JvmStatic
     fun hasMultiple(): Boolean = available().size > 1
 
