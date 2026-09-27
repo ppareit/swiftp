@@ -939,6 +939,11 @@ public abstract class FileUtil {
         }
     }
 
+    /** A directory that is built for the listing rather than read from storage. */
+    public static Gen createVirtualDirGen(File f) {
+        return new Gen<>(new VirtualDir(f.getPath(), virtualDirTime(f)));
+    }
+
     /*
      * A virtual directory has no real modification time.
      */

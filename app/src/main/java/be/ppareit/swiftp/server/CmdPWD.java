@@ -29,6 +29,7 @@ import java.io.IOException;
 
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
+import be.ppareit.swiftp.utils.AllFilesVolumes;
 import be.ppareit.swiftp.utils.FileUtil;
 
 /**
@@ -48,7 +49,8 @@ public class CmdPWD extends FtpCmd implements Runnable {
         // The chroot restriction has been applied when the working directory was set, so
         // the user-visible path is the current directory with the chroot part taken off
         // the front. It cannot simply be sliced off by length: a chroot of "/" would lose
-        // the leading slash.
+        // the leading slash. In multi-volume all-files mode the session keeps its own root
+        // when a volume disappears, so PWD must not expose a different volume's path.
         try {
             String currentDir = sessionThread.getWorkingDir().getCanonicalPath();
             File chrootDir = sessionThread.getChrootDir();
@@ -58,6 +60,9 @@ public class CmdPWD extends FtpCmd implements Runnable {
                 if (Util.useScopedStorage()) {
                     final String virtualDir = AllowedFolders.virtualPathForPhysical(currentDir, chroot);
                     if (virtualDir != null) currentDir = virtualDir;
+                } else if (AllFilesVolumes.servesVirtualRoot(chrootDir)) {
+                    final String virtualDir = AllFilesVolumes.virtualPathForPhysical(currentDir);
+                    currentDir = virtualDir == null ? chroot : virtualDir;
                 }
                 visibleDir = chrootRelativePath(chroot, currentDir);
                 if (visibleDir == null) {

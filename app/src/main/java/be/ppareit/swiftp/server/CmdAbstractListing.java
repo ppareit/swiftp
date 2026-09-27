@@ -35,6 +35,7 @@ import java.io.File;
 import java.util.Comparator;
 
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllFilesVolumes;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.utils.VirtualDir;
@@ -70,8 +71,16 @@ public abstract class CmdAbstractListing extends FtpCmd {
     /*
      * A directory that only exists because allowed folders sit below it. Its entries are those
      * folders, one path segment at a time, so a login chrooted above them sees them all.
+     * Under all files access it is /storage, and its entries are the mounted volumes.
      */
     private String listEntriesVirtual(StringBuilder response, VirtualDir dir) {
+        if (!Util.useScopedStorage()) {
+            for (AllFilesVolumes.Volume volume : AllFilesVolumes.available()) {
+                final String line = makeLsString(genFor(new File(volume.getPath())));
+                if (line != null) response.append(line);
+            }
+            return null;
+        }
         for (String name : AllowedFolders.childNamesUnder(dir.getPath())) {
             final FileUtil.Gen child = genFor(new File(dir.getPath(), name));
             final String line = makeLsString(child);

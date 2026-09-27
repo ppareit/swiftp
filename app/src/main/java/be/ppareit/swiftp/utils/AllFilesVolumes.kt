@@ -2,6 +2,8 @@
 
 package be.ppareit.swiftp.utils
 
+import be.ppareit.swiftp.Util
+
 import java.io.File
 
 /** The mounted, readable volumes served through direct File access. */
@@ -26,6 +28,11 @@ object AllFilesVolumes {
 
     @JvmStatic
     fun isVirtualRoot(path: String): Boolean = path == VIRTUAL_ROOT
+
+    /** True under all files access for a chroot of /storage, where "/" lists the volumes by name. */
+    @JvmStatic
+    fun servesVirtualRoot(chroot: File): Boolean =
+        !Util.useScopedStorage() && isVirtualRoot(chroot.path)
 
     @JvmStatic
     fun physicalPathForVirtual(path: String): String? {

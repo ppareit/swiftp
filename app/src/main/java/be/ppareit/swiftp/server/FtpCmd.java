@@ -26,6 +26,7 @@ import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 
 import be.ppareit.swiftp.Util;
+import be.ppareit.swiftp.utils.AllFilesVolumes;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
 import be.ppareit.swiftp.utils.Logging;
@@ -251,6 +252,12 @@ public abstract class FtpCmd implements Runnable {
     }
 
     /**
+     * What a path resolves to when it names nothing this session may reach. A File rather
+     * than null, so every caller keeps its one violatesChroot check, which refuses it first.
+     */
+    static final File UNREACHABLE = new File("/__swiftp_unreachable__");
+
+    /**
      * Resolves a path the client sent: absolute ones against the chroot, relative ones against
      * {@code existingPrefix}, normally the working dir. Both live in the FTP namespace, so under
      * scoped storage the result is mapped back to a physical path. This does not enforce the
@@ -260,6 +267,7 @@ public abstract class FtpCmd implements Runnable {
         if (ftpPath == null) ftpPath = "";
 
         File namespacePrefix = existingPrefix;
+        final boolean allFilesVirtual = AllFilesVolumes.servesVirtualRoot(chrootDir);
         if (Util.useScopedStorage()) {
             try {
                 final String virtualPrefix = AllowedFolders.virtualPathForPhysical(
@@ -267,6 +275,14 @@ public abstract class FtpCmd implements Runnable {
                 if (virtualPrefix != null) namespacePrefix = new File(virtualPrefix);
             } catch (Exception ignored) {
                 // Keep the physical prefix; later validation still enforces the chroot.
+            }
+        } else if (allFilesVirtual) {
+            try {
+                final String virtualPrefix = AllFilesVolumes.virtualPathForPhysical(
+                        existingPrefix.getCanonicalPath());
+                if (virtualPrefix != null) namespacePrefix = new File(virtualPrefix);
+            } catch (Exception ignored) {
+                // Unknown or unmounted volumes are refused by the translation below.
             }
         }
 
@@ -278,6 +294,17 @@ public abstract class FtpCmd implements Runnable {
             path = new File(namespacePrefix, ftpPath);
         }
 
+        if (allFilesVirtual) {
+            try {
+                final String physicalPath = AllFilesVolumes.physicalPathForVirtual(
+                        path.getCanonicalPath());
+                // An FTP path outside the named mounts must never reach an arbitrary /storage
+                // child. Returning a path outside the chroot makes every command refuse it.
+                return physicalPath == null ? UNREACHABLE : new File(physicalPath);
+            } catch (Exception e) {
+                return UNREACHABLE;
+            }
+        }
         if (!Util.useScopedStorage()) return path;
         try {
             final String physicalPath = AllowedFolders.physicalPathForVirtual(path.getCanonicalPath());
@@ -324,16 +351,28 @@ public abstract class FtpCmd implements Runnable {
      * and nowhere else, so whatever the session's namespace adds to an entry is added alike.
      */
     protected FileUtil.Gen genFor(File file) {
+        if (AllFilesVolumes.servesVirtualRoot(sessionThread.getChrootDir())) {
+            if (AllFilesVolumes.isVirtualRoot(file.getPath())) return FileUtil.createVirtualDirGen(file);
+            final String volumeName = AllFilesVolumes.nameForPhysicalRoot(file.getPath());
+            if (volumeName != null) return new FileUtil.Gen<>(file, volumeName);
+        }
         return FileUtil.createGenFromFile(file);
     }
 
     public boolean violatesChroot(File file) {
+        if (UNREACHABLE.equals(file)) return true;
         try {
             // taking the canonical path as new devices have sdcard symbolic linked
             // for multi user support
             File chroot = sessionThread.getChrootDir();
             String canonicalChroot = chroot.getCanonicalPath();
             String canonicalPath = file.getCanonicalPath();
+            if (AllFilesVolumes.servesVirtualRoot(chroot)) {
+                if (canonicalPath.equals(canonicalChroot)
+                        || AllFilesVolumes.containsPhysical(canonicalPath)) return false;
+                Log.i(TAG, "Path outside mounted storage volumes, denying");
+                return true;
+            }
             if (!isWithinChroot(canonicalChroot, canonicalPath)) {
                 Log.i(TAG, "Path violated folder restriction, denying");
                 Log.d(TAG, "path: " + canonicalPath);
