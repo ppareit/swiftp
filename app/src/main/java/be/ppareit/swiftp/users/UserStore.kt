@@ -34,14 +34,21 @@ object UserStore : Authenticator {
 
     private val sp get() = FsSettings.preferences()
 
+    /** Set once [normalized] has run over the stored users, see [users]. */
+    private const val CHROOTS_NORMALIZED = "chrootsNormalized"
+
     /** Every stored user. Never empty. */
     fun users(): List<FtpUser> {
         val stored = stored()
+        if (sp.getBoolean(CHROOTS_NORMALIZED, false)) return stored
         val users = stored.map(::normalized)
         // Written back rather than recomputed on every read: what [normalized] recognizes is a
         // path that is the whole served set, and that stops being recognizable the moment the
         // allowed folders change, which is exactly when it would be needed.
+        // And only on this first read: a path that is the whole set later on is one somebody
+        // picked, and reading it as the allowed folders widens that user when the set grows.
         if (users != stored) save(users)
+        sp.edit().putBoolean(CHROOTS_NORMALIZED, true).apply()
         return users
     }
 
@@ -61,7 +68,7 @@ object UserStore : Authenticator {
     fun modify(username: String, user: FtpUser): FtpUser {
         remove(username)
         add(user)
-        return normalized(user)
+        return user(user.username) ?: user
     }
 
     /**

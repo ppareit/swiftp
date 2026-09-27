@@ -62,6 +62,9 @@ public class FsSettings {
      */
     public static String getAnonChroot() {
         final String chroot = sp.getString("anonChroot", "");
+        // Only on the first read, like the users, or a folder chosen later is widened
+        if (sp.getBoolean("anonChrootNormalized", false)) return chroot;
+        sp.edit().putBoolean("anonChrootNormalized", true).apply();
         if (!chroot.isEmpty() && chroot.equals(getDefaultChrootDir().getPath())) {
             // Migrate this also to 'All allowed folders'
             setAnonChroot("");
