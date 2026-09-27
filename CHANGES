@@ -1,3 +1,21 @@
+Version 3.6 (2026/09/27)
+    + Show internal storage and SD cards as named folders for logins that expose
+      all storage. Use this view by default when a card is present. Paths move
+      for existing installs: /DCIM becomes /Internal/DCIM, so update sync jobs
+      and bookmarks, or pick a folder for the login to keep the old root
+    * Show internal and removable storage in the folder picker even when Android
+      omits them from directory listings, and name them clearly in the user list
+    * Make FTP renames and moves work across allowed folders and storage volumes
+      with selected-folder access
+    * Block removal of login roots, storage volume roots and allowed folders,
+      and renames that would move allowed folders, do not follow symbolic links
+      when removing directories
+    * Keep a session's login root when its storage volume is removed, and preserve
+      explicitly chosen login roots when migrating saved settings
+    * Correct FTP replies for created directories, unwritable uploads and MFMT
+      modification times
+    * Fixed a crash when opening the store version while the Play Store is disabled
+    * Updated Android Gradle Plugin and Gradle
 Version 3.5 (2026/09/13)
     + Added a clear Storage access screen for switching between full access and
       selected folders while keeping saved folder selections
