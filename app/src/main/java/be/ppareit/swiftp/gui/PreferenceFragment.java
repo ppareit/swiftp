@@ -176,7 +176,18 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setData(Uri.parse("market://details?id=be.ppareit.swiftp"));
-                startActivity(intent);
+                try {
+                    startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    // The store can be installed and still take no market links, when disabled
+                    intent.setData(Uri.parse(
+                            "https://play.google.com/store/apps/details?id=be.ppareit.swiftp"));
+                    try {
+                        startActivity(intent);
+                    } catch (ActivityNotFoundException ignored) {
+                        Cat.e("No store and no browser to show the store version");
+                    }
+                }
                 return false;
             });
         }
