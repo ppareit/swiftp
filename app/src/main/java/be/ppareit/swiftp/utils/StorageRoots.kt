@@ -42,6 +42,7 @@ object StorageRoots {
     }
 
     /** Return the one canonical form of the file, . and .. resolved, symlinks followed*/
+    @JvmStatic
     fun canonical(file: File): File =
         runCatching { file.canonicalFile }.getOrDefault(file.absoluteFile)
 }

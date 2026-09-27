@@ -25,6 +25,7 @@ import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
+import be.ppareit.swiftp.utils.FileUtil;
 
 /**
  * CmdRNFR implements RENAME FROM (RNFR)
@@ -59,7 +60,7 @@ public class CmdRNFR extends FtpCmd implements Runnable {
                 errString = "550 Won't rename an allowed folder\r\n";
                 break mainblock;
             }
-            if (!file.exists()) {
+            if (!FileUtil.createGenFromFile(file).exists()) {
                 errString = "450 Cannot rename nonexistent file\r\n";
             }
         }

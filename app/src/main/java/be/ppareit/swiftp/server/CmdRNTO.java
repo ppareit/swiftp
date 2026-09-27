@@ -27,6 +27,8 @@ import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
+import be.ppareit.swiftp.utils.SafMove;
+import be.ppareit.swiftp.utils.StorageRoots;
 
 /**
  * CmdRNTO implements RENAME TO (RNTO)
@@ -69,13 +71,14 @@ public class CmdRNTO extends FtpCmd implements Runnable {
                 break mainblock;
             }
             Cat.i("RNTO from file: " + fromFile.getPath());
-
-            if (fromFile.isDirectory()) {
-                FileUtil.renameFolder(fromFile, toFile, App.getAppContext());
-            } else {
-                FileUtil.moveFile(fromFile, toFile, App.getAppContext());
+            if (isBelow(toFile, fromFile)) {
+                errString = "550 Can't move a folder into itself\r\n";
+                break mainblock;
             }
 
+            errString = Util.useScopedStorage()
+                    ? moveThroughSaf(fromFile, toFile)
+                    : moveThroughFile(fromFile, toFile);
         }
         if (errString != null) {
             sessionThread.writeString(errString);
@@ -85,5 +88,36 @@ public class CmdRNTO extends FtpCmd implements Runnable {
         }
         sessionThread.setRenameFrom(null);
         Cat.d("RNTO finished");
+    }
+
+    /** The error reply, or null when the document is at its new path. */
+    private static String moveThroughSaf(File fromFile, File toFile) {
+        switch (SafMove.move(fromFile, toFile, App.getAppContext())) {
+            case MOVED:
+                return null;
+            case TARGET_EXISTS:
+                return "550 Target already exists\r\n";
+            case SOURCE_KEPT:
+                return "550 Copied, but could not remove the source\r\n";
+            default:
+                return "550 Rename failed\r\n";
+        }
+    }
+
+    /** The error reply, or null when the file is at its new path. */
+    private static String moveThroughFile(File fromFile, File toFile) {
+        final boolean renamed = fromFile.isDirectory()
+                ? FileUtil.renameFolder(fromFile, toFile, App.getAppContext())
+                : FileUtil.moveFile(fromFile, toFile, App.getAppContext());
+        // some Android versions rename and still return false, so look at the result
+        if (renamed || (!fromFile.exists() && toFile.exists())) return null;
+        return "550 Rename failed\r\n";
+    }
+
+    /** Whether path lies strictly inside dir, canonically, so . and .. do not hide it. */
+    private static boolean isBelow(File path, File dir) {
+        final String canonicalPath = StorageRoots.canonical(path).getPath();
+        final String canonicalDir = StorageRoots.canonical(dir).getPath();
+        return canonicalPath.startsWith(canonicalDir + File.separator);
     }
 }

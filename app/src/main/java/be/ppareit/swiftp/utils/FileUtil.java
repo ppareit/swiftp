@@ -174,22 +174,6 @@ public abstract class FileUtil {
      */
     public static boolean moveFile(@NonNull final File source, @NonNull final File target, Context context) {
 
-        if (Util.useScopedStorage()) {
-            // Fix: Block is fix for rename file causing app to crash with latest DocumentFile changes.
-            // Fix: Must move above File to make sure it happens without incident, as on Android 8,
-            // File was successful but always returns false thus causing various issues.
-            DocumentFile df = AllowedFolders.documentAt(source.getPath());
-            if (df != null) {
-                try {
-                    if (DocumentsContract.renameDocument(context.getContentResolver(), df.getUri(), target.getName()) != null) {
-                        return true;
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
         if (target.exists()) {
             return false;
         }
@@ -230,23 +214,6 @@ public abstract class FileUtil {
      * @return true if the renaming was successful.
      */
     public static boolean renameFolder(@NonNull final File source, @NonNull final File target, Context context) {
-
-        if (Util.useScopedStorage()) {
-            // Fix: File rename is having random and odd results here with scoped storage. So,
-            // need to move above File.
-            // Fix: Store overwrite failure happening with internal Android 13 via the old code.
-            // Fix: Failure happening with new multi user changes happening on sd card not compat with old.
-            DocumentFile df = AllowedFolders.documentAt(source.getPath());
-            if (df != null) {
-                try {
-                    if (DocumentsContract.renameDocument(context.getContentResolver(), df.getUri(), target.getName()) != null) {
-                        return true;
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
 
         // First try the normal rename.
         if (rename(source, target)) {
