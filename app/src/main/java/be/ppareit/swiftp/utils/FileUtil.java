@@ -101,12 +101,15 @@ public abstract class FileUtil {
         return true;
     }
 
+    /** Opens a file without truncation so uploads can seek to EOF or a restart offset. */
     public static FileOutputStream getOutputStream(final File target, Context context) throws FileNotFoundException {
         FileOutputStream outStream = null;
         // First try the normal way
         if (isWritable(target)) {
             // standard way
-            outStream = new FileOutputStream(target);
+            ParcelFileDescriptor descriptor = ParcelFileDescriptor.open(target,
+                    ParcelFileDescriptor.MODE_READ_WRITE | ParcelFileDescriptor.MODE_CREATE);
+            outStream = new ParcelFileDescriptor.AutoCloseOutputStream(descriptor);
         } else {
             // Storage Access Framework
             DocumentFile targetDocument = getDocumentFile(target, false, context);
