@@ -983,7 +983,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         if (mode == StorageAccessMode.SELECTED_FOLDERS && !names.isEmpty()) {
             allowedFoldersPref.setSummary(TextUtils.join(", ", names));
         } else if (mode == StorageAccessMode.ALL_FILES && Util.hasFullSdCardAccess()) {
-            allowedFoldersPref.setSummary(R.string.allowed_folders_full_sdcard);
+            allowedFoldersPref.setSummary(R.string.allowed_folders_full_access);
         } else if (mode == StorageAccessMode.ALL_FILES) {
             allowedFoldersPref.setSummary(R.string.allowed_folders_allow_access);
             nothingIsShared = true;

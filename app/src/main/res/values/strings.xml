@@ -229,7 +229,7 @@ https://github.com/ppareit/swiftp/issues .\n\n
          does not carry it. -->
     <string name="allowed_folders_label">Storage access…</string>
     <string name="allowed_folders_title">Storage access</string>
-    <string name="allowed_folders_full_sdcard">FULL SDCARD</string>
+    <string name="allowed_folders_full_access">FULL ACCESS</string>
     <string name="allowed_folders_choose">CHOOSE FOLDERS</string>
     <string name="allowed_folders_choose_access">CHOOSE ACCESS</string>
     <string name="preference_fix">FIX</string>
