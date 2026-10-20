@@ -77,7 +77,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
             }
 
             try {
-                if (storeFile.exists()) {
+                if (!Util.useScopedStorage() && storeFile.exists()) {
                     if (!append && sessionThread.offset < 0) {
                         if (!FileUtil.deleteFile(storeFile, App.getAppContext())) {
                             errString = "451 Couldn't truncate file\r\n";
@@ -93,18 +93,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
 
                 if (Util.useScopedStorage()) {
                     final String mime = "application/octet-stream";
-                    // Fix: REST needs check of exists here. sessionThread.offset must be checked
-                    // as correct before using it as it can be wrong during connection issues. As
-                    // it is not at this time, do not use it here.
-                    if (!append && !storeFile.exists()) {
-                        if (storeFile.exists()) {
-                            errString = "451 Couldn't truncate file\r\n";
-                            break storing;
-                        }
-                        docStoreFile = FileUtil.mkfile(storeFile, mime);
-                    } else {
-                        docStoreFile = AllowedFolders.documentAt(storeFile.getPath());
-                    }
+                    docStoreFile = FileUtil.mkfile(storeFile, mime);
                     if (docStoreFile == null || !docStoreFile.exists()) {
                         errString = "451 Couldn't open file \"" + param + "\" aka \""
                                 + storeFile.getCanonicalPath() + "\" for writing\r\n";
@@ -120,7 +109,8 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 }
 
                 if (docStoreFile != null) {
-                    os = App.getAppContext().getContentResolver().openOutputStream(docStoreFile.getUri());
+                    os = App.getAppContext().getContentResolver().openOutputStream(
+                            docStoreFile.getUri(), append ? "wa" : "wt");
                 } else {
                     out = FileUtil.getOutputStream(storeFile, App.getAppContext());
                 }

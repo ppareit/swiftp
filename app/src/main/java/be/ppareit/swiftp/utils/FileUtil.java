@@ -274,11 +274,13 @@ public abstract class FileUtil {
     /**
      * Create a folder. The folder may even be on external SD card.
      *
+     * Synchronization prevents concurrent requests from creating duplicate SAF folders.
+     *
      * @param file The folder to be created.
      * @return True if creation was successful.
      * @deprecated use {@link #mkdirs(Context, File)}
      */
-    public static boolean mkdir(final File file, Context context) {
+    public static synchronized boolean mkdir(final File file, Context context) {
         if (file == null)
             return false;
 
@@ -365,11 +367,16 @@ public abstract class FileUtil {
         return false;
     }
 
-    /*
-    * File creation for DocumentFile from File.
-    * */
-    public static DocumentFile mkfile(final File file, String mime) throws IOException {
+    /**
+     * Return an existing SAF file or create it. Synchronization prevents concurrent
+     * uploads from creating duplicate files.
+     */
+    public static synchronized DocumentFile mkfile(final File file, String mime) throws IOException {
         try {
+            DocumentFile existing = AllowedFolders.documentAt(file.getPath());
+            if (existing != null && existing.exists()) {
+                return existing.isFile() ? existing : null;
+            }
             // May not be able to create a file in dirs that have eg "?". However, can create a
             // file in a dir that has the # symbol.
             final String filename = file.getName();
