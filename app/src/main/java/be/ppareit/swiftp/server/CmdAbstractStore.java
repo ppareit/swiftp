@@ -38,6 +38,7 @@ import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
+import be.ppareit.swiftp.utils.SafAccess;
 import be.ppareit.swiftp.MediaUpdater;
 
 abstract public class CmdAbstractStore extends FtpCmd {
@@ -47,6 +48,12 @@ abstract public class CmdAbstractStore extends FtpCmd {
     }
 
     public void doStorOrAppe(String param, boolean append) {
+        try (SafAccess.Lease ignored = Util.useScopedStorage() ? SafAccess.upload() : null) {
+            store(param, append);
+        }
+    }
+
+    private void store(String param, boolean append) {
         Cat.d("STOR/APPE executing with append = " + append);
 
         File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(),

@@ -25,7 +25,14 @@ object SafMove {
     enum class Result { MOVED, TARGET_EXISTS, FAILED, SOURCE_KEPT }
 
     @JvmStatic
-    fun move(from: File, to: File, context: Context): Result {
+    fun move(from: File, to: File, context: Context): Result = SafAccess.move().use {
+        // FileUtil uses this monitor for MKD and file creation too.
+        synchronized(FileUtil::class.java) {
+            moveLocked(from, to, context)
+        }
+    }
+
+    private fun moveLocked(from: File, to: File, context: Context): Result {
         val fromParent = from.parentFile ?: return Result.FAILED
         val toParent = to.parentFile ?: return Result.FAILED
         val source = AllowedFolders.documentAt(from.path)?.takeIf { it.exists() }
