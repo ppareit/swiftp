@@ -21,6 +21,7 @@ public class CmdRANG extends FtpCmd implements Runnable {
     @Override
     public void run() {
         Cat.d("RANG executing");
+        sessionThread.clearRestartPosition();
         String param = getParameter(input);
         String splits[] = param.split(" ");
         String errString = null;
@@ -49,7 +50,7 @@ public class CmdRANG extends FtpCmd implements Runnable {
                 sessionThread.offset = -1L; // reset start position
                 sessionThread.endPosition = -1L; //reset end position
                 break mainblock;
-            } else if (startPosition > endPosition) {
+            } else if (startPosition < 0 || endPosition < 0 || startPosition > endPosition) {
                 errString = "500 Invalid start and end position\r\n";
                 break mainblock;
             }

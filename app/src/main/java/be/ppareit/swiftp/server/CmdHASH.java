@@ -33,6 +33,9 @@ public class CmdHASH extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
+        long restart = sessionThread.offset;
+        long rangeEnd = sessionThread.endPosition;
+        sessionThread.clearRestartPosition();
         Cat.d("HASH executing");
         String param = getParameter(input);
         File fileToHash;
@@ -63,6 +66,10 @@ public class CmdHASH extends FtpCmd implements Runnable {
                 break mainblock;
             }
 
+            if (restart > gen.length()) {
+                errString = "554 Restart position exceeds file length\r\n";
+                break mainblock;
+            }
             FileInputStream in = null;
             InputStream is = null;
             try {
@@ -75,28 +82,28 @@ public class CmdHASH extends FtpCmd implements Runnable {
 
                 long offset = 0L;
                 long endPosition = gen.length() - 1;
-                if (sessionThread.offset >= 0) {
-                    offset = sessionThread.offset;
-                    if (offset <= sessionThread.endPosition
-                            && sessionThread.endPosition <= gen.length() - 1) {
-                        endPosition = sessionThread.endPosition;
-                    }
+                if (restart >= 0) {
+                    offset = restart;
+                    if (offset <= rangeEnd) endPosition = Math.min(endPosition, rangeEnd);
                 }
 
                 // This is not a range but length (Range 0-0 would still read 0th byte), so +1
                 long bytesToRead = endPosition - offset + 1;
                 int bytesRead;
-                if (isFile) in.skip(offset);
-                else is.skip(offset);
-                while ((bytesRead = isFile ? in.read(buffer) : is.read(buffer)) != -1) {
+                InputStream stream = isFile ? in : is;
+                if (stream == null) throw new IOException("No input stream");
+                CmdRETR.skipFully(stream, offset);
+                while (bytesToRead > 0 && (bytesRead = stream.read(buffer)) != -1) {
                     if (bytesRead > bytesToRead) {
                         md.update(buffer, 0, (int) bytesToRead);
+                        bytesToRead = 0;
                         break;
                     }
                     md.update(buffer, 0, bytesRead);
                     bytesToRead -= bytesRead;
                 }
 
+                if (bytesToRead != 0) throw new IOException("File ended during hashing");
                 byte[] hash = md.digest();
                 StringBuilder hexString = new StringBuilder();
                 for (byte b : hash) {
@@ -110,7 +117,7 @@ public class CmdHASH extends FtpCmd implements Runnable {
                 errString = "550 File not found\r\n";
                 break mainblock;
             } catch (IOException e) {
-                errString = "425 Network error\r\n";
+                errString = "451 File read error\r\n";
                 break mainblock;
             } catch (NoSuchAlgorithmException e) {
                 errString = "550 Unknown hashing algorithm\r\n";

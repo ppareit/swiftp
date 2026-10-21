@@ -47,6 +47,9 @@ public class CmdRETR extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
+        long restart = sessionThread.offset;
+        long rangeEnd = sessionThread.endPosition;
+        sessionThread.clearRestartPosition();
         Cat.d("RETR executing");
         String param = getParameter(input);
         File fileToRetr;
@@ -81,6 +84,15 @@ public class CmdRETR extends FtpCmd implements Runnable {
             errString = validate(gen);
             if (errString != null) break mainblock;
 
+            if (restart >= 0 && !sessionThread.isBinaryMode()) {
+                errString = "550 Unable to seek to requested position in ASCII mode\r\n";
+                break mainblock;
+            }
+            if (rangeEnd < 0 && restart > gen.length()) {
+                errString = "554 Restart position exceeds file length\r\n";
+                break mainblock;
+            }
+
             FileInputStream in = null;
             InputStream is = null;
             try {
@@ -88,6 +100,7 @@ public class CmdRETR extends FtpCmd implements Runnable {
                     if (docFileToRetr == null) break mainblock;
                     uri = docFileToRetr.getUri();
                     is = App.getAppContext().getContentResolver().openInputStream(uri);
+                    if (is == null) throw new IOException("No input stream");
                 } else {
                     in = new FileInputStream(fileToRetr);
                 }
@@ -110,17 +123,18 @@ public class CmdRETR extends FtpCmd implements Runnable {
                     long offset = 0L;
                     long endPosition = (Util.useScopedStorage() ? docFileToRetr.length() - 1
                             : fileToRetr.length() - 1);
-                    if (sessionThread.offset >= 0) {
-                        offset = sessionThread.offset;
-                        if (sessionThread.endPosition >= offset) {
-                            endPosition = sessionThread.endPosition;
+                    if (restart >= 0) {
+                        offset = restart;
+                        if (rangeEnd >= offset) {
+                            endPosition = Math.min(endPosition, rangeEnd);
                         }
-                        sessionThread.offset = -1;
                     }
                     // This is not a range but length (Range 0-0 would still read 0th byte), so +1
-                    long bytesToRead = endPosition - offset + 1;
-                    if (Util.useScopedStorage()) skipFully(is, offset);
-                    else skipFully(in, offset);
+                    long bytesToRead = Math.max(0, endPosition - offset + 1);
+                    if (bytesToRead > 0) {
+                        if (Util.useScopedStorage()) skipFully(is, offset);
+                        else skipFully(in, offset);
+                    }
                     final boolean scoped = Util.useScopedStorage();
                     while (bytesToRead > 0
                             && (bytesRead = (scoped ? is.read(buffer) : in.read(buffer))) != -1) {
@@ -139,13 +153,12 @@ public class CmdRETR extends FtpCmd implements Runnable {
                             break mainblock;
                         }
                     }
-                } else { // We're in ASCII mode
-                    Cat.d("Transferring in ASCII mode");
-                    if (sessionThread.offset >= 0) {
-                        errString = "550 Unable to seek to requested position in ASCII mode";
-                        Cat.e("Error: " + errString);
+                    if (bytesToRead > 0) {
+                        errString = "451 File ended before the requested bytes were read\r\n";
                         break mainblock;
                     }
+                } else { // We're in ASCII mode
+                    Cat.d("Transferring in ASCII mode");
                     // We have to convert all solitary \n to \r\n
                     boolean lastBufEndedWithCR = false;
                     final boolean scoped = Util.useScopedStorage();
@@ -209,21 +222,21 @@ public class CmdRETR extends FtpCmd implements Runnable {
     }
 
     /**
-     * Skips exactly offset bytes, or stops at end of file.
+     * Skips exactly offset bytes, throwing if the stream ends early.
      *
      * A single skip() is allowed to move less than asked, which would leave the stream
      * short of the offset and send the client the wrong bytes with nothing reporting an
      * error. That is likelier on the content:// stream than on a plain file.
      * skipNBytes would say this in one line, but it needs API 34 and minSdk is 23.
      */
-    private static void skipFully(InputStream stream, long offset) throws IOException {
+    static void skipFully(InputStream stream, long offset) throws IOException {
         long remaining = offset;
         while (remaining > 0) {
             long skipped = stream.skip(remaining);
             if (skipped > 0) {
                 remaining -= skipped;
             } else if (stream.read() == -1) {
-                break; // end of file, nothing left to skip past
+                throw new IOException("File ended before restart position");
             } else {
                 remaining--; // skip may return 0; the read above advanced one byte
             }

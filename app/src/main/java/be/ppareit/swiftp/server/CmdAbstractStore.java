@@ -24,6 +24,8 @@ package be.ppareit.swiftp.server;
  * the common code is in this class, and inherited by CmdSTOR and CmdAPPE.
  */
 
+import android.os.ParcelFileDescriptor;
+
 import androidx.documentfile.provider.DocumentFile;
 
 import net.vrallev.android.cat.Cat;
@@ -48,12 +50,15 @@ abstract public class CmdAbstractStore extends FtpCmd {
     }
 
     public void doStorOrAppe(String param, boolean append) {
+        long offset = sessionThread.offset;
+        long endPosition = sessionThread.endPosition;
+        sessionThread.clearRestartPosition();
         try (SafAccess.Lease ignored = Util.useScopedStorage() ? SafAccess.upload() : null) {
-            store(param, append);
+            store(param, append, offset, endPosition);
         }
     }
 
-    private void store(String param, boolean append) {
+    private void store(String param, boolean append, long offset, long endPosition) {
         Cat.d("STOR/APPE executing with append = " + append);
 
         File storeFile = inputPathToChrootedFile(sessionThread.getChrootDir(),
@@ -78,14 +83,45 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 errString = "451 Can't overwrite a directory\r\n";
                 break storing;
             }
-            if ((sessionThread.offset >= 0) && (append)) {
+            if ((offset >= 0) && (append)) {
                 errString = "555 Append can not be used after a REST command\r\n";
                 break storing;
             }
 
+            if (offset >= 0 && !sessionThread.isBinaryMode()) {
+                errString = "550 Restart position not accepted in ASCII mode\r\n";
+                break storing;
+            }
+            // Validate before creating or opening anything: a rejected resume must not
+            // truncate an existing document or create an empty replacement.
+            if (Util.useScopedStorage()) {
+                docStoreFile = AllowedFolders.documentAt(storeFile.getPath());
+                if (docStoreFile != null && docStoreFile.isDirectory()) {
+                    errString = "451 Can't overwrite a directory\r\n";
+                    break storing;
+                }
+            }
+            long length = Util.useScopedStorage()
+                    ? (docStoreFile != null && docStoreFile.exists() ? docStoreFile.length() : 0)
+                    : storeFile.length();
+            if (offset > length) {
+                errString = "554 Restart position exceeds file length\r\n";
+                break storing;
+            }
+
+            long remaining = offset >= 0 && endPosition >= offset
+                    ? endPosition - offset : -1;
+            // Store the inclusive range count without overflowing for 0..Long.MAX_VALUE.
+            boolean bounded = remaining >= 0;
+            if (bounded && remaining == Long.MAX_VALUE) {
+                errString = "554 Requested range is too large\r\n";
+                break storing;
+            }
+            if (bounded) remaining++;
+
             try {
                 if (!Util.useScopedStorage() && storeFile.exists()) {
-                    if (!append && sessionThread.offset < 0) {
+                    if (!append && offset < 0) {
                         if (!FileUtil.deleteFile(storeFile, App.getAppContext())) {
                             errString = "451 Couldn't truncate file\r\n";
                             break storing;
@@ -106,18 +142,23 @@ abstract public class CmdAbstractStore extends FtpCmd {
                                 + storeFile.getCanonicalPath() + "\" for writing\r\n";
                         break storing;
                     }
-                    // Fix: Do not allow this situation to pass.
-                    if (sessionThread.offset > 0 && docStoreFile.length() == 0) {
-                        errString = "554 restart failure: bad offset\r\n";
-                        break storing;
-                    }
                 } else {
                     FileUtil.mkfile(storeFile, App.getAppContext());
                 }
 
                 if (docStoreFile != null) {
-                    os = App.getAppContext().getContentResolver().openOutputStream(
-                            docStoreFile.getUri(), append ? "wa" : "wt");
+                    if (offset >= 0) {
+                        // "rw" preserves the document. Seek before accepting data; a
+                        // provider without seek support must fail rather than corrupt it.
+                        ParcelFileDescriptor descriptor = App.getAppContext().getContentResolver()
+                                .openFileDescriptor(docStoreFile.getUri(), "rw");
+                        if (descriptor == null) throw new IOException("No file descriptor");
+                        out = new ParcelFileDescriptor.AutoCloseOutputStream(descriptor);
+                    } else {
+                        os = App.getAppContext().getContentResolver().openOutputStream(
+                                docStoreFile.getUri(), append ? "wa" : "wt");
+                        if (os == null) throw new IOException("No output stream");
+                    }
                 } else {
                     out = FileUtil.getOutputStream(storeFile, App.getAppContext());
                 }
@@ -130,11 +171,10 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 }
                 try {
                     if (out != null) {
-                        if (sessionThread.offset < 0) {
+                        if (offset < 0) {
                             out.getChannel().position(storeFile.length());
                         } else {
-                            out.getChannel().position(sessionThread.offset);
-                            sessionThread.offset = -1;
+                            out.getChannel().position(offset);
                         }
                     }
                 }
@@ -177,7 +217,9 @@ abstract public class CmdAbstractStore extends FtpCmd {
                 switch (numRead = sessionThread.receiveFromDataSocket(buffer)) {
                     case -1:
                         Cat.d("Returned from final read");
-                        // We're finished reading
+                        if (bounded && remaining != 0) {
+                            errString = "426 Incomplete range upload\r\n";
+                        }
                         break storing;
                     case 0:
                         errString = "426 Couldn't receive data\r\n";
@@ -186,6 +228,8 @@ abstract public class CmdAbstractStore extends FtpCmd {
                         errString = "425 Could not connect data socket\r\n";
                         break storing;
                     default:
+                        boolean excess = bounded && numRead > remaining;
+                        if (excess) numRead = (int) remaining;
                         try {
                             if (sessionThread.isBinaryMode()) {
                                 if (os != null) os.write(buffer, 0, numRead);
@@ -213,6 +257,11 @@ abstract public class CmdAbstractStore extends FtpCmd {
                             Cat.d("Exception while storing: " + e);
                             break storing;
                         }
+                        if (bounded) remaining -= numRead;
+                        if (excess) {
+                            errString = "426 Upload exceeds requested range\r\n";
+                            break storing;
+                        }
                         break;
                 }
             }
@@ -221,13 +270,15 @@ abstract public class CmdAbstractStore extends FtpCmd {
             if (os != null) {
                 os.close();
             }
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            if (errString == null) errString = "451 Could not finish writing file\r\n";
         }
         try {
             if (out != null) {
                 out.close();
             }
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            if (errString == null) errString = "451 Could not finish writing file\r\n";
         }
 
         if (errString != null) {

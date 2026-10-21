@@ -75,6 +75,13 @@ public class SessionThread extends Thread {
     protected String encoding = "UTF-8";
     long offset = -1; // where to start append when using REST/RANG
     long endPosition = -1; // where to stop append when using RANG
+
+    /** A restart applies to one attempted operation, including an operation that fails. */
+    void clearRestartPosition() {
+        offset = -1;
+        endPosition = -1;
+    }
+
     private String[] formatTypes = {"Size", "Modify", "Type", "Perm"}; // types option of MLST/MLSD
     private int authFails = 0;
     private String hashingAlgorithm = "SHA-1";

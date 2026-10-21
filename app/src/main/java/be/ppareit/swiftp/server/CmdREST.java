@@ -29,6 +29,7 @@ public class CmdREST extends FtpCmd implements Runnable {
 
     @Override
     public void run() {
+        sessionThread.clearRestartPosition();
         String param = getParameter(input);
         long offset;
         try {
