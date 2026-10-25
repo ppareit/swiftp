@@ -1,3 +1,15 @@
+Version 3.7 (2026/10/25)
+    + Added support for themed launcher icons
+    * Refreshed launcher, widget, quick settings, notification and action icons
+      with vector artwork
+    * Update the home screen widget directly without a background service
+    * Preserve existing file contents when appending or resuming uploads, and
+      fix invalid restart offsets and resumed transfers
+    * Fix concurrent file and folder creation, uploads and moves when using
+      selected-folder access (Thanks Xavron)
+    * Move folder contents individually when Android refuses to rename a folder
+    * Keep the last user in the list clear of the add button when scrolling
+    * Rename the misleading FULL SDCARD setting to FULL ACCESS (Thanks Vrihub)
 Version 3.6 (2026/09/27)
     + Show internal storage and SD cards as named folders for logins that expose
       all storage. Use this view by default when a card is present. Paths move
