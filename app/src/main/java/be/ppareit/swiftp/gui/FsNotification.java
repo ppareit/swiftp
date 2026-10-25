@@ -92,14 +92,14 @@ public class FsNotification {
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
                 notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
-        int stopIcon = android.R.drawable.ic_menu_close_clear_cancel;
+        int stopIcon = R.drawable.ic_close;
         CharSequence stopText = context.getString(R.string.notification_stop_text);
         Intent stopIntent = new Intent(context, FsService.class);
         stopIntent.setAction(FsService.ACTION_REQUEST_STOP);
         PendingIntent stopPendingIntent = PendingIntent.getService(context, 0,
                 stopIntent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
-        int preferenceIcon = android.R.drawable.ic_menu_preferences;
+        int preferenceIcon = R.drawable.ic_settings;
         CharSequence preferenceText = context.getString(R.string.notif_settings_text);
         Intent preferenceIntent = new Intent(context, MainActivity.class);
         preferenceIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
