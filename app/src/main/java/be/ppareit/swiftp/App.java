@@ -57,6 +57,8 @@ public class App extends Application {
                 intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
 
         QuickToggleShortcut.update(this, FsService.isRunning());
+
+        LegacyCleanup.run(this);
     }
 
     /**

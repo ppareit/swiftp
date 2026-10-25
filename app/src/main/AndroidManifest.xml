@@ -128,10 +128,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:resource="@xml/widget_info" />
         </receiver>
 
-        <service
-            android:name="be.ppareit.swiftp.gui.FsWidgetProvider$UpdateService"
-            android:foregroundServiceType="connectedDevice" />
-
         <!-- Tasker/Locale integration, Action: the host tells us to start or stop the server. -->
         <activity
             android:name="be.ppareit.swiftp.tasker.ActionConfigSetServerState"
