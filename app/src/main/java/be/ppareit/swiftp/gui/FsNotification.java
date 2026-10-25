@@ -79,7 +79,7 @@ public class FsNotification {
         String ipText = getServerAddressText();
 
         // Instantiate a Notification
-        int icon = R.mipmap.notification;
+        int icon = R.drawable.notification;
         CharSequence tickerText = String.format(context.getString(R.string.notification_server_starting), ipText);
         long when = System.currentTimeMillis();
 

@@ -106,7 +106,7 @@ public class FsWidgetProvider extends AppWidgetProvider {
             Notification notification = new NotificationCompat.Builder(this)
                     .setContentTitle("FTP Server")
                     .setContentText("Widget provider background service")
-                    .setSmallIcon(R.mipmap.notification)
+                    .setSmallIcon(R.drawable.notification)
                     .setOngoing(true)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setCategory(NotificationCompat.CATEGORY_SERVICE)
