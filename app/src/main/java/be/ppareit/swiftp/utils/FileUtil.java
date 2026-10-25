@@ -210,7 +210,7 @@ public abstract class FileUtil {
     }
 
     /**
-     * Rename a folder. On an extSdCard the old folder stays in place, but files are moved.
+     * Rename a folder. Where it cannot be renamed, its files are moved one by one.
      *
      * @param source The source folder.
      * @param target The target folder.
@@ -250,25 +250,25 @@ public abstract class FileUtil {
         File[] sourceFiles = source.listFiles();
 
         if (sourceFiles == null) {
-            return true;
+            return false;
         }
 
+        // Devices refuse to rename a folder with files in it outside the standard top level folders
+        // In that case we move files and delete original
         for (File sourceFile : sourceFiles) {
             String fileName = sourceFile.getName();
             File targetFile = new File(target, fileName);
-            if (!copyFile(sourceFile, targetFile, context)) {
+            boolean moved = sourceFile.isDirectory()
+                    ? renameFolder(sourceFile, targetFile, context)
+                    : moveFile(sourceFile, targetFile, context);
+            // rename() never tells, so look at the result
+            if (!moved && (sourceFile.exists() || !targetFile.exists())) {
                 // stop on first error
                 return false;
             }
         }
-        // Only after successfully copying all files, delete files on source folder.
-        for (File sourceFile : sourceFiles) {
-            if (!deleteFile(sourceFile, context)) {
-                // stop on first error
-                return false;
-            }
-        }
-        return true;
+        // Only after moving all files, delete the now empty source folder.
+        return deleteFile(source, context);
     }
 
     /**
