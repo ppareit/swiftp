@@ -1,3 +1,12 @@
+Version 3.8 (2026/11/04)
+    + Added a theme setting: follow the system, light or dark
+    * Replaced confusing settings with Keep device awake setting
+    * Keep the device awake until the last client disconnects
+    * Improve moves of files over 2 GB that fall back to copying
+    * Refuse MKD with selected-folder access when the folder cannot be created
+    * Correct FTP replies for MLST, DELE, NLST and MLSD
+    * Stay on the advanced settings screen when the device rotates
+    * Let the Storage access and About screens scroll in landscape
 Version 3.7 (2026/10/25)
     + Added support for themed launcher icons
     * Refreshed launcher, widget, quick settings, notification and action icons
