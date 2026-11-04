@@ -66,18 +66,16 @@ public class CmdNLST extends CmdAbstractListing implements Runnable {
                 if (violatesChroot(fileToList)) {
                     errString = "450 Listing target violates chroot\r\n";
                     break mainblock;
-                } else if (fileToList.isFile()) {
-                    // Bernstein suggests that NLST should fail when a
-                    // parameter is given and the parameter names a regular
-                    // file (not a directory).
-                    errString = "550 NLST for regular files is unsupported\r\n";
-                    break mainblock;
                 }
             }
             String listing;
-            // Use Gen, otherwise a granted folder and the virtual root above it
-            // both fail File.isDirectory() checks under SAF.
+            // Use Gen, under SAF a granted folder and the virtual root above it fail File checks.
             FileUtil.Gen gen = genFor(fileToList);
+            if (!param.equals("") && gen.isFile()) {
+                // Bernstein suggests NLST should fail when the parameter names a regular file.
+                errString = "550 NLST for regular files is unsupported\r\n";
+                break mainblock;
+            }
             if (gen.isDirectory()) {
                 StringBuilder response = new StringBuilder();
                 errString = listDirectory(response, gen);
