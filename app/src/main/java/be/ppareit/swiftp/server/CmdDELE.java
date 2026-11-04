@@ -62,7 +62,7 @@ public class CmdDELE extends FtpCmd implements Runnable {
 
     private void tryToDelete(FileUtil.Gen storeFile) {
         String errString = null;
-        if (storeFile.getOb() == null) {
+        if (!storeFile.exists()) {
             errString = "550 File does not exist\r\n";
         } else {
             final boolean isDocumentFile = storeFile.getOb() instanceof DocumentFile;

@@ -69,7 +69,7 @@ public class CmdMLSD extends CmdAbstractListing implements Runnable {
             // https://tools.ietf.org/html/rfc3659#page-39
             // MLSD auto need to add [type=cdir] and [type=pdir]
             FileUtil.Gen gen = genFor(fileToList);
-            if (gen.getOb() == null) {
+            if (!gen.exists()) {
                 errString = "550 No such directory, or it is not a shared folder\r\n";
                 break mainblock;
             }
