@@ -107,8 +107,8 @@ public class CmdRNTO extends FtpCmd implements Runnable {
     /** The error reply, or null when the file is at its new path. */
     private static String moveThroughFile(File fromFile, File toFile) {
         final boolean renamed = fromFile.isDirectory()
-                ? FileUtil.renameFolder(fromFile, toFile, App.getAppContext())
-                : FileUtil.moveFile(fromFile, toFile, App.getAppContext());
+                ? FileUtil.renameFolder(fromFile, toFile)
+                : FileUtil.moveFile(fromFile, toFile);
         // some Android versions rename and still return false, so look at the result
         if (renamed || (!fromFile.exists() && toFile.exists())) return null;
         return "550 Rename failed\r\n";

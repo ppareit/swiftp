@@ -25,7 +25,6 @@ import android.util.Log;
 
 import androidx.documentfile.provider.DocumentFile;
 
-import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
@@ -71,7 +70,7 @@ public class CmdDELE extends FtpCmd implements Runnable {
             if (storeFile.isDirectory()) {
                 errString = "550 Can't DELE a directory\r\n";
             } else if ((isDocumentFile && !((DocumentFile) storeFile.getOb()).delete())
-                    || (isFile && !FileUtil.deleteFile((File) storeFile.getOb(), App.getAppContext()))) {
+                    || (isFile && !FileUtil.deleteFile((File) storeFile.getOb()))) {
                 errString = "450 Error deleting file\r\n";
             }
         }

@@ -26,7 +26,6 @@ import android.util.Log;
 
 import androidx.documentfile.provider.DocumentFile;
 
-import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.MediaUpdater;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
@@ -197,10 +196,10 @@ public class CmdRMD extends FtpCmd implements Runnable {
                 success &= recursiveDelete(entry);
             }
             Log.d(TAG, "Recursively deleted: " + toDelete);
-            return success && FileUtil.deleteFile(toDelete, App.getAppContext());
+            return success && FileUtil.deleteFile(toDelete);
         } else {
             Log.d(TAG, "RMD deleting file: " + toDelete);
-            boolean success = FileUtil.deleteFile(toDelete, App.getAppContext());
+            boolean success = FileUtil.deleteFile(toDelete);
             if (!Util.useScopedStorage()) {
                 // Don't allow on Android 11+ as it causes problems should it reach here
                 MediaUpdater.notifyFileDeleted(toDelete.getPath());

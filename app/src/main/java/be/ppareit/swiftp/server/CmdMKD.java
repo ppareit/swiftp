@@ -24,7 +24,6 @@ import java.io.IOException;
 
 import android.util.Log;
 
-import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.utils.AllowedFolders;
 import be.ppareit.swiftp.utils.FileUtil;
@@ -69,7 +68,7 @@ public class CmdMKD extends FtpCmd implements Runnable {
                 break mainblock;
             }
 
-            if (!FileUtil.mkdir(toCreate, App.getAppContext())) {
+            if (!FileUtil.mkdir(toCreate)) {
                 errString = "550 Error making directory (permissions?)\r\n";
                 break mainblock;
             }

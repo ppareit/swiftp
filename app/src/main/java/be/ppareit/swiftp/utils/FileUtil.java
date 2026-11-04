@@ -40,7 +40,7 @@ public abstract class FileUtil {
      * @return true if the copying was successful.
      */
     @SuppressWarnings("null")
-    private static boolean copyFile(final File source, final File target, Context context) {
+    private static boolean copyFile(final File source, final File target) {
         FileInputStream inStream = null;
         OutputStream outStream = null;
         FileChannel inChannel = null;
@@ -66,8 +66,8 @@ public abstract class FileUtil {
                 }
             } else {
                 // Storage Access Framework
-                DocumentFile targetDocument = getDocumentFile(target, false, context);
-                outStream = context.getContentResolver().openOutputStream(targetDocument.getUri());
+                DocumentFile targetDocument = getDocumentFile(target, false);
+                outStream = App.getAppContext().getContentResolver().openOutputStream(targetDocument.getUri());
 
                 if (outStream != null) {
                     byte[] buffer = new byte[16384]; // MAGIC_NUMBER
@@ -111,7 +111,7 @@ public abstract class FileUtil {
     }
 
     /** Opens a file without truncation so uploads can seek to EOF or a restart offset. */
-    public static FileOutputStream getOutputStream(final File target, Context context) throws FileNotFoundException {
+    public static FileOutputStream getOutputStream(final File target) throws FileNotFoundException {
         FileOutputStream outStream = null;
         // First try the normal way
         if (isWritable(target)) {
@@ -121,11 +121,11 @@ public abstract class FileUtil {
             outStream = new ParcelFileDescriptor.AutoCloseOutputStream(descriptor);
         } else {
             // Storage Access Framework
-            DocumentFile targetDocument = getDocumentFile(target, false, context);
+            DocumentFile targetDocument = getDocumentFile(target, false);
             if (targetDocument == null) {
                 throw new FileNotFoundException("No direct or SAF write access to " + target);
             }
-            ParcelFileDescriptor descriptor = context.getContentResolver()
+            ParcelFileDescriptor descriptor = App.getAppContext().getContentResolver()
                     .openFileDescriptor(targetDocument.getUri(), "rw");
             if (descriptor == null) {
                 throw new FileNotFoundException("Cannot open " + target + " for writing");
@@ -141,7 +141,7 @@ public abstract class FileUtil {
      * @param file the file to be deleted.
      * @return True if successfully deleted.
      */
-    public static boolean deleteFile(@NonNull final File file, Context context) {
+    public static boolean deleteFile(@NonNull final File file) {
         // First try the normal deletion.
         if (file == null) return true;
 
@@ -155,14 +155,14 @@ public abstract class FileUtil {
 
         boolean fileDelete = false;
         if (file.isDirectory()) {
-            fileDelete = rmdir(file, context);
+            fileDelete = rmdir(file);
         }
         if (file.delete() || fileDelete)
             return true;
 
         // Try with Storage Access Framework.
-        if (FileUtil.isOnExtSdCard(file, context)) {
-            DocumentFile document = getDocumentFile(file, false, context);
+        if (FileUtil.isOnExtSdCard(file)) {
+            DocumentFile document = getDocumentFile(file, false);
             if (document == null) {
                 return false;
             }
@@ -184,7 +184,7 @@ public abstract class FileUtil {
      * @param target The target file
      * @return true if the copying was successful.
      */
-    public static boolean moveFile(@NonNull final File source, @NonNull final File target, Context context) {
+    public static boolean moveFile(@NonNull final File source, @NonNull final File target) {
 
         if (target.exists()) {
             return false;
@@ -196,13 +196,13 @@ public abstract class FileUtil {
         }
 
         // Try the Storage Access Framework if it is just a rename within the same parent folder.
-        if (source.getParent().equals(target.getParent()) && FileUtil.isOnExtSdCard(source, context)) {
-            DocumentFile document = getDocumentFile(source, false, context);
+        if (source.getParent().equals(target.getParent()) && FileUtil.isOnExtSdCard(source)) {
+            DocumentFile document = getDocumentFile(source, false);
             if (document == null) {
                 return false;
             }
             try {
-                if (DocumentsContract.renameDocument(context.getContentResolver(), document.getUri(), target.getName()) != null) {
+                if (DocumentsContract.renameDocument(App.getAppContext().getContentResolver(), document.getUri(), target.getName()) != null) {
                     return true;
                 }
             } catch (FileNotFoundException e) {
@@ -211,7 +211,7 @@ public abstract class FileUtil {
         }
 
         // if all else failed, try to copy the file and delete the source file
-        if (!copyFile(source, target, context) || !deleteFile(source, context)) {
+        if (!copyFile(source, target) || !deleteFile(source)) {
             return false;
         }
 
@@ -225,7 +225,7 @@ public abstract class FileUtil {
      * @param target The target folder.
      * @return true if the renaming was successful.
      */
-    public static boolean renameFolder(@NonNull final File source, @NonNull final File target, Context context) {
+    public static boolean renameFolder(@NonNull final File source, @NonNull final File target) {
 
         // First try the normal rename.
         if (rename(source, target)) {
@@ -236,13 +236,13 @@ public abstract class FileUtil {
         }
 
         // Try the Storage Access Framework if it is just a rename within the same parent folder.
-        if (source.getParent().equals(target.getParent()) && FileUtil.isOnExtSdCard(source, context)) {
-            DocumentFile document = getDocumentFile(source, true, context);
+        if (source.getParent().equals(target.getParent()) && FileUtil.isOnExtSdCard(source)) {
+            DocumentFile document = getDocumentFile(source, true);
             if (document == null) {
                 return false;
             }
             try {
-                if((DocumentsContract.renameDocument(context.getContentResolver(), document.getUri(),
+                if((DocumentsContract.renameDocument(App.getAppContext().getContentResolver(), document.getUri(),
                         target.getName()) != null)) {
                     return true;
                 }
@@ -252,7 +252,7 @@ public abstract class FileUtil {
         }
 
         // Try the manual way, moving files individually.
-        if (!mkdir(target, context)) {
+        if (!mkdir(target)) {
             return false;
         }
 
@@ -268,8 +268,8 @@ public abstract class FileUtil {
             String fileName = sourceFile.getName();
             File targetFile = new File(target, fileName);
             boolean moved = sourceFile.isDirectory()
-                    ? renameFolder(sourceFile, targetFile, context)
-                    : moveFile(sourceFile, targetFile, context);
+                    ? renameFolder(sourceFile, targetFile)
+                    : moveFile(sourceFile, targetFile);
             // rename() never tells, so look at the result
             if (!moved && (sourceFile.exists() || !targetFile.exists())) {
                 // stop on first error
@@ -277,7 +277,7 @@ public abstract class FileUtil {
             }
         }
         // Only after moving all files, delete the now empty source folder.
-        return deleteFile(source, context);
+        return deleteFile(source);
     }
 
     /**
@@ -288,7 +288,7 @@ public abstract class FileUtil {
      * @param file The folder to be created.
      * @return True if creation was successful.
      */
-    public static synchronized boolean mkdir(final File file, Context context) {
+    public static synchronized boolean mkdir(final File file) {
         if (file == null)
             return false;
 
@@ -319,9 +319,9 @@ public abstract class FileUtil {
             return true;
         }
 
-        if (FileUtil.isOnExtSdCard(file, context)) {
+        if (FileUtil.isOnExtSdCard(file)) {
             // Try with Storage Access Framework.
-            DocumentFile document = getDocumentFile(file, true, context);
+            DocumentFile document = getDocumentFile(file, true);
             if (document == null) {
                 return false;
             }
@@ -332,7 +332,7 @@ public abstract class FileUtil {
         return false;
     }
 
-    public static boolean mkfile(final File file, Context context) throws IOException {
+    public static boolean mkfile(final File file) throws IOException {
         if (file == null)
             return false;
         if (file.exists()) {
@@ -350,15 +350,15 @@ public abstract class FileUtil {
         }
 
         // Try with Storage Access Framework.
-        if (FileUtil.isOnExtSdCard(file, context)) {
-            DocumentFile document = getDocumentFile(file.getParentFile(), true, context);
+        if (FileUtil.isOnExtSdCard(file)) {
+            DocumentFile document = getDocumentFile(file.getParentFile(), true);
             if (document == null) {
                 return false;
             }
             // getDocumentFile implicitly creates the directory.
             try {
                 // use for SingleDocumentFile
-                return DocumentsContract.createDocument(context.getContentResolver(), document.getUri(), DocumentsContract.Document.COLUMN_MIME_TYPE, file.getName()) != null;
+                return DocumentsContract.createDocument(App.getAppContext().getContentResolver(), document.getUri(), DocumentsContract.Document.COLUMN_MIME_TYPE, file.getName()) != null;
                 // return document.createFile("image", file.getName()) != null;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -397,13 +397,13 @@ public abstract class FileUtil {
      * @param file The folder name.
      * @return true if successful.
      */
-    private static boolean rmdir(@NonNull final File file, Context context) {
+    private static boolean rmdir(@NonNull final File file) {
         if (!file.exists()) return true;
 
         File[] files = file.listFiles();
         if (files != null && files.length > 0) {
             for (File child : files) {
-                rmdir(child, context);
+                rmdir(child);
             }
         }
 
@@ -413,7 +413,7 @@ public abstract class FileUtil {
         }
 
         // Try with Storage Access Framework.
-        DocumentFile document = getDocumentFile(file, true, context);
+        DocumentFile document = getDocumentFile(file, true);
         if (document != null && document.delete()) {
             return true;
         }
@@ -482,7 +482,7 @@ public abstract class FileUtil {
      * @param folder The directory
      * @return true if it is possible to write in this directory.
      */
-    public static boolean isWritableNormalOrSaf(final File folder, Context c) {
+    public static boolean isWritableNormalOrSaf(final File folder) {
         // Verify that this is a directory.
         if (folder == null)
             return false;
@@ -504,7 +504,7 @@ public abstract class FileUtil {
         }
 
         // Next check SAF writability.
-        DocumentFile document = getDocumentFile(file, false, c);
+        DocumentFile document = getDocumentFile(file, false);
 
         if (document == null) {
             return false;
@@ -514,7 +514,7 @@ public abstract class FileUtil {
         boolean result = document.canWrite() && file.exists();
 
         // Ensure that the dummy file is not remaining.
-        deleteFile(file, c);
+        deleteFile(file);
         return result;
     }
 
@@ -523,10 +523,10 @@ public abstract class FileUtil {
      *
      * @return A list of external SD card paths.
      */
-    private static String[] getExtSdCardPaths(Context context) {
+    private static String[] getExtSdCardPaths() {
         List<String> paths = new ArrayList<>();
-        for (File file : context.getExternalFilesDirs("external")) {
-            if (file != null && !file.equals(context.getExternalFilesDir("external"))) {
+        for (File file : App.getAppContext().getExternalFilesDirs("external")) {
+            if (file != null && !file.equals(App.getAppContext().getExternalFilesDir("external"))) {
                 int index = file.getAbsolutePath().lastIndexOf("/Android/data");
                 if (index < 0) {
                     Log.w(LOG, "Unexpected external file dir: " + file.getAbsolutePath());
@@ -574,12 +574,12 @@ public abstract class FileUtil {
      * @return The main folder of the external SD card containing this file, if the file is on an SD card. Otherwise,
      * null is returned.
      */
-    private static String getExtSdCardFolder(final FileUtil.Gen file, Context context) {
+    private static String getExtSdCardFolder(final FileUtil.Gen file) {
         boolean isDocFile = file.getOb() instanceof DocumentFile; // double check
         if (Util.useScopedStorage() && isDocFile) {
             return getExtSdCardFolderScopedStorage(file);
         } else {
-            return getExtSdCardFolderOld(file, context);
+            return getExtSdCardFolderOld(file);
         }
     }
 
@@ -635,8 +635,8 @@ public abstract class FileUtil {
         return null;
     }
 
-    private static String getExtSdCardFolderOld(final FileUtil.Gen file, Context context) {
-        String[] extSdPaths = getExtSdCardPaths(context);
+    private static String getExtSdCardFolderOld(final FileUtil.Gen file) {
+        String[] extSdPaths = getExtSdCardPaths();
         try {
             for (int i = 0; i < extSdPaths.length; i++) {
                 if (file.getCanonicalPath().startsWith(extSdPaths[i])) {
@@ -655,8 +655,8 @@ public abstract class FileUtil {
      * @param file The file.
      * @return true if on external sd card.
      */
-    public static boolean isOnExtSdCard(final File file, Context c) {
-        return getExtSdCardFolder(new Gen<>(file), c) != null;
+    public static boolean isOnExtSdCard(final File file) {
+        return getExtSdCardFolder(new Gen<>(file)) != null;
     }
 
     /**
@@ -667,8 +667,8 @@ public abstract class FileUtil {
      * @param isDirectory flag indicating if the file should be a directory.
      * @return The DocumentFile
      */
-    public static DocumentFile getDocumentFile(final File file, final boolean isDirectory, Context context) {
-        String baseFolder = getExtSdCardFolder(new Gen<>(file), context);
+    public static DocumentFile getDocumentFile(final File file, final boolean isDirectory) {
+        String baseFolder = getExtSdCardFolder(new Gen<>(file));
         boolean originalDirectory = false;
         if (baseFolder == null) {
             return null;
@@ -695,14 +695,14 @@ public abstract class FileUtil {
         }
         if (file.exists()) {
             Uri documentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, DocumentsContract.getTreeDocumentId(treeUri) + relativePath);
-            DocumentFile document = DocumentFile.fromSingleUri(context, documentUri);
+            DocumentFile document = DocumentFile.fromSingleUri(App.getAppContext(), documentUri);
             if (document != null) {
                 return document;
             }
         }
 
         // start with root of SD card and then parse through document tree.
-        DocumentFile document = DocumentFile.fromTreeUri(context, treeUri);
+        DocumentFile document = DocumentFile.fromTreeUri(App.getAppContext(), treeUri);
         if (originalDirectory) return document;
         String[] parts = relativePath.split("\\/");
         for (int i = 0; i < parts.length; i++) {
@@ -727,20 +727,19 @@ public abstract class FileUtil {
      * Checks whether the target path exists or is writable
      *
      * @param f       the target path
-     * @param context
      * @return 1 if exists or writable, 0 if not writable
      */
-    public static int checkFolder(final String f, Context context) {
+    public static int checkFolder(final String f) {
         if (f == null) return 0;
 
         File folder = new File(f);
-        if (FileUtil.isOnExtSdCard(folder, context)) {
+        if (FileUtil.isOnExtSdCard(folder)) {
             if (!folder.exists() || !folder.isDirectory()) {
                 return 0;
             }
 
             // On Android 5, trigger storage access framework.
-            if (FileUtil.isWritableNormalOrSaf(folder, context)) {
+            if (FileUtil.isWritableNormalOrSaf(folder)) {
                 return 1;
 
             }

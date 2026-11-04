@@ -122,7 +122,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
             try {
                 if (!Util.useScopedStorage() && storeFile.exists()) {
                     if (!append && offset < 0) {
-                        if (!FileUtil.deleteFile(storeFile, App.getAppContext())) {
+                        if (!FileUtil.deleteFile(storeFile)) {
                             errString = "451 Couldn't truncate file\r\n";
                             break storing;
                         }
@@ -143,7 +143,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
                         break storing;
                     }
                 } else {
-                    FileUtil.mkfile(storeFile, App.getAppContext());
+                    FileUtil.mkfile(storeFile);
                 }
 
                 if (docStoreFile != null) {
@@ -160,7 +160,7 @@ abstract public class CmdAbstractStore extends FtpCmd {
                         if (os == null) throw new IOException("No output stream");
                     }
                 } else {
-                    out = FileUtil.getOutputStream(storeFile, App.getAppContext());
+                    out = FileUtil.getOutputStream(storeFile);
                 }
 
                 //file
