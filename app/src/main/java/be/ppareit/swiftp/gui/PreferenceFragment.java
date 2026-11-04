@@ -281,6 +281,14 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             });
         }
 
+        final ListPreference themePref = findPref(ThemeSetting.KEY);
+        if (themePref != null) {
+            themePref.setOnPreferenceChangeListener((preference, newValue) -> {
+                ThemeSetting.apply(requireContext(), (String) newValue);
+                return true;
+            });
+        }
+
         TwoStatePreference serverNotificationPref = findPref("show_server_notification");
         if (serverNotificationPref != null) {
             serverNotificationPref.setOnPreferenceChangeListener((preference, newValue) -> {

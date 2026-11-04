@@ -116,6 +116,15 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                     android:summary="@string/battery_saver_desc"
                     android:title="@string/battery_saver_setting_title" />
 
+                <ListPreference
+                    android:defaultValue="system"
+                    android:dialogTitle="@string/theme_title"
+                    android:entries="@array/pref_list_theme_titles"
+                    android:entryValues="@array/pref_list_theme_values"
+                    android:key="theme"
+                    android:title="@string/theme_title"
+                    app:useSimpleSummaryProvider="true" />
+
             </PreferenceCategory>
 
             <PreferenceCategory

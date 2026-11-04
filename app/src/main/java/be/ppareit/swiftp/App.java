@@ -24,12 +24,12 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 
 import net.vrallev.android.cat.Cat;
 
 import be.ppareit.swiftp.gui.QuickToggleShortcut;
+import be.ppareit.swiftp.gui.ThemeSetting;
 import be.ppareit.swiftp.tasker.ServerStateBroadcastReceiver;
 
 public class App extends Application {
@@ -41,7 +41,7 @@ public class App extends Application {
         super.onCreate();
         mInstance = this;
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        ThemeSetting.apply(this);
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(FsService.ACTION_STARTED);
