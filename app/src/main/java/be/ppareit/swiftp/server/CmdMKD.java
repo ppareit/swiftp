@@ -69,7 +69,7 @@ public class CmdMKD extends FtpCmd implements Runnable {
                 break mainblock;
             }
 
-            if (!FileUtil.mkdirs(App.getAppContext(), toCreate)) {
+            if (!FileUtil.mkdir(toCreate, App.getAppContext())) {
                 errString = "550 Error making directory (permissions?)\r\n";
                 break mainblock;
             }

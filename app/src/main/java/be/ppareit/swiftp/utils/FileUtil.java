@@ -287,7 +287,6 @@ public abstract class FileUtil {
      *
      * @param file The folder to be created.
      * @return True if creation was successful.
-     * @deprecated use {@link #mkdirs(Context, File)}
      */
     public static synchronized boolean mkdir(final File file, Context context) {
         if (file == null)
@@ -331,12 +330,6 @@ public abstract class FileUtil {
         }
 
         return false;
-    }
-
-    public static boolean mkdirs(Context context, File file) {
-        boolean isSuccessful = true;
-        isSuccessful = mkdir(new File(file.getPath()), context);
-        return isSuccessful;
     }
 
     public static boolean mkfile(final File file, Context context) throws IOException {
