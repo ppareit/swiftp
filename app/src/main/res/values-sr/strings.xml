@@ -44,7 +44,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="port_number_label">Број порта</string>
     <string name="chroot_label">Остани у фасцикли</string>
     <string name="accept_wifi_label">Прихвати везу са бежичног</string>
-    <string name="wakelock_label">Држи уређај будним (пуна брзина ЦПУ-а)</string>
     <string name="extra_label">Додатно</string>
     <string name="help_label">Помоћ...</string>
     <string name="about_label">О програму...</string>
@@ -115,10 +114,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="about_libraries_title">Библиотеке</string>
     <string name="about_contributor_title">Доприносиоци</string>
 
-    <string name="battery_saver_setting_title">Уштеда батерије</string>
-    <string name="bs_high">ХИГХ</string>
-    <string name="bs_low">ЛОВ</string>
-    <string name="bs_deep">ДУБОКО</string>
 
     <string name="enable_logging">Омогући пријаву</string>
     <string name="manage_log_label">Пријава…</string>

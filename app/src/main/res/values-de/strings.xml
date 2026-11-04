@@ -42,7 +42,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="port_number_label">Port</string>
     <string name="chroot_label">Auf Verzeichnis beschränken</string>
     <string name="accept_wifi_label">WiFi-Verbindungen erlauben</string>
-    <string name="wakelock_label">Gerät wach halten (volle CPU-Geschwindigkeit)</string>
     <string name="extra_label">Extras</string>
     <string name="help_label">Hilfe...</string>
     <string name="about_label">Über...</string>
@@ -84,10 +83,6 @@ Gemeldete Probleme und Verbesserungsvorschläge sind unter https://github.com/pp
     <string name="storage_warning">Warnung: das Speichermedium ist nicht verfügbar!</string>
     <string name="widget_name">FTP Server Widget</string>
 
-    <string name="battery_saver_setting_title">Batteriesparmodus</string>
-    <string name="bs_high">HOCH</string>
-    <string name="bs_low">NIEDRIG</string>
-    <string name="bs_deep">TIEF</string>
 
     <string name="enable_logging">Aktiviere das Logging</string>
     <string name="manage_log_label">Protokoll…</string>

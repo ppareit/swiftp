@@ -21,6 +21,7 @@ package be.ppareit.swiftp
 import android.content.Context
 
 import androidx.core.app.NotificationManagerCompat
+import androidx.preference.PreferenceManager
 
 /**
  * Removes what older versions left behind on the device.
@@ -33,5 +34,12 @@ object LegacyCleanup {
         // channel that service needed is gone. It was created on every server start, widget or not.
         NotificationManagerCompat.from(context)
             .deleteNotificationChannel("be.ppareit.swiftp.widget_provider.channelId")
+
+        // After 3.7.0: the battery saver list and the screen checkbox became one keep awake list,
+        // which starts at its default for everyone, so the old values are only dropped.
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .remove("battery_saver")
+            .remove("stayAwake")
+            .apply()
     }
 }

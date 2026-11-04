@@ -60,7 +60,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="port_validation_error">Le port doit être inclus entre 1 et 65535.</string>
     <string name="chroot_label">Rester dans le dossier</string>
     <string name="accept_wifi_label">Accepter la connexion en wifi</string>
-    <string name="wakelock_label">Garder l\'appareil activé (vitesse CPU maximale)</string>
     <string name="extra_label">Plus</string>
     <string name="help_label">Aide...</string>
     <string name="about_label">À propos...</string>
@@ -135,10 +134,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="about_libraries_title">Bibliothèques</string>
     <string name="about_contributor_title">Contributions</string>
 
-    <string name="battery_saver_setting_title">Économiseur de batterie</string>
-    <string name="bs_high">HAUT</string>
-    <string name="bs_low">FAIBLE</string>
-    <string name="bs_deep">PROFOND</string>
 
     <string name="enable_logging">Activer la journalisation</string>
     <string name="manage_log_label">Enregistrer…</string>

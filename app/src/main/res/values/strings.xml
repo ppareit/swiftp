@@ -97,7 +97,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="chroot_stranded_message">These logins are kept in a folder that is not shared any more, so they can no longer log in:\n\n%1$s</string>
     <string name="chroot_stranded_fix">Use all allowed folders</string>
     <string name="accept_wifi_label">Accept connection from Wi-Fi</string>
-    <string name="wakelock_label">Keep device awake (full CPU speed)</string>
     <string name="writeExternalStorage_label">Writing external storage</string>
     <string name="extra_label">Extra</string>
     <string name="help_label">Help…</string>
@@ -217,12 +216,12 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="show_server_notification_summary">Show the server address and a stop button while the server is running</string>
     <string name="write_external_storage_old_android_version_summary">On these devices, all store is available using the file hierarchy.</string>
 
-    <!-- since 3.1 -->
-    <string name="battery_saver_setting_title">Battery Saver</string>
-    <string name="battery_saver_desc">NOTE: You *must* manually restart server after changing.</string>
-    <string name="bs_high">HIGH</string>
-    <string name="bs_low">LOW</string>
-    <string name="bs_deep">DEEP</string>
+    <!-- Keep awake: when the server keeps the device awake -->
+    <string name="keep_awake_title">Keep device awake</string>
+    <string name="keep_awake_never">Never (recommended)</string>
+    <string name="keep_awake_while_connected">While clients are connected</string>
+    <string name="keep_awake_always">Always</string>
+    <string name="keep_awake_always_screen_on">Always, and keep the screen on</string>
 
     <!-- Allowed folders: which parts of storage the server may serve -->
     <!-- The ellipsis marks the settings entry that opens a screen; the screen's own title

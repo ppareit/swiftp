@@ -42,7 +42,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="port_number_label">Номер порта</string>
     <string name="chroot_label">Корневая папка доступа</string>
     <string name="accept_wifi_label">Принимать подключения по wifi</string>
-    <string name="wakelock_label">Не давать уснуть (максимальная производительность ЦП)</string>
     <string name="extra_label">Дополнительно</string>
     <string name="help_label">Помощь...</string>
     <string name="about_label">О программе...</string>
@@ -97,10 +96,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="widget_name">FTP Server Widget</string>
     <string name="notif_settings_text">Настройки</string>
 
-    <string name="battery_saver_setting_title">Экономия заряда батареи</string>
-    <string name="bs_high">ВЫСОКИЙ</string>
-    <string name="bs_low">НИЗКИЙ</string>
-    <string name="bs_deep">ГЛУБОКИЙ</string>
 
     <string name="enable_logging">Включить ведение журнала</string>
     <string name="manage_log_label">Бревно…</string>

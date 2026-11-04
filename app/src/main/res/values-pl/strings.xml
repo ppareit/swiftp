@@ -59,7 +59,6 @@ wraz z SwiFTP. Jeśli nie, zobacz <http://www.gnu.org/licenses/>.
     <string name="port_validation_error">Numer portu musi być z zakresu od 1 do 65535.</string>
     <string name="chroot_label">Pozostań w katalogu</string>
     <string name="accept_wifi_label">Zaakceptuj połączenie z Wi-Fi</string>
-    <string name="wakelock_label">Utrzymuj urządzenie w stanie czuwania (pełna prędkość procesora)</string>
     <string name="writeExternalStorage_label">Zapisywanie w pamięci zewnętrznej</string>
     <string name="extra_label">Dodatkowe</string>
     <string name="help_label">Pomoc…</string>
@@ -162,10 +161,6 @@ na stronie https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_users_multiple_users">Dostępnych jest wielu użytkowników, patrz lista.</string>
     <string name="write_external_storage_old_android_version_summary">Na tych urządzeniach cały sklep jest dostępny przy użyciu hierarchii plików.</string>
 
-    <string name="battery_saver_setting_title">Program oszczędzający baterię</string>
-    <string name="bs_high">WYSOKI</string>
-    <string name="bs_low">NISKI</string>
-    <string name="bs_deep">GŁĘBOKO</string>
 
     <string name="enable_logging">Włącz logowanie</string>
     <string name="manage_log_label">Dziennik…</string>

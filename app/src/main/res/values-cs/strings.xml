@@ -59,7 +59,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="port_validation_error">Číslo portu musí být v rozsahu 1 až 65535.</string>
     <string name="chroot_label">Zůstat ve složce</string>
     <string name="accept_wifi_label">Přijmout připojení z Wifi</string>
-    <string name="wakelock_label">Udržujte zařízení vzhůru (plná rychlost CPU)</string>
     <string name="writeExternalStorage_label">Zápis na externí úložiště</string>
     <string name="extra_label">Extra</string>
     <string name="help_label">Pomoc…</string>

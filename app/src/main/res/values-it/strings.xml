@@ -42,7 +42,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="port_number_label">Numbero Porta</string>
     <string name="chroot_label">Rimani nella cartella</string>
     <string name="accept_wifi_label">Accetta connessioni via WiFi</string>
-    <string name="wakelock_label">Mantieni attivo il dispositivo (piena velocità di CPU)</string>
     <string name="extra_label">Extra</string>
     <string name="help_label">Aiuto...</string>
     <string name="about_label">Info...</string>
@@ -88,10 +87,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="storage_warning">Attenzione: la memoria di massa non è disponibile. Probabilmente dovresti smontarla.</string>
     <string name="widget_name">Widget Server FTP</string>
 
-    <string name="battery_saver_setting_title">Risparmio batteria</string>
-    <string name="bs_high">ALTO</string>
-    <string name="bs_low">BASSO</string>
-    <string name="bs_deep">PROFONDO</string>
 
     <string name="enable_logging">Abilita la registrazione</string>
     <string name="manage_log_label">Tronco d\'albero…</string>

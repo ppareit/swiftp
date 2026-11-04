@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="pref_list_battery_saver_titles">
-    <item>@string/bs_high</item>
-    <item>@string/bs_low</item>
-    <item>@string/bs_deep</item>
+    <string-array name="pref_list_keep_awake_titles">
+        <item>@string/keep_awake_never</item>
+        <item>@string/keep_awake_while_connected</item>
+        <item>@string/keep_awake_always</item>
+        <item>@string/keep_awake_always_screen_on</item>
     </string-array>
 
-    <string-array name="pref_list_battery_saver_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
+    <!-- Must match the values in KeepAwake.kt -->
+    <string-array name="pref_list_keep_awake_values" translatable="false">
+        <item>never</item>
+        <item>while_connected</item>
+        <item>always</item>
+        <item>always_screen_on</item>
     </string-array>
 
     <string-array name="pref_list_theme_titles">

@@ -133,14 +133,6 @@ public class FsSettings {
         return port;
     }
 
-    public static String getBatterySaverChoice(String val) {
-        String s = sp.getString("battery_saver", "1");
-        if (val != null) s = val;
-        if (s.equals("0")) return App.getAppContext().getString(R.string.bs_high);
-        if (s.equals("1")) return App.getAppContext().getString(R.string.bs_low);
-        return App.getAppContext().getString(R.string.bs_deep);
-    }
-
     public static int getAnonMaxConNumber() {
         String s = sp.getString("anon_max", "1");
         if (s.isEmpty()) s = "1";
@@ -151,10 +143,6 @@ public class FsSettings {
 
     public static void setAnonMaxConNumber(int max) {
         sp.edit().putString("anon_max", String.valueOf(max)).apply();
-    }
-
-    public static boolean shouldTakeFullWakeLock() {
-        return sp.getBoolean("stayAwake", false);
     }
 
     /**

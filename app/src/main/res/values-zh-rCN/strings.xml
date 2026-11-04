@@ -36,7 +36,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="port_number_label">端口号</string>
     <string name="chroot_label">设为根目录</string>
     <string name="accept_wifi_label">接受 Wi-Fi 连接</string>
-    <string name="wakelock_label">保持设备唤醒（最大 CPU 频率）</string>
     <string name="extra_label">其他</string>
     <string name="help_label">帮助...</string>
     <string name="about_label">关于...</string>
@@ -82,10 +81,6 @@ https://github.com/ppareit/swiftp/issues 提交您的建议。\n\n
     <string name="storage_warning">警告：当前存储暂不可用，您可能需要取消挂载。</string>
     <string name="widget_name">FTP Server Widget</string>
 
-    <string name="battery_saver_setting_title">省电</string>
-    <string name="bs_high">高的</string>
-    <string name="bs_low">低的</string>
-    <string name="bs_deep">深的</string>
 
     <string name="enable_logging">启用日志记录</string>
     <string name="manage_log_label">日志…</string>

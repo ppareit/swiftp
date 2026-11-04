@@ -29,33 +29,19 @@ import android.util.Log
 import kotlin.time.Duration.Companion.minutes
 
 /**
- * The wake lock and Wi-Fi lock the server holds, following the battery saver setting.
+ * The wake lock and Wi-Fi lock the server holds, following the [KeepAwake] setting.
  *
- * HIGH holds both for as long as the server runs. LOW takes them when a client connects
- * and releases them ten minutes after the last open session ends. DEEP never takes them.
+ * ALWAYS holds both for as long as the server runs, and ALWAYS_SCREEN_ON adds a full wake
+ * lock that keeps the screen on. WHILE_CONNECTED takes them when a client connects and
+ * releases them ten minutes after the last open session ends. NEVER never takes them.
  *
  * Every entry point is synchronized: sessions start on the listener thread, end on their
  * own threads, and the delayed release runs on the main thread.
  */
 class ServerWakeLocks(
     context: Context,
-    private val mode: Mode,
-    private val fullWakeLock: Boolean,
+    private val mode: KeepAwake,
 ) {
-
-    enum class Mode {
-        HIGH, LOW, DEEP;
-
-        companion object {
-            /** The `battery_saver` preference value: "0", "1" or "2". */
-            @JvmStatic
-            fun fromPreference(value: String?): Mode = when (value) {
-                "0" -> HIGH
-                "1" -> LOW
-                else -> DEEP
-            }
-        }
-    }
 
     private val powerManager =
         context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -65,6 +51,7 @@ class ServerWakeLocks(
     private val delayedRelease = Runnable { releaseIfIdle() }
 
     private var wakeLock: PowerManager.WakeLock? = null
+    private var screenLock: PowerManager.WakeLock? = null
     private var wifiLock: WifiManager.WifiLock? = null
     private var openSessions = 0
     private var stopped = false
@@ -72,18 +59,25 @@ class ServerWakeLocks(
     val isHeld: Boolean
         @Synchronized get() = wakeLock != null
 
-    /** The server is up. Only HIGH takes the locks now. */
+    val isScreenHeld: Boolean
+        @Synchronized get() = screenLock != null
+
+    private val holdsWhileConnected: Boolean
+        get() = mode == KeepAwake.WHILE_CONNECTED
+
+    /** The server is up. Only ALWAYS and ALWAYS_SCREEN_ON take the locks now. */
     @Synchronized
     fun start() {
-        if (stopped || mode != Mode.HIGH) return
+        if (stopped) return
+        if (mode != KeepAwake.ALWAYS && mode != KeepAwake.ALWAYS_SCREEN_ON) return
         // @TODO: when using ethernet, is it needed to take wifi lock?
         acquire()
     }
 
-    /** A client connected. In LOW this takes the locks and cancels a pending release. */
+    /** A client connected. In WHILE_CONNECTED this takes the locks and cancels a pending release. */
     @Synchronized
     fun sessionStarted() {
-        if (stopped || mode != Mode.LOW) return
+        if (stopped || !holdsWhileConnected) return
         openSessions++
         handler.removeCallbacks(delayedRelease)
         acquire()
@@ -95,17 +89,17 @@ class ServerWakeLocks(
      * */
     @Synchronized
     fun sessionEnded() {
-        if (stopped || mode != Mode.LOW) return
+        if (stopped || !holdsWhileConnected) return
         if (openSessions > 0) openSessions--
         if (openSessions > 0) return
         handler.removeCallbacks(delayedRelease)
         handler.postDelayed(delayedRelease, RELEASE_DELAY.inWholeMilliseconds)
     }
 
-    /** The listener stopped accepting. In LOW the connection locks go with it. */
+    /** The listener stopped accepting. In WHILE_CONNECTED the connection locks go with it. */
     @Synchronized
     fun releaseConnectionLocks() {
-        if (mode != Mode.LOW) return
+        if (!holdsWhileConnected) return
         handler.removeCallbacks(delayedRelease)
         release()
     }
@@ -133,15 +127,19 @@ class ServerWakeLocks(
     @SuppressLint("WakelockTimeout") // held for as long as the server serves, no timeout to give
     private fun acquire() {
         if (wakeLock == null) {
-            wakeLock = if (fullWakeLock) {
-                Log.d(TAG, "acquire: Taking full wake lock")
-                // Note: FULL_WAKE_LOCK is deprecated, officially not recommended, and is actually worse.
-                @Suppress("DEPRECATION")
-                powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, LOCK_TAG)
-            } else {
-                Log.d(TAG, "acquire: Taking partial wake lock")
-                powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOCK_TAG)
-            }.apply {
+            Log.d(TAG, "acquire: Taking partial wake lock")
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOCK_TAG).apply {
+                setReferenceCounted(false)
+                acquire()
+            }
+        }
+        // Next to the partial one, not instead: the power button releases a full wake lock
+        // and lets the CPU sleep, a partial one keeps it running.
+        if (mode == KeepAwake.ALWAYS_SCREEN_ON && screenLock == null) {
+            Log.d(TAG, "acquire: Taking full wake lock")
+            // Note: FULL_WAKE_LOCK is deprecated, officially not recommended, and is actually worse.
+            @Suppress("DEPRECATION")
+            screenLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, SCREEN_LOCK_TAG).apply {
                 setReferenceCounted(false)
                 acquire()
             }
@@ -172,12 +170,18 @@ class ServerWakeLocks(
             it.release()
         }
         wakeLock = null
+        screenLock?.let {
+            Log.d(TAG, "release: Releasing full wake lock")
+            it.release()
+        }
+        screenLock = null
     }
 
     companion object {
         private const val TAG = "ServerWakeLocks"
         // Shown in battery stats and Android vitals.
         private const val LOCK_TAG = "SwiFTP:server"
+        private const val SCREEN_LOCK_TAG = "SwiFTP:screen"
         private val RELEASE_DELAY = 10.minutes
     }
 }

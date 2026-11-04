@@ -419,9 +419,7 @@ public class FsService extends Service implements Runnable {
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
         stopWakeLocks();
-        ServerWakeLocks locks = new ServerWakeLocks(this,
-                ServerWakeLocks.Mode.fromPreference(sp.getString("battery_saver", "1")),
-                FsSettings.shouldTakeFullWakeLock());
+        ServerWakeLocks locks = new ServerWakeLocks(this, KeepAwake.read(sp));
         locks.start();
         wakeLocks = locks;
 

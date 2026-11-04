@@ -39,7 +39,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="port_number_label">Poort nummer</string>
     <string name="chroot_label">Blijf in map</string>
     <string name="accept_wifi_label">Accepteer verbindingen via wifi</string>
-    <string name="wakelock_label">Houd toestel wakker (volledige CPU snelheid)</string>
     <string name="extra_label">Extra\'s</string>
     <string name="help_label">Help...</string>
     <string name="about_label">Over...</string>
@@ -87,10 +86,6 @@ van de volgende versie staan op https://github.com/ppareit/swiftp/issues .\n\n
     <string name="storage_warning">Warning: storage is not available. You may want to unmount it.</string>
     <string name="widget_name">FTP Server Widget</string>
 
-    <string name="battery_saver_setting_title">Batterij bespaarder</string>
-    <string name="bs_high">HOOG</string>
-    <string name="bs_low">LAAG</string>
-    <string name="bs_deep">DIEP</string>
 
     <string name="logging">Logboek</string>
     <string name="enable_logging">Logboekregistratie inschakelen</string>

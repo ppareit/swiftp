@@ -77,6 +77,7 @@ import java.util.Set;
 import be.ppareit.swiftp.App;
 import be.ppareit.swiftp.FsService;
 import be.ppareit.swiftp.FsSettings;
+import be.ppareit.swiftp.KeepAwake;
 import be.ppareit.swiftp.R;
 import be.ppareit.swiftp.Util;
 import be.ppareit.swiftp.server.ServerProblem;
@@ -241,41 +242,9 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             });
         }
 
-        final CheckBoxPreference wakelockPref = findPref("stayAwake");
-        if (wakelockPref != null) {
-            wakelockPref.setOnPreferenceChangeListener((preference, newValue) -> {
-                FsService.restart();
-                return true;
-            });
-        }
-
-        final ListPreference batterySaver = findPref("battery_saver");
-        if (batterySaver != null && wakelockPref != null) {
-            // val 0 HIGH is always on wake locks + wake lock setting enabled (high battery, smooth)
-            // val 1 LOW is wake locks run only during client connection (low battery, some of both)
-            // val 2 DEEP is wake locks disabled (lowest battery use, a bit choppy)
-            final String s = batterySaver.getValue();
-            if (Integer.parseInt(s) > 1) {
-                wakelockPref.setChecked(false);
-                wakelockPref.setEnabled(false);
-            } else {
-                wakelockPref.setEnabled(true);
-            }
-            batterySaver.setTitle("Battery saver");
-            final String bSumSelection = FsSettings.getBatterySaverChoice(null) + '\n';
-            final String bSum = bSumSelection;
-            batterySaver.setSummary(bSum);
-            batterySaver.setOnPreferenceChangeListener((preference, newValue) -> {
-                if (Integer.parseInt((String) newValue) > 1) {
-                    wakelockPref.setChecked(false);
-                    wakelockPref.setEnabled(false);
-                } else {
-                    wakelockPref.setEnabled(true);
-                }
-                final String bSumSelection2 = FsSettings.getBatterySaverChoice(
-                        (String) newValue) + '\n';
-                final String bSum2 = bSumSelection2;
-                batterySaver.setSummary(bSum2);
+        final ListPreference keepAwakePref = findPref(KeepAwake.KEY);
+        if (keepAwakePref != null) {
+            keepAwakePref.setOnPreferenceChangeListener((preference, newValue) -> {
                 FsService.restart();
                 return true;
             });

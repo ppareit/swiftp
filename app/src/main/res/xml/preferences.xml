@@ -102,19 +102,14 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                 android:title="@string/general_title"
                 app:iconSpaceReserved="false">
 
-                <CheckBoxPreference
-                    android:defaultValue="@string/wakelock_default"
-                    android:key="stayAwake"
-                    android:title="@string/wakelock_label" />
-
                 <ListPreference
-                    android:defaultValue="1"
-                    android:dialogTitle="@string/battery_saver_setting_title"
-                    android:entries="@array/pref_list_battery_saver_titles"
-                    android:entryValues="@array/pref_list_battery_saver_values"
-                    android:key="battery_saver"
-                    android:summary="@string/battery_saver_desc"
-                    android:title="@string/battery_saver_setting_title" />
+                    android:defaultValue="never"
+                    android:dialogTitle="@string/keep_awake_title"
+                    android:entries="@array/pref_list_keep_awake_titles"
+                    android:entryValues="@array/pref_list_keep_awake_values"
+                    android:key="keep_awake"
+                    android:title="@string/keep_awake_title"
+                    app:useSimpleSummaryProvider="true" />
 
                 <ListPreference
                     android:defaultValue="system"

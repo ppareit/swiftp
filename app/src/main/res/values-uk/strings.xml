@@ -42,7 +42,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="port_number_label">Номер порту</string>
     <string name="chroot_label">Коренева папка доступу</string>
     <string name="accept_wifi_label">Приймати підключення по wifi</string>
-    <string name="wakelock_label">Не давати заснути (максимальна продуктивність ЦП)</string>
     <string name="extra_label">Додатково</string>
     <string name="help_label">Допомога...</string>
     <string name="about_label">Про додаток...</string>
@@ -136,10 +135,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_users_multiple_users">Доступно кілька користувачів, дивіться список.</string>
     <string name="write_external_storage_old_android_version_summary">На цих пристроях вся пам\'ять доступна за допомогою ієрархії файлів.</string>
 
-    <string name="battery_saver_setting_title">Економія батареї</string>
-    <string name="bs_high">ВИСОКА</string>
-    <string name="bs_low">НИЗЬКИЙ</string>
-    <string name="bs_deep">ГЛИБОКИЙ</string>
 
     <string name="enable_logging">Увімкнути журналювання</string>
     <string name="manage_log_label">Журнал…</string>

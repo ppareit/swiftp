@@ -52,7 +52,6 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
     <string name="port_validation_error">The port number must be in the range 1 to 65535.</string>
     <string name="chroot_label">Carpeta de inicio</string>
     <string name="accept_wifi_label">Aceptar conexión desde Wi\u2011Fi</string>
-    <string name="wakelock_label">Mantener encendido (máxima velocidad de CPU)</string>
     <string name="writeExternalStorage_label">Writing external storage</string>
     <string name="extra_label">Otros</string>
     <string name="help_label">Ayuda\u2026</string>
@@ -139,10 +138,6 @@ implementarán, mira el registro de incidencias en https://github.com/ppareit/sw
     <string name="manage_users_multiple_users">Varios usuarios disponibles, mira la lista.</string>
     <string name="write_external_storage_old_android_version_summary">En estos dispositivos, toda lo guardado está disponible utilizando la jerarquía de archivos.</string>
 
-    <string name="battery_saver_setting_title">Ahorro de batería</string>
-    <string name="bs_high">ALTO</string>
-    <string name="bs_low">BAJO</string>
-    <string name="bs_deep">PROFUNDO</string>
 
     <string name="enable_logging">Habilitar el registro</string>
     <string name="manage_log_label">Registro…</string>

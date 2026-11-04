@@ -59,7 +59,6 @@ së bashku me SwiFTP. Nëse jo, shihni <http://www.gnu.org/licenses/>.
     <string name="port_validation_error">Numri i portit duhet të jetë në intervalin 1 deri në 65535.</string>
     <string name="chroot_label">Qëndroni në dosje</string>
     <string name="accept_wifi_label">Pranoni lidhje nga wifi</string>
-    <string name="wakelock_label">Mbajeni zgjuar pajisjen (shpejtësia e plotë e CPU)</string>
     <string name="writeExternalStorage_label">Shkrimi i ruajtjes së jashtme</string>
     <string name="extra_label">Shtesë</string>
     <string name="help_label">Ndihmë...</string>
@@ -161,10 +160,6 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="manage_users_multiple_users">Shumë përdorues të disponueshëm, shihni listën.</string>
     <string name="write_external_storage_old_android_version_summary">Në këto pajisje, e gjithë dyqani është në dispozicion duke përdorur hierarkinë e skedarit.</string>
 
-    <string name="battery_saver_setting_title">Kursuesi i baterisë</string>
-    <string name="bs_high">I LARTË</string>
-    <string name="bs_low">I ULËT</string>
-    <string name="bs_deep">THELLË</string>
 
     <string name="enable_logging">Aktivizo regjistrimin</string>
     <string name="manage_log_label">Regjistrohu…</string>
