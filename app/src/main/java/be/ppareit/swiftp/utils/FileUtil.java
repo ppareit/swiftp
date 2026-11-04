@@ -54,7 +54,16 @@ public abstract class FileUtil {
                 outStream = new FileOutputStream(target);
                 inChannel = inStream.getChannel();
                 outChannel = ((FileOutputStream) outStream).getChannel();
-                inChannel.transferTo(0, inChannel.size(), outChannel);
+                // transferTo may move less than asked, one sendfile stops at 0x7ffff000 bytes
+                final long size = inChannel.size();
+                long position = 0;
+                while (position < size) {
+                    final long moved = inChannel.transferTo(position, size - position, outChannel);
+                    if (moved <= 0) {
+                        throw new IOException("Copied " + position + " of " + size + " bytes");
+                    }
+                    position += moved;
+                }
             } else {
                 // Storage Access Framework
                 DocumentFile targetDocument = getDocumentFile(target, false, context);
