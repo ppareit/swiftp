@@ -108,7 +108,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
                     android:title="@string/wakelock_label" />
 
                 <ListPreference
-                    android:defaultValue="0"
+                    android:defaultValue="1"
                     android:dialogTitle="@string/battery_saver_setting_title"
                     android:entries="@array/pref_list_battery_saver_titles"
                     android:entryValues="@array/pref_list_battery_saver_values"

@@ -90,9 +90,7 @@ public class TcpListener extends Thread {
                         // call to close() on server off causes SocketException here with "Socket closed"
                         final String msg = e.getMessage();
                         if (msg != null && msg.contains("Socket closed")) {
-                            if (ftpServerService.isConnWakelockRunning()) {
-                                ftpServerService.releaseWakelocks();
-                            }
+                            ftpServerService.releaseConnectionWakeLocks();
                             return;
                         }
                         // Simple retry and fail back to next catch or continue on success
@@ -110,18 +108,14 @@ public class TcpListener extends Thread {
 
                     if (loopExControlPlain > LOOP_EXCEPTION_CONTROL_MAX) {
                         loopExControlPlain = 0;
-                        if (ftpServerService.isConnWakelockRunning()) {
-                            ftpServerService.releaseWakelocks();
-                        }
+                        ftpServerService.releaseConnectionWakeLocks();
                         break;
                     }
                 }
             } catch (Exception e) {
                 loopExControlPlain++;
                 Log.d(TAG, "Exception in TcpListener");
-                if (ftpServerService.isConnWakelockRunning()) {
-                    ftpServerService.releaseWakelocks();
-                }
+                ftpServerService.releaseConnectionWakeLocks();
             }
         }).start();
     }
@@ -143,9 +137,7 @@ public class TcpListener extends Thread {
                         // call to close() on server off causes SocketException here with "Socket closed"
                         final String msg = e.getMessage();
                         if (msg != null && msg.contains("Socket closed")) {
-                            if (ftpServerService.isConnWakelockRunning()) {
-                                ftpServerService.releaseWakelocks();
-                            }
+                            ftpServerService.releaseConnectionWakeLocks();
                             return;
                         }
                         // Simple retry and fail back to next catch or continue on success
@@ -181,15 +173,11 @@ public class TcpListener extends Thread {
                     // Handshake timeout will end up here.
                     // Clients can fail the handshake.
                     Log.d(TAG, "Exception in TcpListener");
-                    if (ftpServerService.isConnWakelockRunning()) {
-                        ftpServerService.releaseWakelocks();
-                    }
+                    ftpServerService.releaseConnectionWakeLocks();
                 }
                 if (loopExControlTLS > LOOP_EXCEPTION_CONTROL_MAX) {
                     loopExControlTLS = 0;
-                    if (ftpServerService.isConnWakelockRunning()) {
-                        ftpServerService.releaseWakelocks();
-                    }
+                    ftpServerService.releaseConnectionWakeLocks();
                     break;
                 }
             }
@@ -208,7 +196,7 @@ public class TcpListener extends Thread {
 
     private void spawnSession(Socket clientSocket, SSLSocket sslClientSocket) {
         Log.i(TAG, "New connection, spawned thread");
-        ftpServerService.createConnWakeLock();
+        ftpServerService.sessionStarted();
         SessionThread newSession = new SessionThread(
                 clientSocket, new LocalDataSocket(settings), sslClientSocket,
                 settings, authenticator

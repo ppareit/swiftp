@@ -489,6 +489,9 @@ public class SessionThread extends Thread {
         } catch (IOException e) {
             logging.appendLog("Connection was dropped: " + e.getMessage());
             Cat.i("Connection was dropped");
+        } finally {
+            // So wake locks are released or other cleanup happens
+            FsService.sessionEnded();
         }
         closeSocket();
         // The listener a PASV or EPSV bound is released by the transfer that uses it,
@@ -497,7 +500,6 @@ public class SessionThread extends Thread {
         // ports after a handful of connections and answers 502 to every PASV.
         localDataSocket.clearState();
         AnonymousLimit.decrement();
-        FsService.connWakelockEndHandler();
     }
 
     public void closeSocket() {

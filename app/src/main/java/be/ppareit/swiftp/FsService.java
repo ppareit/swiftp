@@ -30,15 +30,10 @@ import android.net.ConnectivityManager;
 import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.wifi.WifiManager;
-import android.net.wifi.WifiManager.WifiLock;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -107,13 +102,8 @@ public class FsService extends Service implements Runnable {
     private TcpListener socketWatcher = null;
     private final List<SessionThread> sessionThreads = new ArrayList<>();
 
-    private PowerManager.WakeLock wakeLock;
-    private WifiLock wifiLock = null;
-
-    private static boolean connectionWakelockRunning = false;
-    static Handler connWakeLockHandler = null;
-    static Message connWakeLockMessage = null;
-    static boolean useConnWakeLocks = false;
+    // Static so a session can report its end without a reference to the service.
+    private static volatile ServerWakeLocks wakeLocks = null;
 
 
     /**
@@ -265,10 +255,7 @@ public class FsService extends Service implements Runnable {
         } catch (IOException ignored) {
         }
 
-        releaseWakelocks();
-
-        if (connWakeLockHandler != null) connWakeLockHandler.removeCallbacksAndMessages(null);
-        if (connWakeLockMessage != null) connWakeLockMessage = null;
+        stopWakeLocks();
 
         Log.d(TAG, "FTPServerService.onDestroy() finished");
     }
@@ -431,18 +418,12 @@ public class FsService extends Service implements Runnable {
         }
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-        final int batterySaver = Integer.parseInt(sp.getString("battery_saver", "1"));
-        if (batterySaver == 0) {
-            // @TODO: when using ethernet, is it needed to take wifi lock?
-            takeWifiLock();
-            takeWakeLock();
-            useConnWakeLocks = false;
-        } else if (batterySaver == 1) {
-            useConnWakeLocks = true;
-            initializeConnWakeLocks();
-        } else {
-            useConnWakeLocks = false;
-        }
+        stopWakeLocks();
+        ServerWakeLocks locks = new ServerWakeLocks(this,
+                ServerWakeLocks.Mode.fromPreference(sp.getString("battery_saver", "1")),
+                FsSettings.shouldTakeFullWakeLock());
+        locks.start();
+        wakeLocks = locks;
 
         // A socket is open now, so the FTP server is started, notify rest of world
         Log.i(TAG, "Ftp Server up and running, broadcasting ACTION_STARTED");
@@ -469,107 +450,28 @@ public class FsService extends Service implements Runnable {
         }
     }
 
-    /**
-     * Takes the wake lock
-     * <p>
-     * Many devices seem to not properly honor a PARTIAL_WAKE_LOCK, which should prevent
-     * CPU throttling. For these devices, we have a option to force the phone into a full
-     * wake lock.
-     */
-    public void takeWakeLock() {
-        if (wakeLock == null) {
-            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            if (FsSettings.shouldTakeFullWakeLock()) {
-                Log.d(TAG, "takeWakeLock: Taking full wake lock");
-                // Note: FULL_WAKE_LOCK is deprecated, officially not recommended, and is actually worse.
-                wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, TAG);
-            } else {
-                Log.d(TAG, "maybeTakeWakeLock: Taking partial wake lock");
-                wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
-            }
-            wakeLock.setReferenceCounted(false);
-        }
-        wakeLock.acquire();
+    /** A client connected. Under LOW battery saver this takes the wake locks. */
+    public void sessionStarted() {
+        ServerWakeLocks locks = wakeLocks;
+        if (locks != null) locks.sessionStarted();
     }
 
-    public void takeWifiLock() {
-        Log.d(TAG, "takeWifiLock: Taking wifi lock");
-        if (wifiLock == null) {
-            WifiManager manager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            if (Build.VERSION.SDK_INT >= 29) {
-                // Low is forced starting in Android 14 and starts use at Android 10.
-                wifiLock = manager.createWifiLock(WifiManager.WIFI_MODE_FULL_LOW_LATENCY, TAG);
-            } else {
-                wifiLock = manager.createWifiLock(TAG);
-            }
-            wifiLock.setReferenceCounted(false);
-        }
-        wifiLock.acquire();
+    /** A session ended. Under LOW the locks go ten minutes after the last one. */
+    public static void sessionEnded() {
+        ServerWakeLocks locks = wakeLocks;
+        if (locks != null) locks.sessionEnded();
     }
 
-    public void releaseWakelocks() {
-        if (wifiLock != null) {
-            Log.d(TAG, "onDestroy: Releasing wifi lock");
-            wifiLock.release();
-            wifiLock = null;
-        }
-        if (wakeLock != null) {
-            Log.d(TAG, "onDestroy: Releasing wake lock");
-            wakeLock.release();
-            wakeLock = null;
-        }
-        setConnWakelockNotRunning();
+    /** The listener stopped accepting. Under LOW the connection wake locks go now. */
+    public void releaseConnectionWakeLocks() {
+        ServerWakeLocks locks = wakeLocks;
+        if (locks != null) locks.releaseConnectionLocks();
     }
 
-    public boolean isConnWakelockRunning() {
-        return connectionWakelockRunning;
-    }
-
-    public void setConnWakelockNotRunning() {
-        //logging.appendLog("connection wakelocks (off)...");
-        connectionWakelockRunning = false;
-    }
-
-    public void setConnWakelockRunning() {
-        //logging.appendLog("connection wakelocks (on)...");
-        connectionWakelockRunning = true;
-    }
-
-    public void initializeConnWakeLocks() {
-        if (connWakeLockHandler != null) return;
-        connWakeLockHandler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(@androidx.annotation.NonNull Message msg) {
-                super.handleMessage(msg);
-                if (isConnWakelockRunning()) releaseWakelocks();
-            }
-        };
-    }
-
-    public void createConnWakeLock() {
-        if (!useConnWakeLocks) return;
-        if (connWakeLockMessage != null) {
-            connWakeLockHandler.removeCallbacksAndMessages(null);
-            connWakeLockMessage = null;
-        }
-        if (!isConnWakelockRunning()) {
-            takeWakeLock();
-            takeWifiLock();
-            setConnWakelockRunning();
-        }
-    }
-
-    /* Handle a delayed reaction to ending connection wakelocks.
-     * As its not possible to know when it will end since ftp client can quit and connect right back
-     * again, need to create a delayed reaction. A handler with a delayed message works well.
-     * */
-    public static void connWakelockEndHandler() {
-        if (!useConnWakeLocks) return;
-        if (connWakeLockMessage == null) {
-            //new Logging().appendLog("connection wakelocks to off in 10 minutes...\n\n\n");
-            connWakeLockMessage = connWakeLockHandler.obtainMessage();
-            connWakeLockHandler.sendMessageDelayed(connWakeLockMessage, 600000);
-        }
+    private static void stopWakeLocks() {
+        ServerWakeLocks locks = wakeLocks;
+        wakeLocks = null;
+        if (locks != null) locks.stop();
     }
 
     /**
