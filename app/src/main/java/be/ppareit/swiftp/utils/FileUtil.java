@@ -307,6 +307,7 @@ public abstract class FileUtil {
                     return documentFile.exists();
                 }
             }
+            return false;
         }
 
         if (file.exists()) {
