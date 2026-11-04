@@ -60,9 +60,11 @@ public class MainActivity extends AppCompatActivity {
             ad.show();
         }
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_activity_fragment, new PreferenceFragment(), null)
-                .commit();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main_activity_fragment, new PreferenceFragment(), null)
+                    .commit();
+        }
     }
 
     @Override

@@ -110,16 +110,9 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
     /** The last start failure to show in the switch summary, or 0 for none. */
     private int failureSummary = 0;
 
-    private static int showScreen = 0;
-    private static final int SHOW_ADVANCED_SCREEN = 1;
-
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-        switch (showScreen) {
-            case SHOW_ADVANCED_SCREEN -> setPreferencesFromResource(R.xml.preferences, "preference_screen_advanced");
-            default -> setPreferencesFromResource(R.xml.preferences, rootKey);
-        }
-        showScreen = 0;
+        setPreferencesFromResource(R.xml.preferences, rootKey);
     }
 
     @NonNull
@@ -137,9 +130,12 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         if (prefScreenAdvanced != null) {
             prefScreenAdvanced.setOnPreferenceClickListener(preference -> {
                 updateIPListWithChangesFromOtherSettings();
-                showScreen = SHOW_ADVANCED_SCREEN;
+                PreferenceFragment advanced = new PreferenceFragment();
+                Bundle args = new Bundle();
+                args.putString(ARG_PREFERENCE_ROOT, "preference_screen_advanced");
+                advanced.setArguments(args);
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_activity_fragment, new PreferenceFragment(), "preference_screen_advanced")
+                        .replace(R.id.main_activity_fragment, advanced, "preference_screen_advanced")
                         .addToBackStack("default")
                         .commit();
                 return true;
