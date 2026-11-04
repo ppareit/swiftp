@@ -222,6 +222,12 @@ https://github.com/ppareit/swiftp/issues .\n\n
     <string name="keep_awake_while_connected">While clients are connected</string>
     <string name="keep_awake_always">Always</string>
     <string name="keep_awake_always_screen_on">Always, and keep the screen on</string>
+    <string name="keep_awake_report_title">Did Never not work?</string>
+    <string name="keep_awake_report_message">Keeping the device awake costs battery, and Never should work on every device. If the server stopped answering with Never, please report your device. The report opens on GitHub with your device details filled in.</string>
+    <string name="keep_awake_keep_never">Keep Never</string>
+    <string name="keep_awake_just_change">Just change</string>
+    <string name="keep_awake_change_and_report">Change and report</string>
+    <string name="keep_awake_report_no_browser">No browser found to open GitHub</string>
 
     <!-- Allowed folders: which parts of storage the server may serve -->
     <!-- The ellipsis marks the settings entry that opens a screen; the screen's own title

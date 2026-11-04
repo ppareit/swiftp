@@ -245,6 +245,16 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         final ListPreference keepAwakePref = findPref(KeepAwake.KEY);
         if (keepAwakePref != null) {
             keepAwakePref.setOnPreferenceChangeListener((preference, newValue) -> {
+                KeepAwake chosen = KeepAwake.fromValue((String) newValue);
+                if (KeepAwake.fromValue(keepAwakePref.getValue()) == KeepAwake.NEVER
+                        && chosen != KeepAwake.NEVER) {
+                    // Not yet: only once the user confirms, setValue does not come back here
+                    KeepAwakeReport.confirmLeavingNever(requireContext(), chosen, () -> {
+                        keepAwakePref.setValue(chosen.getValue());
+                        FsService.restart();
+                    });
+                    return false;
+                }
                 FsService.restart();
                 return true;
             });
