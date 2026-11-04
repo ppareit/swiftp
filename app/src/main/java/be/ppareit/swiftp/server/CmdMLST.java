@@ -60,7 +60,7 @@ public class CmdMLST extends FtpCmd implements Runnable {
         FileUtil.Gen gen = genFor(fileToFormat);
         if (gen.exists()) {
             sessionThread.writeString("250- Listing " + param + "\r\n");
-            sessionThread.writeString(makeString(gen) + "\r\n");
+            sessionThread.writeString(" " + makeString(gen));
             sessionThread.writeString("250 End\r\n");
         } else {
             Log.w(TAG, "run: file does not exist");
