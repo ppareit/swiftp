@@ -4,7 +4,6 @@ package be.ppareit.swiftp.gui
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,9 +11,8 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.ListView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 
@@ -39,7 +37,7 @@ import be.ppareit.swiftp.utils.StorageTree
  */
 class AllowedFoldersFragment : Fragment() {
 
-    private lateinit var listView: ListView
+    private lateinit var folderList: LinearLayout
     private lateinit var selectedHeading: TextView
     private lateinit var allFilesCard: CardView
     private lateinit var safCard: CardView
@@ -55,7 +53,7 @@ class AllowedFoldersFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         val root = inflater.inflate(R.layout.allowed_folders_list_layout, container, false)
-        listView = root.findViewById(R.id.allowed_folders_list)
+        folderList = root.findViewById(R.id.allowed_folders_list)
         selectedHeading = root.findViewById(R.id.allowed_folders_selected_heading)
         allFilesCard = root.findViewById(R.id.allowed_folders_all_files_card)
         safCard = root.findViewById(R.id.allowed_folders_saf_card)
@@ -129,13 +127,22 @@ class AllowedFoldersFragment : Fragment() {
         safButton.isEnabled = !safIsActive
 
         selectedHeading.visibility = if (safIsActive) View.VISIBLE else View.GONE
-        listView.visibility = if (safIsActive) View.VISIBLE else View.GONE
+        folderList.visibility = if (safIsActive) View.VISIBLE else View.GONE
         addButton.visibility = if (safIsActive) View.VISIBLE else View.GONE
-        val folders = AllowedFolders.all()
-        // A copy: ArrayAdapter keeps the list it is given and will mutate it, and this one
-        // belongs to the cached AllowedFolders snapshot that the server reads from.
-        listView.adapter =
-            FolderAdapter(requireContext(), folders.toMutableList(), ::removeFolder)
+        showFolders(AllowedFolders.all())
+    }
+
+    private fun showFolders(folders: List<StorageTree>) {
+        folderList.removeAllViews()
+        val inflater = LayoutInflater.from(requireContext())
+        for (tree in folders) {
+            val view = inflater.inflate(R.layout.allowed_folders_item_layout, folderList, false)
+            view.findViewById<TextView>(R.id.allowed_folder_name).text = tree.name
+            view.findViewById<TextView>(R.id.allowed_folder_path).text = tree.rootPath
+            view.findViewById<Button>(R.id.allowed_folder_remove_btn)
+                .setOnClickListener { removeFolder(tree) }
+            folderList.addView(view)
+        }
     }
 
     private fun setSelected(card: CardView, selected: Boolean) {
@@ -280,26 +287,6 @@ class AllowedFoldersFragment : Fragment() {
                 FsService.checkUsersAvailable()
             }
             .show()
-    }
-
-    /** Not inner: ArrayAdapter has its own `remove(T)`, which silently shadowed the fragment's. */
-    private class FolderAdapter(
-        context: Context,
-        folders: List<StorageTree>,
-        private val onRemove: (StorageTree) -> Unit,
-    ) : ArrayAdapter<StorageTree>(context, R.layout.allowed_folders_item_layout, folders) {
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val view = convertView ?: LayoutInflater.from(context)
-                .inflate(R.layout.allowed_folders_item_layout, parent, false)
-            val tree = getItem(position) ?: return view
-
-            view.findViewById<TextView>(R.id.allowed_folder_name).text = tree.name
-            view.findViewById<TextView>(R.id.allowed_folder_path).text = tree.rootPath
-            view.findViewById<Button>(R.id.allowed_folder_remove_btn)
-                .setOnClickListener { onRemove(tree) }
-            return view
-        }
     }
 
     companion object {
